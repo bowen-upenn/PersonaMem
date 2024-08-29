@@ -1,0 +1,13 @@
+datasets:
+  data_dir: 'data/synthetic'
+  context: 'therapy'
+  therapy_source_dir: 'data/source/HOPE_WSDM_2022/conversations'
+  persona_file: 'data/source/Persona_Hub_200000.jsonl'
+models:
+  llm_model: 'gpt-4-turbo'  # 'gpt-4-turbo', 'gpt-4o'
+inference:
+  verbose: False
+  print_every: 50
+  num_samples: 1
+  output_dir: 'outputs/'
+  save_output_response: True
