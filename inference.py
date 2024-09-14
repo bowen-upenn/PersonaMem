@@ -42,22 +42,22 @@ def inference(args):
             utils.append_json_to_file(persona, output_file_path, curr_data_name='Persona', parse_json=False)
             utils.append_json_to_file(args['datasets']['context'], output_file_path, curr_data_name='Context', parse_json=False)
 
-            ############### Step 3: Expand the persona to personal history ###############
+            # Expand the persona to personal history
             response = LLM.query_llm(step='expand_persona', content=persona, verbose=args['inference']['verbose'])
             utils.append_json_to_file(response, output_file_path, curr_data_name='General Personal History', parse_json=True)
 
-            ############### Step 4: Expand the persona and personal history to conversation ###############
+            # Expand the persona and personal history to conversation
             response = LLM.query_llm(step='init_conversation', context=args['datasets']['context'], verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='Initial Conversation', parse_json=False)
+            utils.append_json_to_file(response, output_file_path, curr_data_name='Initial Conversation', parse_json=True)
 
-            ############### Step 5: Generate a list of memory-related questions and answers ###############
+            # Generate a list of memory-related questions and answers
             response = LLM.query_llm(step='generate_questions', verbose=args['inference']['verbose'])
             utils.append_json_to_file(response, output_file_path, curr_data_name='Initial Q&A Pairs', parse_json=True)
 
-            ############### Step 6: Continue writing new personal history with conflicts and another conversation ###############
+            # Continue writing new personal history with conflicts and another conversation
             response = LLM.query_llm(step='second_expand', context=args['datasets']['context'], verbose=args['inference']['verbose'])
             utils.append_json_to_file(response, output_file_path, curr_data_name='Second Expand', parse_json=True)
 
-            ############### Step 7: Continue generating another list of memory-related questions and answers ###############
+            # Continue generating another list of memory-related questions and answers
             response = LLM.query_llm(step='generate_questions', verbose=args['inference']['verbose'])
             utils.append_json_to_file(response, output_file_path, curr_data_name='Expanded Q&A Pairs', parse_json=True)
