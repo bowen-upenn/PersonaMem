@@ -9,8 +9,8 @@ import math
 
 from openai import OpenAI
 
-from prompts import *
-from utils import *
+import prompts
+import utils
 
 
 class QueryLLM:
@@ -20,19 +20,35 @@ class QueryLLM:
         with open("openai_key.txt", "r") as api_key_file:
             self.api_key = api_key_file.read()
 
-        self.client = OpenAI()
-        self.assistant = client.beta.assistants.create(
+        self.client = OpenAI(api_key=self.api_key)
+        self.assistant = self.client.beta.assistants.create(
             name="Data Generator",
             instructions="You are a helpful assistant that generates persona-oriented conversational data in an user specified context.",
             tools=[{"type": "code_interpreter"}],
             model=self.args['models']['llm_model'],
         )
-        self.thread = client.beta.threads.create()
+        self.thread = None
 
+    def create_a_thread(self):
+        self.thread = self.client.beta.threads.create()
 
-    def query_llm(self, query, step='source_data', verbose=False):
+    def query_llm(self, step='source_data', content=None, context=None, verbose=False):
         if step == 'source_data':
-            prompt = ""
+            prompt = prompts.prompts_for_background_data(content)
+        elif step == 'expand_persona':
+            prompt = prompts.prompts_for_init_general_bullet_points(content)
+        elif step == 'init_conversation':
+            if context == 'therapy':
+                prompt = prompts.prompts_for_init_therapy_conversations()
+            else:
+                raise NotImplementedError("Unknown context: {}".format(context))
+        elif step == 'generate_questions':
+            prompt = prompts.prompt_for_question_answer_pairs()
+        elif step == 'second_expand':
+            if context == 'therapy':
+                prompt = prompts.prompts_for_second_general_bullet_points_and_therapy_conversations()
+            else:
+                raise NotImplementedError("Unknown context: {}".format(context))
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -51,8 +67,9 @@ class QueryLLM:
             response = self.client.beta.threads.messages.list(
                 thread_id=self.thread.id
             )
+            response = response.data[0].content[0].text.value
             if verbose:
-                print(f'LLM Response: {response}')
+                print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
         else:
             response = None
             print(run.status)
