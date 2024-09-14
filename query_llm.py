@@ -36,7 +36,9 @@ class QueryLLM:
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(content)
         elif step == 'expand_persona':
-            prompt = prompts.prompts_for_init_general_bullet_points(content)
+            prompt = prompts.prompts_for_expanding_persona(content)
+        elif step == 'init_personal_history':
+            prompt = prompts.prompts_for_init_general_personal_history(content)
         elif step == 'init_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_init_therapy_conversations()
@@ -46,7 +48,7 @@ class QueryLLM:
             prompt = prompts.prompt_for_question_answer_pairs()
         elif step == 'second_expand':
             if context == 'therapy':
-                prompt = prompts.prompts_for_second_general_bullet_points_and_therapy_conversations()
+                prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations()
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         else:

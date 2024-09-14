@@ -25,12 +25,13 @@ def inference(args):
                 source_dir = args['datasets']['therapy_source_dir']
             else:
                 raise NotImplementedError("Unknown context: {}".format(args['datasets']['context']))
+            utils.append_json_to_file(args['datasets']['context'], output_file_path, curr_data_name='Context', parse_json=False)
 
             # Load a random source data in the given context and convert it from JSON to plain text
             source_data = utils.load_source_data(source_dir)
             context_conversation = utils.preprocess_source_data(source_data, args['datasets']['context'])
 
-            # # Send the conversation to the LLM as a background memory about the context
+            # Send the conversation to the LLM as a background memory about the context
             LLM.create_a_thread()
             response = LLM.query_llm(step='source_data', content=context_conversation, verbose=args['inference']['verbose'])
 
@@ -38,26 +39,19 @@ def inference(args):
             random_row = random.choice(all_personas)
             persona = random_row.strip()[13:-2]  # Remove {"persona": "} and "}
             if args['inference']['verbose']:
-                print(f'{utils.Colors.OKGREEN}{"Persona"}:{utils.Colors.ENDC}{persona}')
-            utils.append_json_to_file(persona, output_file_path, curr_data_name='Persona', parse_json=False)
-            utils.append_json_to_file(args['datasets']['context'], output_file_path, curr_data_name='Context', parse_json=False)
+                print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}{persona}')
+            utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
 
-            # Expand the persona to personal history
-            response = LLM.query_llm(step='expand_persona', content=persona, verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='General Personal History', parse_json=True)
+            # Expand the persona to at least five sentences
+            persona = LLM.query_llm(step='expand_persona', content=persona, verbose=args['inference']['verbose'])
+            utils.append_json_to_file(persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
 
-            # Expand the persona and personal history to conversation
-            response = LLM.query_llm(step='init_conversation', context=args['datasets']['context'], verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='Initial Conversation', parse_json=True)
-
-            # Generate a list of memory-related questions and answers
-            response = LLM.query_llm(step='generate_questions', verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='Initial Q&A Pairs', parse_json=True)
-
-            # Continue writing new personal history with conflicts and another conversation
-            response = LLM.query_llm(step='second_expand', context=args['datasets']['context'], verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='Second Expand', parse_json=True)
-
-            # Continue generating another list of memory-related questions and answers
-            response = LLM.query_llm(step='generate_questions', verbose=args['inference']['verbose'])
-            utils.append_json_to_file(response, output_file_path, curr_data_name='Expanded Q&A Pairs', parse_json=True)
+            # Generate personal history, conversations, and questions and answers in two consecutive turns
+            steps = ['init_personal_history', 'init_conversation', 'generate_questions', 'second_expand', 'generate_questions']
+            data_names = ['General Personal History', 'Initial Conversation', 'Initial Q&A Pairs', 'Second Expand', 'Expanded Q&A Pairs']
+            for step, data_name in zip(steps, data_names):
+                content = None
+                if step == 'init_personal_history':
+                    content = persona
+                response = LLM.query_llm(step=step, content=content, context=args['datasets']['context'], verbose=args['inference']['verbose'])
+                utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)

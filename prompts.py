@@ -8,14 +8,19 @@ def prompts_for_background_data(content):
     return prompt
 
 
-def prompts_for_init_general_bullet_points(persona):
+def prompts_for_expanding_persona(persona):
+    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences: " + persona
+    return prompt
+
+
+def prompts_for_init_general_personal_history(persona):
     prompt = "Given the following persona, expand it with the person's general background development history within ten years, " \
              "turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. " \
              "You should mention both daily activities and important key milestones, and both positive and negative history events. " \
              "Use JSON format where each timestamp is a key in the JSON dictionary. Each point should also be marked with labels of either ['Short-Term'] or ['Long-Term'], " \
              "where short-term fact refers to something happening daily, which can be irrelevant to the persona like what the person eats, " \
              "which should come with temporal quantifiers like 'today' or so, but long-term fact refers to some key personas that won't be changed for at least a year. " \
-             "Here is the persona: " + persona
+             "List at least 10 events, more are welcome. Here is the persona: " + persona
     return prompt
 
 
@@ -36,7 +41,7 @@ def prompts_for_init_therapy_conversations():
     return prompt
 
 
-def prompts_for_second_general_bullet_points_and_therapy_conversations():
+def prompts_for_second_general_personal_history_and_therapy_conversations():
     prompt = "Write another separate therapy conversation history that is happening in a year with the same person. " \
              "Based on the persona and personal history, what would the person do in the next week, month, and year? " \
              "Those new points should be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts. " \
@@ -44,7 +49,7 @@ def prompts_for_second_general_bullet_points_and_therapy_conversations():
              "If there is a sentence in the patient's conversation that is related to a bullet point, " \
              "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
              "The patent's conversation should clearly include detailed info about these events, " \
-             "Crease a JSON file. You should list these new points first in the JSON format using key 'Expanded Personal History', " \
+             "Crease a JSON file. You should list at least 10 new points first in the JSON format using key 'Expanded Personal History', more are welcome, " \
              "and then write the new therapy conversation using key 'Expanded Conversation' with contents purely in a textual format."
     return prompt
 
