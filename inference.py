@@ -47,11 +47,11 @@ def inference(args):
             utils.append_json_to_file(persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
 
             # Generate personal history, conversations, and questions and answers in two consecutive turns
-            steps = ['init_personal_history', 'init_conversation', 'generate_questions', 'second_expand', 'generate_questions']
-            data_names = ['General Personal History', 'Initial Conversation', 'Initial Q&A Pairs', 'Second Expand', 'Expanded Q&A Pairs']
+            steps = ['init_general_personal_history', 'init_contextual_personal_history', 'init_conversation', 'generate_questions', 'continue_conversation', 'second_expand', 'generate_questions', 'continue_conversation']
+            data_names = ['General Personal History', 'Contextual Personal History', 'Initial Conversation', 'Initial Q&A Pairs', 'Initial Conversation', 'Second Expand', 'Expanded Q&A Pairs', 'Expanded Conversation']
             for step, data_name in zip(steps, data_names):
                 content = None
-                if step == 'init_personal_history':
+                if step == 'init_general_personal_history':
                     content = persona
                 response = LLM.query_llm(step=step, content=content, context=args['datasets']['context'], verbose=args['inference']['verbose'])
                 utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)

@@ -14,8 +14,9 @@ def prompts_for_expanding_persona(persona):
 
 
 def prompts_for_init_general_personal_history(persona):
-    prompt = "Given the following persona, expand it with the person's general background development history within ten years, " \
+    prompt = "Given the following persona, expand it with the person's general background history within ten years, " \
              "turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. " \
+             "Remember that these events should be general like career development, and they will be shared across multiple different contexts." \
              "You should mention both daily activities and important key milestones, and both positive and negative history events. " \
              "Use JSON format where each timestamp is a key in the JSON dictionary. Each point should also be marked with labels of either ['Short-Term'] or ['Long-Term'], " \
              "where short-term fact refers to something happening daily, which can be irrelevant to the persona like what the person eats, " \
@@ -24,8 +25,10 @@ def prompts_for_init_general_personal_history(persona):
     return prompt
 
 
-def prompts_for_init_contextual_bullet_points(persona, general_bullet_points):
-    prompt = ""
+def prompts_for_init_contextual_personal_history(context):
+    prompt = "Given the persona and the person's general background history above, continue to write 10 more events related to the context of " + context + ". " \
+             "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
+             "Use the same JSON format with MM/DD/YYYY timestamp and short-term/long-term labels as above. "
     return prompt
 
 
@@ -41,7 +44,7 @@ def prompts_for_init_therapy_conversations():
     return prompt
 
 
-def prompts_for_second_general_personal_history_and_therapy_conversations():
+def prompts_for_second_general_personal_history_and_therapy_conversations(context):
     prompt = "Write another separate therapy conversation history that is happening in a year with the same person. " \
              "Based on the persona and personal history, what would the person do in the next week, month, and year? " \
              "Those new points should be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts. " \
@@ -49,8 +52,10 @@ def prompts_for_second_general_personal_history_and_therapy_conversations():
              "If there is a sentence in the patient's conversation that is related to a bullet point, " \
              "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
              "The patent's conversation should clearly include detailed info about these events, " \
-             "Crease a JSON file. You should list at least 10 new points first in the JSON format using key 'Expanded Personal History', more are welcome, " \
-             "and then write the new therapy conversation using key 'Expanded Conversation' with contents purely in a textual format."
+             "Crease a JSON file. You should first list at least 10 new points in the JSON format using key 'Expanded General Personal History', more are welcome, " \
+             "and 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
+             "then write the new therapy conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
+             "The new therapy conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
     return prompt
 
 
@@ -62,5 +67,13 @@ def prompt_for_question_answer_pairs():
              "Each element should have an unique integer index as the key, starting from '0' and incrementing by one at a time, " \
              "and each value should be another dict with keys 'Question', 'Answer', and 'Reference', " \
              "where 'Reference' should mention the related detailed personal history in the JSON files above including the timestamp in the format of MM/DD/YYYY. " \
-             "Clearly mark if this question-answer pair is related to one, two, or more events."
+             "Clearly mark if this question-answer pair is related to one, two, or more events, " \
+             "and whether it is related to the general personal history ('General') or the contextual personal history ('Contextual')."
+    return prompt
+
+
+def prompts_for_continuing_therapy_conversations():
+    prompt = "Insert additional conversation turns in the conversation above to double the length of the conversation record. Do NOT add any side notes for these new turns." \
+             "Keep all original sentences the same. Follow the same persona but other concerns irrelevant to the personal history mentioned above. " \
+             "Show the complete conversation record in the same format. "
     return prompt
