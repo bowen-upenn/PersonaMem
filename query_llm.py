@@ -28,11 +28,14 @@ class QueryLLM:
             model=self.args['models']['llm_model'],
         )
         self.thread = None
+        self.expanded_persona = None
+        self.init_general_personal_history = None
+        self.expanded_general_personal_history = None
 
     def create_a_thread(self):
         self.thread = self.client.beta.threads.create()
 
-    def query_llm(self, step='source_data', content=None, context=None, verbose=False):
+    def query_llm(self, step='source_data', content=None, context=None, idx_context=0, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(content)
         elif step == 'expand_persona':
@@ -40,7 +43,7 @@ class QueryLLM:
         elif step == 'init_general_personal_history':
             prompt = prompts.prompts_for_init_general_personal_history(content)
         elif step == 'init_contextual_personal_history':
-            prompt = prompts.prompts_for_init_contextual_personal_history(context)
+            prompt = prompts.prompts_for_init_contextual_personal_history(context, self.expanded_persona, self.init_general_personal_history)
         elif step == 'init_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_init_therapy_conversations()
@@ -50,7 +53,7 @@ class QueryLLM:
             prompt = prompts.prompt_for_question_answer_pairs()
         elif step == 'second_expand':
             if context == 'therapy':
-                prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context)
+                prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context, self.expanded_general_personal_history)
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         elif step == 'continue_conversation':
@@ -61,26 +64,44 @@ class QueryLLM:
         else:
             raise ValueError(f'Invalid step: {step}')
 
-        message = self.client.beta.threads.messages.create(
-            thread_id=self.thread.id,
-            role="user",
-            content=prompt
-        )
-
-        run = self.client.beta.threads.runs.create_and_poll(
-            thread_id=self.thread.id,
-            assistant_id=self.assistant.id
-        )
-
-        if run.status == 'completed':
-            response = self.client.beta.threads.messages.list(
-                thread_id=self.thread.id
+        if step == 'expand_persona':
+            response = self.client.chat.completions.create(
+                model=self.args['models']['llm_model'],
+                messages=[{"role": "user",
+                           "content": prompt}],
+                max_tokens=300
             )
-            response = response.data[0].content[0].text.value
+            response = response.choices[0].message.content
             if verbose:
                 print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
         else:
-            response = None
-            print(run.status)
+            message = self.client.beta.threads.messages.create(
+                thread_id=self.thread.id,
+                role="user",
+                content=prompt
+            )
+
+            run = self.client.beta.threads.runs.create_and_poll(
+                thread_id=self.thread.id,
+                assistant_id=self.assistant.id
+            )
+
+            if run.status == 'completed':
+                response = self.client.beta.threads.messages.list(
+                    thread_id=self.thread.id
+                )
+                response = response.data[0].content[0].text.value
+                if verbose:
+                    print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
+            else:
+                response = None
+                print(run.status)
+
+        if idx_context == 0 and step == 'expand_persona':
+            self.expanded_persona = response
+        if idx_context == 0 and step == 'init_general_personal_history':
+            self.init_general_personal_history = response
+        if idx_context == 0 and step == 'second_expand':
+            self.expanded_general_personal_history = response
 
         return response

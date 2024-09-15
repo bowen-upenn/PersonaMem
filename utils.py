@@ -51,7 +51,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
             return {}
 
 
-    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False):
+    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False, expanded_general_personal_history=None):
         if parse_json:
             # Use regex to extract the JSON part enclosed by "```json" and "```"
             json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
@@ -65,7 +65,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
                     parsed_json = json.loads(json_part)
                     # Add the parsed JSON content to the existing data under the user-specified key
                     if curr_data_name == 'Second Expand':
-                        existing_json_file['Expanded General Personal History'] = parsed_json['Expanded General Personal History']
+                        existing_json_file['Expanded General Personal History'] = parsed_json['Expanded General Personal History'] if expanded_general_personal_history is None else expanded_general_personal_history
                         existing_json_file['Expanded Contextual Personal History'] = parsed_json['Expanded Contextual Personal History']
                         existing_json_file['Expanded Conversation'] = parsed_json['Expanded Conversation']
                     else:
