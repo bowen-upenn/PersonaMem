@@ -1,5 +1,9 @@
 import json
+import yaml
+import tiktoken
+
 import utils
+
 
 # Sample JSON content for testing
 json_content = {
@@ -65,6 +69,16 @@ def extract_conversation(json_content, context, which_conversation='all', which_
 
 
 if __name__ == '__main__':
+    # Load hyperparameters
+    try:
+        with open('config.yaml', 'r') as file:
+            args = yaml.safe_load(file)
+    except Exception as e:
+        print('Error reading the config file', e)
+
+    # Load the tokenizer
+    encoding = tiktoken.encoding_for_model(args['models']['llm_model'])
+
     # Test1: Run test cases on the toy example
     print(f'{utils.Colors.HEADER}TEST1{utils.Colors.HEADER}')
     possible_which_conversation = ['Initial', 'All']
@@ -75,9 +89,12 @@ if __name__ == '__main__':
             extracted_conversation = extract_conversation(json_content, context='therapist', which_conversation=which_conversation, which_format=which_format)
             print(f'{utils.Colors.OKGREEN}Conversation type: {which_conversation}, Output format: {which_format}{utils.Colors.ENDC}')
             print(extracted_conversation)
-            print('\n')
 
-            # TODO: Print the number of characters and number of tokens
+            # Print the number of characters and number of tokens
+            if which_format == 'string':
+                tokens = encoding.encode(extracted_conversation)
+                print(f'{utils.Colors.OKGREEN}Number of tokens: {len(tokens)}{utils.Colors.ENDC}')
+            print('\n')
 
             # TODO: Extract question-answer pairs given input the index of concatenation
 
@@ -100,5 +117,11 @@ if __name__ == '__main__':
                 else:
                     all_conversations.append(extracted_conversation)
         print(all_conversations)
+
+        # Print the number of characters and number of tokens
+        if which_format == 'string':
+            tokens = encoding.encode(all_conversations)
+            print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on {args['models']['llm_model']} tokenizer{utils.Colors.ENDC}")
         print('\n')
+
 
