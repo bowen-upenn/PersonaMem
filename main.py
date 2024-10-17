@@ -22,14 +22,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4-turbo", help='Set LLM model. Choose from gpt-3.5-turbo, gpt-4-turbo, and gpt-4o')
     parser.add_argument('--context', type=str, default="therapy", help='Set conversation context. Choose from therapy')
-    parser.add_argument('--n', type=int, default=1, help='Set number of samples to generate')
+    parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
+    parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples to generate')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
     # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['datasets']['context'] = cmd_args.context if cmd_args.context is not None else args['datasets']['context']
-    args['inference']['num_samples'] = cmd_args.n if cmd_args.n is not None else args['inference']['num_samples']
+    args['inference']['num_contexts_per_persona'] = cmd_args.n_persona if cmd_args.n_persona is not None else args['inference']['num_contexts_per_persona']
+    args['inference']['num_samples_per_context'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_context']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
     torch.manual_seed(0)

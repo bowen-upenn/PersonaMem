@@ -64,7 +64,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
                     # Parse the extracted JSON string into a Python dictionary
                     parsed_json = json.loads(json_part)
                     # Add the parsed JSON content to the existing data under the user-specified key
-                    if curr_data_name == 'Second Expand':
+                    if curr_data_name == 'Expand History and Conversation':
                         existing_json_file['Expanded General Personal History'] = parsed_json['Expanded General Personal History'] if expanded_general_personal_history is None else expanded_general_personal_history
                         existing_json_file['Expanded Contextual Personal History'] = parsed_json['Expanded Contextual Personal History']
                         existing_json_file['Expanded Conversation'] = parsed_json['Expanded Conversation']

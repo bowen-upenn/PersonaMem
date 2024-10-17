@@ -51,14 +51,9 @@ class QueryLLM:
                 raise NotImplementedError("Unknown context: {}".format(context))
         elif step == 'generate_questions':
             prompt = prompts.prompt_for_question_answer_pairs()
-        elif step == 'second_expand':
+        elif step == 'expand_history_and_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context, self.expanded_general_personal_history)
-            else:
-                raise NotImplementedError("Unknown context: {}".format(context))
-        elif step == 'continue_conversation':
-            if context == 'therapy':
-                prompt = prompts.prompts_for_continuing_therapy_conversations()
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         else:
