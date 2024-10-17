@@ -48,6 +48,27 @@ def prompts_for_init_therapy_conversations():
              "The patent's conversation should clearly include detailed info about these events, while ensuring the conversation is LONG enough and contain other information and details to make it long. "
     return prompt
 
+def prompts_for_init_legal_conversations():
+    prompt = "Your task is to write a legal consulting conversation record based on the persona and detailed background development history above. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Make sure to include all the bullet points in the history in the JSON file. " \
+             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Patient', 'Therapist', or 'Side_Note'." \
+             "If there is a sentence in the patient's conversation that is related to a bullet point, " \
+             "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
+             "The patent's conversation should clearly include detailed info about these events, " \
+             "while ensuring the conversation is LONG enough and contain other information and details to make it long. "
+    return prompt
+
+def prompts_for_init_recommendation_food_conversations():
+    prompt = "Your task is to write a food recommendation conversation record based on the persona and detailed background development history above. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Make sure to include all the bullet points in the history in the JSON file. " \
+             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Patient', 'Therapist', or 'Side_Note'." \
+             "If there is a sentence in the patient's conversation that is related to a bullet point, " \
+             "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
+             "The patent's conversation should clearly include detailed info about these events, " \
+             "while ensuring the conversation is LONG enough and contain other information and details to make it long. "
+
 
 def prompts_for_second_general_personal_history_and_therapy_conversations(context, expanded_general_personal_history=None):
     if expanded_general_personal_history is None:

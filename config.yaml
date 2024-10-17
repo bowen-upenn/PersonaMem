@@ -3,6 +3,10 @@ datasets:
   all_contexts: ['therapy']
   curr_context: 'therapy'
   therapy_source_dir: 'data/source/HOPE_WSDM_2022/conversations'
+  law_source_dir: 'data/source/Law_School_Conversations/conversations'
+  recommendation_food_source_dir: 'data/source/Food_Recommendation_Conversations/conversations'
+  recommendation_webshop_source_dir: 'data/source/Webshop_Recommendation_Conversations/conversations'
+  recommendation_movie_source_dir: 'data/source/Movie_Recommendation_Conversations/conversations'
   persona_file: 'data/source/Persona_Hub_200000.jsonl'
 models:
   llm_model: 'gpt-4o'  # 'gpt-4-turbo', 'gpt-4o'

@@ -44,6 +44,14 @@ def inference(args):
                     # Load a random conversation history from the chosen real-world dataset
                     if curr_context == 'therapy':
                         source_dir = args['datasets']['therapy_source_dir']
+                    elif curr_context == 'law':
+                        source_dir = args['datasets']['law_source_dir']
+                    elif curr_context == 'recommendation_food':
+                        source_dir = args['datasets']['recommendation_food_source_dir']
+                    elif curr_context == 'recommendation_webshop':
+                        source_dir = args['datasets']['recommendation_webshop_source_dir']
+                    elif curr_context == 'recommendation_movie':
+                        source_dir = args['datasets']['recommendation_movie_source_dir']
                     else:
                         raise NotImplementedError("Unknown context: {}".format(curr_context))
                     utils.append_json_to_file(curr_context, output_file_path, curr_data_name='Context', parse_json=False)
