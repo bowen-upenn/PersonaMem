@@ -1,7 +1,6 @@
 datasets:
   data_dir: 'data/synthetic'
-  all_contexts: ['therapy']
-  curr_context: 'therapy'
+  context: 'therapy'
   therapy_source_dir: 'data/source/HOPE_WSDM_2022/conversations'
   persona_file: 'data/source/Persona_Hub_200000.jsonl'
 models:
@@ -9,8 +8,6 @@ models:
 inference:
   verbose: False
   print_every: 50
-  num_personas: 1
-  num_contexts_per_persona: 1
   num_samples_per_context: 1
   output_dir: 'data/output/'
   save_output_response: True

@@ -65,8 +65,9 @@ def extract_conversation(json_content, context, which_conversation='all', which_
 
 
 if __name__ == '__main__':
-    # Run test cases on the toy example
-    possible_which_conversation = ['Initial', 'Expanded', 'All']
+    # Test1: Run test cases on the toy example
+    print(f'{utils.Colors.HEADER}TEST1{utils.Colors.HEADER}')
+    possible_which_conversation = ['Initial', 'All']
     possible_which_format = ['string', 'api_dict']
 
     for which_conversation in possible_which_conversation:
@@ -75,3 +76,29 @@ if __name__ == '__main__':
             print(f'{utils.Colors.OKGREEN}Conversation type: {which_conversation}, Output format: {which_format}{utils.Colors.ENDC}')
             print(extracted_conversation)
             print('\n')
+
+            # TODO: Print the number of characters and number of tokens
+
+            # TODO: Extract question-answer pairs given input the index of concatenation
+
+
+    # Test2: Run test cases on concatenate conversations from multiple files
+    print(f'{utils.Colors.HEADER}TEST2{utils.Colors.ENDC}')
+    jsons = ['data/output/conversation_therapy_persona0_sample0.json', 'data/output/conversation_therapy_persona0_sample1.json']
+
+    for which_format in possible_which_format:
+        if which_format == 'string':
+            all_conversations = ""
+        else:
+            all_conversations = []
+        for json_file in jsons:
+            with open(json_file, 'r') as f:
+                json_content = json.load(f)
+                extracted_conversation = extract_conversation(json_content, context='therapist', which_conversation='All', which_format=which_format)
+                if which_format == 'string':
+                    all_conversations += extracted_conversation + '\n\n'
+                else:
+                    all_conversations.append(extracted_conversation)
+        print(all_conversations)
+        print('\n')
+

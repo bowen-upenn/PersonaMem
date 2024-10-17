@@ -27,11 +27,19 @@ def inference(args):
             # Expand the persona to at least five sentences
             expanded_persona = LLM.query_llm(step='expand_persona', content=persona, verbose=args['inference']['verbose'])
 
-            for idx_context in range(int(args['inference']['num_contexts_per_persona'])):
-                if int(args['inference']['num_contexts_per_persona']) == 1:
-                    curr_context = args['datasets']['curr_context']
-                else:
-                    curr_context = args['datasets']['all_contexts'][idx_context]
+            # Define regex pattern to check if input contains square brackets
+            if re.match(r"\[.*\]", args['datasets']['curr_context'].strip()):
+                # Remove brackets and split the string by commas
+                all_contexts = re.sub(r'[\[\]]', '', args['datasets']['curr_context']).split(',')
+                all_contexts = [context.strip() for context in all_contexts]
+            else:
+                # Handle single context case
+                all_contexts = [user_input.strip()]
+
+            # Loop through each context in the list
+            for idx_context, curr_context in enumerate(all_contexts):
+                # Process each context as needed
+                print(f"Processing context: {curr_context}, {idx_context}/{len(all_contexts)}")
 
                 for idx_sample in range(int(args['inference']['num_samples_per_context'])):
                     output_file_path = os.path.join(args['inference']['output_dir'], f'{args["inference"]["output_file_name"]}_{curr_context}_persona{idx_persona}_sample{idx_sample}.json')
