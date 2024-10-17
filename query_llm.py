@@ -47,6 +47,14 @@ class QueryLLM:
         elif step == 'init_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_init_therapy_conversations()
+            elif context == 'law':
+                prompt = prompts.prompts_for_init_legal_conversations()
+            elif context == 'recommendation_food':
+                prompt = prompts.prompts_for_init_recommendation_food_conversations()
+            elif context == 'recommendation_webshop':
+                prompt = prompts.prompts_for_init_recommendation_webshop_conversations()
+            elif context == 'recommendation_movie':
+                prompt = prompts.prompts_for_init_recommendation_movie_conversations()
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         elif step == 'generate_questions':
