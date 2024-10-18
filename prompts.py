@@ -8,13 +8,15 @@ def prompts_for_background_data(content):
     return prompt
 
 
-def prompts_for_expanding_persona(persona):
-    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences: " + persona
+def prompts_for_expanding_persona(persona, start_time):
+    birth_year = str(int(start_time.split('/')[2]) - 18)
+    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around " \
+             "five sentences. Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
     return prompt
 
 
-def prompts_for_init_general_personal_history(persona):
-    prompt = "Given the following persona, expand it with the person's general background history within ten years, " \
+def prompts_for_init_general_personal_history(persona, start_time):
+    prompt = "Given the following persona, expand it with the person's general background history within ten years starting at " + start_time + "." \
              "turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. " \
              "Remember that these events should be general like career development, and they will be shared across multiple different contexts." \
              "You should mention both daily activities and important key milestones, and both positive and negative history events. " \
@@ -25,16 +27,16 @@ def prompts_for_init_general_personal_history(persona):
     return prompt
 
 
-def prompts_for_init_contextual_personal_history(context, persona=None, init_general_personal_history=None):
+def prompts_for_init_contextual_personal_history(context, start_time, persona=None, init_general_personal_history=None):
     if init_general_personal_history is None:
         prompt = "Given the persona and the person's general background history above, continue to write 10 more events related to the context of " + context + ". " \
                  "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
-                 "Use the same JSON format with MM/DD/YYYY timestamp and short-term/long-term labels as above. "
+                 "Use the same JSON format with MM/DD/YYYY timestamp starting at " + start_time + ", and use short-term/long-term labels as above. "
     else:
         prompt = "Here is the persona:\n\n" + persona + "\n\nHere are 10 events related to the person's general background history:\n\n" + init_general_personal_history + "\n\n" \
                  "Given the persona and the person's general background history above, continue to write 10 more events related to the context of " + context + ". " \
                  "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
-                 "Use the same JSON format with MM/DD/YYYY timestamp and short-term/long-term labels as above. "
+                 "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. "
     return prompt
 
 

@@ -25,21 +25,28 @@ def inference(args):
                 print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}{persona}')
 
             # Expand the persona to at least five sentences
-            expanded_persona = LLM.query_llm(step='expand_persona', content=persona, verbose=args['inference']['verbose'])
+            start_time = utils.pick_a_random_time()
+            expanded_persona = LLM.query_llm(step='expand_persona', content=persona, start_time=start_time, verbose=args['inference']['verbose'])
 
             # Define regex pattern to check if input contains square brackets
-            if re.match(r"\[.*\]", args['datasets']['curr_context'].strip()):
+            if re.match(r"\[.*\]", args['datasets']['context'].strip()):
                 # Remove brackets and split the string by commas
-                all_contexts = re.sub(r'[\[\]]', '', args['datasets']['curr_context']).split(',')
+                all_contexts = re.sub(r'[\[\]]', '', args['datasets']['context']).split(',')
                 all_contexts = [context.strip() for context in all_contexts]
             else:
                 # Handle single context case
-                all_contexts = [user_input.strip()]
+                all_contexts = [args['datasets']['context'].strip()]
+            # Since we assign a consecutive time frame for all contexts, we randomly permute contexts to ensure generalization
+            random.shuffle(all_contexts)
 
             # Loop through each context in the list
             for idx_context, curr_context in enumerate(all_contexts):
                 # Process each context as needed
-                print(f"Processing context: {curr_context}, {idx_context}/{len(all_contexts)}")
+                print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context}/{len(all_contexts)}{utils.Colors.ENDC}')
+
+                # Set a consecutive time frame for different contexts for each persona, while all samples below are independent
+                if idx_context > 0:
+                    start_time = utils.pick_a_random_time_within_a_year(start_time)
 
                 for idx_sample in range(int(args['inference']['num_samples_per_context'])):
                     output_file_path = os.path.join(args['inference']['output_dir'], f'{args["inference"]["output_file_name"]}_{curr_context}_persona{idx_persona}_sample{idx_sample}.json')
@@ -72,7 +79,7 @@ def inference(args):
                                 continue    # only generate general personal history once, to be shared across multiple contexts for the same persona
                             content = expanded_persona
 
-                        response = LLM.query_llm(step=step, content=content, context=curr_context, idx_context=idx_context, verbose=args['inference']['verbose'])
+                        response = LLM.query_llm(step=step, content=content, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
 
                         if step == 'expand_history_and_conversation' and idx_context > 0:
                             utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True, expanded_general_personal_history=LLM.expanded_general_personal_history)

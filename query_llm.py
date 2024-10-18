@@ -35,15 +35,15 @@ class QueryLLM:
     def create_a_thread(self):
         self.thread = self.client.beta.threads.create()
 
-    def query_llm(self, step='source_data', content=None, context=None, idx_context=0, verbose=False):
+    def query_llm(self, step='source_data', content=None, context=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(content)
         elif step == 'expand_persona':
-            prompt = prompts.prompts_for_expanding_persona(content)
+            prompt = prompts.prompts_for_expanding_persona(content, start_time)
         elif step == 'init_general_personal_history':
-            prompt = prompts.prompts_for_init_general_personal_history(content)
+            prompt = prompts.prompts_for_init_general_personal_history(content, start_time)
         elif step == 'init_contextual_personal_history':
-            prompt = prompts.prompts_for_init_contextual_personal_history(context, self.expanded_persona, self.init_general_personal_history)
+            prompt = prompts.prompts_for_init_contextual_personal_history(context, start_time, self.expanded_persona, self.init_general_personal_history)
         elif step == 'init_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_init_therapy_conversations()

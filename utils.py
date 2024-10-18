@@ -4,6 +4,7 @@ import os
 import random
 import json
 import re
+from datetime import timedelta
 
 
 class Colors:
@@ -90,3 +91,33 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     # Save the updated data back to the file
     with open(output_file_path, "w") as json_file:
         json.dump(appended_json_file, json_file, indent=4)
+
+
+def pick_a_random_time():
+    # Skewed random selection towards recent years
+    weights = np.array([i for i in range(1, 2011-1920+1)])
+    weights[-20:] *= 10
+    weights = weights / weights.sum()
+    year = random.choices(
+        population=range(1920, 2011),
+        weights=weights,
+        k=1
+    )[0]
+
+    # Random month and day
+    month = random.randint(1, 12)
+    day = random.randint(1, 28 if month == 2 else 30 if month in [4, 6, 9, 11] else 31)
+
+    return f"{month:02d}/{day:02d}/{year}"
+
+
+def pick_a_random_time_within_a_year(input_date):
+    # Convert input string to datetime object
+    input_date = datetime.strptime(input_date, "%m/%d/%Y")
+
+    # Generate a random timedelta within a year (365 days in both directions)
+    days_difference = random.randint(0, 365)
+    new_date = input_date + timedelta(days=days_difference)
+
+    # Return the new date in the same format
+    return new_date.strftime("%m/%d/%Y")
