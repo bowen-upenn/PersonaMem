@@ -28,16 +28,12 @@ def inference(args):
             start_time = utils.pick_a_random_time()
             expanded_persona = LLM.query_llm(step='expand_persona', content=persona, start_time=start_time, verbose=args['inference']['verbose'])
 
-            # Define regex pattern to check if input contains square brackets
-            if re.match(r"\[.*\]", args['datasets']['context'].strip()):
-                # Remove brackets and split the string by commas
-                all_contexts = re.sub(r'[\[\]]', '', args['datasets']['context']).split(',')
-                all_contexts = [context.strip() for context in all_contexts]
-            else:
-                # Handle single context case
-                all_contexts = [args['datasets']['context'].strip()]
+            # Clean up the names of contexts
+            all_contexts = [ctx.strip() for ctx in args['datasets']['context']]
+
             # Since we assign a consecutive time frame for all contexts, we randomly permute contexts to ensure generalization
-            random.shuffle(all_contexts)
+            if len(all_contexts) > 1:
+                random.shuffle(all_contexts)
 
             # Loop through each context in the list
             for idx_context, curr_context in enumerate(all_contexts):
