@@ -4,7 +4,7 @@ import os
 import random
 import json
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 class Colors:
@@ -17,7 +17,7 @@ class Colors:
 
 
 def preprocess_source_data(data, context):
-    if context == 'therapy':
+    if context == 'therapy' or context == 'legal':
         context_conversation = ""
         for message in data["conversation"]:
             role = message["role"]
@@ -52,7 +52,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
             return {}
 
 
-    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False, expanded_general_personal_history=None):
+    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False):
         if parse_json:
             # Use regex to extract the JSON part enclosed by "```json" and "```"
             json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
@@ -66,9 +66,12 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
                     parsed_json = json.loads(json_part)
                     # Add the parsed JSON content to the existing data under the user-specified key
                     if curr_data_name == 'Expand History and Conversation':
-                        existing_json_file['Expanded General Personal History'] = parsed_json['Expanded General Personal History'] if expanded_general_personal_history is None else expanded_general_personal_history
-                        existing_json_file['Expanded Contextual Personal History'] = parsed_json['Expanded Contextual Personal History']
-                        existing_json_file['Expanded Conversation'] = parsed_json['Expanded Conversation']
+                        key = 'Expanded General Personal History' if 'Expanded General Personal History' in parsed_json else 'Expanded_General_Personal_History'
+                        existing_json_file['Expanded General Personal History'] = parsed_json[key]
+                        key = 'Expanded Contextual Personal History' if 'Expanded Contextual Personal History' in parsed_json else 'Expanded_Contextual_Personal_History'
+                        existing_json_file['Expanded Contextual Personal History'] = parsed_json[key]
+                        key = 'Expanded Conversation' if 'Expanded Conversation' in parsed_json else 'Expanded_Conversation'
+                        existing_json_file['Expanded Conversation'] = parsed_json[key]
                     else:
                         existing_json_file[curr_data_name] = parsed_json
 
@@ -96,7 +99,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
 def pick_a_random_time():
     # Skewed random selection towards recent years
     weights = np.array([i for i in range(1, 2011-1920+1)])
-    weights[-20:] *= 10
+    weights[-20:] *= 3
     weights = weights / weights.sum()
     year = random.choices(
         population=range(1920, 2011),

@@ -38,7 +38,7 @@ def inference(args):
             # Loop through each context in the list
             for idx_context, curr_context in enumerate(all_contexts):
                 # Process each context as needed
-                print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context}/{len(all_contexts)}{utils.Colors.ENDC}')
+                print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context}/{len(all_contexts)-1}{utils.Colors.ENDC}')
 
                 # Set a consecutive time frame for different contexts for each persona, while all samples below are independent
                 if idx_context > 0:
@@ -55,6 +55,8 @@ def inference(args):
                     # Load a random conversation history from the chosen real-world dataset
                     if curr_context == 'therapy':
                         source_dir = args['datasets']['therapy_source_dir']
+                    elif curr_context == 'legal':
+                        source_dir = args['datasets']['legal_source_dir']
                     else:
                         raise NotImplementedError("Unknown context: {}".format(curr_context))
                     utils.append_json_to_file(curr_context, output_file_path, curr_data_name='Context', parse_json=False)
@@ -76,8 +78,4 @@ def inference(args):
                             content = expanded_persona
 
                         response = LLM.query_llm(step=step, content=content, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
-
-                        if step == 'expand_history_and_conversation' and idx_context > 0:
-                            utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True, expanded_general_personal_history=LLM.expanded_general_personal_history)
-                        else:
-                            utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
+                        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)

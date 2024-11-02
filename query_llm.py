@@ -30,7 +30,6 @@ class QueryLLM:
         self.thread = None
         self.expanded_persona = None
         self.init_general_personal_history = None
-        self.expanded_general_personal_history = None
 
     def create_a_thread(self):
         self.thread = self.client.beta.threads.create()
@@ -47,15 +46,16 @@ class QueryLLM:
         elif step == 'init_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_init_therapy_conversations()
+            elif context == 'legal':
+                prompt = prompts.prompts_for_init_legal_conversations()
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         elif step == 'generate_questions':
             prompt = prompts.prompt_for_question_answer_pairs()
         elif step == 'expand_history_and_conversation':
-            if context == 'therapy':
-                prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context, self.expanded_general_personal_history)
-            else:
-                raise NotImplementedError("Unknown context: {}".format(context))
+            prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context)
+        elif step == 'recommendation':
+            prompt = prompts.prompt_for_recommendations(content, context)
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -96,7 +96,5 @@ class QueryLLM:
             self.expanded_persona = response
         if idx_context == 0 and step == 'init_general_personal_history':
             self.init_general_personal_history = response
-        if idx_context == 0 and step == 'second_expand':
-            self.expanded_general_personal_history = response
 
         return response

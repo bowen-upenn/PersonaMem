@@ -10,8 +10,9 @@ def prompts_for_background_data(content):
 
 def prompts_for_expanding_persona(persona, start_time):
     birth_year = str(int(start_time.split('/')[2]) - 18)
-    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around " \
-             "five sentences. Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
+    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. " \
+             "Add a name if it is missing from the initial version." \
+             "Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
     return prompt
 
 
@@ -51,31 +52,52 @@ def prompts_for_init_therapy_conversations():
     return prompt
 
 
-def prompts_for_second_general_personal_history_and_therapy_conversations(context, expanded_general_personal_history=None):
-    if expanded_general_personal_history is None:
-        prompt = "Write another separate therapy conversation history that is happening in a year with the same person. " \
-                 "Based on the persona and personal history, what would the person do in the next week, month, and year? " \
-                 "Those new points should be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts. " \
-                 "Similarly, write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Patient', 'Therapist', or 'Side_Note'." \
-                 "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
-                 "containing the related event and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. " \
-                 "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
-                 "The patent's conversation should clearly include detailed info about these events, " \
-                 "Crease a JSON file. You should first list at least 10 new points in the JSON format using key 'Expanded General Personal History', more are welcome, " \
-                 "and 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
-                 "then write the new therapy conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
-                 "The new therapy conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
+def prompts_for_init_legal_conversations():
+    prompt = "Your task is to write a legal consulting conversation record based on the persona and detailed background development history above. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Make sure to include all the bullet points in the history in the JSON file. " \
+             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'client', 'lawyerassistant', or 'Side_Note'." \
+             "If there is a sentence in the patient's conversation that is related to a bullet point, " \
+             "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
+             "The clients's conversation should clearly include detailed info about these events, " \
+             "while ensuring the conversation is LONG enough and contain other information and details to make it long. "
+    return prompt
+
+
+def prompts_for_init_recommendation_food_conversations():
+    prompt = "Your task is to write a food recommendation conversation record based on the persona and detailed background development history above. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Make sure to include all the bullet points in the history in the JSON file. " \
+             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'customer', 'agent', or 'Side_Note'." \
+             "If there is a sentence in the patient's conversation that is related to a bullet point, " \
+             "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
+             "The customer's conversation should clearly include detailed info about these events, " \
+             "while ensuring the conversation is LONG enough and contain other information and details to make it long. "
+    return prompt
+
+
+def prompts_for_second_general_personal_history_and_therapy_conversations(context):
+    if context == "therapy":
+        roles = "'Patient', 'Therapist'"
+        user_role = 'Patient'
+    elif context == 'legal':
+        roles = "'client', 'lawyerassistant'"
+        user_role = 'client'
     else:
-        prompt = "Write another separate therapy conversation history that is happening in a year with the same person. " \
-                 "Similarly, write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Patient', 'Therapist', or 'Side_Note'." \
-                 "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
-                 "containing the related event and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. " \
-                 "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
-                 "The patent's conversation should clearly include detailed info about these events, " \
-                 "You should first incorporate the following expanded general personal history happening in the past year:\n\n" + expanded_general_personal_history + "\n\n" \
-                 "Next, crease a JSON file, list 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
-                 "then write the new therapy conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
-                 "The new therapy conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
+        raise ValueError("Invalid context", context)
+
+    prompt = "Write another separate conversation history that is happening in a year with the same person. " \
+             "Based on the persona and personal history, what would the person do in the next week, month, and year? " \
+             "Those new points should be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts. " \
+             "Similarly, write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either " + roles +  "or 'Side_Note'." \
+             "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
+             "containing the related event and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. " \
+             "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
+             "The " + user_role + "'s conversation should clearly include detailed info about these events, " \
+             "Crease a JSON file. You should first list at least 10 new points in the JSON format using key 'Expanded General Personal History', more are welcome, " \
+             "and 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
+             "then write the new conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
+             "The new conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
     return prompt
 
 
@@ -89,4 +111,16 @@ def prompt_for_question_answer_pairs():
              "where 'Reference' should mention the related detailed personal history in the JSON files above including the timestamp in the format of MM/DD/YYYY. " \
              "Clearly mark if this question-answer pair is related to one, two, or more events, " \
              "and whether it is related to the general personal history ('General') or the contextual personal history ('Contextual')."
+    return prompt
+
+
+def prompt_for_recommendations(context):
+    if context == "therapy":
+        user, agent = 'patient', 'therapist'
+    elif context == 'legal':
+        user, agent = 'client', 'lawyerassistant'
+    else:
+        raise ValueError("Invalid context", context)
+    prompt = "Could you, as a " + agent + ", find one unique personal preference of the user different from other common " + user + ", oriented by their persona information," \
+             " and then offer a brief recommendation to the " + user + " based on this unique preference."
     return prompt

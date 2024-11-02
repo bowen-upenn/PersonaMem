@@ -68,6 +68,15 @@ def extract_conversation(json_content, context, which_conversation='all', which_
     return extracted_conversation
 
 
+def extract_persona(json_content):
+    """
+    :param json_content: it is the JSON file that contains the conversational data
+    """
+    # Extracting the conversation from the JSON dictionary
+    persona = json_content.get("Expanded Persona", []) 
+    return persona
+
+
 if __name__ == '__main__':
     # Load hyperparameters
     try:
