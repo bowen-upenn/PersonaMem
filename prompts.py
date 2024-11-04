@@ -54,7 +54,7 @@ def prompts_for_init_therapy_conversations():
 
 def prompts_for_init_legal_conversations():
     prompt = "Your task is to write a legal consulting conversation record based on the persona and detailed background development history above. " \
-             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a legal consulting. " \
              "Make sure to include all the bullet points in the history in the JSON file. " \
              "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'client', 'lawyerassistant', or 'Side_Note'." \
              "If there is a sentence in the patient's conversation that is related to a bullet point, " \
