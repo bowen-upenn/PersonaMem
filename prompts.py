@@ -52,16 +52,16 @@ def prompts_for_init_therapy_conversations():
 
 def prompts_for_init_legal_conversations():
     prompt = "Your task is to write a legal consulting conversation record based on the persona and detailed background development history above. " \
-             "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
+             "Think about what the person's persona and history could cause trouble so that the person seeks a legal consulting. " \
              "Make sure to include all the bullet points in the history in the JSON file. " \
-             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Patient', 'Therapist', or 'Side_Note'." \
+             "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Client', 'Lawyer assistant', or 'Side_Note'." \
              "If there is a sentence in the patient's conversation that is related to a bullet point, " \
              "add an separate line in square bracket '[]' that starts with 'Side_Note' immediately after that sentence in the list, which includes the related event and the MM/DD/YYYY timestamp. " \
              "The patent's conversation should clearly include detailed info about these events, " \
              "while ensuring the conversation is LONG enough and contain other information and details to make it long. "
     return prompt
 
-def prompts_for_init_recommendation_food_conversations():
+# def prompts_for_init_recommendation_food_conversations():
     prompt = "Your task is to write a food recommendation conversation record based on the persona and detailed background development history above. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a therapist. " \
              "Make sure to include all the bullet points in the history in the JSON file. " \
@@ -97,6 +97,33 @@ def prompts_for_second_general_personal_history_and_therapy_conversations(contex
                  "Next, crease a JSON file, list 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
                  "then write the new therapy conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
                  "The new therapy conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
+    return prompt
+
+def prompts_for_second_general_personal_history_and_legal_conversations(context, expanded_general_personal_history=None):
+    if expanded_general_personal_history is None:
+        prompt = "Write another separate legal consulting conversation history that is happening in a year with the same person. " \
+                 "Based on the persona and personal history, what would the person do in the next week, month, and year? " \
+                 "Those new points should be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts. " \
+                 "Similarly, write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Client', 'Lawyer assistant', or 'Side_Note'." \
+                 "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
+                 "containing the related event and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. " \
+                 "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
+                 "The patent's conversation should clearly include detailed info about these events, " \
+                 "Crease a JSON file. You should first list at least 10 new points in the JSON format using key 'Expanded General Personal History', more are welcome, " \
+                 "and 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
+                 "then write the new legal consulting conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
+                 "The new legal consulting conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
+    else:
+        prompt = "Write another separate legal consulting conversation history that is happening in a year with the same person. " \
+                 "Similarly, write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either 'Client', 'Lawyer assistant', or 'Side_Note'." \
+                 "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
+                 "containing the related event and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. " \
+                 "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
+                 "The patent's conversation should clearly include detailed info about these events, " \
+                 "You should first incorporate the following expanded general personal history happening in the past year:\n\n" + expanded_general_personal_history + "\n\n" \
+                 "Next, crease a JSON file, list 5 more new points more related to the context of " + context + " using the key 'Expanded Contextual Personal History', " \
+                 "then write the new legal consulting conversation using key 'Expanded Conversation' with contents as a list in JSON, same as before." \
+                 "The new legal consulting conversation should cover all new points. It should be LONG enough and contain other information and details to make it long. "
     return prompt
 
 

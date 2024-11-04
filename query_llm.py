@@ -62,6 +62,8 @@ class QueryLLM:
         elif step == 'expand_history_and_conversation':
             if context == 'therapy':
                 prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context, self.expanded_general_personal_history)
+            elif context == 'law':
+                prompt = prompts.prompts_for_second_general_personal_history_and_legal_conversations(context, self.expanded_general_personal_history)
             else:
                 raise NotImplementedError("Unknown context: {}".format(context))
         else:

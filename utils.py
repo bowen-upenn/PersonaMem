@@ -4,6 +4,7 @@ import os
 import random
 import json
 import re
+from datetime import datetime
 from datetime import timedelta
 
 
@@ -17,7 +18,7 @@ class Colors:
 
 
 def preprocess_source_data(data, context):
-    if context == 'therapy':
+    if context == 'therapy' or 'law':
         context_conversation = ""
         for message in data["conversation"]:
             role = message["role"]

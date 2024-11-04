@@ -21,7 +21,9 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
+    #parser.add_argument('--context', type=str, default="therapy, law", help='Set conversation context. Choose from therapy. If need multiple contexts, use the format [context1,context2]')
     parser.add_argument('--context', type=str, default="therapy", help='Set conversation context. Choose from therapy. If need multiple contexts, use the format [context1,context2]')
+    #parser.add_argument('--context', type=str, default="law", help='Set conversation context. Choose from therapy. If need multiple contexts, use the format [context1,context2]')
     parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
     parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per context to generate')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
