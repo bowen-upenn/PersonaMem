@@ -6,7 +6,7 @@ We allow command-line argparser for the following arguments:
 - ```--model``` to select the LLM.
   - ```gpt-4-turbo```, ```gpt-4o```
 - ```--n_persona``` to select the number of unique personas. *(This is the outer loop)*
-- ```--context``` to select the context of the conversation. To select a single context, use the format ```"context1"```. To select multiple contexts, use the format ```"[context1,context2,context3]"```. *(This is the middle loop)*
+- ```--context``` to select the context of the conversation. To select a single context, use the format ```"context1"```. To select multiple contexts, use the format ```context1 context2 context3```. *(This is the middle loop)*
   - ```therapy```
 - ```--n_samples``` to select the number of samples per context per persona. *(This is the inner loop)*
 - ```--verbose``` to print out all generated contents.
