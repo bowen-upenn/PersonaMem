@@ -68,7 +68,6 @@ def prompts_for_expanding_contextual_personal_history(context, period='WEEK'):
              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
     return prompt
 
-
 def prompts_for_generating_conversations(context, persona, curr_personal_history=None, period='INIT'):
     if context == 'therapy':
         context_name, user, agent = 'therapy', 'Patient', 'Therapist'
