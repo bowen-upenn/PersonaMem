@@ -26,7 +26,7 @@ def inference(args):
 
             # Expand the persona to at least five sentences
             start_time = utils.pick_a_random_time()
-            expanded_persona = LLM.query_llm(step='expand_persona', content=persona, start_time=start_time, verbose=args['inference']['verbose'])
+            expanded_persona = LLM.query_llm(step='expand_persona', persona=persona, start_time=start_time, verbose=args['inference']['verbose'])
 
             # Clean up the names of contexts
             all_contexts = [ctx.strip() for ctx in args['datasets']['context']]
@@ -64,18 +64,29 @@ def inference(args):
                     # Load a random source data to the LLM as a background memory about the context
                     source_data = utils.load_source_data(source_dir)
                     context_conversation = utils.preprocess_source_data(source_data, curr_context)
-                    _ = LLM.query_llm(step='source_data', content=context_conversation, verbose=args['inference']['verbose'])
+                    _ = LLM.query_llm(step='source_data', seed=context_conversation, verbose=args['inference']['verbose'])
 
-                    # Generate personal history, conversations, and questions and answers in two consecutive turns
-                    steps = ['init_general_personal_history', 'init_contextual_personal_history', 'init_conversation', 'generate_questions', 'expand_history_and_conversation', 'generate_questions']
-                    data_names = ['General Personal History', 'Contextual Personal History', 'Initial Conversation', 'Initial Q&A Pairs', 'Expand History and Conversation', 'Expanded Q&A Pairs']
+                    # Generate general and contextual personal histories across time frames
+                    steps = ['init_general_personal_history', 'first_expand_general_personal_history', 'second_expand_general_personal_history', 'third_expand_general_personal_history',
+                             'init_contextual_personal_history', 'first_expand_contextual_personal_history', 'second_expand_contextual_personal_history', 'third_expand_contextual_personal_history']
+                    data_names = ['Init General Personal History', 'General Personal History Next Week', 'General Personal History Next Month', 'General Personal History Next Year',
+                                  'Init Contextual Personal History', 'Contextual Personal History Next Week', 'Contextual Personal History Next Month', 'Contextual Personal History Next Year']
+                    existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history, 'first_expand_general_personal_history': LLM.first_expand_general_personal_history,
+                                                         'second_expand_general_personal_history': LLM.second_expand_general_personal_history, 'third_expand_general_personal_history': LLM.third_expand_general_personal_history}
+
                     for step, data_name in zip(steps, data_names):
-                        content = None
-                        if step == 'init_general_personal_history':
-                            if idx_context > 0:
-                                utils.append_json_to_file(LLM.init_general_personal_history, output_file_path, curr_data_name=data_name, parse_json=True)
-                                continue    # only generate general personal history once, to be shared across multiple contexts for the same persona
-                            content = expanded_persona
+                        if idx_context > 0 and step in existing_general_personal_history:
+                            # Only generate general personal history once, to be shared across multiple contexts for the same persona
+                            utils.append_json_to_file(existing_general_personal_history[step], output_file_path, curr_data_name=data_name, parse_json=True)
+                            continue
 
-                        response = LLM.query_llm(step=step, content=content, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
+                        response = LLM.query_llm(step=step, persona=expanded_persona, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
+                        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
+
+                    # Populate personal history into conversation
+                    steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
+                    data_names = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
+
+                    for step, data_name in zip(steps, data_names):
+                        response = LLM.query_llm(step=step, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
                         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)

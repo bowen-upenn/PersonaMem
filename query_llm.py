@@ -21,41 +21,75 @@ class QueryLLM:
             self.api_key = api_key_file.read()
 
         self.client = OpenAI(api_key=self.api_key)
-        self.assistant = self.client.beta.assistants.create(
-            name="Data Generator",
+        self.assistant_persona = self.client.beta.assistants.create(
+            name="Persona Generator",
+            instructions="You are a helpful assistant that generates user personas in an user specified context.",
+            tools=[{"type": "code_interpreter"}],
+            model=self.args['models']['llm_model'],
+        )
+        self.thread_persona = None
+
+        self.assistant_conversation = self.client.beta.assistants.create(
+            name="Conversation Generator",
             instructions="You are a helpful assistant that generates persona-oriented conversational data in an user specified context.",
             tools=[{"type": "code_interpreter"}],
             model=self.args['models']['llm_model'],
         )
-        self.thread = None
+        self.thread_conversation = None
+
         self.expanded_persona = None
+
+        self.general_personal_history = None
         self.init_general_personal_history = None
+        self.first_expand_general_personal_history = None
+        self.second_expand_general_personal_history = None
+        self.third_expand_general_personal_history = None
+
+        self.init_personal_history = None
+        self.first_expand_personal_history = None
+        self.second_expand_personal_history = None
+        self.third_personal_history = None
 
     def create_a_thread(self):
-        self.thread = self.client.beta.threads.create()
+        self.thread_persona = self.client.beta.threads.create()
+        self.thread_conversation = self.client.beta.threads.create()
 
-    def query_llm(self, step='source_data', content=None, context=None, idx_context=0, start_time=None, verbose=False):
+    def query_llm(self, step='source_data', persona=None, context=None, seed=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':
-            prompt = prompts.prompts_for_background_data(content)
+            prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
-            prompt = prompts.prompts_for_expanding_persona(content, start_time)
+            prompt = prompts.prompts_for_expanding_persona(persona, start_time)
+
+        # Generate once across multiple contexts
         elif step == 'init_general_personal_history':
-            prompt = prompts.prompts_for_init_general_personal_history(content, start_time)
+            prompt = prompts.prompts_for_init_general_personal_history(persona, start_time)
+        elif step == 'first_expand_general_personal_history':
+            prompt = prompts.prompts_for_expanding_general_personal_history(period='WEEK')
+        elif step == 'second_expand_general_personal_history':
+            prompt = prompts.prompts_for_expanding_general_personal_history(period='MONTH')
+        elif step == 'third_expand_general_personal_history':
+            prompt = prompts.prompts_for_expanding_general_personal_history(period='YEAR')
+
+        # Generate one for each context
         elif step == 'init_contextual_personal_history':
-            prompt = prompts.prompts_for_init_contextual_personal_history(context, start_time, self.expanded_persona, self.init_general_personal_history)
+            prompt = prompts.prompts_for_init_contextual_personal_history(context, start_time, self.expanded_persona, self.general_personal_history)
+        elif step == 'first_expand_contextual_personal_history':
+            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='WEEK')
+        elif step == 'second_expand_contextual_personal_history':
+            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='MONTH')
+        elif step == 'third_expand_contextual_personal_history':
+            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='YEAR')
+
+        # A separate thread to populate personal histories into conversations
         elif step == 'init_conversation':
-            if context == 'therapy':
-                prompt = prompts.prompts_for_init_therapy_conversations()
-            elif context == 'legal':
-                prompt = prompts.prompts_for_init_legal_conversations()
-            else:
-                raise NotImplementedError("Unknown context: {}".format(context))
-        elif step == 'generate_questions':
-            prompt = prompts.prompt_for_question_answer_pairs()
-        elif step == 'expand_history_and_conversation':
-            prompt = prompts.prompts_for_second_general_personal_history_and_therapy_conversations(context)
-        elif step == 'recommendation':
-            prompt = prompts.prompt_for_recommendations(content, context)
+            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.init_personal_history, period='INIT')
+        elif step == 'first_expand_conversation':
+            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.first_expand_personal_history, period='WEEK')
+        elif step == 'second_expand_conversation':
+            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.second_expand_personal_history, period='MONTH')
+        elif step == 'third_expand_conversation':
+            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_personal_history, period='YEAR')
+
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -64,26 +98,31 @@ class QueryLLM:
                 model=self.args['models']['llm_model'],
                 messages=[{"role": "user",
                            "content": prompt}],
-                max_tokens=300
+                max_tokens=1000
             )
             response = response.choices[0].message.content
             if verbose:
                 print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
         else:
+            if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
+                curr_thread = self.thread_conversation
+            else:
+                curr_thread = self.thread_persona
+
             message = self.client.beta.threads.messages.create(
-                thread_id=self.thread.id,
+                thread_id=curr_thread.id,
                 role="user",
                 content=prompt
             )
 
             run = self.client.beta.threads.runs.create_and_poll(
-                thread_id=self.thread.id,
-                assistant_id=self.assistant.id
+                thread_id=curr_thread.id,
+                assistant_id=self.assistant_persona.id
             )
 
             if run.status == 'completed':
                 response = self.client.beta.threads.messages.list(
-                    thread_id=self.thread.id
+                    thread_id=curr_thread.id
                 )
                 response = response.data[0].content[0].text.value
                 if verbose:
@@ -92,9 +131,39 @@ class QueryLLM:
                 response = None
                 print(run.status)
 
-        if idx_context == 0 and step == 'expand_persona':
-            self.expanded_persona = response
-        if idx_context == 0 and step == 'init_general_personal_history':
-            self.init_general_personal_history = response
+        # Save general personal history to be shared across contexts
+        if idx_context == 0:
+            if step == 'init_general_personal_history':
+                self.general_personal_history = response
+                self.init_general_personal_history = response
+            elif step == 'first_expand_general_personal_history':
+                self.general_personal_history += response
+                self.first_expand_general_personal_history = response
+            elif step == 'second_expand_general_personal_history':
+                self.general_personal_history += response
+                self.second_expand_general_personal_history = response
+            elif step == 'third_expand_general_personal_history':
+                self.general_personal_history += response
+                self.third_expand_general_personal_history = response
+            elif step == 'expand_persona':
+                self.expanded_persona = response
+
+        # Save general+contextual personal history in order to generate conversations
+        if step == 'init_general_personal_history':
+            self.init_personal_history = response
+        elif step == 'init_contextual_personal_history':
+            self.init_personal_history += response
+        elif step == 'first_expand_general_personal_history':
+            self.first_expand_personal_history = response
+        elif step == 'first_expand_contextual_personal_history':
+            self.first_expand_personal_history += response
+        elif step == 'second_expand_general_personal_history':
+            self.second_expand_personal_history = response
+        elif step == 'second_expand_contextual_personal_history':
+            self.second_expand_personal_history += response
+        elif step == 'third_expand_general_personal_history':
+            self.third_personal_history = response
+        elif step == 'third_expand_contextual_personal_history':
+            self.third_personal_history += response
 
         return response

@@ -65,15 +65,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
                     # Parse the extracted JSON string into a Python dictionary
                     parsed_json = json.loads(json_part)
                     # Add the parsed JSON content to the existing data under the user-specified key
-                    if curr_data_name == 'Expand History and Conversation':
-                        key = 'Expanded General Personal History' if 'Expanded General Personal History' in parsed_json else 'Expanded_General_Personal_History'
-                        existing_json_file['Expanded General Personal History'] = parsed_json[key]
-                        key = 'Expanded Contextual Personal History' if 'Expanded Contextual Personal History' in parsed_json else 'Expanded_Contextual_Personal_History'
-                        existing_json_file['Expanded Contextual Personal History'] = parsed_json[key]
-                        key = 'Expanded Conversation' if 'Expanded Conversation' in parsed_json else 'Expanded_Conversation'
-                        existing_json_file['Expanded Conversation'] = parsed_json[key]
-                    else:
-                        existing_json_file[curr_data_name] = parsed_json
+                    existing_json_file[curr_data_name] = parsed_json
 
                 except json.JSONDecodeError as e:
                     print(f"Error parsing JSON for {curr_data_name}: {e}")
