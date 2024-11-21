@@ -51,7 +51,7 @@ def prompts_for_expanding_general_personal_history(period='WEEK'):
     prompt = "Given the initial general personal history, think about what would happen to the same person in a " + period + ". " \
              "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
              "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. Try finding interesting reasons unique to this person. " \
-             "Please also mention related old event contradictory to it using the key '[Old Fact] Likes:' or '[Old Fact] Dislikes:'. Contradictions should focus on what this person prefers and dislikes. " \
+             "Please also mention related old event contradictory to it using the key [Old Event] and the underlying like or dislike things using the key '[Old Fact] Likes:' or '[Old Fact] Dislikes:'. " \
              "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key. " \
              "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
@@ -62,7 +62,8 @@ def prompts_for_expanding_contextual_personal_history(context, period='WEEK'):
     prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + context + ". " \
              "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
              "If there is any contradictions, or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. Try finding interesting reasons unique to this person. " \
-             "as well as the related old event contradictory to it using the key '[Old Fact] Likes:' or '[Old Fact] Dislikes:'. Contradictions should focus on what this person prefers and dislikes. " \
+             "Please also mention related old event contradictory to it using the key [Old Event] and the underlying like or dislike things using the key '[Old Fact] Likes:' or '[Old Fact] Dislikes:'. " \
+             "Contradictions should focus on what this person prefers and dislikes. " \
              "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key. " \
              "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
