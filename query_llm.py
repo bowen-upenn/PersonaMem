@@ -37,6 +37,14 @@ class QueryLLM:
         )
         self.thread_conversation = None
 
+        self.assistant_conversation = self.client.beta.assistants.create(
+            name="Q&A Generator",
+            instructions="You are a helpful assistant that generates Q&A given persona-oriented conversational data in an user specified context.",
+            tools=[{"type": "code_interpreter"}],
+            model=self.args['models']['llm_model'],
+        )
+        self.thread_qa = None
+
         self.expanded_persona = None
 
         self.general_personal_history = None
@@ -53,6 +61,7 @@ class QueryLLM:
     def create_a_thread(self):
         self.thread_persona = self.client.beta.threads.create()
         self.thread_conversation = self.client.beta.threads.create()
+        self.thread_qa = self.client.beta.threads.create()
 
     def query_llm(self, step='source_data', persona=None, context=None, seed=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':

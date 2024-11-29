@@ -38,7 +38,7 @@ def inference(args):
             # Loop through each context in the list
             for idx_context, curr_context in enumerate(all_contexts):
                 # Process each context as needed
-                print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context}/{len(all_contexts)-1}{utils.Colors.ENDC}')
+                print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context+1}/{len(all_contexts)}{utils.Colors.ENDC}')
 
                 # Set a consecutive time frame for different contexts for each persona, while all samples below are independent
                 if idx_context > 0:
