@@ -73,21 +73,21 @@ class QueryLLM:
         elif step == 'init_general_personal_history':
             prompt = prompts.prompts_for_init_general_personal_history(persona, start_time)
         elif step == 'first_expand_general_personal_history':
-            prompt = prompts.prompts_for_expanding_general_personal_history(period='WEEK')
+            prompt = prompts.prompts_for_expanding_personal_history(type='general', period='WEEK')
         elif step == 'second_expand_general_personal_history':
-            prompt = prompts.prompts_for_expanding_general_personal_history(period='MONTH')
+            prompt = prompts.prompts_for_expanding_personal_history(type='general', period='MONTH')
         elif step == 'third_expand_general_personal_history':
-            prompt = prompts.prompts_for_expanding_general_personal_history(period='YEAR')
+            prompt = prompts.prompts_for_expanding_personal_history(type='general', period='YEAR')
 
         # Generate one for each context
         elif step == 'init_contextual_personal_history':
             prompt = prompts.prompts_for_init_contextual_personal_history(context, start_time, self.expanded_persona, self.general_personal_history)
         elif step == 'first_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='WEEK')
+            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='WEEK')
         elif step == 'second_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='MONTH')
+            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='MONTH')
         elif step == 'third_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_contextual_personal_history(context, period='YEAR')
+            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='YEAR')
 
         # A separate thread to populate personal histories into conversations
         elif step == 'init_conversation':
@@ -99,6 +99,9 @@ class QueryLLM:
         elif step == 'third_expand_conversation':
             prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_personal_history, period='YEAR')
 
+        # A separate thread to generate Q&A from conversations
+        elif step == 'qa_static':
+            prompt = prompts.prompts_for_generating_qa_static(seed)
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -115,6 +118,8 @@ class QueryLLM:
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
+            elif step == 'qa_static':
+                curr_thread = self.thread_qa
             else:
                 curr_thread = self.thread_persona
 

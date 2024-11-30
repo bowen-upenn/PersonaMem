@@ -48,29 +48,24 @@ def prompts_for_init_contextual_personal_history(context, start_time, persona, g
     return prompt
 
 
-def prompts_for_expanding_general_personal_history(period='WEEK'):
-    prompt = "Given the initial general personal history, think about what would happen to the same person in a " + period + ". " \
-             "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
-             "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. Try finding interesting reasons unique to this person. " \
-             "Please use the key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
-             "and the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron. " \
-             "Contradictions should focus on what this person prefers and dislikes. You shall also include some contradictions to the existing contradictions in the previous history. " \
-             "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key. " \
-             "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
-             "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
-    return prompt
+def prompts_for_expanding_personal_history(context=None, type='general', period='WEEK'):
+    if type != 'general':
+        assert context is not None
 
-
-def prompts_for_expanding_contextual_personal_history(context, period='WEEK'):
-    prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + context + ". " \
-             "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
-             "If there is any contradictions, or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. Try finding interesting reasons unique to this person. " \
-             "Please use the key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
-             "and the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron. " \
-             "Contradictions should focus on what this person prefers and dislikes. You shall also include some contradictions to the existing contradictions in the previous history. " \
-             "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key. " \
-             "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
-             "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
+    if type == 'general':
+        prompt = "Given the initial general personal history, think about what would happen to the same person in a " + period + ". "
+    else:
+        prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + context + ". "
+    prompt += "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
+              "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. Try finding interesting reasons unique to this person. " \
+              "Please use the following keys, and do NOT modify the name of these keys:\n\n" \
+              "key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
+              "and the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
+              "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n" \
+              "Any contradictions should focus on what this person prefers and dislikes. " \
+              "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
+              "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
+              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
     return prompt
 
 
@@ -110,19 +105,6 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
                   "but with a new background development history happened in the next year following the previous conversation:\n\n" + curr_personal_history + "\n\n"
 
     return prompt
-
-
-# def prompt_for_question_answer_pairs():
-#     prompt = "Generate 10 question-answer pairs directly related to the two JSON files above. " \
-#              "These questions should ask about obvious key facts related to the description of each event, but avoid asking questions related to their labels or timestamps. " \
-#              "Each question should be able to be answered by only looking at the conversations without looking at the side notes in the records. " \
-#              "All question-answer pairs should be objective and specific. Write your question-answer pairs in the JSON format. " \
-#              "Each element should have an unique integer index as the key, starting from '0' and incrementing by one at a time, " \
-#              "and each value should be another dict with keys 'Question', 'Answer', and 'Reference', " \
-#              "where 'Reference' should mention the related detailed personal history in the JSON files above including the timestamp in the format of MM/DD/YYYY. " \
-#              "Clearly mark if this question-answer pair is related to one, two, or more events, " \
-#              "and whether it is related to the general personal history ('General') or the contextual personal history ('Contextual')."
-#     return prompt
 
 
 def prompt_for_recommendations(context):

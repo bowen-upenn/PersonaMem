@@ -3,6 +3,8 @@ import json
 import re
 from sentence_transformers import SentenceTransformer, util
 
+from query_llm import QueryLLM
+
 # Load the SentenceTransformer model
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -53,7 +55,7 @@ def find_most_similar_event(side_note_sentence, related_data):
     return most_similar_data
 
 
-def trace_event_history(timestamp, previous_blocks):
+def trace_event_history(timestamp, previous_blocks, verbose=False):
     """
     Traces the event history recursively, if needed, for knowledge updates.
     """
@@ -70,7 +72,7 @@ def trace_event_history(timestamp, previous_blocks):
         # print('event_data', timestamp, event_data)
 
         linear_graph[timestamp] = event_data
-        if "Old Event" in event_data:
+        if "Old Event" in event_data or "[Old Event]" in event_data:
             # Get the timestamp of the old event
             old_event_timestamp = event_data.get("Old Event Date") or event_data.get("[Old Event Date]", "")
             # print('old_event_timestamp', old_event_timestamp)
@@ -86,17 +88,72 @@ def trace_event_history(timestamp, previous_blocks):
 
 
 def generate_qa_static():
+    # response = LLM.query_llm(step='qa_static', seed=seed_data, verbose=args['inference']['verbose'])
     pass
 
 
-def generate_qa_knowledge_update():
-    pass
+def generate_qa_knowledge_update(context, data, generative=False):
+    if context == "therapy":
+        user = 'patient'
+    elif context == 'legal':
+        user = 'client'
+    else:
+        raise ValueError("Invalid context", context)
+
+    qa_entries = []
+    timestamps = list(data.keys())  # Get all timestamps in order
+
+    for i, timestamp in enumerate(timestamps[:-1]):  # Iterate until the second-to-last timestamp
+        current_details = data[timestamp]
+        next_details = data[timestamps[i + 1]]
+
+        if "[Reasons of Change]" in current_details:  # Only include events with reasons for change
+            if "[Old Fact] Dislikes" in current_details:
+                question = (
+                    f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
+                    f"although the {user} dislikes {current_details['[Old Fact] Dislikes'].lower()}?"
+                )
+            elif "[Old Fact] Likes" in current_details:
+                question = (
+                    f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
+                    f"although the {user} likes {current_details['[Old Fact] Likes'].lower()}?"
+                )
+            else:
+                continue
+
+            answer = current_details["[Reasons of Change]"]
+
+            reference = {
+                timestamp: current_details,
+                timestamps[i + 1]: next_details
+            }
+
+            qa_entries.append({
+                "Question": question,
+                "Answer": answer,
+                "Reference": reference
+            })
+
+    # Save to JSON file
+    print("Q&A:")
+    print(json.dumps(qa_entries, indent=4))
+    # with open(output_file, "w") as f:
+    #     json.dump(qa_entries, f, indent=4)
+
+    return qa_entries
 
 
-def process_conversation(conversation_key, data_path):
+def process_conversation(conversation_key, data_path, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
+
+    if 'therapy' in data_path:
+        context = 'therapy'
+    elif 'legal' in data_path:
+        context = 'legal'
+    else:
+        raise ValueError("Invalid context", data_path)
 
     conversation = data.get(conversation_key, [])
     # Collect all side notes with timestamps in the current conversation
@@ -129,14 +186,13 @@ def process_conversation(conversation_key, data_path):
             most_similar_data = find_most_similar_event(side_note, related_data)
         else:
             most_similar_data = related_data[0]
-        if not most_similar_data:
-            continue
 
-        if "Reasons of Change" in most_similar_data:
+        # data_keys = [key.lower() for key in most_similar_data.keys()]
+        if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
-            event_history = trace_event_history(timestamp, previous_blocks)
+            event_history = trace_event_history(timestamp, previous_blocks, verbose=verbose)
             # print(f"Knowledge update traced: {event_history}")
-            generate_qa_knowledge_update()
+            generate_qa_knowledge_update(context, event_history)
         else:
             # Static knowledge point
             # print(f"Static knowledge point: {most_similar_data}")
@@ -145,4 +201,4 @@ def process_conversation(conversation_key, data_path):
 
 if __name__ == "__main__":
     data_path = './data/output/conversation_therapy_persona0_sample0.json'
-    process_conversation("Conversation Next Year", data_path)
+    process_conversation(conversation_key="Conversation Next Year", data_path=data_path, verbose=True)
