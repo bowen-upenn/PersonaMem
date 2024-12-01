@@ -87,8 +87,8 @@ def trace_event_history(timestamp, previous_blocks, verbose=False):
     return linear_graph
 
 
-def generate_qa_static():
-    # response = LLM.query_llm(step='qa_static', seed=seed_data, verbose=args['inference']['verbose'])
+def generate_qa_static(seed_data, verbose):
+    response = LLM.query_llm(step='qa_static', seed=seed_data, verbose=verbose)
     pass
 
 
@@ -133,6 +133,8 @@ def generate_qa_knowledge_update(context, data, generative=False):
                 "Answer": answer,
                 "Reference": reference
             })
+
+
 
     # Save to JSON file
     print("Q&A:")
