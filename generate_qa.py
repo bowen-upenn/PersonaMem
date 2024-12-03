@@ -180,6 +180,7 @@ def process_conversation(conversation_key, data_path, verbose):
     for timestamp, side_note in side_notes:
         # Find related data in the previous personal history for each current event
         related_data = find_related_data(timestamp, previous_blocks)
+        print('related_data', related_data, timestamp)
         if not related_data:
             continue
 
@@ -198,7 +199,8 @@ def process_conversation(conversation_key, data_path, verbose):
         else:
             # Static knowledge point
             # print(f"Static knowledge point: {most_similar_data}")
-            generate_qa_static()
+            # generate_qa_static()
+            pass
 
 
 if __name__ == "__main__":

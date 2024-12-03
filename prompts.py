@@ -28,7 +28,14 @@ def prompts_for_init_general_personal_history(persona, start_time):
              "which should come with temporal quantifiers like 'today' or so, but long-term fact refers to some key personas that won't be changed for at least a year. " \
              "There should be 5 short-term and 5 long-term events. Include all 10 things this person likes and dislikes mentioned in the persona, and rewrite them as appropriate events. " \
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
-             "All events must have an appropriate time stamp in the format of MM/DD/YYYY. List at least 10 events, more are welcome. Here is the persona: " + persona
+             "All events must have an appropriate time stamp in the format of MM/DD/YYYY. List at least 10 events, more are welcome. " \
+             "Here is the template you should follow for each event:\n\n" \
+                "'MM/DD/YYYY': {\n" \
+                    "'Event': xxx, \n" \
+                    "'Category': 'Short-Term' OR 'Long-Term'\n" \
+                    "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
+                "}, \n\n" \
+             "Here is the persona: " + persona
     return prompt
 
 
@@ -45,6 +52,12 @@ def prompts_for_init_contextual_personal_history(context, start_time, persona, g
                  "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
                  "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
                  "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
+    prompt += "Here is the template you should follow for each event:\n\n" \
+              "'MM/DD/YYYY': {\n" \
+                  "'Event': xxx, \n" \
+                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
+                  "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
+              "}"
     return prompt
 
 
@@ -59,14 +72,32 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
     prompt += "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
               "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. " \
               "Try finding unique reasons for this person, not common for the general public, that trigger the change. " \
-              "Please use the following keys, and do NOT modify the name of these keys:\n\n" \
-              "key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
-              "and the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
+              "Please also use the following keys, and do NOT modify the name of these keys:\n\n" \
+              "The key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
+              "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
+              "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the opposite of the '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
               "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n" \
               "Any contradictions should focus on what this person prefers and dislikes. " \
               "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
               "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
               "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
+
+    prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
+              "'MM/DD/YYYY': {\n" \
+                  "'Event': xxx, \n" \
+                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
+                  "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
+              "}, \n\n" \
+              "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
+              "'MM/DD/YYYY': {\n" \
+                  "'Event': xxx, \n" \
+                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
+                  "'[Reasons of Change]': xxx, \n" \
+                  "'[Updated Fact] Likes' OR '[Updated Fact] Dislikes': xxx, \n" \
+                  "'[Old Fact] Likes' OR '[Old Fact] Dislikes': xxx, \n" \
+                  "'[Old Event Date]': MM/DD/YYYY, \n" \
+                  "'[Old Event]': xxx, \n" \
+              "}"
     return prompt
 
 
@@ -81,12 +112,12 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
         raise ValueError("Invalid context", context)
 
     prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + context_name + ". " \
-             "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events, using them and their time stamps as the skeleton. " \
+             "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps as the skeleton. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a " + agent.lower() + ". " \
              "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either '" + user + "', '" + agent + "', or 'Side_Note'." \
              "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
              "containing the related event itself and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. Do not mention underlying '[Fact]' of the event. " \
-             "If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
+             "Do NOT modify any MM/DD/YYYY above. If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
              "The " + user.lower() + "'s conversation should clearly include detailed info about these events, while ensuring the conversation is LONG enough and contain other information and details to make it long. " \
              "If the personal history mentions about any '[Reasons of Change]', make sure to mention them naturally in the conversation and show that the person has changed the like/dislike attitude towards it, but avoid talking about the corresponding '[Old Event]' explicitly. " \
 
