@@ -139,12 +139,28 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
     return prompt
 
 
-def prompts_for_generating_qa_static(seed_data, question_type=None, question_format=None, expand=False):
+def prompts_for_generating_qa_helper(data, action):
+    if action == 'propose_incorrect_reasons':
+        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']."
+    elif action == 'extract_object':
+        prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
+                 "Second, based on the extracted primary noun, propose one different child object name under this parent category. Output it into the key 'random_child_object'." \
+                 "You should output a dictionary following this format:\n" \
+                 "{\n" \
+                 "    'parent_object': xxx,\n" \
+                 "    'random_child_object': yyy\n" \
+                 "}"
+    else:
+        raise ValueError("Invalid action", action)
+    return prompt
+
+
+def prompts_for_generating_qa(data, question_type=None, question_format=None, expand=False):
     if not expand:
         assert question_type is not None
         if question_type == 'factual':
             prompt = "Rewrite the event as a question and an answer pair. The question should ask about one factual detail of the event, and the answer should provide the detail. " \
-                      "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new event:\n" + seed_data
+                      "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new event:\n" + data
         elif question_type == 'recommendation':
             prompt = "You should first extract the object name mentioned in 'Event', think about its topic, and rewrite it as a question and answer pair focusing on recommendations in a new scenario happening in the near future. " \
                      "The data may contain a list of events around the same hobby but with changes in the user's likes/dislikes towards it. Focus on the user's preferences, and the new answer should be concise and aligned with the user's latest likes or dislikes. " \
@@ -169,7 +185,7 @@ def prompts_for_generating_qa_static(seed_data, question_type=None, question_for
                             "'[Reasons of Change]': 'The nostalgic taste reminded them of family gatherings in childhood.'\n" \
                         "}\n" \
                      "you should rewrite it as a question: 'What kind of cocktails would you recommend to this user?' with the answer: 'A cocktail with a balanced taste using limited amount of syrup'." \
-                     "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new data:\n" + seed_data
+                     "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new data:\n" + data
         else:
             raise ValueError("Invalid question type", question_type)
     else:
@@ -187,6 +203,7 @@ def prompts_for_generating_qa_static(seed_data, question_type=None, question_for
         else:
             raise ValueError("Invalid question format", question_format)
     return prompt
+
 
 def prompt_for_recommendations(context):
     if context == "therapy":

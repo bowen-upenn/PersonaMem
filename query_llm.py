@@ -63,7 +63,7 @@ class QueryLLM:
         self.thread_conversation = self.client.beta.threads.create()
         self.thread_qa = self.client.beta.threads.create()
 
-    def query_llm(self, step='source_data', persona=None, context=None, seed=None, idx_context=0, start_time=None, verbose=False):
+    def query_llm(self, step='source_data', persona=None, context=None, seed=None, data=None, action=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
@@ -100,12 +100,15 @@ class QueryLLM:
             prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_personal_history, period='YEAR')
 
         # A separate thread to generate Q&A from conversations
+        elif step == 'qa_helper':
+            prompt = prompts.prompts_for_generating_qa_helper(data, action)
         elif step == 'qa_static':
-            prompt = prompts.prompts_for_generating_qa_static(seed)
+            prompt = prompts.prompts_for_generating_qa_static(data)
         else:
             raise ValueError(f'Invalid step: {step}')
 
-        if step == 'expand_persona':
+        # Independent API calls
+        if step == 'expand_persona' or step == 'qa_helper':
             response = self.client.chat.completions.create(
                 model=self.args['models']['llm_model'],
                 messages=[{"role": "user",
@@ -115,6 +118,8 @@ class QueryLLM:
             response = response.choices[0].message.content
             if verbose:
                 print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
+
+        # API calls within a thread
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
