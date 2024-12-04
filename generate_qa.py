@@ -5,6 +5,7 @@ import yaml
 import argparse
 import ast
 from sentence_transformers import SentenceTransformer, util
+import random
 
 import utils
 from query_llm import QueryLLM
@@ -83,8 +84,9 @@ def trace_event_history(timestamp, previous_blocks, verbose=False):
         else:
             break  # No further history to trace
 
-    print(f'{utils.Colors.OKGREEN}linear_graph:{utils.Colors.ENDC}')
-    print(json.dumps(linear_graph, indent=4))
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}linear_graph:{utils.Colors.ENDC}')
+        print(json.dumps(linear_graph, indent=4))
     return linear_graph
 
 
@@ -93,7 +95,7 @@ def generate_qa_static(seed_data, verbose):
     pass
 
 
-def generate_qa_knowledge_update(LLM, context, event_history):
+def generate_qa_reasons_of_change(LLM, context, event_history):
     if context == "therapy":
         user = 'patient'
     elif context == 'legal':
@@ -137,60 +139,6 @@ def generate_qa_knowledge_update(LLM, context, event_history):
                 "Reference": reference
             })
 
-            # Generate Q&A pairs on the evolution of the user's preference, i.e., the linear graph of updates
-            if "[Old Fact] Dislikes" in current_details:
-                response = LLM.query_llm(step='qa_helper', data=current_details['[Old Fact] Dislikes'], action='extract_object', verbose=False)
-                response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
-                response = json.loads(response)
-                parent_object = response.get("parent_object", "")
-                random_child_object = response.get("random_child_object", "")
-                question = (
-                    f"How does the {user}'s preference towards {parent_object} evolve?"
-                )
-                correct_answer = f"The user dislikes {current_details['[Old Fact] Dislikes'].lower()} -> likes it."
-                incorrect_answers = {
-                    # Type 1: Incorrect knowledge updates
-                    "Type1": [f"The user likes {current_details['[Old Fact] Dislikes'].lower()} -> dislikes it.",
-                              f"The user always dislikes {current_details['[Old Fact] Dislikes'].lower()}",
-                              f"The user always likes {current_details['[Old Fact] Dislikes'].lower()}"],
-
-                    # Type 2: Using the object never mentioned in the conversation
-                    "Type2": [f"The user likes {current_details['[Old Fact] Dislikes'].lower()} -> dislikes it.",
-                                f"The user dislikes {random_child_object} -> likes it.",
-                                f"The user likes {random_child_object} -> dislikes it."]
-                }
-
-            elif "[Old Fact] Likes" in current_details:
-                response = LLM.query_llm(step='qa_helper', data=current_details['[Old Fact] Likes'], action='extract_object', verbose=False)
-                response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
-                response = json.loads(response)
-                parent_object = response.get("parent_object", "")
-                random_child_object = response.get("random_child_object", "")
-                question = (
-                    f"How does the {user}'s preference towards {parent_object} evolve?"
-                )
-                correct_answer = f"The user likes {current_details['[Old Fact] Likes'].lower()} -> dislikes it."
-                incorrect_answers = {
-                    # Type 1: Incorrect knowledge updates
-                    "Type1": [f"The user dislikes {current_details['[Old Fact] Likes'].lower()} -> likes it.",
-                              f"The user always likes {current_details['[Old Fact] Likes'].lower()}",
-                              f"The user always dislikes {current_details['[Old Fact] Likes'].lower()}"],
-
-                    # Type 2: Using the object never mentioned in the conversation
-                    "Type2": [f"The user dislikes {current_details['[Old Fact] Likes'].lower()} -> likes it.",
-                              f"The user likes {random_child_object} -> dislikes it.",
-                              f"The user dislikes {random_child_object} -> likes it."]
-                }
-            else:
-                continue
-            qa_entries.append({
-                "Question": question,
-                "Correct_Answer": correct_answer,
-                "Incorrect_Answers": incorrect_answers,
-                "Type": "graph_of_updates",
-                "Reference": reference
-            })
-
     # Save to JSON file
     print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
     print(json.dumps(qa_entries, indent=4))
@@ -200,7 +148,131 @@ def generate_qa_knowledge_update(LLM, context, event_history):
     return qa_entries
 
 
-def process_conversation(args, LLM, SentenceBERT, conversation_key, data_path, verbose):
+def randomly_shorten_an_answer(incorrect_answer):
+    # Randomly remove one event if the number of '->' is greater than 2
+    events = [event.strip() for event in incorrect_answer.split('->')]
+    random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
+
+    # To remove one update step, we need to remove two consecutive events
+    del events[random_event_index]
+    del events[random_event_index + 1]
+
+    incorrect_answer = ' -> '.join(events)
+    return incorrect_answer
+
+
+def generate_qa_graph_of_updates(LLM, context, event_history):
+    if context == "therapy":
+        user = "patient"
+    elif context == "legal":
+        user = "client"
+    else:
+        raise ValueError("Invalid context", context)
+
+    """
+    - Incorrect knowledge updates
+    - Always dislikes
+    - Always likes
+    - Correct knowledge updates, but use the object never mentioned in the conversation
+    - Incorrect knowledge updates, but use the object never mentioned in the conversation
+    - Randomly substitute likes to dislikes (or vice versa) x 2
+    - Miss some update steps, if the number of steps is greater than 2
+    """
+    correct_answer = ""
+    incorrect_answers = ["" for _ in range(7)]
+    timestamps = list(event_history.keys())  # Get all timestamps in order
+
+    # Assert there are knowledge updates
+    if len(timestamps) < 2:
+        return
+
+    # Based on what the user likes/dislikes, extract the parent object name to form the question, as well as random child objects for incorrect answers
+    current_details = event_history[timestamps[0]]
+    if "[Old Fact] Dislikes" in current_details:
+        data = current_details['[Old Fact] Dislikes']
+    else:
+        data = current_details['[Old Fact] Likes']
+    response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
+
+    response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
+    response = json.loads(response)
+    parent_object = response.get("parent_object", "")
+    random_child_object = response.get("random_child_object", "")
+    question = (
+        f"How does the {user}'s preference towards {parent_object} evolve?"
+    )
+
+    # Iterate through the linear graph of updates to generate correct and incorrect answers
+    for i, timestamp in enumerate(reversed(timestamps)):
+        current_details = event_history[timestamp]
+
+        if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
+            curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
+            if i == 0:
+                correct_answer += f"The user likes {curr_preference}"
+                incorrect_answers[0] = f"The user dislikes {curr_preference}"
+                incorrect_answers[1] = f"The user always dislikes {curr_preference}"
+                incorrect_answers[2] = f"The user always likes {curr_preference}"
+                incorrect_answers[3] = f"The user likes {random_child_object}"
+                incorrect_answers[4] = f"The user dislikes {random_child_object}"
+                incorrect_answers[5] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                incorrect_answers[6] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+            else:
+                correct_answer += f" -> likes {curr_preference}"
+                incorrect_answers[0] += f" -> dislikes {curr_preference}"
+                incorrect_answers[3] += f" -> likes {random_child_object}"
+                incorrect_answers[4] += f" -> dislikes {random_child_object}"
+                incorrect_answers[5] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+
+        elif "[Updated Fact] Dislikes" in current_details or "[Fact] Dislikes" in current_details:
+            curr_preference = current_details['[Updated Fact] Dislikes'].lower() if "[Updated Fact] Dislikes" in current_details else current_details['[Fact] Dislikes'].lower()
+            if i == 0:
+                correct_answer += f"The user dislikes {curr_preference}"
+                incorrect_answers[0] = f"The user likes {curr_preference}"
+                incorrect_answers[1] = f"The user always dislikes {curr_preference}"
+                incorrect_answers[2] = f"The user always likes {curr_preference}"
+                incorrect_answers[3] = f"The user dislikes {random_child_object}"
+                incorrect_answers[4] = f"The user likes {random_child_object}"
+                incorrect_answers[5] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                incorrect_answers[6] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+            else:
+                correct_answer += f" -> dislikes {curr_preference}"
+                incorrect_answers[0] += f" -> likes {curr_preference}"
+                incorrect_answers[3] += f" -> dislikes {random_child_object}"
+                incorrect_answers[4] += f" -> likes {random_child_object}"
+                incorrect_answers[5] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+
+    # Remove some random steps from the correct answer
+    incorrect_answer_shorter = correct_answer[:]
+    if incorrect_answer_shorter.count('->') > 3:
+        incorrect_answers.append(randomly_shorten_an_answer(incorrect_answer_shorter))
+
+    # Remove repeated incorrect answers, if any resulted from the random process
+    if incorrect_answers[5] == incorrect_answers[6]:
+        del incorrect_answers[6]
+
+    qa_entry = {
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "graph_of_updates",
+        "Reference": event_history
+    }
+
+    # Save to JSON file
+    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+    print(json.dumps(qa_entry, indent=4))
+    # with open(output_file, "w") as f:
+    #     json.dump(qa_entry, f, indent=4)
+
+    return qa_entry
+
+
+
+
+def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
@@ -247,9 +319,11 @@ def process_conversation(args, LLM, SentenceBERT, conversation_key, data_path, v
         # data_keys = [key.lower() for key in most_similar_data.keys()]
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
-            event_history = trace_event_history(timestamp, previous_blocks, verbose=verbose)
+            event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
             # print(f"Knowledge update traced: {event_history}")
-            generate_qa_knowledge_update(LLM, context, event_history)
+            if action == 'qa':
+                generate_qa_reasons_of_change(LLM, context, event_history)
+                generate_qa_graph_of_updates(LLM, context, event_history)
         else:
             # Static knowledge point
             # print(f"Static knowledge point: {most_similar_data}")
@@ -268,6 +342,7 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
+    parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
@@ -279,4 +354,4 @@ if __name__ == "__main__":
     LLM = QueryLLM(args)
 
     data_path = './data/output/conversation_therapy_persona0_sample0.json'
-    process_conversation(args, LLM, SentenceBERT, conversation_key="Conversation Next Year", data_path=data_path, verbose=cmd_args.verbose)
+    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key="Conversation Next Year", data_path=data_path, verbose=cmd_args.verbose)

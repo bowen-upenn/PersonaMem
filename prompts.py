@@ -144,7 +144,7 @@ def prompts_for_generating_qa_helper(data, action):
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']."
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
-                 "Second, based on the extracted primary noun, propose one different child object name under this parent category. Output it into the key 'random_child_object'." \
+                 "Second, based on the extracted primary noun, propose one different child object name under this parent category, adding some different adjectives or descriptors. Output it into the key 'random_child_object'." \
                  "You should output a dictionary following this format:\n" \
                  "{\n" \
                  "    'parent_object': xxx,\n" \
