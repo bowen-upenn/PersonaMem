@@ -101,9 +101,7 @@ class QueryLLM:
 
         # A separate thread to generate Q&A from conversations
         elif step == 'qa_helper':
-            prompt = prompts.prompts_for_generating_qa_helper(data, action)
-        elif step == 'qa_static':
-            prompt = prompts.prompts_for_generating_qa_static(data)
+            prompt = prompts.prompts_for_generating_qa(data, action)
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -112,8 +110,7 @@ class QueryLLM:
             response = self.client.chat.completions.create(
                 model=self.args['models']['llm_model'],
                 messages=[{"role": "user",
-                           "content": prompt}],
-                max_tokens=1000
+                           "content": prompt}]
             )
             response = response.choices[0].message.content
             if verbose:
@@ -123,8 +120,6 @@ class QueryLLM:
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
-            elif step == 'qa_static':
-                curr_thread = self.thread_qa
             else:
                 curr_thread = self.thread_persona
 

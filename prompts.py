@@ -139,7 +139,7 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
     return prompt
 
 
-def prompts_for_generating_qa_helper(data, action):
+def prompts_for_generating_qa(data, action):
     if action == 'propose_incorrect_reasons':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']."
     elif action == 'extract_object':
@@ -150,58 +150,24 @@ def prompts_for_generating_qa_helper(data, action):
                  "    'parent_object': xxx,\n" \
                  "    'random_child_object': yyy\n" \
                  "}"
+    elif action == 'recommendation':
+        prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
+                 "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
+                 "Please first construct a hypothetical scenario or context where this " + data['user'] + " would need your recommendation, and then provide a concise and aligned suggestion. " \
+                 "Say your recommendations directly without explanations or using words like 'I would recommend'. If the answer is a single phrase, add a little descriptions. " \
+                 "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
+                 "{\n" \
+                 "    'Question': xxx,\n" \
+                 "    'Answer': yyy\n" \
+                 "}" \
+                 "Do NOT modify the names of these keys. " \
+                 "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
+    elif action == 'propose_incorrect_recommendations':
+        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data['correct_answer'] + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']. Do NOT use JSON." \
+                 "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
+                 "Follow the same language and structure as the correct answer. These three options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
     else:
         raise ValueError("Invalid action", action)
-    return prompt
-
-
-def prompts_for_generating_qa(data, question_type=None, question_format=None, expand=False):
-    if not expand:
-        assert question_type is not None
-        if question_type == 'factual':
-            prompt = "Rewrite the event as a question and an answer pair. The question should ask about one factual detail of the event, and the answer should provide the detail. " \
-                      "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new event:\n" + data
-        elif question_type == 'recommendation':
-            prompt = "You should first extract the object name mentioned in 'Event', think about its topic, and rewrite it as a question and answer pair focusing on recommendations in a new scenario happening in the near future. " \
-                     "The data may contain a list of events around the same hobby but with changes in the user's likes/dislikes towards it. Focus on the user's preferences, and the new answer should be concise and aligned with the user's latest likes or dislikes. " \
-                     "For example, given the following data: '08/25/2017': {\n" \
-                            "'Event': 'Tries making a series of less sweet cocktails at a home gathering, developing a taste for creativity in mixology.',\n" \
-                            "'Category': [\n" \
-                            "    'Short-Term'\n" \
-                            "],\n" \
-                            "'[Old Event]': 'Drinks an overly sweet cocktail at a family event and unexpectedly finds it enjoyable due to the occasion.',\n" \
-                            "'[Old Event Date]': '08/05/2017',\n" \
-                            "'[Old Fact] Dislikes': 'Drinking overly sweet cocktails',\n" \
-                            "'[Reasons of Change]': 'Inspired by the idea of creating balanced flavors and tailoring drinks to personal taste.'\n" \
-                        "},\n" \
-                        "'08/05/2017': {\n" \
-                            "'Event': 'Drinks an overly sweet cocktail at a family event and unexpectedly finds it enjoyable due to the occasion.',\n" \
-                            "'Category': [\n" \
-                            "    'Short-Term'\n" \
-                            "],\n" \
-                            "'[Old Event]': 'Avoided drinking overly sweet cocktails.',\n" \
-                            "'[Old Event Date]': '06/03/2017',\n" \
-                            "'[Old Fact] Dislikes': 'Drinking overly sweet cocktails',\n" \
-                            "'[Reasons of Change]': 'The nostalgic taste reminded them of family gatherings in childhood.'\n" \
-                        "}\n" \
-                     "you should rewrite it as a question: 'What kind of cocktails would you recommend to this user?' with the answer: 'A cocktail with a balanced taste using limited amount of syrup'." \
-                     "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. Here is the new data:\n" + data
-        else:
-            raise ValueError("Invalid question type", question_type)
-    else:
-        assert question_format is not None
-        if question_format == 'binary':
-            prompt = "Your next task is to reformat the question-answer pair above in a binary chose format with 2 options. " \
-                     "You already have the correct answer, and please compose the other incorrect options that flip your correct answer to violate the user's latest preference. " \
-                     "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. "
-        elif question_format == 'mcq':
-            prompt = "Your next task is to reformat the question-answer pair above in a MCQ format with 4 options. " \
-                     "You already have the correct answer and one wrong answer, and please compose the other two incorrect options. " \
-                     "These two new options should still be good suggestions to other users, but just not for this specific user. " \
-                     "You should also rewrite the question such that the question asks what is the best recommendation to this user. " \
-                     "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. Do NOT modify the names of these keys. "
-        else:
-            raise ValueError("Invalid question format", question_format)
     return prompt
 
 

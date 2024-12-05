@@ -148,20 +148,20 @@ def generate_qa_reasons_of_change(LLM, context, event_history):
     return qa_entries
 
 
-def randomly_shorten_an_answer(incorrect_answer):
-    # Randomly remove one event if the number of '->' is greater than 2
-    events = [event.strip() for event in incorrect_answer.split('->')]
-    random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
-
-    # To remove one update step, we need to remove two consecutive events
-    del events[random_event_index]
-    del events[random_event_index + 1]
-
-    incorrect_answer = ' -> '.join(events)
-    return incorrect_answer
-
-
 def generate_qa_graph_of_updates(LLM, context, event_history):
+
+    def _randomly_shorten_an_answer(incorrect_answer):
+        # Randomly remove one event if the number of '->' is greater than 2
+        events = [event.strip() for event in incorrect_answer.split('->')]
+        random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
+
+        # To remove one update step, we need to remove two consecutive events
+        del events[random_event_index]
+        del events[random_event_index + 1]
+
+        incorrect_answer = ' -> '.join(events)
+        return incorrect_answer
+
     if context == "therapy":
         user = "patient"
     elif context == "legal":
@@ -188,10 +188,10 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
 
     # Based on what the user likes/dislikes, extract the parent object name to form the question, as well as random child objects for incorrect answers
     current_details = event_history[timestamps[0]]
-    if "[Old Fact] Dislikes" in current_details:
-        data = current_details['[Old Fact] Dislikes']
+    if "[Updated Fact] Likes" in current_details:
+        data = current_details['[Updated Fact] Likes']
     else:
-        data = current_details['[Old Fact] Likes']
+        data = current_details['[Updated Fact] Dislikes']
     response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
 
     response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
@@ -247,7 +247,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
     # Remove some random steps from the correct answer
     incorrect_answer_shorter = correct_answer[:]
     if incorrect_answer_shorter.count('->') > 3:
-        incorrect_answers.append(randomly_shorten_an_answer(incorrect_answer_shorter))
+        incorrect_answers.append(_randomly_shorten_an_answer(incorrect_answer_shorter))
 
     # Remove repeated incorrect answers, if any resulted from the random process
     if incorrect_answers[5] == incorrect_answers[6]:
@@ -267,8 +267,58 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
     # with open(output_file, "w") as f:
     #     json.dump(qa_entry, f, indent=4)
 
-    return qa_entry
+    return qa_entry, parent_object
 
+
+def generate_qa_recommendations(LLM, context, event_history, parent_object=None):
+    if context == "therapy":
+        user = "patient"
+    elif context == "legal":
+        user = "client"
+    else:
+        raise ValueError("Invalid context", context)
+
+    timestamps = list(event_history.keys())  # Get all timestamps in order
+    _, current_detail = timestamps[0], event_history[timestamps[0]]
+    _, previous_detail = timestamps[1], event_history[timestamps[1]]
+    
+    if parent_object is None:
+        if "[Updated Fact] Likes" in current_detail:
+            data = current_detail['[Updated Fact] Likes']
+        else:
+            data = current_detail['[Updated Fact] Dislikes']
+        response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
+        response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
+        response = json.loads(response)
+        parent_object = response.get("parent_object", "")
+
+    recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
+    response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
+
+    response = response.strip("```json").strip("```python").strip("```").strip()
+    response = json.loads(response)
+    question = response.get("Question", "")
+    correct_answer = response.get("Answer", "")
+
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'correct_answer': str(response)}, action='propose_incorrect_recommendations', verbose=False)
+    incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+    incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    qa_entry = {
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "recommendations",
+        "Reference": event_history
+    }
+
+    # Save to JSON file
+    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+    print(json.dumps(qa_entry, indent=4))
+    # with open(output_file, "w") as f:
+    #     json.dump(qa_entry, f, indent=4)
+
+    return qa_entry
 
 
 
@@ -322,8 +372,9 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
             event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
             # print(f"Knowledge update traced: {event_history}")
             if action == 'qa':
-                generate_qa_reasons_of_change(LLM, context, event_history)
-                generate_qa_graph_of_updates(LLM, context, event_history)
+                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
+                # qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
+                generate_qa_recommendations(LLM, context, event_history, parent_object=None)
         else:
             # Static knowledge point
             # print(f"Static knowledge point: {most_similar_data}")
