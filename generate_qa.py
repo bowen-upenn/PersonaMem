@@ -129,8 +129,15 @@ def generate_qa_reasons_of_change(LLM, context, event_history):
             else:
                 continue
             correct_answer = current_details["[Reasons of Change]"]
+
             incorrect_answers = LLM.query_llm(step='qa_helper', data=f"Question: {question} Correct answer: {correct_answer}", action='propose_incorrect_reasons', verbose=False)
-            incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+            match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+            if match:
+                incorrect_answers = match.group(1)  # Extract the code block
+            incorrect_answers = incorrect_answers.strip("```").strip()
+            incorrect_answers = ast.literal_eval(incorrect_answers)
+            # incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+
             qa_entries.append({
                 "Question": question,
                 "Correct_Answer": correct_answer,
@@ -301,7 +308,10 @@ def generate_qa_recommendations(LLM, context, event_history, parent_object=None)
     correct_answer = response.get("Answer", "")
 
     incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'correct_answer': str(response)}, action='propose_incorrect_recommendations', verbose=False)
-    incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip()
     incorrect_answers = ast.literal_eval(incorrect_answers)
 
     qa_entry = {
@@ -372,9 +382,9 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
             event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
             # print(f"Knowledge update traced: {event_history}")
             if action == 'qa':
-                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
-                # qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
-                generate_qa_recommendations(LLM, context, event_history, parent_object=None)
+                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
+                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, parent_object=None)
         else:
             # Static knowledge point
             # print(f"Static knowledge point: {most_similar_data}")
