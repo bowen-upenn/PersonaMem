@@ -11,6 +11,18 @@ import utils
 from query_llm import QueryLLM
 
 
+def process_json_from_api(response):
+    # Parse JSON from API response
+    response = response.strip("```json").strip("```python").strip("```").strip()
+
+    # Replace single quotes around keys and values, ignoring inner single quotes
+    response = re.sub(r"'(\w+)':", r'"\1":', response)
+    response = re.sub(r":\s'([^']*)'", r': "\1"', response)
+
+    response = json.loads(response)
+    return response
+
+
 def extract_side_notes_with_timestamps(conversation):
     """
     Extracts Side_Notes with timestamps from a conversation.
@@ -90,9 +102,56 @@ def trace_event_history(timestamp, previous_blocks, verbose=False):
     return linear_graph
 
 
-def generate_qa_static(seed_data, verbose):
-    response = LLM.query_llm(step='qa_static', seed=seed_data, verbose=verbose)
-    pass
+def generate_qa_static_factual(LLM, context, event_history, visited_static_factual):
+    if context == "therapy":
+        user = 'patient'
+    elif context == 'legal':
+        user = 'client'
+    else:
+        raise ValueError("Invalid context", context)
+
+    qa_entries = []
+
+    for current_timestamp, current_detail in event_history.items():
+        # Avoid duplicate questions for the same event, which could be visited by another linear graph
+        if current_timestamp in visited_static_factual:
+            if visited_static_factual[current_timestamp] == current_detail['Event']:
+                continue
+        else:
+            visited_static_factual[current_timestamp] = current_detail['Event']
+
+        response = LLM.query_llm(step='qa_helper', data={'user': user, 'timestamp': current_timestamp, 'event': str(current_detail)}, action='factual_qa', verbose=False)
+        response = process_json_from_api(response)
+        question = response.get("Question", "")
+        correct_answer = response.get("Answer", "")
+
+        incorrect_answers = LLM.query_llm(step='qa_helper', data=str(response), action='propose_incorrect_facts', verbose=False)
+        match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+        if match:
+            incorrect_answers = match.group(1)  # Extract the code block
+        incorrect_answers = incorrect_answers.strip("```").strip()
+        incorrect_answers = ast.literal_eval(incorrect_answers)
+
+        qa_entries.append({
+            "Question": question,
+            "Correct_Answer": correct_answer,
+            "Incorrect_Answers": incorrect_answers,
+            "Type": "static_factual",
+        })
+
+    if len(qa_entries) == 1:
+        qa_entries[0]["Reference"] = event_history
+    else:
+        # they share the same reference
+        qa_entries.append({"Reference": event_history})
+
+    # Save to JSON file
+    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+    print(json.dumps(qa_entries, indent=4))
+    # with open(output_file, "w") as f:
+    #     json.dump(qa_entry, f, indent=4)
+
+    return qa_entries
 
 
 def generate_qa_reasons_of_change(LLM, context, event_history):
@@ -201,8 +260,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
         data = current_details['[Updated Fact] Dislikes']
     response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
 
-    response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
-    response = json.loads(response)
+    response = process_json_from_api(response)
     parent_object = response.get("parent_object", "")
     random_child_object = response.get("random_child_object", "")
     question = (
@@ -295,15 +353,13 @@ def generate_qa_recommendations(LLM, context, event_history, parent_object=None)
         else:
             data = current_detail['[Updated Fact] Dislikes']
         response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
-        response = response.strip("```json").strip("```python").strip("```").strip().replace("'", '"')
-        response = json.loads(response)
+        response = process_json_from_api(response)
         parent_object = response.get("parent_object", "")
 
     recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
-    response = response.strip("```json").strip("```python").strip("```").strip()
-    response = json.loads(response)
+    response = process_json_from_api(response)
     question = response.get("Question", "")
     correct_answer = response.get("Answer", "")
 
@@ -332,7 +388,7 @@ def generate_qa_recommendations(LLM, context, event_history, parent_object=None)
 
 
 
-def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path, verbose):
+def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path, visited_static_factual, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
@@ -376,20 +432,18 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
         else:
             most_similar_data = related_data[0]
 
-        # data_keys = [key.lower() for key in most_similar_data.keys()]
+        event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
+
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
-            event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
-            # print(f"Knowledge update traced: {event_history}")
             if action == 'qa':
+                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
                 qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
                 qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
                 qa_entry = generate_qa_recommendations(LLM, context, event_history, parent_object=None)
         else:
             # Static knowledge point
-            # print(f"Static knowledge point: {most_similar_data}")
-            # generate_qa_static()
-            pass
+            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
 
 
 if __name__ == "__main__":
@@ -404,8 +458,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
     parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs')
+    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
+    cmd_args.data = './data/output/conversation_' + cmd_args.data + '.json'
 
     # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
@@ -413,6 +469,6 @@ if __name__ == "__main__":
 
     SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
     LLM = QueryLLM(args)
+    visited_static_factual = {}
 
-    data_path = './data/output/conversation_therapy_persona0_sample0.json'
-    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key="Conversation Next Year", data_path=data_path, verbose=cmd_args.verbose)
+    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key="Conversation Next Year", data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)

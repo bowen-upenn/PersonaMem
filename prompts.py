@@ -140,8 +140,22 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
 
 
 def prompts_for_generating_qa(data, action):
-    if action == 'propose_incorrect_reasons':
-        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']."
+    if action == 'factual_qa':
+        prompt = "Please propose one factual Q&A for this event happened to this specific " + data['user'] + ", in order to evaluate the model's memory capabilities. " \
+                 "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
+                 "The question should explicitly include the timestamp " + data['timestamp'] + ". Follow this format:\n" \
+                 "{\n" \
+                 "    'Question': xxx,\n" \
+                 "    'Answer': yyy\n" \
+                 "}" \
+                 "Do NOT modify the names of these keys. " \
+                 "Here is the event:\n\n" + data['event']
+    elif action == 'propose_incorrect_facts':
+        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
+                 "Incorrect answers should have the same length with the correct answer."
+    elif action == 'propose_incorrect_reasons':
+        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
+                 "Incorrect answers should have the same length with the correct answer."
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
                  "Second, based on the extracted primary noun, propose one different child object name under this parent category, adding some different adjectives or descriptors. Output it into the key 'random_child_object'." \
@@ -165,7 +179,7 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_recommendations':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data['correct_answer'] + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']. Do NOT use JSON." \
                  "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
-                 "Follow the same language and structure as the correct answer. These three options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
+                 "Follow the same language and length as the correct answer. These three options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
     else:
         raise ValueError("Invalid action", action)
     return prompt
