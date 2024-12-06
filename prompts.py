@@ -177,9 +177,15 @@ def prompts_for_generating_qa(data, action):
                  "Do NOT modify the names of these keys. " \
                  "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
     elif action == 'propose_incorrect_recommendations':
-        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data['correct_answer'] + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']. Do NOT use JSON." \
+        prompt = "Given the following Q&A, prepare two incorrect answers.\n\n" + data['qa'] + "\n\nOutput a Python list of two strings, following this format: ['xxx', 'yyy']. Do NOT use JSON." \
                  "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
-                 "Follow the same language and length as the correct answer. These three options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
+                 "Follow the same language and length as the correct answer. These two options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
+    elif action == 'extract_identity':
+        prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. Here is the full persona:\n\n" + data
+    elif action == 'propose_stereotype_recommendation':
+        prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context" \
+                 "and irrelevant to or violate this " + data['user'] + "'s actual preference. Here is the question and the correct answer:\n\n" + data['qa'] + "\n\nHere is the " + data['user'] + "'s identities:\n\n" + data['persona'] + "\n\n"\
+                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
     else:
         raise ValueError("Invalid action", action)
     return prompt

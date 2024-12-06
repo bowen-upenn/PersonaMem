@@ -335,7 +335,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
     return qa_entry, parent_object
 
 
-def generate_qa_recommendations(LLM, context, event_history, parent_object=None):
+def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None):
     if context == "therapy":
         user = "patient"
     elif context == "legal":
@@ -363,12 +363,17 @@ def generate_qa_recommendations(LLM, context, event_history, parent_object=None)
     question = response.get("Question", "")
     correct_answer = response.get("Answer", "")
 
-    incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'correct_answer': str(response)}, action='propose_incorrect_recommendations', verbose=False)
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'qa': str(response)}, action='propose_incorrect_recommendations', verbose=False)
     match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip()
     incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    identity = LLM.query_llm(step='qa_helper', data=persona["Expanded Persona"], action='extract_identity', verbose=False)
+    print('Persona', identity+". "+persona["Original Persona"])
+    stereotypical_answer = LLM.query_llm(step='qa_helper', data={'user': user, 'persona': identity+". "+persona["Original Persona"], 'qa': str(response)}, action='propose_stereotype_recommendation', verbose=False)
+    incorrect_answers.append(stereotypical_answer)
 
     qa_entry = {
         "Question": question,
@@ -400,6 +405,7 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
     else:
         raise ValueError("Invalid context", data_path)
 
+    persona = {"Original Persona": data.get("Original Persona", ""), "Expanded Persona": data.get("Expanded Persona", "")}
     conversation = data.get(conversation_key, [])
     # Collect all side notes with timestamps in the current conversation
     side_notes = extract_side_notes_with_timestamps(conversation)
@@ -437,14 +443,14 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
             if action == 'qa':
-                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
-                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, parent_object=None)
+                # qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
+                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
+                # qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None)
         else:
             # Static knowledge point
-            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-
+            # qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
+            pass
 
 if __name__ == "__main__":
     # Load hyperparameters
