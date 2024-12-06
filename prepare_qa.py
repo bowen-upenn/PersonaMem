@@ -465,9 +465,21 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
     parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs')
     parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
+    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
+
     cmd_args.data = './data/output/conversation_' + cmd_args.data + '.json'
+    if cmd_args.time == 'init':
+        cmd_args.time = 'Init Conversation'
+    elif cmd_args.time == 'next_week':
+        cmd_args.time = 'Conversation Next Week'
+    elif cmd_args.time == 'next_month':
+        cmd_args.time = 'Conversation Next Month'
+    elif cmd_args.time == 'next_year':
+        cmd_args.time = 'Conversation Next Year'
+    else:
+        raise ValueError("Invalid time", cmd_args.time)
 
     # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
@@ -477,4 +489,4 @@ if __name__ == "__main__":
     LLM = QueryLLM(args)
     visited_static_factual = {}
 
-    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key="Conversation Next Year", data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
