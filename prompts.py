@@ -1,6 +1,5 @@
 import torch
 import random
-from utils import *
 
 
 def prompts_for_background_data(content):
@@ -30,34 +29,30 @@ def prompts_for_init_general_personal_history(persona, start_time):
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
              "All events must have an appropriate time stamp in the format of MM/DD/YYYY. List at least 10 events, more are welcome. " \
              "Here is the template you should follow for each event:\n\n" \
-                "'MM/DD/YYYY': {\n" \
-                    "'Event': xxx, \n" \
-                    "'Category': 'Short-Term' OR 'Long-Term'\n" \
-                    "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
+                '"MM/DD/YYYY": {\n' \
+                    '"Event": xxx, \n' \
+                    '"Category": "Short-Term" OR "Long-Term"\n' \
+                    '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
+             "Do NOT modify the names of these keys." \
              "Here is the persona: " + persona
     return prompt
 
 
 def prompts_for_init_contextual_personal_history(context, start_time, persona, general_personal_history):
-    if general_personal_history is None:
-        prompt = "Given the persona and the person's general background history above, continue to write 10 personal hobbies and 10 things this person dislikes to do but others might like, using bullet points, related to " + context + ". " \
-                 "Next, write 10 more events related to the context of " + context + ". Include these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
-                 "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
-                 "Use the same JSON format with MM/DD/YYYY timestamp starting at " + start_time + ", and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
-    else:
-        prompt = "Here is the persona:\n\n" + persona + "\n\nHere are 10 events related to the person's general background history:\n\n" + general_personal_history + "\n\n" \
-                 "Given the persona and the person's general background history above, continue to write 5 personal hobbies and 5 things this person dislikes to do but others might like, using bullet points, related to " + context + ". " \
-                 "Next, write 10 more events related to the context of " + context + ". Include all these 10 new things this person likes and dislikes, and rewrite them as appropriate events." \
-                 "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
-                 "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
-                 "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
-    prompt += "Here is the template you should follow for each event:\n\n" \
-              "'MM/DD/YYYY': {\n" \
-                  "'Event': xxx, \n" \
-                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
-                  "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
-              "}"
+    prompt = "Here is the persona:\n\n" + persona + "\n\nHere are 10 events related to the person's general background history:\n\n" + general_personal_history + "\n\n" \
+             "Given the persona and the person's general background history above, continue to list 10 personal hobbies and 10 things this person dislikes but others might like, using bullet points, related to " + context + ". " \
+             "Next, write 10 more events related to the context of " + context + ". Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
+             "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
+             "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
+             "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
+             "Here is the template you should follow for each event:\n\n" \
+                '"MM/DD/YYYY": {\n' \
+                    '"Event": xxx, \n' \
+                    '"Category": "Short-Term" OR "Long-Term"\n' \
+                    '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
+                "}, \n\n" \
+             "Do NOT modify the names of these keys."
     return prompt
 
 
@@ -83,21 +78,22 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
               "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
 
     prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
-              "'MM/DD/YYYY': {\n" \
-                  "'Event': xxx, \n" \
-                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
-                  "'[Fact] Likes' OR '[Fact] Dislikes': xxx, \n" \
+              '"MM/DD/YYYY": {\n' \
+                  '"Event": xxx, \n' \
+                  '"Category": "Short-Term" OR "Long-Term"\n' \
+                  '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
               "}, \n\n" \
               "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
               "'MM/DD/YYYY': {\n" \
-                  "'Event': xxx, \n" \
-                  "'Category': 'Short-Term' OR 'Long-Term'\n" \
-                  "'[Reasons of Change]': xxx, \n" \
-                  "'[Updated Fact] Likes' OR '[Updated Fact] Dislikes': xxx, \n" \
-                  "'[Old Fact] Likes' OR '[Old Fact] Dislikes': xxx, \n" \
-                  "'[Old Event Date]': MM/DD/YYYY, \n" \
-                  "'[Old Event]': xxx, \n" \
-              "}"
+                  '"Event": xxx, \n' \
+                  '"Category": "Short-Term" OR "Long-Term"\n' \
+                  '"[Reasons of Change]": xxx, \n' \
+                  '"[Updated Fact] Likes" OR "[Updated Fact] Dislikes": xxx, \n' \
+                  '"[Old Fact] Likes" OR "[Old Fact] Dislikes": xxx, \n' \
+                  '"[Old Event Date]": MM/DD/YYYY, \n' \
+                  '"[Old Event]": xxx, \n' \
+              "}\n" \
+              "Do NOT modify the names of these keys."
     return prompt
 
 
@@ -145,8 +141,8 @@ def prompts_for_generating_qa(data, action):
                  "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
                  "The question should explicitly include the timestamp " + data['timestamp'] + ". Follow this format:\n" \
                  "{\n" \
-                 "    'Question': xxx,\n" \
-                 "    'Answer': yyy\n" \
+                 '    "Question": xxx,\n' \
+                 '    "Answer": yyy\n' \
                  "}" \
                  "Do NOT modify the names of these keys. " \
                  "Here is the event:\n\n" + data['event']
@@ -161,9 +157,10 @@ def prompts_for_generating_qa(data, action):
                  "Second, based on the extracted primary noun, propose one different child object name under this parent category, adding some different adjectives or descriptors. Output it into the key 'random_child_object'." \
                  "You should output a dictionary following this format:\n" \
                  "{\n" \
-                 "    'parent_object': xxx,\n" \
-                 "    'random_child_object': yyy\n" \
-                 "}"
+                 '    "parent_object": xxx,\n' \
+                 '    "random_child_object": yyy\n' \
+                 "}\n" \
+                 "Do NOT modify the names of these keys. "
     elif action == 'recommendation':
         prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
                  "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
@@ -171,8 +168,8 @@ def prompts_for_generating_qa(data, action):
                  "Say your recommendations directly without explanations or using words like 'I would recommend'. If the answer is a single phrase, add a little descriptions. " \
                  "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
                  "{\n" \
-                 "    'Question': xxx,\n" \
-                 "    'Answer': yyy\n" \
+                 '    "Question": xxx,\n' \
+                 '    "Answer": yyy\n' \
                  "}" \
                  "Do NOT modify the names of these keys. " \
                  "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
@@ -191,13 +188,42 @@ def prompts_for_generating_qa(data, action):
     return prompt
 
 
-def prompt_for_recommendations(context):
-    if context == "therapy":
-        user, agent = 'patient', 'therapist'
-    elif context == 'legal':
-        user, agent = 'client', 'lawyer assistant'
+def prompt_for_content_generation(data, action):
+    if action == 'preferences':
+        prompt = "Here is a new author's persona:\n\n" + data + "\n\nGiven the persona above, please list 5 writing styles (e.g., tone, wording, emojis, valence, arousal, dominance, personality, and etc) and " \
+                 "5 formatting styles (e.g., subsections, signature, final closing, title, side notes, paragraph length, and ways to write first & last names, abbreviation, time, and etc) this writer may likes and dislikes, respectively, " \
+                 "using bullet points. You should output a Python dictionary of the following format:\n\n" \
+                 "{\n" \
+                 '   "[Writing Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                 '   "[Writing Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                 '   "[Formatting Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                 '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                "}\n" \
+                "Do NOT modify the names of these keys. No other words."
+    elif action == 'rewrite_from_persona':
+        prompt = "Here is a creative writing sample:\n\n" + data + "\n\nGiven the creative writing sample and the persona above, " \
+                 "please modify some sentences and formats as if it was written by the author with this new persona, incorporating all likes and dislikes in writing and formatting styles. " \
+                 "Do NOT make any modifications on other sentences whose writing or formatting styles are not related to the new author's persona, keeping them word-by-word identical." \
+                 "Within the new sample, before each sentence you wanna modify, make sure to add a '[Side_Note]' in square brackets explaining why this modification is aligned with what writing or formatting persona points of this new author. " \
+                 "You should only output the rewritten sample as a simple string. No other words."
+    elif action == 'rewrite_as_conversation':
+        prompt = "Given the original and rewritten samples above, create a conversation record as if the new author is consulting an expert writing assistant to help the author convert the original sample to the rewritten sample. " \
+                 "The author should propose questions and concerns, explicitly saying that they likes and dislikes regarding the writing and formatting styles. We need to see every explicit and concrete reasons, " \
+                 "and you should always use a '[Side_Note]' with square brackets to link each modification to its corresponding '[Writing Styles] Likes', '[Writing Styles] Dislikes', '[Formatting Styles] Likes', and '[Formatting Styles] Dislikes' in the persona. " \
+                 "The assistant should give recommendations that result in the modified sentences in the rewritten sample, but it could also propose a different suggestion, the author dislikes it and says why, and the assistant finally propose the one shown in the final rewritten sample." \
+                 "Make sure to explicitly include each pair of original and modified sentence in the conversation, as if these two persons are showing the sentence to each other in a conversation. " \
+                 "Each utterance in the conversation should be short, like a in-person consultation, but the whole conversation should be long enough to cover all modified sentences in the rewritten sample." \
+                 "Except for the very first two sentences where the user explains how they want the assistant to help them, you should follow this format for the conversation:\n\n" \
+                 "[Original_Sentence]: xxx\n" \
+                 "[Side_Note]: '[Writing Styles] Likes' OR '[Writing Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here) \n" \
+                 "User: xxx\n" \
+                 "Assistant: xxx\n" \
+                 "User: xxx\n" \
+                 "Do NOT change the names before the colon mark. No other words."
+    elif action == 'write_new_sample':
+        prompt = "The writer's persona:\n\n" + data['persona'] + "\n\nThe writer's likes and dislikes on writing styles:\n\n" + data['writing_styles'] + "\n\nand formatting styles:\n\n" + data['formatting_styles'] + "\n\n" \
+                 "Given the writer's persona and preferences above, Your task is to write a new creative writing paragraph of at most 5 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
+                 "You should simply output the new paragraph as a string. No other words."
     else:
-        raise ValueError("Invalid context", context)
-    prompt = "Could you, as a " + agent + ", find one unique personal preference of the user different from other common " + user + "s, oriented by their persona information," \
-             " and then offer a brief recommendation to the " + user + " based on this unique preference."
+        raise ValueError("Invalid action", action)
     return prompt

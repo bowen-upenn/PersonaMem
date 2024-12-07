@@ -36,14 +36,7 @@ class QueryLLM:
             model=self.args['models']['llm_model'],
         )
         self.thread_conversation = None
-
-        self.assistant_conversation = self.client.beta.assistants.create(
-            name="Q&A Generator",
-            instructions="You are a helpful assistant that generates Q&A given persona-oriented conversational data in an user specified context.",
-            tools=[{"type": "code_interpreter"}],
-            model=self.args['models']['llm_model'],
-        )
-        self.thread_qa = None
+        self.thread_new_content = None
 
         self.expanded_persona = None
 
@@ -61,7 +54,7 @@ class QueryLLM:
     def create_a_thread(self):
         self.thread_persona = self.client.beta.threads.create()
         self.thread_conversation = self.client.beta.threads.create()
-        self.thread_qa = self.client.beta.threads.create()
+        self.thread_new_content = self.client.beta.threads.create()
 
     def query_llm(self, step='source_data', persona=None, context=None, seed=None, data=None, action=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':
@@ -99,9 +92,10 @@ class QueryLLM:
         elif step == 'third_expand_conversation':
             prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_personal_history, period='YEAR')
 
-        # A separate thread to generate Q&A from conversations
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
+        elif step == 'new_content':
+            prompt = prompts.prompt_for_content_generation(data, action)
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -120,6 +114,8 @@ class QueryLLM:
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
+            elif step == 'new_content':
+                curr_thread = self.thread_new_content
             else:
                 curr_thread = self.thread_persona
 

@@ -9,6 +9,34 @@ import torch
 from query_llm import QueryLLM
 import utils
 import extract_conversation
+from prepare_qa import process_json_from_api
+
+
+def load_all_writing_sample(file_path):
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    keys = list(data.keys())  # Preload the keys
+    return data, keys
+
+
+def extract_random_writing_sample(data, prompts):
+    random_prompt = random.choice(prompts)
+    curr_samples = data[random_prompt]
+    return random.choice(curr_samples)
+
+
+def convert_to_conversation(persona, writing_sample):
+    # Rewrite the writing sample to be persona-aligned
+    response = LLM.query_llm(step='new_content', data={'persona': persona, 'writing_sample': writing_sample}, action='rewrite_from_persona', verbose=False)
+    response = process_json_from_api(response)
+    writing_styles = response.get("Writing_styles", "")
+    formatting_styles = response.get("Formatting_styles", "")
+    updated_writing_sample = response.get("Updated_writing_sample", "")
+
+    # Rewrite the persona-aligned writing sample as a conversation
+    conversation = LLM.query_llm(step='new_content', action='rewrite_as_conversation', verbose=False)
+
+    new_writing_sample = LLM.query_llm(step='new_content', data={'persona': persona, 'writing_styles': writing_styles, 'formatting_styles': formatting_styles}, action='write_new_sample', verbose=False)
 
 
 if __name__ == '__main__':
@@ -39,7 +67,7 @@ if __name__ == '__main__':
         conversations = extract_conversation(json_file, context, which_conversation='all', which_format='string')
 
         # Query the LLM using prompts.prompt_for_recommendations() to get persona-oriented recommendations
-        recommendation = LLM.query_llm(step='recommendation', content=[persona, conversations], verbose=args['inference']['verbose'])
+        recommendation = LLM.query_llm(step='recommendation', content={"persona": persona, "conversations": conversations}, verbose=args['inference']['verbose'])
 
         # Save the recommendations and the corresponding JSON filename in a new JSON file
         recommendation_data[json_file] = recommendation

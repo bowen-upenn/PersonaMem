@@ -11,18 +11,6 @@ import utils
 from query_llm import QueryLLM
 
 
-def process_json_from_api(response):
-    # Parse JSON from API response
-    response = response.strip("```json").strip("```python").strip("```").strip()
-
-    # Replace single quotes around keys and values, ignoring inner single quotes
-    response = re.sub(r"'(\w+)':", r'"\1":', response)
-    response = re.sub(r":\s'([^']*)'", r': "\1"', response)
-
-    response = json.loads(response)
-    return response
-
-
 def extract_side_notes_with_timestamps(conversation):
     """
     Extracts Side_Notes with timestamps from a conversation.
@@ -46,27 +34,6 @@ def find_related_data(timestamp, history_blocks):
             if key == timestamp:
                 related_data.append(value)
     return related_data
-
-
-def find_most_similar_event(SentenceBERT, side_note_sentence, related_data):
-    """
-    The same timestamp may have multiple events, like one in the general personal history and one in the contextual one.
-    This function uses SentenceBERT to locate the single event we are actually targeting.
-    """
-    max_similarity = -1
-    most_similar_data = None
-
-    for data in related_data:
-        event_sentence = data.get("event", "")
-        similarity = util.pytorch_cos_sim(
-            SentenceBERT.encode(side_note_sentence, convert_to_tensor=True),
-            SentenceBERT.encode(event_sentence, convert_to_tensor=True)
-        )
-        if similarity > max_similarity:
-            max_similarity = similarity
-            most_similar_data = data
-
-    return most_similar_data
 
 
 def trace_event_history(timestamp, previous_blocks, verbose=False):
@@ -121,7 +88,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             visited_static_factual[current_timestamp] = current_detail['Event']
 
         response = LLM.query_llm(step='qa_helper', data={'user': user, 'timestamp': current_timestamp, 'event': str(current_detail)}, action='factual_qa', verbose=False)
-        response = process_json_from_api(response)
+        response = utils.process_json_from_api(response)
         question = response.get("Question", "")
         correct_answer = response.get("Answer", "")
 
@@ -260,7 +227,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
         data = current_details['[Updated Fact] Dislikes']
     response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
 
-    response = process_json_from_api(response)
+    response = utils.process_json_from_api(response)
     parent_object = response.get("parent_object", "")
     random_child_object = response.get("random_child_object", "")
     question = (
@@ -353,13 +320,13 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         else:
             data = current_detail['[Updated Fact] Dislikes']
         response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
-        response = process_json_from_api(response)
+        response = utils.process_json_from_api(response)
         parent_object = response.get("parent_object", "")
 
     recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
-    response = process_json_from_api(response)
+    response = utils.process_json_from_api(response)
     question = response.get("Question", "")
     correct_answer = response.get("Answer", "")
 
@@ -434,7 +401,7 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
 
         # If there are more than one related data with the same timestamp, find the single correct one
         if len(related_data) > 1:
-            most_similar_data = find_most_similar_event(SentenceBERT, side_note, related_data)
+            most_similar_data = utils.find_most_similar_event(SentenceBERT, side_note, related_data)
         else:
             most_similar_data = related_data[0]
 
@@ -443,14 +410,14 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
             if action == 'qa':
-                # qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
-                # qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
+                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
+                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
+                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
                 qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None)
         else:
             # Static knowledge point
-            # qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-            pass
+            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
+            
 
 if __name__ == "__main__":
     # Load hyperparameters

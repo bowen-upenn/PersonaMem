@@ -29,15 +29,42 @@ def preprocess_source_data(data, context):
     return context_conversation
 
 
-def load_source_data(source_dir):
+def load_all_source_data(source_dir, context):
+    if context == 'writing':
+        with open(source_dir, 'r') as f:
+            data = json.load(f)
+        prompts = list(data.keys())  # Preload the keys
+        return {'data': data, 'prompts': prompts}
+    else:
+        all_source_files = os.listdir(source_dir)
+        return all_source_files
+
+
+def load_one_source_data(all_source_files, context):
     # Load a random source file from the real-world data
-    all_source_files = os.listdir(source_dir)
-    random_idx = random.randint(0, len(all_source_files) - 1)
-    selected_file = all_source_files[random_idx]
-    selected_file_path = os.path.join(source_dir, selected_file)
-    with open(selected_file_path, 'r', encoding='utf-8') as file:
-        source_data = json.load(file)
-    return source_data
+    if context == 'writing':
+        data, prompts = all_source_files['data'], all_source_files['prompts']
+        random_prompt = random.choice(prompts)
+        curr_samples = data[random_prompt]
+        return random.choice(curr_samples)
+    else:
+        random_idx = random.randint(0, len(all_source_files) - 1)
+        selected_file = all_source_files[random_idx]
+        selected_file_path = os.path.join(source_dir, selected_file)
+        with open(selected_file_path, 'r', encoding='utf-8') as file:
+            source_data = json.load(file)
+        return source_data
+
+
+def rewrite_sample(LLM, persona, writing_sample, verbose):
+    # Rewrite the writing sample to be persona-aligned
+    preferences = LLM.query_llm(step='new_content', data=persona, action='preferences', verbose=verbose)
+    preferences = process_json_from_api(preferences)
+    writing_styles = preferences.get("Writing_styles", "")
+    formatting_styles = preferences.get("Formatting_styles", "")
+
+    updated_writing_sample = LLM.query_llm(step='new_content', data=writing_sample, action='rewrite_from_persona', verbose=verbose)
+    return writing_styles, formatting_styles, updated_writing_sample
 
 
 def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False):
@@ -116,3 +143,59 @@ def pick_a_random_time_within_a_year(input_date):
 
     # Return the new date in the same format
     return new_date.strftime("%m/%d/%Y")
+
+
+def find_most_similar_event(SentenceBERT, side_note_sentence, related_data):
+    """
+    The same timestamp may have multiple events, like one in the general personal history and one in the contextual one.
+    This function uses SentenceBERT to locate the single event we are actually targeting.
+    """
+    max_similarity = -1
+    most_similar_data = None
+
+    for data in related_data:
+        event_sentence = data.get("event", "")
+        similarity = util.pytorch_cos_sim(
+            SentenceBERT.encode(side_note_sentence, convert_to_tensor=True),
+            SentenceBERT.encode(event_sentence, convert_to_tensor=True)
+        )
+        if similarity > max_similarity:
+            max_similarity = similarity
+            most_similar_data = data
+
+    return most_similar_data
+
+
+def process_json_from_api(response):
+    # Parse JSON from API response
+    # print('response before:', response)
+    response = response.strip("```json").strip("```python").strip("```").strip()
+
+    # Replace single quotes around keys and values, ignoring inner single quotes
+    response = re.sub(r"'(\w+)':", r'"\1":', response)
+    response = re.sub(r":\s'([^']*)'", r': "\1"', response)
+    # print('response after:', response)
+    response = json.loads(response)
+    return response
+
+
+def clean_raw_writing_data(source_file, output_file):
+    try:
+        # Read raw data from the file
+        with open(source_file, 'r') as f:
+            data = f.read()
+
+        # Process the data: Remove <newline> and backticks (`) from the content
+        cleaned_data = data.replace("<newline>", "").replace("`", "").replace("''", "").replace(" ,", ",").replace(" .", ".").replace(" ?", "?").replace(" !", "!").replace(" '", "'")
+
+        # Save the cleaned data back to the output file
+        with open(output_file, 'w') as f:
+            f.write(cleaned_data)
+
+        print(f"Data has been cleaned and saved to {output_file}.")
+    except FileNotFoundError:
+        print(f"Error: The file {source_file} was not found.")
+    except json.JSONDecodeError:
+        print("Error: The source file does not contain valid JSON.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
