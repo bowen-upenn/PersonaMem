@@ -417,7 +417,64 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
         else:
             # Static knowledge point
             qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-            
+
+
+def qa_generative(LLM, data_path, verbose):
+    # Write new content that aligns and violates the persona
+    with open(data_path, "r", encoding="utf-8") as f:
+        curr_data = json.load(f)
+    conversation = curr_data.get("Conversation", [])
+    conversation = utils.remove_side_notes(conversation)
+
+    new_writing_sample = LLM.query_llm(step='new_content', data=conversation, action='write_new_sample', verbose=verbose)
+    violated_writing_styles = LLM.query_llm(step='new_content', data=conversation, action='write_violating_sample', verbose=verbose)
+
+    # Evaluate the new contents
+    aligned_results = LLM.query_llm(step='eval_new_content', data={'persona': persona, 'writing_styles': writing_styles, 'formatting_styles': formatting_styles,
+                                                                   'paragraph1': new_writing_sample, 'paragraph2': violated_writing_styles}, action='evaluate_aligned', verbose=verbose)
+    violated_results = LLM.query_llm(step='eval_new_content', action='evaluate_violated', verbose=verbose)
+
+    print(f'{utils.Colors.OKGREEN}Aligned Results:{utils.Colors.ENDC}')
+    print(json.dumps(aligned_results, indent=4))
+    print(f'{utils.Colors.OKGREEN}Violated Results:{utils.Colors.ENDC}')
+    print(json.dumps(violated_results, indent=4))
+
+
+def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose):
+    # Load a random creative writing sample
+    source_data = utils.load_one_source_data(all_source_files, curr_context='writing')
+
+    # Load personas from the current file and three other files
+    assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
+    all_data_paths = [i for i in range(len(writing_files)) if writing_files[i] != data_path]
+    all_data_paths = [data_path] + all_data_paths   # The first one will be the correct answer
+
+    keys_of_interest = ["Expanded Persona", "Writing Styles", "Formatting Styles", "Updated Writing Sample"]
+
+    new_writing_samples = []    # The first one will be the correct answer
+    personas = []
+    for curr_data_path in all_data_paths:
+        with open(curr_data_path, "r", encoding="utf-8") as f:
+            curr_data = json.load(f)
+
+        curr_persona = {key: curr_data.get(key) for key in keys_of_interest}
+        personas.append(curr_persona)
+        new_writing_sample = LLM.query_llm(step='new_content', data={'persona': curr_persona['Expanded Persona'], 'writing_styles': curr_persona['Writing Styles'], 'formatting_styles': curr_persona['Formatting Styles'],
+                                                                     'source_data': source_data}, action='write_new_sample_oracle', verbose=verbose)
+        new_writing_samples.append(new_writing_sample)
+
+    print(f'{utils.Colors.OKGREEN}Persona:{utils.Colors.ENDC}')
+    print(json.dumps(personas[0], indent=4))
+    print(f'{utils.Colors.OKGREEN}Correct Writing Samples:{utils.Colors.ENDC}')
+    print(new_writing_samples[0])
+    print(f'{utils.Colors.OKGREEN}Other Writing Samples:{utils.Colors.ENDC}')
+    print(json.dumps(new_writing_samples[1:], indent=4))
+
+
+def evaluate_content_generations(LLM, data_path, all_source_files, all_writing_files, verbose):
+    qa_generative(LLM, data_path, verbose)
+    qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose)
+
 
 if __name__ == "__main__":
     # Load hyperparameters
@@ -435,25 +492,30 @@ if __name__ == "__main__":
     parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
-
     cmd_args.data = './data/output/conversation_' + cmd_args.data + '.json'
-    if cmd_args.time == 'init':
-        cmd_args.time = 'Init Conversation'
-    elif cmd_args.time == 'next_week':
-        cmd_args.time = 'Conversation Next Week'
-    elif cmd_args.time == 'next_month':
-        cmd_args.time = 'Conversation Next Month'
-    elif cmd_args.time == 'next_year':
-        cmd_args.time = 'Conversation Next Year'
-    else:
-        raise ValueError("Invalid time", cmd_args.time)
 
-    # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
-    SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
     LLM = QueryLLM(args)
-    visited_static_factual = {}
 
-    process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+    if 'writing' in cmd_args.data:
+        all_source_files = utils.load_all_source_data(source_dir, curr_context)
+        all_writing_files = utils.load_all_writing_data()
+        evaluate_content_generations(LLM, data_path=cmd_args.data, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+    else:
+        if cmd_args.time == 'init':
+            cmd_args.time = 'Init Conversation'
+        elif cmd_args.time == 'next_week':
+            cmd_args.time = 'Conversation Next Week'
+        elif cmd_args.time == 'next_month':
+            cmd_args.time = 'Conversation Next Month'
+        elif cmd_args.time == 'next_year':
+            cmd_args.time = 'Conversation Next Year'
+        else:
+            raise ValueError("Invalid time", cmd_args.time)
+
+        SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
+        visited_static_factual = {}
+
+        process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)

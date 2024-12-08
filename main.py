@@ -25,6 +25,8 @@ if __name__ == "__main__":
                                                                                   'If multiple contexts, separate the names by space, e.g. --context therapy legal')  # https://docs.python.org/3/library/argparse.html#nargs
     parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
     parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per context to generate')
+    parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
+    parser.add_argument('--s_samples', type=int, default=0, help='Set the starting idx of samples per context to generate')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
@@ -33,6 +35,8 @@ if __name__ == "__main__":
     args['datasets']['context'] = cmd_args.context if cmd_args.context is not None else args['datasets']['context']
     args['inference']['num_personas'] = cmd_args.n_persona if cmd_args.n_persona is not None else args['inference']['num_personas']
     args['inference']['num_samples_per_context'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_context']
+    args['inference']['start_persona_idx'] = cmd_args.s_persona if cmd_args.s_persona is not None else args['inference']['start_persona_idx']
+    args['inference']['start_sample_idx'] = cmd_args.s_samples if cmd_args.s_samples is not None else args['inference']['start_sample_idx']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
     torch.manual_seed(0)

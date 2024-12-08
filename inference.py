@@ -5,6 +5,7 @@ import re
 import json
 import random
 import torch
+import ast
 
 from query_llm import QueryLLM
 import utils
@@ -16,7 +17,7 @@ def inference(args):
         all_personas = file.readlines()
     LLM = QueryLLM(args)
 
-    for idx_persona in range(int(args['inference']['num_personas'])):
+    for idx_persona in range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas'])):
         # Load a random persona
         random_row = random.choice(all_personas)
         persona = random_row.strip()[13:-2]  # Remove prefix '{"persona":' and suffix '"}'
@@ -54,11 +55,12 @@ def inference(args):
             if idx_context > 0:
                 start_time = utils.pick_a_random_time_within_a_year(start_time)
 
-            for idx_sample in range(int(args['inference']['num_samples_per_context'])):
-                output_file_path = os.path.join(args['inference']['output_dir'], f'{args["inference"]["output_file_name"]}_{curr_context}_persona{idx_persona}_sample{idx_sample}.json')
+            for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_context'])):
+                output_file_path = os.path.join(args['inference']['output_dir'], os.path.join(f'{curr_context}', f'{args["inference"]["output_file_name"]}_{curr_context}_persona{idx_persona}_sample{idx_sample}.json'))
                 utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
                 utils.append_json_to_file(expanded_persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
                 utils.append_json_to_file(curr_context, output_file_path, curr_data_name='Context', parse_json=False)
+                print(f'{utils.Colors.OKGREEN}Output file path: {output_file_path}{utils.Colors.ENDC}')
 
                 LLM.create_a_thread()
 
@@ -70,15 +72,18 @@ def inference(args):
                     It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
                     """
                     # Convert the writing sample into a conversation
-                    writing_styles, formatting_styles, updated_writing_sample = utils.rewrite_sample(LLM, persona, source_data, verbose=args['inference']['verbose'])
-                    conversation = LLM.query_llm(step='new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
-                    new_writing_sample = LLM.query_llm(step='new_content', data={'persona': persona, 'writing_styles': writing_styles, 'formatting_styles': formatting_styles}, action='write_new_sample', verbose=False)
+                    preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=args['inference']['verbose'])
+                    updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', verbose=args['inference']['verbose'])
 
-                    utils.append_json_to_file(writing_styles, output_file_path, curr_data_name='Writing Styles', parse_json=False)
-                    utils.append_json_to_file(formatting_styles, output_file_path, curr_data_name='Formatting Styles', parse_json=False)
-                    utils.append_json_to_file(updated_writing_sample, output_file_path, curr_data_name='Updated Writing Sample', parse_json=False)
-                    utils.append_json_to_file(conversation, output_file_path, curr_data_name='Conversation', parse_json=False)
-                    utils.append_json_to_file(new_writing_sample, output_file_path, curr_data_name='New Writing Sample', parse_json=False)
+                    # writing_styles, formatting_styles, updated_writing_sample = utils.rewrite_sample(LLM, persona, source_data, verbose=args['inference']['verbose'])
+                    conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
+                    if 'python' in conversation or 'plaintext' in conversation:
+                        conversation = ast.literal_eval(conversation.strip("```python").strip("```plaintext").strip())
+
+                    responses = [source_data, preferences, updated_writing_sample, conversation]
+                    data_names = ['Original Sample', 'Writing and Formatting Styles', 'Updated Writing Sample', 'Conversation']
+                    for response, data_name in zip(responses, data_names):
+                        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False)
 
                 else:
                     # Feed the thread with a seeding data from the real-world conversation
@@ -108,4 +113,4 @@ def inference(args):
 
                     for step, data_name in zip(steps, data_names):
                         response = LLM.query_llm(step=step, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
-                    utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
+                        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)

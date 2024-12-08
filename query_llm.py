@@ -36,7 +36,9 @@ class QueryLLM:
             model=self.args['models']['llm_model'],
         )
         self.thread_conversation = None
+        self.thread_preparing_new_content = None
         self.thread_new_content = None
+        self.thread_eval_new_content = None
 
         self.expanded_persona = None
 
@@ -54,7 +56,9 @@ class QueryLLM:
     def create_a_thread(self):
         self.thread_persona = self.client.beta.threads.create()
         self.thread_conversation = self.client.beta.threads.create()
+        self.thread_preparing_new_content = self.client.beta.threads.create()
         self.thread_new_content = self.client.beta.threads.create()
+        self.thread_eval_new_content = self.client.beta.threads.create()
 
     def query_llm(self, step='source_data', persona=None, context=None, seed=None, data=None, action=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':
@@ -94,12 +98,16 @@ class QueryLLM:
 
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
+        elif step == 'prepare_new_content':
+            prompt = prompts.prompt_for_preparing_new_content(data, action)
         elif step == 'new_content':
             prompt = prompts.prompt_for_content_generation(data, action)
+        elif step == 'eval_new_content':
+            prompt = prompts.prompt_for_evaluating_content(data, action)
         else:
             raise ValueError(f'Invalid step: {step}')
 
-        # Independent API calls
+        # Independent API calls every time
         if step == 'expand_persona' or step == 'qa_helper':
             response = self.client.chat.completions.create(
                 model=self.args['models']['llm_model'],
@@ -110,12 +118,16 @@ class QueryLLM:
             if verbose:
                 print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
 
-        # API calls within a thread
+        # API calls within a thread in a multi-turn fashion
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
+            elif step == 'prepare_new_content':
+                curr_thread = self.thread_preparing_new_content
             elif step == 'new_content':
                 curr_thread = self.thread_new_content
+            elif step == 'eval_new_content':
+                curr_thread = self.thread_eval_new_content
             else:
                 curr_thread = self.thread_persona
 
@@ -136,7 +148,10 @@ class QueryLLM:
                 )
                 response = response.data[0].content[0].text.value
                 if verbose:
-                    print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
+                    if step == 'new_content':
+                        print(f'{utils.Colors.OKGREEN}{action.capitalize()}:{utils.Colors.ENDC} {response}')
+                    else:
+                        print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
             else:
                 response = None
                 print(run.status)

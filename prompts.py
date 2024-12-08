@@ -188,7 +188,7 @@ def prompts_for_generating_qa(data, action):
     return prompt
 
 
-def prompt_for_content_generation(data, action):
+def prompt_for_preparing_new_content(data, action):
     if action == 'preferences':
         prompt = "Here is a new author's persona:\n\n" + data + "\n\nGiven the persona above, please list 5 writing styles (e.g., tone, wording, emojis, valence, arousal, dominance, personality, and etc) and " \
                  "5 formatting styles (e.g., subsections, signature, final closing, title, side notes, paragraph length, and ways to write first & last names, abbreviation, time, and etc) this writer may likes and dislikes, respectively, " \
@@ -219,11 +219,66 @@ def prompt_for_content_generation(data, action):
                  "User: xxx\n" \
                  "Assistant: xxx\n" \
                  "User: xxx\n" \
-                 "Do NOT change the names before the colon mark. No other words."
-    elif action == 'write_new_sample':
-        prompt = "The writer's persona:\n\n" + data['persona'] + "\n\nThe writer's likes and dislikes on writing styles:\n\n" + data['writing_styles'] + "\n\nand formatting styles:\n\n" + data['formatting_styles'] + "\n\n" \
-                 "Given the writer's persona and preferences above, Your task is to write a new creative writing paragraph of at most 5 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
+                 "Output a Python list of strings, where each line is a string. Do NOT change the names before the colon mark. No other words."
+    else:
+        raise ValueError("Invalid action", action)
+    return prompt
+
+
+def prompt_for_content_generation(data, action):
+    if action == 'write_new_sample':
+        prompt = "The writer's conversation record with the writing assistant:\n\n" + data + "\n\n" \
+                 "Given the conversation above, your task is to write a new creative writing paragraph of at most 5 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
                  "You should simply output the new paragraph as a string. No other words."
+    elif action == 'write_violating_sample':
+        prompt = "The writer's conversation record with the writing assistant:\n\n" + data + "\n\n" \
+                 "You have written a paragraph that aligns with the personas. Next, given the same conversation, please write a new creative writing paragraph of at most 5 sentences that, on-purposely, violates the personas, likes, and dislikes in writing and formatting styles." \
+                 "You should simply output the new paragraph as a string. No other words."
+    else:
+        raise ValueError("Invalid action", action)
+    return prompt
+
+
+def prompt_for_evaluating_content(data, action):
+    if action == 'evaluate_aligned':
+        prompt = "Here is the writer's persona:\n\n" + data['persona'] + "\n\nThe writer's likes and dislikes on writing styles:\n\n" + data['writing_styles'] + "\n\nand formatting styles:\n\n" + data['formatting_styles'] + "\n\n" \
+                 "Paragraph 1:\n\n" + data['paragraph1'] + "\n\nParagraph 2:\n\n" + data['paragraph2'] + "\n\n" \
+                 "Your tasks are to find how many sentences in Paragraph 1 and Paragraph 2 respectively that align with the authors' persona, likes, and dislikes. " \
+                 'Only mention those that are aligned, using a JSON file with two keys "Paragraph_1" and "Paragraph_2", whose value is a list of Python dictionary.' \
+                 'For each sentence included in the list, add the key "Reason" BEFORE the "Sentence"m explaining why, i.e., what persona, likes, and dislikes it is aligned with.' \
+                 "Here is the template your output should follow:\n\n" \
+                 "{\n" \
+                 '  "Paragraph_1": "[\n' \
+                 "      {\n" \
+                 '          "Reason": "xxx",\n' \
+                 '          "Sentence": "yyy"\n' \
+                 "      },\n...\n" \
+                 "  ],\n" \
+                 '  "Paragraph_2": "[\n' \
+                 "      {\n" \
+                 '          "Reason": "xxx",\n' \
+                 '          "Sentence": "yyy"\n' \
+                 "      },\n...\n" \
+                 "  ],\n" \
+                 "}" \
+                 "Do NOT modify the names of these keys. No other words."
+    elif action == 'evaluate_violated':
+        prompt = "Same as above, but list sentences that VIOLATE this writer's persona, likes, and dislikes, if any. You should follow the same template below:\n\n" \
+                 "{\n" \
+                 '  "Paragraph_1": "[\n' \
+                 "      {\n" \
+                 '          "Reason": "xxx",\n' \
+                 '          "Sentence": "yyy"\n' \
+                 "      },\n...\n" \
+                 "  ],\n" \
+                 '  "Paragraph_2": "[\n' \
+                 "      {\n" \
+                 '          "Reason": "xxx",\n' \
+                 '          "Sentence": "yyy"\n' \
+                 "      },\n...\n" \
+                 "  ],\n" \
+                 "}" \
+                 "Do NOT modify the names of these keys. No other words."
     else:
         raise ValueError("Invalid action", action)
     return prompt

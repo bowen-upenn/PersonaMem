@@ -56,15 +56,35 @@ def load_one_source_data(all_source_files, context):
         return source_data
 
 
-def rewrite_sample(LLM, persona, writing_sample, verbose):
-    # Rewrite the writing sample to be persona-aligned
-    preferences = LLM.query_llm(step='new_content', data=persona, action='preferences', verbose=verbose)
-    preferences = process_json_from_api(preferences)
-    writing_styles = preferences.get("Writing_styles", "")
-    formatting_styles = preferences.get("Formatting_styles", "")
+def process_json_from_api(response):
+    # Parse JSON from API response
+    # print('response before:', response)
+    response = response.strip("```json").strip("```python").strip("```").strip()
 
-    updated_writing_sample = LLM.query_llm(step='new_content', data=writing_sample, action='rewrite_from_persona', verbose=verbose)
-    return writing_styles, formatting_styles, updated_writing_sample
+    # Replace single quotes around keys and values, ignoring inner single quotes
+    # Replace single quotes with double quotes, excluding possessive cases
+    response = re.sub(
+        r"(?<!\w)'|'(?!\w)",  # Match single quotes not part of possessive forms
+        '"',
+        response
+    )
+    # response = response.replace("'", '"')
+    # response = re.sub(r"'(\w+)':", r'"\1":', response)
+    # response = re.sub(r":\s'([^']*)'", r': "\1"', response)
+    # print('response after:', response)
+    response = json.loads(response)
+    return response
+
+
+# def rewrite_sample(LLM, persona, writing_sample, verbose):
+#     # Rewrite the writing sample to be persona-aligned
+#     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=verbose)
+#     # preferences = process_json_from_api(preferences)
+#     # writing_styles = preferences.get("Writing_styles", "")
+#     # formatting_styles = preferences.get("Formatting_styles", "")
+#
+#     updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=writing_sample, action='rewrite_from_persona', verbose=verbose)
+#     return preferences, updated_writing_sample
 
 
 def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False):
@@ -166,19 +186,6 @@ def find_most_similar_event(SentenceBERT, side_note_sentence, related_data):
     return most_similar_data
 
 
-def process_json_from_api(response):
-    # Parse JSON from API response
-    # print('response before:', response)
-    response = response.strip("```json").strip("```python").strip("```").strip()
-
-    # Replace single quotes around keys and values, ignoring inner single quotes
-    response = re.sub(r"'(\w+)':", r'"\1":', response)
-    response = re.sub(r":\s'([^']*)'", r': "\1"', response)
-    # print('response after:', response)
-    response = json.loads(response)
-    return response
-
-
 def clean_raw_writing_data(source_file, output_file):
     try:
         # Read raw data from the file
@@ -199,3 +206,17 @@ def clean_raw_writing_data(source_file, output_file):
         print("Error: The source file does not contain valid JSON.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+
+
+def load_all_writing_data():
+    directory_path = "data/output/"
+    writing_data_files = [
+        filename for filename in os.listdir(directory_path) if "writing" in filename
+    ]
+    return writing_data_files
+
+
+def remove_side_notes(conversation):
+    pattern = re.compile(r'^\s*["\']?\[?(?:side[ _]?notes?|Side[ _]?Notes?)\]?[^\]]*[:,\]].*$', re.IGNORECASE | re.MULTILINE)
+    cleaned_conversation = re.sub(pattern, '', conversation)
+    return cleaned_conversation
