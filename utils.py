@@ -220,3 +220,32 @@ def remove_side_notes(conversation):
     pattern = re.compile(r'^\s*["\']?\[?(?:side[ _]?notes?)\]?[^\]]*[:,\]].*$', re.IGNORECASE | re.MULTILINE)
     cleaned_conversation = [line for line in conversation if not pattern.match(line.lower())]
     return cleaned_conversation
+
+
+def find_existing_persona_files(idx_persona):
+    # Dynamically retrieve all subdirectories in './data/output'
+    output_base_dir = "./data/output"
+    context_dirs = [os.path.join(output_base_dir, d) for d in os.listdir(output_base_dir) if os.path.isdir(os.path.join(output_base_dir, d))]
+
+    # Find an existing file belonging to the same persona index
+    matching_file = None
+    for context_dir in context_dirs:
+        for file_name in os.listdir(context_dir):
+            if f"_persona{idx_persona}_" in file_name:
+                matching_file = os.path.join(context_dir, file_name)
+                break
+        if matching_file:
+            break
+
+    if matching_file:
+        with open(existing_files[0], 'r') as file:
+            data = json.load(file)
+        persona = data["Original Persona"]
+        expanded_persona = data["Expanded Persona"]
+        start_time = next(iter(data["Init General Personal History"].keys()))  # Get the first timestamp
+
+        return {'persona': persona, 'expanded_persona': expanded_persona, 'start_time': start_time}
+    else:
+        return None
+
+

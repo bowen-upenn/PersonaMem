@@ -19,14 +19,20 @@ def inference(args):
 
     for idx_persona in range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas'])):
         # Load a random persona
-        random_row = random.choice(all_personas)
-        persona = random_row.strip()[13:-2]  # Remove prefix '{"persona":' and suffix '"}'
-        if args['inference']['verbose']:
-            print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}{persona}')
+        found = utils.find_existing_persona_files(idx_persona)
+        if found:
+            # Ensure that every data file with the same idx_persona share the same persona
+            persona, expanded_persona, start_time = found['persona'], found['expanded_persona'], found['start_time']
+        else:
+            # Create a new persona for the new idx_persona
+            random_row = random.choice(all_personas)
+            persona = random_row.strip()[13:-2]  # Remove prefix '{"persona":' and suffix '"}'
+            if args['inference']['verbose']:
+                print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}{persona}')
 
-        # Expand the persona to at least five sentences
-        start_time = utils.pick_a_random_time()
-        expanded_persona = LLM.query_llm(step='expand_persona', persona=persona, start_time=start_time, verbose=args['inference']['verbose'])
+            # Expand the persona to at least five sentences
+            start_time = utils.pick_a_random_time()
+            expanded_persona = LLM.query_llm(step='expand_persona', persona=persona, start_time=start_time, verbose=args['inference']['verbose'])
 
         # Clean up the names of contexts
         all_contexts = [ctx.strip() for ctx in args['datasets']['context']]
