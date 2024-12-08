@@ -53,12 +53,16 @@ class QueryLLM:
         self.second_expand_personal_history = None
         self.third_personal_history = None
 
-    def create_a_thread(self):
-        self.thread_persona = self.client.beta.threads.create()
-        self.thread_conversation = self.client.beta.threads.create()
-        self.thread_preparing_new_content = self.client.beta.threads.create()
-        self.thread_new_content = self.client.beta.threads.create()
-        self.thread_eval_new_content = self.client.beta.threads.create()
+    def create_a_thread(self, step):
+        if step == 'conversation':
+            self.thread_persona = self.client.beta.threads.create()
+            self.thread_conversation = self.client.beta.threads.create()
+            self.thread_preparing_new_content = self.client.beta.threads.create()
+        elif step == 'qa':
+            self.thread_new_content = self.client.beta.threads.create()
+            self.thread_eval_new_content = self.client.beta.threads.create()
+        else:
+            raise ValueError(f'Invalid step: {step}')
 
     def query_llm(self, step='source_data', persona=None, context=None, seed=None, data=None, action=None, idx_context=0, start_time=None, verbose=False):
         if step == 'source_data':

@@ -425,12 +425,15 @@ def qa_generative(LLM, data_path, verbose):
         curr_data = json.load(f)
     conversation = curr_data.get("Conversation", [])
     conversation = utils.remove_side_notes(conversation)
+    conversation = "\n".join(conversation)
 
     new_writing_sample = LLM.query_llm(step='new_content', data=conversation, action='write_new_sample', verbose=verbose)
     violated_writing_styles = LLM.query_llm(step='new_content', data=conversation, action='write_violating_sample', verbose=verbose)
 
     # Evaluate the new contents
-    aligned_results = LLM.query_llm(step='eval_new_content', data={'persona': persona, 'writing_styles': writing_styles, 'formatting_styles': formatting_styles,
+    persona = curr_data.get("Expanded Persona", "")
+    preferences = curr_data.get("Writing and Formatting Styles", "")
+    aligned_results = LLM.query_llm(step='eval_new_content', data={'persona': persona, 'preferences': preferences,
                                                                    'paragraph1': new_writing_sample, 'paragraph2': violated_writing_styles}, action='evaluate_aligned', verbose=verbose)
     violated_results = LLM.query_llm(step='eval_new_content', action='evaluate_violated', verbose=verbose)
 
@@ -442,37 +445,37 @@ def qa_generative(LLM, data_path, verbose):
 
 def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose):
     # Load a random creative writing sample
-    source_data = utils.load_one_source_data(all_source_files, curr_context='writing')
+    source_data = utils.load_one_source_data(all_source_files, context='writing')
 
-    # Load personas from the current file and three other files
+    # Load personas from the current file and three other random files
     assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
-    all_data_paths = [i for i in range(len(writing_files)) if writing_files[i] != data_path]
+    all_data_paths = random.sample(['./data/output/writing/'+another_path for another_path in all_writing_files
+                                    if another_path != data_path and another_path.rsplit('_', 1)[-2] != data_path.rsplit('_', 1)[-2]], 3)
     all_data_paths = [data_path] + all_data_paths   # The first one will be the correct answer
 
-    keys_of_interest = ["Expanded Persona", "Writing Styles", "Formatting Styles", "Updated Writing Sample"]
-
+    persona = None
     new_writing_samples = []    # The first one will be the correct answer
-    personas = []
-    for curr_data_path in all_data_paths:
+    for i, curr_data_path in enumerate(all_data_paths):
         with open(curr_data_path, "r", encoding="utf-8") as f:
             curr_data = json.load(f)
 
-        curr_persona = {key: curr_data.get(key) for key in keys_of_interest}
-        personas.append(curr_persona)
-        new_writing_sample = LLM.query_llm(step='new_content', data={'persona': curr_persona['Expanded Persona'], 'writing_styles': curr_persona['Writing Styles'], 'formatting_styles': curr_persona['Formatting Styles'],
-                                                                     'source_data': source_data}, action='write_new_sample_oracle', verbose=verbose)
-        new_writing_samples.append(new_writing_sample)
+        new_writing_samples.append(LLM.query_llm(step='new_content', data={'persona': curr_data.get('Expanded Persona'), 'preferences': curr_data.get('Writing and Formatting Styles'), 'source_data': source_data},
+                                                 action='write_new_sample_oracle', verbose=False))
+        if i == 0:
+            persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
 
-    print(f'{utils.Colors.OKGREEN}Persona:{utils.Colors.ENDC}')
-    print(json.dumps(personas[0], indent=4))
-    print(f'{utils.Colors.OKGREEN}Correct Writing Samples:{utils.Colors.ENDC}')
-    print(new_writing_samples[0])
-    print(f'{utils.Colors.OKGREEN}Other Writing Samples:{utils.Colors.ENDC}')
-    print(json.dumps(new_writing_samples[1:], indent=4))
+    qa_entry = {
+        "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
+        "Correct_Answer": new_writing_samples[0],
+        "Incorrect_Answers": new_writing_samples[1:],
+        "Type": "new_content_discriminative"
+    }
+    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+    print(json.dumps(qa_entry, indent=4))
 
 
 def evaluate_content_generations(LLM, data_path, all_source_files, all_writing_files, verbose):
-    qa_generative(LLM, data_path, verbose)
+    # qa_generative(LLM, data_path, verbose)
     qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose)
 
 
@@ -487,20 +490,23 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs')
+    parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs. Not applicable for the "writing" context.')
     parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
-    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data')
+    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data. Not applicable for the "writing" context.')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
-    cmd_args.data = './data/output/conversation_' + cmd_args.data + '.json'
+
+    match = re.match(r'^([^_]+)_', cmd_args.data)
+    cmd_args.data = './data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json'
 
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
     LLM = QueryLLM(args)
+    LLM.create_a_thread(step='qa')
 
     if 'writing' in cmd_args.data:
-        all_source_files = utils.load_all_source_data(source_dir, curr_context)
+        all_source_files = utils.load_all_source_data(args['datasets']['writing_source_dir'], 'writing')
         all_writing_files = utils.load_all_writing_data()
         evaluate_content_generations(LLM, data_path=cmd_args.data, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
     else:

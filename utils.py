@@ -209,7 +209,7 @@ def clean_raw_writing_data(source_file, output_file):
 
 
 def load_all_writing_data():
-    directory_path = "data/output/"
+    directory_path = "data/output/writing/"
     writing_data_files = [
         filename for filename in os.listdir(directory_path) if "writing" in filename
     ]
@@ -217,6 +217,6 @@ def load_all_writing_data():
 
 
 def remove_side_notes(conversation):
-    pattern = re.compile(r'^\s*["\']?\[?(?:side[ _]?notes?|Side[ _]?Notes?)\]?[^\]]*[:,\]].*$', re.IGNORECASE | re.MULTILINE)
-    cleaned_conversation = re.sub(pattern, '', conversation)
+    pattern = re.compile(r'^\s*["\']?\[?(?:side[ _]?notes?)\]?[^\]]*[:,\]].*$', re.IGNORECASE | re.MULTILINE)
+    cleaned_conversation = [line for line in conversation if not pattern.match(line.lower())]
     return cleaned_conversation

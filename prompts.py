@@ -234,6 +234,10 @@ def prompt_for_content_generation(data, action):
         prompt = "The writer's conversation record with the writing assistant:\n\n" + data + "\n\n" \
                  "You have written a paragraph that aligns with the personas. Next, given the same conversation, please write a new creative writing paragraph of at most 5 sentences that, on-purposely, violates the personas, likes, and dislikes in writing and formatting styles." \
                  "You should simply output the new paragraph as a string. No other words."
+    elif action == 'write_new_sample_oracle':
+        prompt = "The writer's persona:\n\n" + data['persona'] + "\n\nand the likes and dislikes in writing and formatting styles:\n\n" + data['preferences'] + "\n\n" \
+                 "Given the information above about the writer, your task is to write a new creative writing paragraph of at most 5 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
+                 "You should simply output the new paragraph as a string. No other words."
     else:
         raise ValueError("Invalid action", action)
     return prompt
@@ -241,7 +245,7 @@ def prompt_for_content_generation(data, action):
 
 def prompt_for_evaluating_content(data, action):
     if action == 'evaluate_aligned':
-        prompt = "Here is the writer's persona:\n\n" + data['persona'] + "\n\nThe writer's likes and dislikes on writing styles:\n\n" + data['writing_styles'] + "\n\nand formatting styles:\n\n" + data['formatting_styles'] + "\n\n" \
+        prompt = "Here is the writer's persona:\n\n" + data['persona'] + "\n\nThe writer's likes and dislikes on writing and formatting styles:\n\n" + data['preferences'] + "\n\n" \
                  "Paragraph 1:\n\n" + data['paragraph1'] + "\n\nParagraph 2:\n\n" + data['paragraph2'] + "\n\n" \
                  "Your tasks are to find how many sentences in Paragraph 1 and Paragraph 2 respectively that align with the authors' persona, likes, and dislikes. " \
                  'Only mention those that are aligned, using a JSON file with two keys "Paragraph_1" and "Paragraph_2", whose value is a list of Python dictionary.' \

@@ -62,7 +62,7 @@ def inference(args):
                 utils.append_json_to_file(curr_context, output_file_path, curr_data_name='Context', parse_json=False)
                 print(f'{utils.Colors.OKGREEN}Output file path: {output_file_path}{utils.Colors.ENDC}')
 
-                LLM.create_a_thread()
+                LLM.create_a_thread(step='conversation')
 
                 # Load a random source data to the LLM as a background memory about the context
                 source_data = utils.load_one_source_data(all_source_files, curr_context)
@@ -74,6 +74,10 @@ def inference(args):
                     # Convert the writing sample into a conversation
                     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=args['inference']['verbose'])
                     updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', verbose=args['inference']['verbose'])
+                    if 'python' in preferences or 'plaintext' in preferences:
+                        preferences = preferences.strip("```python").strip("```plaintext").strip()
+                    if 'python' in updated_writing_sample or 'plaintext' in updated_writing_sample:
+                        updated_writing_sample = updated_writing_sample.strip("```python").strip("```plaintext").strip()
 
                     # writing_styles, formatting_styles, updated_writing_sample = utils.rewrite_sample(LLM, persona, source_data, verbose=args['inference']['verbose'])
                     conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
