@@ -40,7 +40,7 @@ def load_all_source_data(source_dir, context):
         return all_source_files
 
 
-def load_one_source_data(all_source_files, context):
+def load_one_source_data(source_dir, all_source_files, context):
     # Load a random source file from the real-world data
     if context == 'writing':
         data, prompts = all_source_files['data'], all_source_files['prompts']

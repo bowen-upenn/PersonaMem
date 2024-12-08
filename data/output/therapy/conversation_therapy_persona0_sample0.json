@@ -1,729 +1,769 @@
 {
-    "Original Persona": "A backend Ruby on Rails developer who is familiar with the Administrate gem for building rails dashboards",
-    "Expanded Persona": "**Name:** Eleanor Hughes  \n**Gender Identity:** Female  \n**Racial Identity:** Caucasian  \n\nEleanor is a seasoned Ruby on Rails backend developer born in 1927, renowned for her expertise with the Administrate gem, which she skillfully uses to build intuitive and efficient Rails dashboards. Her career spans several decades, giving her a wealth of experience in software development and a deep appreciation for how technology has evolved over time. Eleanor is passionate about mentoring younger developers, finding joy in sharing the practical wisdom she has gathered through the years. Despite her age, she embraces modern technology with enthusiasm, continually updating her skills to remain at the forefront of backend development. Outside of her professional life, Eleanor enjoys a variety of activities that foster both her intellectual curiosity and love for community.\n\n**Hobbies:**\n- Gardening, especially cultivating heirloom vegetables and flowers\n- Reading historical novels and biographies\n- Knitting and crocheting intricate patterns for friends and family\n- Playing chess with members of her local community club\n- Attending classical music concerts and operas\n\n**Dislikes:**\n- The latest pop music trends, preferring classical and jazz\n- Cooking shows, as she prefers hands-on cooking experience\n- Social media, finding face-to-face interactions more rewarding\n- High-energy action movies, favoring dramas and documentaries\n- Shopping for new gadgets, as she values craftsmanship and reliability in older tools",
+    "Original Persona": "A teenager with a passion for understanding their own behavior and motivations",
+    "Expanded Persona": "**Name:** Jordan Ellis  \n**Gender Identity:** Non-binary  \n**Racial Identity:** Mixed race (Asian and Caucasian)\n\n**Expanded Persona:**  \nJordan Ellis, born in 1980, is a thoughtful individual who has always had a keen interest in understanding their own behavior and motivations. They possess a natural curiosity about the workings of the human mind, which has led them to explore various fields, including psychology and philosophy. Despite being in their forties, they maintain a youthful spirit and continue to nurture their inner teenager's desire for self-discovery. Jordan enjoys having deep conversations and often finds themselves pondering the nuances of human emotions and interpersonal relationships. Their empathetic nature and reflective mindset make them an excellent listener and a trusted confidant among their friends.\n\n**Hobbies:**  \n- Meditation and mindfulness practices  \n- Reading books on psychology and self-help  \n- Hiking and connecting with nature  \n- Journaling and reflective writing  \n- Painting and exploring creative expression  \n\n**Things Jordan Dislikes:**  \n- Watching reality TV shows  \n- Attending large and loud parties  \n- Following strict daily routines  \n- Shopping at crowded malls  \n- Engaging with pop culture trends",
     "Context": "therapy",
     "Init General Personal History": {
-        "08/10/1945": {
-            "Event": "Eleanor completes a complex knitting project for a family member.",
+        "09/19/1998": {
+            "Event": "Jordan started practicing meditation regularly to enhance mindfulness.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Meditation and mindfulness practices"
+        },
+        "02/15/1999": {
+            "Event": "Jordan attended a book club discussion on a popular psychology book, sparking an interest in the field.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading books on psychology and self-help"
+        },
+        "06/03/2000": {
+            "Event": "Joined a hiking group to explore nearby trails, developing a connection with nature.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and connecting with nature"
+        },
+        "08/22/2001": {
+            "Event": "Jordan spent today journaling about personal growth experiences.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Knitting and crocheting intricate patterns for friends and family"
+            "[Fact] Likes": "Journaling and reflective writing"
         },
-        "10/15/1945": {
-            "Event": "Wins a local chess tournament, enhancing her reputation in the community chess club.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Playing chess with members of her local community club"
-        },
-        "03/21/1946": {
-            "Event": "Reads a historical novel about the Napoleonic Wars.",
+        "11/12/2001": {
+            "Event": "Today, Jordan visited an art studio to improve their painting skills.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Reading historical novels and biographies"
+            "[Fact] Likes": "Painting and exploring creative expression"
         },
-        "09/03/1946": {
-            "Event": "Starts a new mentoring program at work to help junior developers learn Ruby on Rails.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Mentoring younger developers"
-        },
-        "05/12/1947": {
-            "Event": "Attends a chamber music concert with friends, enjoying the compositions of Beethoven.",
+        "03/19/2002": {
+            "Event": "Decided to skip a party due to the stress of large crowds.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Attending classical music concerts and operas"
+            "[Fact] Dislikes": "Attending large and loud parties"
         },
-        "07/24/1947": {
-            "Event": "Releases a new Rails feature using the Administrate gem, leading to positive feedback from users.",
+        "09/20/2003": {
+            "Event": "Began a new job that allows for flexibility, moving away from rigid schedules.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Her expertise with the Administrate gem in Rails development"
+            "[Fact] Dislikes": "Following strict daily routines"
         },
-        "11/02/1948": {
-            "Event": "Completes planting her heirloom vegetable garden for the upcoming season.",
+        "07/14/2004": {
+            "Event": "Jordan spent the day reading a new book on self-help strategies instead of watching TV.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Gardening, especially cultivating heirloom vegetables and flowers"
+            "[Fact] Dislikes": "Watching reality TV shows"
         },
-        "04/16/1949": {
-            "Event": "Avoids purchasing a new gadget, instead opting to repair her reliable old typewriter.",
+        "10/11/2005": {
+            "Event": "Started experimenting with philosophical concepts in their reflective writing.",
             "Category": "Long-Term",
-            "[Fact] Dislikes": "Shopping for new gadgets, valuing craftsmanship and reliability in older tools"
+            "[Fact] Likes": "Journaling and reflective writing"
         },
-        "06/08/1949": {
-            "Event": "She turns down an invitation to a movie night featuring a high-energy action film, preferring to watch a historical documentary at home.",
+        "01/29/2006": {
+            "Event": "Went to a nature retreat focusing on meditation and mindfulness.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Meditation and mindfulness practices"
+        },
+        "05/17/2007": {
+            "Event": "Avoided visiting a crowded mall by shopping online for essentials.",
             "Category": "Short-Term",
-            "[Fact] Dislikes": "High-energy action movies, favoring dramas and documentaries"
+            "[Fact] Dislikes": "Shopping at crowded malls"
         },
-        "02/15/1950": {
-            "Event": "Participates in a community game of chess every Sunday, contributing significantly to strategies.",
+        "12/21/2008": {
+            "Event": "Engaged in a deep conversation about human emotions, strengthening friendships.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Playing chess with members of her local community club"
+            "[Fact] Likes": "Having deep conversations"
         },
-        "12/30/1950": {
-            "Event": "Works on a complex coding problem late into the night, enjoying the challenge and the opportunity to improve.",
+        "11/15/2009": {
+            "Event": "Spent the weekend exploring artistic expression and painting new pieces.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Her passion for backend development and continual skill update"
+            "[Fact] Likes": "Painting and exploring creative expression"
         },
-        "01/17/1951": {
-            "Event": "Declines to watch a trending cooking show, opting to experiment with new recipes in her kitchen instead.",
+        "03/08/2010": {
+            "Event": "Frequently avoids pop culture shows and trends, focusing on meaningful content.",
             "Category": "Long-Term",
-            "[Fact] Dislikes": "Cooking shows, as she prefers hands-on cooking experience"
-        },
-        "04/04/1951": {
-            "Event": "Mentors a software engineering intern, finding joy in explaining complex systems clearly.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Mentoring younger developers"
-        },
-        "08/22/1951": {
-            "Event": "Attends an opera and appreciates the intricate orchestral arrangements.",
-            "Category": "Short-Term",
-            "[Fact] Likes": "Attending classical music concerts and operas"
-        },
-        "10/30/1952": {
-            "Event": "Continues her self-study of the latest Ruby updates to enhance her development skills.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Embraces modern technology and continually updates skills"
+            "[Fact] Dislikes": "Engaging with pop culture trends"
         }
     },
     "General Personal History Next Week": {
-        "11/01/1952": {
-            "Event": "Surprising herself, Eleanor attends a seminar about social media marketing and finds it interesting.",
+        "01/01/2011": {
+            "Event": "Jordan decided to binge-watch a new reality TV series out of curiosity.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "She realized the power of social media in reaching out to a larger audience for her coding tutorials.",
-            "[Updated Fact] Likes": "Social media, for its potential in educational outreach",
-            "[Old Fact] Dislikes": "Social media, finding face-to-face interactions more rewarding",
-            "[Old Event Date]": "04/16/1949",
-            "[Old Event]": "Starts a new mentoring program at work to help junior developers learn Ruby on Rails."
+            "[Reasons of Change]": "Wanted to understand why their friends find it entertaining and try connecting on a social level.",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "07/14/2004",
+            "[Old Event]": "Jordan spent the day reading a new book on self-help strategies instead of watching TV."
         },
-        "11/02/1952": {
-            "Event": "Eleanor decides to indulge in a cooking show marathon, contrary to her usual preference.",
+        "01/02/2011": {
+            "Event": "Spent the afternoon at a crowded mall exploring new shops.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Seeked inspiration for her recipe experiments and enjoyed the competitive aspect of cooking shows.",
-            "[Updated Fact] Likes": "Cooking shows, appreciating their entertainment value and inspiration",
-            "[Old Fact] Dislikes": "Cooking shows, as she prefers hands-on cooking experience",
-            "[Old Event Date]": "01/17/1951",
-            "[Old Event]": "Declines to watch a trending cooking show, opting to experiment with new recipes in her kitchen instead."
+            "[Reasons of Change]": "Was helping a friend choose a gift, making the experience more enjoyable.",
+            "[Updated Fact] Likes": "Shopping at crowded malls",
+            "[Old Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Event Date]": "05/17/2007",
+            "[Old Event]": "Avoided visiting a crowded mall by shopping online for essentials."
         },
-        "11/03/1952": {
-            "Event": "Works through a new high-energy action film chosen by friends and surprisingly finds herself engrossed in it.",
+        "01/03/2011": {
+            "Event": "Jordan returned to their deep conversation habit in the evening.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The film's narrative drew parallels with the historical documentaries she likes, blending fact and fiction effectively.",
-            "[Updated Fact] Likes": "High-energy action movies with strong historical narratives",
-            "[Old Fact] Dislikes": "High-energy action movies, favoring dramas and documentaries",
-            "[Old Event Date]": "06/08/1949",
-            "[Old Event]": "She turns down an invitation to a movie night featuring a high-energy action film, preferring to watch a historical documentary at home."
+            "[Fact] Likes": "Having deep conversations"
         },
-        "11/04/1952": {
-            "Event": "Returns to appreciating dramas and documentaries, feeling more relaxed by their slower pace.",
+        "01/04/2011": {
+            "Event": "Went to a large party to celebrate a friend's birthday.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Quickly grew tired of the intensity of action films and returned to her comfort zone.",
-            "[Updated Fact] Dislikes": "High-energy action movies, favoring dramas and documentaries",
-            "[Old Fact] Likes": "High-energy action movies with strong historical narratives",
-            "[Old Event Date]": "11/03/1952",
-            "[Old Event]": "Works through a new high-energy action film chosen by friends and surprisingly finds herself engrossed in it."
+            "[Reasons of Change]": "Wanted to show support for their friend's milestone.",
+            "[Updated Fact] Likes": "Attending large and loud parties",
+            "[Old Fact] Dislikes": "Attending large and loud parties",
+            "[Old Event Date]": "03/19/2002",
+            "[Old Event]": "Decided to skip a party due to the stress of large crowds."
         },
-        "11/05/1952": {
-            "Event": "Crafted her first internet-based teaching module to mentor a junior developer remotely.",
+        "01/05/2011": {
+            "Event": "Participated in discussions about pop culture trends in the workplace.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Embracing modern technology and remote mentorship"
+            "[Reasons of Change]": "Realized it's important to engage in these discussions to form better workplace relationships.",
+            "[Updated Fact] Likes": "Engaging with pop culture trends",
+            "[Old Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Event Date]": "03/08/2010",
+            "[Old Event]": "Frequently avoids pop culture shows and trends, focusing on meaningful content."
         },
-        "11/06/1952": {
-            "Event": "Goes back to face-to-face mentoring, finding more satisfaction in direct interaction.",
+        "01/06/2011": {
+            "Event": "Organized a meditation session for colleagues to promote wellness at work.",
             "Category": "Long-Term",
-            "[Reasons of Change]": "Missed the immediate feedback and personal connection that in-person mentoring offers.",
-            "[Updated Fact] Likes": "Face-to-face mentoring",
-            "[Old Fact] Likes": "Embracing modern technology and remote mentorship",
-            "[Old Event Date]": "11/05/1952",
-            "[Old Event]": "Crafted her first internet-based teaching module to mentor a junior developer remotely."
+            "[Fact] Likes": "Meditation and mindfulness practices"
         },
-        "11/07/1952": {
-            "Event": "Attends a coding conference, enjoying the discussions about emerging programming paradigms.",
+        "01/07/2011": {
+            "Event": "Reaffirmed passion for hiking during a weekend nature retreat.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Engaging with the latest trends in programming"
+            "[Fact] Likes": "Hiking and connecting with nature"
         },
-        "11/08/1952": {
-            "Event": "Repairs her old vintage radio instead of investing in a new stereo system, loving the challenge and nostalgia.",
+        "01/08/2011": {
+            "Event": "Spent the day painting a new art piece for a community art show.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Valuing craftsmanship and reliability in older tools"
+            "[Fact] Likes": "Painting and exploring creative expression"
         },
-        "11/09/1952": {
-            "Event": "Begins to appreciate some modern pop music during a community event.",
-            "Category": "Short-Term",
-            "[Reasons of Change]": "A friend's band played pop music in a style that resonated with her love for classical compositions.",
-            "[Updated Fact] Likes": "Selective modern pop music with classical influences",
-            "[Old Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Event Date]": "05/12/1947",
-            "[Old Event]": "Attends a chamber music concert with friends, enjoying the compositions of Beethoven."
-        },
-        "11/10/1952": {
-            "Event": "Decides to spend her evening helping a friend optimize their Rails dashboard using the Administrate gem.",
+        "01/09/2011": {
+            "Event": "Returned to disliking reality TV, found it unfulfilling.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Her expertise with the Administrate gem in Rails development"
+            "[Reasons of Change]": "Realized that the entertainment value did not match personal goals of growth and learning.",
+            "[Updated Fact] Dislikes": "Watching reality TV shows",
+            "[Old Fact] Likes": "Watching reality TV shows",
+            "[Old Event Date]": "01/01/2011",
+            "[Old Event]": "Jordan decided to binge-watch a new reality TV series out of curiosity."
+        },
+        "01/10/2011": {
+            "Event": "Another visit to the crowded mall was avoided for online shopping.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Previous help for a friend was an exception; generally dislikes the environment.",
+            "[Updated Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Fact] Likes": "Shopping at crowded malls",
+            "[Old Event Date]": "01/02/2011",
+            "[Old Event]": "Spent the afternoon at a crowded mall exploring new shops."
         }
     },
     "General Personal History Next Month": {
-        "11/11/1952": {
-            "Event": "Eleanor decides to cook using a recipe she saw on a cooking show, which results in her appreciation for televised culinary tips.",
-            "Category": "Long-Term",
-            "[Reasons of Change]": "Realized cooking shows could enhance her skills through diverse culinary techniques.",
-            "[Updated Fact] Likes": "Cooking shows as educational tools",
-            "[Old Fact] Dislikes": "Cooking shows, as she prefers hands-on cooking experience",
-            "[Old Event Date]": "11/02/1952",
-            "[Old Event]": "Eleanor decides to indulge in a cooking show marathon, contrary to her usual preference."
-        },
-        "11/15/1952": {
-            "Event": "Struggles with a modern pop song that's trending, finding solace in her beloved classical music instead.",
+        "01/15/2011": {
+            "Event": "Jordan spontaneously joined a loud street festival this weekend.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The overplayed modern pop song lacked the depth she appreciates in classical compositions.",
-            "[Updated Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Fact] Likes": "Selective modern pop music with classical influences",
-            "[Old Event Date]": "11/09/1952",
-            "[Old Event]": "Begins to appreciate some modern pop music during a community event."
+            "[Reasons of Change]": "Wanted to capture the vibrant street scenes for a new painting inspiration.",
+            "[Updated Fact] Likes": "Attending large and loud parties",
+            "[Old Fact] Dislikes": "Attending large and loud parties",
+            "[Old Event Date]": "01/04/2011",
+            "[Old Event]": "Went to a large party to celebrate a friend's birthday."
         },
-        "11/20/1952": {
-            "Event": "Attends a historical movie premiere instead of a documentary, admiring how it blends entertainment with facts.",
+        "01/18/2011": {
+            "Event": "Found value in watching a critically acclaimed reality series recommended by a friend.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Interested in how historical events could be portrayed with dramatic flair without losing authenticity.",
-            "[Updated Fact] Likes": "High-energy historical movies",
-            "[Old Fact] Dislikes": "High-energy action movies, favoring dramas and documentaries",
-            "[Old Event Date]": "11/04/1952",
-            "[Old Event]": "Returns to appreciating dramas and documentaries, feeling more relaxed by their slower pace."
+            "[Reasons of Change]": "Hoping to draw ethical and psychological discussions from the well-reviewed show.",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "01/09/2011",
+            "[Old Event]": "Returned to disliking reality TV, found it unfulfilling."
         },
-        "11/23/1952": {
-            "Event": "Participates in an online coding tournament, appreciating the convenience and engagement of virtual events.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Engaging with coding communities online"
-        },
-        "11/25/1952": {
-            "Event": "Volunteers to teach a group of young developers about the Administrate gem via a recorded video session.",
-            "Category": "Long-Term",
-            "[Reasons of Change]": "Recognized the accessibility video tutorials provide for ongoing learning.",
-            "[Updated Fact] Likes": "Remote mentorship via video tutorials",
-            "[Old Fact] Likes": "Face-to-face mentoring",
-            "[Old Event Date]": "11/06/1952",
-            "[Old Event]": "Goes back to face-to-face mentoring, finding more satisfaction in direct interaction."
-        },
-        "11/28/1952": {
-            "Event": "Eleanor visits a tech expo and finds herself seriously considering buying a new gadget that could enhance her work.",
+        "01/20/2011": {
+            "Event": "Enjoyed shopping at a bustling art fair and acquiring unique crafts.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Innovative features of the gadget could streamline her coding processes.",
-            "[Updated Fact] Likes": "Considering new gadgets for their usefulness",
-            "[Old Fact] Dislikes": "Shopping for new gadgets, valuing craftsmanship and reliability in older tools",
-            "[Old Event Date]": "11/08/1952",
-            "[Old Event]": "Repairs her old vintage radio instead of investing in a new stereo system, loving the challenge and nostalgia."
+            "[Reasons of Change]": "Appreciating the creative atmosphere and supporting local artists.",
+            "[Updated Fact] Likes": "Shopping at crowded malls",
+            "[Old Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Event Date]": "01/10/2011",
+            "[Old Event]": "Another visit to the crowded mall was avoided for online shopping."
         },
-        "12/01/1952": {
-            "Event": "Reconnects with her community chess club after a short break, enjoying the strategy discussions.",
+        "01/23/2011": {
+            "Event": "Organized and led a weekend mindfulness retreat in a nearby forest.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Playing chess with members of her local community club"
+            "[Fact] Likes": "Meditation and mindfulness practices"
         },
-        "12/05/1952": {
-            "Event": "Finds herself frustrated with social media and limits her usage, prioritizing in-person interactions.",
+        "01/25/2011": {
+            "Event": "Spent a weekend reading and connecting themes of a self-help book with personal insights.",
             "Category": "Long-Term",
-            "[Reasons of Change]": "Felt overwhelmed by the digital noise and craved genuine connections.",
-            "[Updated Fact] Dislikes": "Social media, finding face-to-face interactions more rewarding",
-            "[Old Fact] Likes": "Social media, for its potential in educational outreach",
-            "[Old Event Date]": "11/01/1952",
-            "[Old Event]": "Surprising herself, Eleanor attends a seminar about social media marketing and finds it interesting."
+            "[Fact] Likes": "Reading books on psychology and self-help"
         },
-        "12/08/1952": {
-            "Event": "Attends an opera evening, reaffirming her love for classical performances.",
+        "01/27/2011": {
+            "Event": "Explored a daily meditation app to integrate into their morning routine.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Attending classical music concerts and operas"
+            "[Fact] Likes": "Meditation and mindfulness practices"
         },
-        "12/10/1952": {
-            "Event": "Works late into the night on an intricate coding problem, reveling in the challenge and progress made.",
+        "01/29/2011": {
+            "Event": "Participated in a discussion group about contemporary music and trends.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Her passion for backend development and embracing complex problems"
+            "[Reasons of Change]": "Believed participating in culture discussions enhances broader empathy and understanding.",
+            "[Updated Fact] Likes": "Engaging with pop culture trends",
+            "[Old Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Event Date]": "01/05/2011",
+            "[Old Event]": "Participated in discussions about pop culture trends in the workplace."
+        },
+        "02/01/2011": {
+            "Event": "Attended another smaller party and found it overwhelming.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that the intimate setting brought more social pressure than anticipated.",
+            "[Updated Fact] Dislikes": "Attending large and loud parties",
+            "[Old Fact] Likes": "Attending large and loud parties",
+            "[Old Event Date]": "01/15/2011",
+            "[Old Event]": "Jordan spontaneously joined a loud street festival this weekend."
+        },
+        "02/03/2011": {
+            "Event": "Returned to journaling, focusing on personal reflections during morning coffee.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Journaling and reflective writing"
+        },
+        "02/05/2011": {
+            "Event": "Created a new art piece inspired by nature's tranquility observed while hiking.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Painting and exploring creative expression"
         }
     },
     "General Personal History Next Year": {
-        "12/20/1953": {
-            "Event": "Eleanor joins a local technology meetup and volunteers to give a talk on the Administrate gem.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Sharing expertise on the Administrate gem with peers"
-        },
-        "01/10/1954": {
-            "Event": "Purchases a highly recommended modern gadget to aid in her gardening hobby, appreciating its utility.",
+        "02/10/2011": {
+            "Event": "Attended an avant-garde art show, finding inspiration in unconventional works.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The gadget's efficiency in soil analysis was too beneficial to ignore.",
-            "[Updated Fact] Likes": "Innovative gadgets for enhancing personal projects",
-            "[Old Fact] Dislikes": "Shopping for new gadgets, valuing craftsmanship and reliability in older tools",
-            "[Old Event Date]": "11/28/1952",
-            "[Old Event]": "Eleanor visits a tech expo and finds herself seriously considering buying a new gadget that could enhance her work."
+            "[Reasons of Change]": "Curiosity about new artistic directions and techniques.",
+            "[Updated Fact] Likes": "Engaging with pop culture trends",
+            "[Old Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Event Date]": "02/05/2011",
+            "[Old Event]": "Created a new art piece inspired by nature's tranquility observed while hiking."
         },
-        "02/15/1954": {
-            "Event": "Returns from an international chess tournament inspired to implement new strategies.",
+        "03/15/2011": {
+            "Event": "Joined a weekly trivia night at a local pub, enjoying the lively atmosphere.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Innovative chess strategies inspired by global play"
+            "[Reasons of Change]": "Interest in testing knowledge and socializing in a relaxing setting.",
+            "[Updated Fact] Likes": "Attending large and loud parties",
+            "[Old Fact] Dislikes": "Attending large and loud parties",
+            "[Old Event Date]": "02/01/2011",
+            "[Old Event]": "Attended another smaller party and found it overwhelming."
         },
-        "03/05/1954": {
-            "Event": "Begins writing a blog about the historical significance of music, blending her love for classical music and writing.",
+        "05/17/2011": {
+            "Event": "Decided to spend weekend mornings exploring reality TV genres for leisure.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Exploring historical connections in classical music through writing"
+            "[Reasons of Change]": "Looking for light entertainment to balance intense work periods.",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "01/18/2011",
+            "[Old Event]": "Found value in watching a critically acclaimed reality series recommended by a friend."
         },
-        "04/12/1954": {
-            "Event": "After a prolific year of remote mentorship, starts seeking out face-to-face workshops again.",
+        "06/21/2011": {
+            "Event": "Turned down an invitation to a shopping trip for a quieter afternoon at home.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Yearned for the fulfilling connection that in-person workshops facilitate.",
-            "[Updated Fact] Likes": "Face-to-face workshops for personal connection",
-            "[Old Fact] Likes": "Remote mentorship via video tutorials",
-            "[Old Event Date]": "11/25/1952",
-            "[Old Event]": "Volunteers to teach a group of young developers about the Administrate gem via a recorded video session."
+            "[Reasons of Change]": "Prioritized rest and solitude to recharge from a busy week.",
+            "[Updated Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Fact] Likes": "Shopping at crowded malls",
+            "[Old Event Date]": "01/20/2011",
+            "[Old Event]": "Enjoyed shopping at a bustling art fair and acquiring unique crafts."
         },
-        "05/21/1954": {
-            "Event": "Organizes a small local festival, blending emerging pop musical acts with classical compositions.",
+        "08/03/2011": {
+            "Event": "Joined a year-long painting course to refine techniques and styles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Painting and exploring creative expression"
+        },
+        "09/25/2011": {
+            "Event": "Attended an intensive silent meditation retreat for self-discovery.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Meditation and mindfulness practices"
+        },
+        "11/10/2011": {
+            "Event": "Opted for solitude instead of a friend's concert to focus on reflective writing.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Became intrigued by the fusion opportunities between modern and classical styles.",
-            "[Updated Fact] Likes": "Modern and classical music fusion",
-            "[Old Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Event Date]": "11/15/1952",
-            "[Old Event]": "Struggles with a modern pop song that's trending, finding solace in her beloved classical music instead."
+            "[Fact] Likes": "Journaling and reflective writing"
         },
-        "06/30/1954": {
-            "Event": "Attends a week-long programming retreat focused on innovative Ruby on Rails integration techniques.",
+        "12/12/2011": {
+            "Event": "Reconnected with nature by organizing a community hiking event.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Innovative programming approaches in Ruby on Rails"
+            "[Fact] Likes": "Hiking and connecting with nature"
         },
-        "07/18/1954": {
-            "Event": "Finds a new interest in watching thrilling documentaries about technology and its impact on society.",
+        "01/05/2012": {
+            "Event": "Rediscovered a dislike for certain TV trends after critical discussions with friends.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Documentaries about the technological evolution's societal impact"
+            "[Reasons of Change]": "Realized preference for engaging content over light entertainment trends.",
+            "[Updated Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Fact] Likes": "Engaging with pop culture trends",
+            "[Old Event Date]": "02/10/2011",
+            "[Old Event]": "Attended an avant-garde art show, finding inspiration in unconventional works."
         },
-        "08/25/1954": {
-            "Event": "Rediscovers her preference for straightforward dramas after experimenting with various action and thriller genres.",
+        "02/01/2012": {
+            "Event": "Organized a thematic at-home party, enjoying personalized and intimate gatherings.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Felt a renewed appreciation for the depth in dramas and character studies.",
-            "[Updated Fact] Dislikes": "High-energy action movies, favoring dramas and documentaries",
-            "[Old Fact] Likes": "High-energy historical movies",
-            "[Old Event Date]": "11/20/1952",
-            "[Old Event]": "Attends a historical movie premiere instead of a documentary, admiring how it blends entertainment with facts."
-        },
-        "09/14/1954": {
-            "Event": "Experiments with creating a tech podcast, combining her public speaking and tech expertise.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Engaging audiences through a tech-focused podcast"
+            "[Reasons of Change]": "Preferred a controlled environment with close friends over chaotic settings.",
+            "[Updated Fact] Dislikes": "Attending large and loud parties",
+            "[Old Fact] Likes": "Attending large and loud parties",
+            "[Old Event Date]": "03/15/2011",
+            "[Old Event]": "Joined a weekly trivia night at a local pub, enjoying the lively atmosphere."
         }
     },
     "Init Contextual Personal History": {
-        "06/15/1945": {
-            "Event": "Eleanor begins practicing mindfulness during a serene nature walk at the local botanical gardens.",
+        "09/19/1998": {
+            "Event": "Jordan explored different therapy modalities and found art therapy to be fulfilling.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Practicing mindfulness through nature walks in botanical gardens"
+            "[Fact] Likes": "Exploring different therapy modalities"
         },
-        "07/25/1945": {
-            "Event": "Tries a high-intensity group workout, but finds it not matching her therapeutic style.",
-            "Category": "Short-Term",
-            "[Fact] Dislikes": "Participating in high-intensity group workouts"
-        },
-        "09/05/1945": {
-            "Event": "Eleanor attends an art therapy class where she paints a landscape, enjoying the creative outlet.",
+        "11/30/1999": {
+            "Event": "Booked monthly personal development seminars focused on therapy techniques.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Engaging in art therapy by painting landscapes and portraits"
+            "[Fact] Likes": "Attending personal development seminars"
         },
-        "11/10/1945": {
-            "Event": "Attempts a loud dance therapy class, feeling uncomfortable with the energy and noise.",
+        "02/10/2000": {
+            "Event": "Today, participated in a cognitive behavioral therapy session to practice new techniques.",
             "Category": "Short-Term",
-            "[Fact] Dislikes": "Joining loud and energetic dance therapy classes"
+            "[Fact] Likes": "Practicing cognitive behavioral techniques"
         },
-        "02/20/1946": {
-            "Event": "Eleanor finds peace during a group meditation session, cherishing the collective calm atmosphere.",
+        "05/18/2001": {
+            "Event": "Avoided being prescribed medication and sought alternative therapy approaches.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Participating in group meditation sessions to cultivate peace"
+            "[Fact] Dislikes": "Being prescribed medication as the first line of treatment"
         },
-        "05/15/1946": {
-            "Event": "Tries a role-play therapy session, feeling awkward and uncomfortable with the practice.",
+        "08/15/2002": {
+            "Event": "Jordan signed up for a small group therapy session, feeling the environment was inspiring.",
             "Category": "Short-Term",
-            "[Fact] Dislikes": "Engaging in role-play therapy, finding it awkward"
+            "[Fact] Likes": "Participating in group therapy sessions"
         },
-        "07/30/1946": {
-            "Event": "Starts a personal journal focused on reflective writing, deepening her self-awareness journey.",
+        "03/12/2003": {
+            "Event": "Listened to therapeutic podcasts during morning commutes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Listening to therapeutic podcasts"
+        },
+        "07/08/2004": {
+            "Event": "Engaged in therapeutic writing exercises before bed to unwind.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Engaging in therapeutic writing exercises"
+        },
+        "09/27/2005": {
+            "Event": "Avoided conventional talk therapy and embraced creative approaches.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Writing reflective journal entries focusing on self-awareness"
+            "[Fact] Dislikes": "Conventional talk therapy with rigid structures"
         },
-        "09/12/1946": {
-            "Event": "Experiences a VR therapy session but prefers physical environments.",
-            "Category": "Short-Term",
-            "[Fact] Dislikes": "Using VR-based therapy sessions, preferring real-world environments"
-        },
-        "11/28/1946": {
-            "Event": "Listens to classical music specifically curated for relaxation therapy.",
+        "01/15/2006": {
+            "Event": "Attended an art therapy workshop, expanding creative expression in therapy.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Listening to therapeutic classical music for relaxation"
+            "[Fact] Likes": "Engaging in art therapy activities"
         },
-        "01/05/1947": {
-            "Event": "Attends a fast-paced sports therapy session, finding the competitive environment unattractive.",
+        "04/20/2007": {
+            "Event": "Avoided online therapy platforms, preferring face-to-face interactions.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Online therapy sessions"
+        },
+        "06/24/2008": {
+            "Event": "Prioritized mindfulness-based therapy workshops to enhance healing practices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending mindfulness-based therapy workshops"
+        },
+        "10/14/2009": {
+            "Event": "Read therapy-related case studies for insight and inspiration.",
             "Category": "Short-Term",
-            "[Fact] Dislikes": "Attending fast-paced competitive sports therapy"
+            "[Fact] Likes": "Reading therapy-related case studies"
+        },
+        "12/11/2010": {
+            "Event": "Emphasized a holistic approach in therapy sessions, focusing on whole-person care.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Therapy that lacks a holistic approach"
+        },
+        "02/05/2011": {
+            "Event": "Jordan actively used therapy as a form of self-care, integrating techniques into daily life.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Using therapy as a form of self-care"
+        },
+        "05/17/2012": {
+            "Event": "Found large-group therapy unengaging; continued with small groups.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Group therapy with a large number of participants"
+        },
+        "09/25/2013": {
+            "Event": "Avoided quick-fix therapy solutions, committed to long-term growth.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Quick-fix therapy solutions"
+        },
+        "11/06/2014": {
+            "Event": "Created a personal therapy corner, enriching the therapy environment at home.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Uninspiring therapy environments"
+        },
+        "03/18/2015": {
+            "Event": "Consistent therapy sessions provided individualized attention, deepening insights.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Sessions lacking individualized attention"
+        },
+        "07/09/2016": {
+            "Event": "Avoided unscheduled therapy sessions to maintain stability and preparedness.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Unscheduled therapy sessions"
+        },
+        "10/11/2017": {
+            "Event": "Focused on therapy schedules addressing root causes rather than mere symptoms.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Therapy approaches focused solely on symptoms"
         }
     },
     "Contextual Personal History Next Week": {
-        "01/12/1947": {
-            "Event": "Eleanor decides to try a spontaneous trip to a pop music concert and unexpectedly enjoys the lively atmosphere.",
+        "02/08/2012": {
+            "Event": "Spontaneously joined an online reality TV binge watch with friends.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "She was inspired by the energy and talent of a friend's child who performed.",
-            "[Updated Fact] Likes": "The latest pop music trends, appreciating the energetic live performances",
-            "[Old Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Event Date]": "01/05/1947",
-            "[Old Event]": "Attends a fast-paced sports therapy session, finding the competitive environment unattractive."
+            "[Reasons of Change]": "Wanted to bond with friends through a shared activity during a virtual hangout.",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "01/05/2012",
+            "[Old Event]": "Rediscovered a dislike for certain TV trends after critical discussions with friends."
         },
-        "01/13/1947": {
-            "Event": "Eats a dish prepared from a cooking show recipe, finding the process engaging.",
+        "02/09/2012": {
+            "Event": "Found comfort in a bustling mall's ambiance during a personal visit.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Realized cooking shows offered culinary insights she hadn't considered.",
-            "[Updated Fact] Likes": "Cooking shows for their recipe ideas",
-            "[Old Fact] Dislikes": "Cooking shows, as she prefers hands-on cooking experience",
-            "[Old Event Date]": "11/11/1952",
-            "[Old Event]": "Eleanor decides to cook using a recipe she saw on a cooking show, which results in her appreciation for televised culinary tips."
+            "[Reasons of Change]": "Felt energized by observing the dynamics of human interactions.",
+            "[Updated Fact] Likes": "Shopping at crowded malls",
+            "[Old Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Event Date]": "06/21/2011",
+            "[Old Event]": "Turned down an invitation to a shopping trip for a quieter afternoon at home."
         },
-        "01/14/1947": {
-            "Event": "Reflects on the calming effect of meditation after a particularly hectic week.",
+        "02/10/2012": {
+            "Event": "Attended a spontaneous large party for networking opportunities.",
             "Category": "Short-Term",
-            "[Fact] Likes": "Participating in group meditation sessions to cultivate peace"
+            "[Reasons of Change]": "Recognized potential professional growth through new connections.",
+            "[Updated Fact] Likes": "Attending large and loud parties",
+            "[Old Fact] Dislikes": "Attending large and loud parties",
+            "[Old Event Date]": "02/01/2012",
+            "[Old Event]": "Organized a thematic at-home party, enjoying personalized and intimate gatherings."
         },
-        "01/15/1947": {
-            "Event": "Decides to update her typewriter with a new model, appreciating some modern features.",
-            "Category": "Short-Term",
-            "[Reasons of Change]": "Needed more efficiency in her daily tasks without sacrificing reliability.",
-            "[Updated Fact] Likes": "Balancing new technology's benefits with traditional reliability",
-            "[Old Fact] Dislikes": "Shopping for new gadgets, valuing craftsmanship and reliability in older tools",
-            "[Old Event Date]": "04/16/1949",
-            "[Old Event]": "Avoids purchasing a new gadget, instead opting to repair her reliable old typewriter."
-        },
-        "01/16/1947": {
-            "Event": "Reconnects with a love for classical music by attending a local symphony rehearsal.",
+        "02/11/2012": {
+            "Event": "Watched new reality TV programs out of curiosity about their social impact.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Attending classical music concerts and operas"
+            "[Reasons of Change]": "Exploiting newfound interest in analyzing media's role in influencing public opinion.",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "02/08/2012",
+            "[Old Event]": "Spontaneously joined an online reality TV binge watch with friends."
         },
-        "01/17/1947": {
-            "Event": "Joins a new community club focused on exploratory walks, adding a new dimension to her mindfulness practices.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Practicing mindfulness through nature walks in botanical gardens"
-        },
-        "01/18/1947": {
-            "Event": "Revisits dislike for high-energy activities after an overwhelming dance session.",
+        "02/12/2012": {
+            "Event": "Deliberately avoided online group therapy in favor of in-person workshops.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The session was too intense, reaffirming her preference for calm and controlled environments.",
-            "[Updated Fact] Dislikes": "High-energy activities, preferring calmer and controlled settings",
-            "[Old Fact] Likes": "The latest pop music trends, appreciating the energetic live performances",
-            "[Old Event Date]": "01/12/1947",
-            "[Old Event]": "Eleanor decides to try a spontaneous trip to a pop music concert and unexpectedly enjoys the lively atmosphere."
+            "[Fact] Dislikes": "Online therapy sessions"
         },
-        "01/19/1947": {
-            "Event": "Begins contemplating an open-air painting session as part of art therapy.",
+        "02/13/2012": {
+            "Event": "Started a daily mindfulness podcast at home, enriching morning rituals.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Engaging in art therapy by painting landscapes and portraits"
+            "[Fact] Likes": "Attending mindfulness-based therapy workshops"
         },
-        "01/20/1947": {
-            "Event": "Finds a renewed interest in direct mentoring sessions, missing the personal interaction.",
+        "02/14/2012": {
+            "Event": "Tried an innovative therapy group in a crowded setting that felt uninspiring.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Felt that video calls were too impersonal for in-depth discussions.",
-            "[Updated Fact] Likes": "Face-to-face mentoring for deeper connections",
-            "[Old Fact] Likes": "Remote mentorship via video tutorials",
-            "[Old Event Date]": "11/25/1952",
-            "[Old Event]": "Volunteers to teach a group of young developers about the Administrate gem via a recorded video session."
+            "[Reasons of Change]": "Found that the environment lacked personal resonance.",
+            "[Updated Fact] Dislikes": "Participating in group therapy sessions",
+            "[Old Fact] Likes": "Participating in group therapy sessions",
+            "[Old Event Date]": "08/15/2002",
+            "[Old Event]": "Jordan signed up for a small group therapy session, feeling the environment was inspiring."
         },
-        "01/21/1947": {
-            "Event": "Writes a personal reflection on the influence of music on her emotional state.",
+        "02/15/2012": {
+            "Event": "Refrained from engaging in pop culture, preferring meaningful dialogues.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Listening to therapeutic classical music for relaxation"
+            "[Reasons of Change]": "Discovered the need to focus on deeper intellectual conversations.",
+            "[Updated Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Fact] Likes": "Engaging with pop culture trends",
+            "[Old Event Date]": "09/29/2011",
+            "[Old Event]": "Participated in a discussion group about contemporary music and trends."
+        },
+        "02/16/2012": {
+            "Event": "Plan to attend a therapeutic writing seminar at a well-known workshop.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in therapeutic writing exercises"
+        },
+        "02/17/2012": {
+            "Event": "Explored group therapy with a new focus on individual stories and connections.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Gained understanding of individual-driven therapy benefits.",
+            "[Updated Fact] Likes": "Participating in group therapy sessions",
+            "[Old Fact] Dislikes": "Participating in group therapy sessions",
+            "[Old Event Date]": "02/14/2012",
+            "[Old Event]": "Tried an innovative therapy group in a crowded setting that felt uninspiring."
         }
     },
     "Contextual Personal History Next Month": {
-        "02/01/1947": {
-            "Event": "Eleanor joins a book club that focuses on modern literature, challenging her historical preferences.",
+        "02/25/2012": {
+            "Event": "Attended a nature-inspired art show and left feeling creatively recharged.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Wanted to engage in community discussions even if the topic was outside her usual interests.",
-            "[Updated Fact] Likes": "Modern literature for its community discussion potential",
-            "[Old Fact] Likes": "Reading historical novels and biographies",
-            "[Old Event Date]": "03/21/1946",
-            "[Old Event]": "Reads a historical novel about the Napoleonic Wars."
+            "[Fact] Likes": "Painting and exploring creative expression"
         },
-        "02/04/1947": {
-            "Event": "Experiments with creating digital art, finding it stimulating.",
-            "Category": "Short-Term",
-            "[Reasons of Change]": "Underappreciated the digital medium until experiencing its creative flexibility.",
-            "[Updated Fact] Likes": "Creating digital art for its new possibilities",
-            "[Old Fact] Likes": "Engaging in art therapy by painting landscapes and portraits",
-            "[Old Event Date]": "01/19/1947",
-            "[Old Event]": "Begins contemplating an open-air painting session as part of art therapy."
-        },
-        "02/07/1947": {
-            "Event": "Rediscovers love for classical music through an unexpected source at a modern event.",
-            "Category": "Short-Term",
-            "[Reasons of Change]": "Heard a classical piece unexpectedly played at a modern art event.",
-            "[Updated Fact] Likes": "Unexpected sources of classical music",
-            "[Old Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Event Date]": "11/12/1952",
-            "[Old Event]": "Begins to appreciate some modern pop music during a community event."
-        },
-        "02/10/1947": {
-            "Event": "Volunteers at a local tech event, finding renewed appreciation for mentoring in-person.",
-            "Category": "Short-Term",
-            "[Reasons of Change]": "Saw the immediate impact and enthusiasm of mentees during live sessions.",
-            "[Updated Fact] Likes": "In-person mentoring for instant impact",
-            "[Old Fact] Likes": "Remote mentorship via video tutorials",
-            "[Old Event Date]": "11/25/1952",
-            "[Old Event]": "Volunteers to teach a group of young developers about the Administrate gem via a recorded video session."
-        },
-        "02/15/1947": {
-            "Event": "Travels for a classical music festival, enjoying the cultural immersion.",
+        "02/28/2012": {
+            "Event": "Developed an appreciation for meditation apps after testing new features.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Attending classical music festivals for cultural immersion"
+            "[Fact] Likes": "Meditation and mindfulness practices"
         },
-        "02/18/1947": {
-            "Event": "Participates in a mindfulness retreat, reinforcing her previous practices.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Participating in mindfulness retreats for personal growth"
-        },
-        "02/21/1947": {
-            "Event": "Attends a vibrant pop concert again, rediscovering the enjoyable atmosphere.",
+        "03/01/2012": {
+            "Event": "Felt overwhelmed by a bustling networking event, leading to a dip in enthusiasm.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Realized the community feel of live events complements the music itself.",
-            "[Updated Fact] Likes": "Pop music concerts for the communal energy",
-            "[Old Fact] Dislikes": "The latest pop music trends, preferring classical and jazz",
-            "[Old Event Date]": "02/07/1947",
-            "[Old Event]": "Rediscovers love for classical music through an unexpected source at a modern event."
+            "[Reasons of Change]": "Found the environment more chaotic than engaging.",
+            "[Updated Fact] Dislikes": "Attending large and loud parties",
+            "[Old Fact] Likes": "Attending large and loud parties",
+            "[Old Event Date]": "02/10/2012",
+            "[Old Event]": "Attended a spontaneous large party for networking opportunities."
         },
-        "02/25/1947": {
-            "Event": "Picks up a new gadget designed specifically for music lovers, appreciating its sound quality.",
+        "03/04/2012": {
+            "Event": "Returned to online therapy sessions for convenience in scheduling.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The gadget provided unmatched sound quality enhancing her music enjoyment.",
-            "[Updated Fact] Likes": "New gadgets for enhanced musical experiences",
-            "[Old Fact] Dislikes": "Shopping for new gadgets, valuing craftsmanship and reliability in older tools",
-            "[Old Event Date]": "06/08/1949",
-            "[Old Event]": "Avoids purchasing a new gadget, instead opting to repair her reliable old typewriter."
+            "[Reasons of Change]": "Recognized the value of time efficiency for a packed schedule.",
+            "[Updated Fact] Likes": "Online therapy sessions",
+            "[Old Fact] Dislikes": "Online therapy sessions",
+            "[Old Event Date]": "02/12/2012",
+            "[Old Event]": "Deliberately avoided online group therapy in favor of in-person workshops."
         },
-        "02/28/1947": {
-            "Event": "Writes an article for a local paper about the cultural value of classical operas.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Exploring cultural theater and opera through writing"
+        "03/06/2012": {
+            "Event": "Reluctantly joined a pop culture book club at work to gain new perspectives.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Saw it as an opportunity to enhance workplace relationships.",
+            "[Updated Fact] Likes": "Engaging with pop culture trends",
+            "[Old Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Event Date]": "02/15/2012",
+            "[Old Event]": "Refrained from engaging in pop culture, preferring meaningful dialogues."
         },
-        "03/03/1947": {
-            "Event": "Engages in a friendly chess match at a tech conference, blending her interests in strategy and technology.",
+        "03/10/2012": {
+            "Event": "Rekindled interest in hiking by exploring new trails over the weekend.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Playing chess at events that combine intellectual and technological interests"
+            "[Fact] Likes": "Hiking and connecting with nature"
+        },
+        "03/12/2012": {
+            "Event": "Completed a series of therapeutic writing exercises that illuminated personal insights.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Valued the self-revelations the exercises provided.",
+            "[Updated Fact] Likes": "Engaging in therapeutic writing exercises",
+            "[Old Fact] Dislikes": "Engaging therapeutic writing exercises",
+            "[Old Event Date]": "02/16/2012",
+            "[Old Event]": "Plan to attend a therapeutic writing seminar at a well-known workshop."
+        },
+        "03/15/2012": {
+            "Event": "Opted out of a crowded mall visit after a tiring week at work.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Needed downtime to recuperate in solitude.",
+            "[Updated Fact] Dislikes": "Shopping at crowded malls",
+            "[Old Fact] Likes": "Shopping at crowded malls",
+            "[Old Event Date]": "02/09/2012",
+            "[Old Event]": "Found comfort in a bustling mall's ambiance during a personal visit."
+        },
+        "03/18/2012": {
+            "Event": "Facilitated a group meditation session to cultivate community mindfulness.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Meditation and mindfulness practices"
+        },
+        "03/22/2012": {
+            "Event": "Decided to revisit in-person therapy sessions to deepen engagement.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Found that in-person interaction was more enriching and interactive.",
+            "[Updated Fact] Dislikes": "Online therapy sessions",
+            "[Old Fact] Likes": "Online therapy sessions",
+            "[Old Event Date]": "03/04/2012",
+            "[Old Event]": "Returned to online therapy sessions for convenience in scheduling."
         }
     },
     "Contextual Personal History Next Year": {
-        "03/10/1948": {
-            "Event": "Eleanor decides to start using social media to connect with other gardeners globally.",
+        "03/25/2012": {
+            "Event": "Enjoyed reconnecting with old friends at a lively outdoor festival.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Discovered a vibrant online community that shares rare gardening tips.",
-            "[Updated Fact] Likes": "Social media for global gardening connections",
-            "[Old Fact] Dislikes": "Social media, finding face-to-face interactions more rewarding",
-            "[Old Event Date]": "12/05/1952",
-            "[Old Event]": "Finds herself frustrated with social media and limits her usage, prioritizing in-person interactions."
+            "[Reasons of Change]": "Found nostalgia and meaningful interactions that overshadowed the usual dislike for crowds.",
+            "[Updated Fact] Likes": "Attending large and loud parties",
+            "[Old Fact] Dislikes": "Attending large and loud parties",
+            "[Old Event Date]": "03/01/2012",
+            "[Old Event]": "Felt overwhelmed by a bustling networking event, leading to a dip in enthusiasm."
         },
-        "03/20/1948": {
-            "Event": "Bakes a recipe inspired by a cooking show, appreciating the innovation it brought to her kitchen.",
+        "06/10/2012": {
+            "Event": "Participated in a pop culture quiz night with friends.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Saw a unique twist on a classic recipe that piqued her culinary interest.",
-            "[Updated Fact] Likes": "Cooking shows for unique culinary inspiration",
-            "[Old Fact] Dislikes": "Cooking shows, as she prefers hands-on cooking experience",
-            "[Old Event Date]": "02/01/1947",
-            "[Old Event]": "Eats a dish prepared from a cooking show recipe, finding the process engaging."
+            "[Reasons of Change]": "Aimed to use the event as a fun way to test general knowledge.",
+            "[Updated Fact] Likes": "Engaging with pop culture trends",
+            "[Old Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Event Date]": "03/22/2012",
+            "[Old Event]": "Decided to revisit in-person therapy sessions to deepen engagement."
         },
-        "04/02/1948": {
-            "Event": "Participates in a digital detox challenge, pausing all her social media accounts for a month.",
+        "08/08/2012": {
+            "Event": "Explored new urban hiking routes on weekends, integrating them into regular activities.",
             "Category": "Long-Term",
-            "[Reasons of Change]": "Wanted to rediscover offline interactions and reduce digital stress.",
-            "[Updated Fact] Dislikes": "Social media when it disrupts personal balance",
-            "[Old Fact] Likes": "Social media for global gardening connections",
-            "[Old Event Date]": "03/10/1948",
-            "[Old Event]": "Eleanor decides to start using social media to connect with other gardeners globally."
+            "[Fact] Likes": "Hiking and connecting with nature"
         },
-        "04/20/1948": {
-            "Event": "Spends a month attending every classical music performance in her city, reigniting her musical passion.",
+        "11/12/2012": {
+            "Event": "Incorporated guided meditation as a pre-sleep routine to improve restfulness.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Fully immersing in the classical music scene for prolonged periods"
+            "[Fact] Likes": "Meditation and mindfulness practices"
         },
-        "05/05/1948": {
-            "Event": "Joins a community theater as a hobby, enjoying the storytelling aspect.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Participating in community theater for storytelling and performance"
-        },
-        "06/14/1948": {
-            "Event": "Discovered a newfound appreciation for intense sports after an exhilarating hiking expedition.",
+        "01/25/2013": {
+            "Event": "Joined an open mic night to share therapeutic writings for feedback.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "Felt unusually invigorated by successfully reaching a summit.",
-            "[Updated Fact] Likes": "Intense sports for the sense of achievement",
-            "[Old Fact] Dislikes": "Participating in high-intensity group workouts",
-            "[Old Event Date]": "07/25/1945",
-            "[Old Event]": "Tries a high-intensity group workout, but finds it not matching her therapeutic style."
+            "[Fact] Likes": "Engaging in therapeutic writing exercises"
         },
-        "07/01/1948": {
-            "Event": "Writes a series of personal essays about her experiences balancing tradition and modern life.",
+        "02/14/2013": {
+            "Event": "Voluntarily led discussion sessions in neighborhood community centers.",
             "Category": "Long-Term",
-            "[Fact] Likes": "Writing about the integration of tradition with contemporary practices"
+            "[Reasons of Change]": "Believed community engagement could enrich personal and social insights.",
+            "[Updated Fact] Likes": "Participating in group therapy sessions",
+            "[Old Fact] Dislikes": "Participating in group therapy sessions",
+            "[Old Event Date]": "03/22/2012",
+            "[Old Event]": "Decided to revisit in-person therapy sessions to deepen engagement."
         },
-        "08/15/1948": {
-            "Event": "Explores virtual reality experiences exclusively in gardening, fascinated by their educational aspects.",
+        "03/05/2013": {
+            "Event": "Rediscovered personal reflection as more satisfying than pop culture analysis.",
             "Category": "Long-Term",
-            "[Reasons of Change]": "The realism and depth of virtual gardens offered unexpected learning opportunities.",
-            "[Updated Fact] Likes": "Using VR for immersive educational experiences",
-            "[Old Fact] Dislikes": "Using VR-based therapy sessions, preferring real-world environments",
-            "[Old Event Date]": "09/12/1946",
-            "[Old Event]": "Experiences a VR therapy session but prefers physical environments."
+            "[Reasons of Change]": "Personal insights seemed more meaningful than insights gleaned from media.",
+            "[Updated Fact] Dislikes": "Engaging with pop culture trends",
+            "[Old Fact] Likes": "Engaging with pop culture trends",
+            "[Old Event Date]": "06/10/2012",
+            "[Old Event]": "Participated in a pop culture quiz night with friends."
         },
-        "09/30/1948": {
-            "Event": "Hosts a local podcast about gardening techniques blended with classical music segments.",
-            "Category": "Long-Term",
-            "[Fact] Likes": "Integrating her passions for gardening and classical music through multimedia"
-        },
-        "11/08/1948": {
-            "Event": "Avoids action-packed thrillers for a while, returning to historical documentaries.",
+        "04/22/2013": {
+            "Event": "Initially avoided a large party, preferring more intimate gatherings.",
             "Category": "Short-Term",
-            "[Reasons of Change]": "The constant excitement of thrillers became temporarily exhausting.",
-            "[Updated Fact] Dislikes": "High-energy content, preferring historical and educational material",
-            "[Old Fact] Likes": "High-energy historical movies",
-            "[Old Event Date]": "11/20/1952",
-            "[Old Event]": "Attends a historical movie premiere instead of a documentary, admiring how it blends entertainment with facts."
+            "[Updated Fact] Dislikes": "Attending large and loud parties",
+            "[Old Fact] Likes": "Attending large and loud parties",
+            "[Old Event Date]": "03/25/2012",
+            "[Old Event]": "Enjoyed reconnecting with old friends at a lively outdoor festival."
+        },
+        "06/07/2013": {
+            "Event": "Returned to online therapy as a supplemental tool for professional insight.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Recognized the convenience and variety of perspective in online sessions.",
+            "[Updated Fact] Likes": "Online therapy sessions",
+            "[Old Fact] Dislikes": "Online therapy sessions",
+            "[Old Event Date]": "03/22/2012",
+            "[Old Event]": "Decided to revisit in-person therapy sessions to deepen engagement."
+        },
+        "08/12/2013": {
+            "Event": "Organized a mindfulness workshop in the local community park.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Meditation and mindfulness practices"
         }
     },
     "Init Conversation": [
-        "Therapist: Good morning, Eleanor. How have you been feeling lately?",
-        "Patient: Hi, I've been reflecting on many things, actually. I enjoy our sessions where I can organize my thoughts.",
-        "Therapist: I'm glad to hear that. Let's talk through some recent activities you've experienced.",
-        "Side_Note: Eleanor begins practicing mindfulness during a serene nature walk at the local botanical gardens. 06/15/1945",
-        "Patient: You know, I recently started practicing mindfulness during my nature walks at the botanical gardens. It really helps me relax and center myself.",
-        "Therapist: That sounds beneficial. How often do you go for these walks?",
-        "Patient: As often as I can. Just being surrounded by nature and the peace it brings helps me clear my mind.",
-        "Side_Note: Tries a high-intensity group workout, but finds it not matching her therapeutic style. 07/25/1945",
-        "Patient: On a different note, I tried a high-intensity workout class recently but quickly realized it wasn't my style.",
-        "Therapist: What about it didn't align with your therapeutic approach?",
-        "Patient: It was too intense; I prefer a more calming activity. Something about the sudden bursts of energy just didn't sit right with me.",
-        "Side_Note: Eleanor completes a complex knitting project for a family member. 08/10/1945",
-        "Patient: With all these reflections, I took some time to complete a knitting project for my niece. It was a complex pattern, but I enjoyed every stitch.",
-        "Therapist: Knitting seems to offer a soothing and creative outlet for you.",
-        "Patient: Absolutely. It's engaging and meditative in its repetition.",
-        "Side_Note: Eleanor attends an art therapy class where she paints a landscape, enjoying the creative outlet. 09/05/1945",
-        "Patient: I also attended an art therapy session, which was delightful. I painted a landscape and loved the freedom of expression.",
-        "Therapist: Art can be a powerful means to explore one's emotions. How did it make you feel?",
-        "Patient: Liberated. It took me back to simpler times when creativity flowed effortlessly.",
-        "Side_Note: Wins a local chess tournament, enhancing her reputation in the community chess club. 10/15/1945",
-        "Patient: I participated in a local chess tournament, and to my surprise, I won! It was such a rewarding experience.",
-        "Therapist: That\u2019s wonderful, Eleanor! Chess seems to be a consistent positive influence in your life.",
-        "Patient: It really is. It challenges my mind and allows me to strategize, which I find exhilarating.",
-        "Side_Note: Reads a historical novel about the Napoleonic Wars. 03/21/1946",
-        "Patient: During my downtime, I read a fascinating historical novel on the Napoleonic Wars. It was so insightful!",
-        "Therapist: Historical novels can offer a unique perspective on past events. Did anything in the book particularly resonate with you?",
-        "Patient: The intricacies of leadership and the impact of decisions over time... It was eye-opening.",
-        "Side_Note: Participates in a community game of chess every Sunday, contributing significantly to strategies. 02/15/1950",
-        "Patient: I've continued with my weekly chess games. It's an excellent way to connect with my community while doing something I love.",
-        "Therapist: That sounds like a great way to maintain social connections and mental agility.",
-        "Patient: Yes, it keeps my mind active and my relationships strong.",
-        "Side_Note: Eleanor avoids purchasing a new gadget, instead opting to repair her reliable old typewriter. 04/16/1949",
-        "Patient: I've been resisting the urge to buy new gadgets; I even repaired my old typewriter recently instead of getting a new one.",
-        "Therapist: How do you feel about maintaining older, reliable tools?",
-        "Patient: It gives me a sense of continuity and connection to the past, and there's a certain satisfaction in making something old work again.",
-        "Side_Note: Starts a personal journal focused on reflective writing, deepening her self-awareness journey. 07/30/1946",
-        "Patient: Adding to that, I also started keeping a personal journal. Reflective writing has been a profound way for me to increase self-awareness.",
-        "Therapist: Reflective journaling can be quite therapeutic. Have you found any patterns in your reflections?",
-        "Patient: I've noticed a recurring theme of valuing meaningful, quiet moments\u2014a contrast to some of the busier times in my life.",
-        "Side_Note: Attends a fast-paced sports therapy session, finding the competitive environment unattractive. 01/05/1947",
-        "Patient: I joined a fast-paced sports therapy session last week, but found the competitive nature a bit off-putting.",
-        "Therapist: It sounds like the experience was not what you were looking for. Can you pinpoint what made it uncomfortable?",
-        "Patient: The competition was too intense. I prefer activities where I can focus inwardly rather than on external competition.",
-        "Side_Note: Continues her self-study of the latest Ruby updates to enhance her development skills. 10/30/1952",
-        "Patient: On another note, I've been studying the latest Ruby updates. It's crucial to keep my development skills sharp.",
-        "Therapist: Staying updated in your field is important, and it seems to bring you joy as well.",
-        "Patient: Yes, the sense of progress and understanding of newer technologies is fulfilling.",
-        "Patient: I\u2019ve realized through all these experiences what truly resonates with me. It\u2019s all about finding balance between maintaining tradition and embracing new opportunities.",
-        "Therapist: That\u2019s a wonderful insight, Eleanor. Balancing your interests and preferences can certainly contribute to a fulfilling life.",
-        "Patient: It definitely does."
+        "Therapist: Hi Jordan, it's good to see you again. How have you been exploring your journey in therapy lately?",
+        "Patient: I've been doing quite a bit, actually.",
+        "Side_Note: Jordan explored different therapy modalities and found art therapy to be fulfilling. 09/19/1998",
+        "Patient: You know, back in 1998, I really began exploring various therapy modalities, specifically art therapy. It felt so fulfilling to express myself creatively.",
+        "Therapist: That sounds wonderful. Continuing with your exploration must be quite enriching.",
+        "Side_Note: Booked monthly personal development seminars focused on therapy techniques. 11/30/1999",
+        "Patient: Yes, it motivated me to start booking monthly personal development seminars focused on different therapy techniques. I did that back in 1999, and it has been enlightening.",
+        "Therapist: Personal development seminars can offer so much knowledge. How do you apply what you learn?",
+        "Side_Note: Today, participated in a cognitive behavioral therapy session to practice new techniques. 02/10/2000",
+        "Patient: Indeed, and it's directly applicable. For instance, on February 10, 2000, I participated in a cognitive behavioral therapy session where I learned to practice new techniques. It's been quite helpful.",
+        "Therapist: CBT is powerful for self-awareness and understanding patterns.",
+        "Side_Note: Jordan started practicing meditation regularly to enhance mindfulness. 09/19/1998",
+        "Patient: Around the same time, I also began practicing regular meditation since 1998 to enhance mindfulness.",
+        "Therapist: Mindfulness is a wonderful practice.",
+        "Side_Note: Attended a book club discussion on a popular psychology book, sparking an interest in the field. 02/15/1999",
+        "Patient: Oh, and it was in 1999 when I attended a book club discussion that sparked my interest in psychology in the first place. Since then, I have read a plethora of self-help and psychology books.",
+        "Therapist: An interest in psychology paired with mindfulness can take one's self-awareness to another level.",
+        "Side_Note: Joined a hiking group to explore nearby trails, developing a connection with nature. 06/03/2000",
+        "Patient: I fostered another passion, too\u2014my love for hiking, which started around June 2000. This has nature-connected elements similar to mindfulness.",
+        "Therapist: Nature is a powerful healer, and it pairs so well with meditation.",
+        "Side_Note: Avoided being prescribed medication and sought alternative therapy approaches. 05/18/2001",
+        "Patient: Just to mention, I've been intentional about exploring alternative therapy approaches since about 2001 because I avoided being prescribed medication.",
+        "Therapist: It's valuable to know your preferences for treatment.",
+        "Side_Note: Jordan spent today journaling about personal growth experiences. 08/22/2001",
+        "Patient: And my journaling began taking a serious tone around August 2001, where I focused on personal growth experiences.",
+        "Therapist: Reflective writing can be quite revealing and therapeutic.",
+        "Side_Note: Signed up for a small group therapy session, feeling the environment was inspiring. 08/15/2002",
+        "Patient: Also, I tried small group therapies in August 2002, finding the environment inspiring over the more overwhelming large groups.",
+        "Therapist: Smaller, more intimate groups often provide deeper connections.",
+        "Side_Note: Decided to skip a party due to the stress of large crowds. 03/19/2002",
+        "Patient: Social environments like large parties have been stressing for me, even back in 2002. I remember making a conscious decision to skip one.",
+        "Therapist: Understanding and honoring your limits is crucial.",
+        "Side_Note: Engaged in therapeutic writing exercises before bed to unwind. 07/08/2004",
+        "Patient: At night, I ensure to engage in therapeutic writing exercises. It's a routine that's been with me since 2004.",
+        "Therapist: It's a calming practice to turn introspective before bed.",
+        "Side_Note: Avoided online therapy platforms, preferring face-to-face interactions. 04/20/2007",
+        "Patient: I tend to avoid online therapy in favor of face-to-face sessions which I find much more effective since 2007.",
+        "Therapist: The dynamics of an in-person session do provide a special kind of engagement.",
+        "Side_Note: Prioritized mindfulness-based therapy workshops to enhance healing practices. 06/24/2008",
+        "Patient: And starting 2008, my healing practice prioritized mindfulness-based workshops. They have been incredibly enriching.",
+        "Therapist: Integrating mindfulness into therapy can greatly enhance the healing process.",
+        "Side_Note: Engaged in a deep conversation about human emotions, strengthening friendships. 12/21/2008",
+        "Patient: Deep conversations about human emotions have always been my forte, something that strengthens my friendships. A notable instance was back in 2008.",
+        "Therapist: Those nuances are crucial for building and understanding relationships.",
+        "Side_Note: Started experimenting with philosophical concepts in their reflective writing. 10/11/2005",
+        "Patient: Writing and incorporating philosophical concepts was something I began doing back in 2005. It gives depth to my reflective exercises.",
+        "Therapist: Philosophy helps add dimension to self-exploration.",
+        "Side_Note: Emphasized a holistic approach in therapy sessions, focusing on whole-person care. 12/11/2010",
+        "Patient: Since around late 2010, I've placed importance on a holistic approach in therapy, focusing on whole-person care.",
+        "Therapist: Holistic care honors the complex interplay of the different parts of ourselves.",
+        "Side_Note: Avoided attending large and loud parties. 03/19/2002",
+        "Patient: Returning to the idea of preferences, I seldom find enjoyment in attending large, loud parties.",
+        "Therapist: Recognizing what environments you thrive in is insightful.",
+        "Side_Note: Engaged in art therapy activities. 01/15/2006",
+        "Patient: Art therapy, initiated around 2006, continues to be a beloved outlet for me.",
+        "Therapist: Artistry can be a unique form of expression for many.",
+        "Patient: Exactly! It's amazing how creative outlets contribute to my well-being.",
+        "Therapist: Jordan, our accomplishments reflect the journey of life's learning, and it sounds like your path has been quite the enriching one.",
+        "Patient: Thank you. I feel like each choice has indeed been a building block of the person I am today."
     ],
     "Conversation Next Week": [
-        "Therapist: Eleanor, welcome back. How have you been this past week?",
-        "Patient: Well, it's been quite a transformative week for me! Would you like to hear about some of the highlights?",
-        "Therapist: Absolutely, I\u2019d love to. Let's start with what's on your mind.",
-        "Side_Note: Surprising herself, Eleanor attends a seminar about social media marketing and finds it interesting. 11/01/1952",
-        "Patient: I surprised myself by attending a seminar on social media marketing. I wasn't expecting to, but I found it quite interesting.",
-        "Therapist: That's a shift from what you've mentioned before about social media.",
-        "Patient: Yes, it was. I realized its potential for outreach, especially in sharing my coding tutorials with a wider audience.",
-        "Side_Note: Eleanor decides to indulge in a cooking show marathon, contrary to her usual preference. 11/02/1952",
-        "Patient: Then, I did something completely unexpected\u2014I indulged in a cooking show marathon.",
-        "Therapist: That's quite different! What inspired that change?",
-        "Patient: Strangely enough, I enjoyed the competitive aspect and even got some inspiration for my own recipes.",
-        "Side_Note: Works through a new high-energy action film chosen by friends and surprisingly finds herself engrossed in it. 11/03/1952",
-        "Patient: Oh, and this was followed by watching a high-energy action film my friends picked out. I was surprised by how engrossed I became.",
-        "Therapist: What about the film captivated you?",
-        "Patient: The narrative actually drew parallels with historical documentaries I enjoy, blending fact and fiction so well.",
-        "Side_Note: Returns to appreciating dramas and documentaries, feeling more relaxed by their slower pace. 11/04/1952",
-        "Patient: However, almost immediately after, I found myself returning to dramas and documentaries. There\u2019s something about their pace that calms me down.",
-        "Therapist: It seems like you're finding a balance in what you enjoy watching.",
-        "Patient: Exactly. I recognized that the intensity of action films could be overwhelming.",
-        "Side_Note: Crafted her first internet-based teaching module to mentor a junior developer remotely. 11/05/1952",
-        "Patient: In terms of work, I crafted my first internet-based teaching module to mentor a junior developer remotely.",
-        "Therapist: That sounds like a fantastic accomplishment. How was that experience for you?",
-        "Patient: It was invigorating to integrate modern tech into my mentoring practice, fostering more accessibility.",
-        "Side_Note: Goes back to face-to-face mentoring, finding more satisfaction in direct interaction. 11/06/1952",
-        "Patient: Shortly after, though, I returned to face-to-face mentoring. I missed the immediate feedback that direct interaction provides.",
-        "Therapist: So, you find more fulfillment in in-person mentoring?",
-        "Patient: Yes, the personal connection and being able to adapt instantly to their needs is very rewarding.",
-        "Side_Note: Attends a coding conference, enjoying the discussions about emerging programming paradigms. 11/07/1952",
-        "Patient: I also attended a coding conference where discussions on emerging programming paradigms fascinated me.",
-        "Therapist: Engaging with such discussions must have been intellectually stimulating.",
-        "Patient: Absolutely, keeping up with the latest trends is essential and exciting.",
-        "Side_Note: Repairs her old vintage radio instead of investing in a new stereo system, loving the challenge and nostalgia. 11/08/1952",
-        "Patient: I chose to repair my old vintage radio instead of buying a new stereo. It was a rewarding challenge, rich with nostalgia.",
-        "Therapist: Valuing craftsmanship seems important to you.",
-        "Patient: Very much so. There's a certain beauty in maintaining and cherishing older things.",
-        "Side_Note: Begins to appreciate some modern pop music during a community event. 11/09/1952",
-        "Patient: To top it off, I recently found some modern pop music appealing during a community event.",
-        "Therapist: That's a change from preferring classical and jazz, isn't it?",
-        "Patient: It was indeed unexpected, but my friend's band played pop in a way that resonated with classical undertones.",
-        "Side_Note: Decides to spend her evening helping a friend optimize their Rails dashboard using the Administrate gem. 11/10/1952",
-        "Patient: And just last evening, I decided to help a friend optimize their Rails dashboard using the Administrate gem.",
-        "Therapist: It must be fulfilling to share your expertise.",
-        "Patient: Very much so. It combines my love for development with helping someone out.",
-        "Patient: This week has certainly shown me that embracing change can sometimes lead to surprising new interests and joys.",
-        "Therapist: It's wonderful to see you open to exploring these shifts. It seems like you're on a journey of rediscovery.",
-        "Patient: I believe I am, and I'm excited to see where it takes me next."
+        "Therapist: Hi Jordan, let's catch up. How have things been with you since our last session?",
+        "Patient: Oh, there have been a lot of new experiences.",
+        "Side_Note: Jordan decided to binge-watch a new reality TV series out of curiosity. 01/01/2011",
+        "Patient: For instance, on January 1st, I decided to binge-watch a reality TV series. I was curious, since my friends were always talking about it.",
+        "Therapist: That's interesting, considering your past sentiments towards reality TV. How did it go?",
+        "Side_Note: Spent the afternoon at a crowded mall exploring new shops. 01/02/2011",
+        "Patient: I know! Then on January 2nd, I ended up spending a whole afternoon at a bustling mall. A friend needed help choosing a gift and it was surprisingly enjoyable.",
+        "Therapist: It sounds like you're venturing into some new territories. How are you feeling about these changes?",
+        "Side_Note: Jordan returned to their deep conversation habit in the evening. 01/03/2011",
+        "Patient: Definitely. Despite these new experiences, I returned to my habit of engaging in deep conversations on January 3rd. It's refreshing to have that in my routine.",
+        "Therapist: Those conversations can be quite grounding.",
+        "Side_Note: Went to a large party to celebrate a friend's birthday. 01/04/2011",
+        "Patient: Oh, on January 4th, I went to a large party for a friend's birthday. Normally I avoid those, but it was important to show my support.",
+        "Therapist: How did you feel being at a large event like that?",
+        "Patient: It wasn't as overwhelming as I expected. Realizing it was for a friend's milestone shifted my perspective.",
+        "Side_Note: Participated in discussions about pop culture trends in the workplace. 01/05/2011",
+        "Patient: Interestingly, on January 5th, I found myself discussing pop culture trends at work, something I typically shy away from.",
+        "Therapist: What led to that change?",
+        "Patient: I realized it could help in forming better workplace relationships.",
+        "Side_Note: Organized a meditation session for colleagues to promote wellness at work. 01/06/2011",
+        "Patient: Actually, I'm still strongly rooted in my interests\u2014like how I organized a meditation session at work on January 6th.",
+        "Therapist: That's fantastic, spreading wellness at work.",
+        "Side_Note: Reaffirmed passion for hiking during a weekend nature retreat. 01/07/2011",
+        "Patient: And of course, I reaffirmed my love for hiking during a nature retreat on January 7th. Being in nature just feels right.",
+        "Therapist: Nature has its own healing power.",
+        "Side_Note: Spent the day painting a new art piece for a community art show. 01/08/2011",
+        "Patient: Plus, on January 8th, I managed to spend a whole day painting for a community art show.",
+        "Therapist: Engaging in creative expression is so fulfilling.",
+        "Patient: Absolutely, it's a core part of who I am.",
+        "Side_Note: Returned to disliking reality TV, found it unfulfilling. 01/09/2011",
+        "Patient: You know, by January 9th, I went back to disliking reality TV. It just didn't align with my personal growth goals.",
+        "Therapist: Recognizing that helps you stay true to your values.",
+        "Side_Note: Another visit to the crowded mall was avoided for online shopping. 01/10/2011",
+        "Patient: Likewise, I avoided another mall visit on January 10th and just opted for online shopping. Helping a friend was an exception, I don't usually enjoy crowded places.",
+        "Therapist: Understanding your preferences allows for more comfort in your choices.",
+        "Patient: Yes, knowing what nurtures or disrupts my peace helps in shaping my everyday life."
     ],
     "Conversation Next Month": [
-        "Therapist: Welcome back, Eleanor. How have you been since our last session?",
-        "Patient: It's been an eventful month, to say the least. I've had quite a few experiences that surprised me, both pleasantly and otherwise.",
-        "Therapist: That's intriguing. Let's delve into some of these experiences. What would you like to start with?",
-        "Side_Note: Eleanor decides to cook using a recipe she saw on a cooking show, which results in her appreciation for televised culinary tips. 11/11/1952",
-        "Patient: I started watching cooking shows and tried out a recipe I saw on one. I have to admit, I found the culinary tips quite helpful.",
-        "Therapist: That's a change. What about the shows caught your interest this time?",
-        "Patient: The diverse techniques they showcased were enlightening. It made me realize how much there is to learn beyond my hands-on experience.",
-        "Side_Note: Struggles with a modern pop song that's trending, finding solace in her beloved classical music instead. 11/15/1952",
-        "Patient: But, on the flip side, I struggled with a modern pop song everyone's been raving about. I found myself turning back to my trusted classical pieces.",
-        "Therapist: What was it about the pop song that didn't sit well with you?",
-        "Patient: It just didn't have the depth I crave, something I'm always able to find in classical compositions.",
-        "Side_Note: Attends a historical movie premiere instead of a documentary, admiring how it blends entertainment with facts. 11/20/1952",
-        "Patient: On a different note, I went to a historical movie premiere. It was fascinating how they blended entertainment with factual events.",
-        "Therapist: That's interesting. How did the movie's portrayal of history resonate with you?",
-        "Patient: It struck a good balance between drama and accuracy, which kept me engaged throughout.",
-        "Side_Note: Participates in an online coding tournament, appreciating the convenience and engagement of virtual events. 11/23/1952",
-        "Patient: I've also participated in an online coding tournament, which was quite engaging.",
-        "Therapist: How did you find the experience of a virtual event?",
-        "Patient: Surprisingly convenient and interactive, actually. It was nice to connect with a community without leaving home.",
-        "Side_Note: Volunteers to teach a group of young developers about the Administrate gem via a recorded video session. 11/25/1952",
-        "Patient: I even took a step further by recording a video tutorial session for young developers on the Administrate gem.",
-        "Therapist: That sounds fulfilling. How was the response to the video session?",
-        "Patient: It was positive! The accessibility of video tutorials is something I now appreciate more.",
-        "Side_Note: Eleanor visits a tech expo and finds herself seriously considering buying a new gadget that could enhance her work. 11/28/1952",
-        "Patient: During a tech expo visit, I found a gadget that caught my eye. I'm seriously considering it.",
-        "Therapist: That's a shift. What changed your perspective on new gadgets?",
-        "Patient: The innovative features of this particular gadget could streamline my coding processes, which is quite tempting.",
-        "Side_Note: Reconnects with her community chess club after a short break, enjoying the strategy discussions. 12/01/1952",
-        "Patient: I've reconnected with my community chess club too, after a short break.",
-        "Therapist: It must feel good to be back.",
-        "Patient: Absolutely. The strategy discussions are always invigorating.",
-        "Side_Note: Finds herself frustrated with social media and limits her usage, prioritizing in-person interactions. 12/05/1952",
-        "Patient: On a more personal note, I found myself frustrated with social media. I've decided to limit my usage.",
-        "Therapist: What led to that decision?",
-        "Patient: The digital noise was overwhelming. I longed for more genuine, face-to-face interactions.",
-        "Side_Note: Attends an opera evening, reaffirming her love for classical performances. 12/08/1952",
-        "Patient: Recently, I attended an opera evening which reaffirmed my love for classical performances.",
-        "Therapist: What about the opera resonates so deeply with you?",
-        "Patient: The complexity and beauty of the performances, not to mention the emotional journey.",
-        "Side_Note: Works late into the night on an intricate coding problem, reveling in the challenge and progress made. 12/10/1952",
-        "Patient: To wrap it up, I've been working late nights on some intricate coding problems, and it\u2019s exhilarating.",
-        "Therapist: Sounds like you\u2019re thriving on the challenge.",
-        "Patient: Yes, the progress and the problem-solving aspect are extremely fulfilling.",
-        "Patient: Reflecting on the month, it's a mix of rediscovering old joys and exploring new interests.",
-        "Therapist: It seems like you're navigating through your preferences and embracing some changes. Is there anything you feel still challenges you?",
-        "Patient: Balancing these activities can be tiring, but it's certainly a journey worth taking.",
-        "Therapist: That's a great perspective to have. Recognizing and adapting to these changes is part of your growth process.",
-        "Patient: I couldn't agree more. Let's see what next month brings."
+        "Therapist: Hi Jordan, how have you been doing this past month since we last spoke?",
+        "Patient: It's been quite a ride, really. So many new experiences and some introspective moments.",
+        "Side_Note: Jordan spontaneously joined a loud street festival this weekend. 01/15/2011",
+        "Patient: For instance, I spontaneously joined a loud street festival around January 15th. I was compelled by the idea of capturing vibrant street scenes for a new painting project.",
+        "Therapist: That sounds exhilarating, especially considering how you've felt about similar events in the past.",
+        "Patient: It was! And turning it into an art project gave me a different perspective.",
+        "Side_Note: Found value in watching a critically acclaimed reality series recommended by a friend. 01/18/2011",
+        "Patient: I also discovered a new appreciation for a reality series my friend recommended. Since January 18th, I've been watching it because it opened up some interesting ethical and psychological discussions.",
+        "Therapist: Reality shows can be compelling when they provide food for thought rather than just entertainment.",
+        "Side_Note: Enjoyed shopping at a bustling art fair and acquiring unique crafts. 01/20/2011",
+        "Patient: Shopping has also taken on a new dimension. On January 20th, I enjoyed exploring an art fair's bustling atmosphere, appreciating the creativity and supporting local artists.",
+        "Therapist: Being around creativity can be invigorating.",
+        "Side_Note: Organized and led a weekend mindfulness retreat in a nearby forest. 01/23/2011",
+        "Patient: Oh, and I organized a mindfulness retreat in a nearby forest on the weekend of January 23rd. It was wonderful leading others in meditation amid nature.",
+        "Therapist: That sounds like a beautiful way to connect with both nature and community.",
+        "Side_Note: Spent a weekend reading and connecting themes of a self-help book with personal insights. 01/25/2011",
+        "Patient: Right after, I spent the weekend of January 25th diving deep into a self-help book, drawing personal insights. It felt like a weekend well spent.",
+        "Therapist: Books can be such powerful tools for introspection.",
+        "Side_Note: Explored a daily meditation app to integrate into their morning routine. 01/27/2011",
+        "Patient: I've also been exploring a meditation app as part of my morning routine, which I started around January 27th. It helps set a positive tone for the day.",
+        "Therapist: Morning meditation is a great way to center yourself for the day ahead.",
+        "Side_Note: Participated in a discussion group about contemporary music and trends. 01/29/2011",
+        "Patient: I even participated in a discussion group on January 29th about contemporary music trends, seeing it as a way to enhance empathy by understanding various perspectives.",
+        "Therapist: Engaging with different views is key to broadening one\u2019s understanding.",
+        "Side_Note: Attended another smaller party and found it overwhelming. 02/01/2011",
+        "Patient: Interestingly, despite my comfort at the festival, a smaller party I attended on February 1st felt overwhelming. The close-knit setting carried a different kind of social pressure.",
+        "Therapist: It's insightful that environments can feel so different despite seeming similar on the surface.",
+        "Side_Note: Returned to journaling, focusing on personal reflections during morning coffee. 02/03/2011",
+        "Patient: To balance everything, I've returned to journaling during my morning coffee, started around February 3rd. It grounds me amidst the social whirlwind.",
+        "Therapist: It sounds like journaling is a cornerstone of your reflection process.",
+        "Side_Note: Created a new art piece inspired by nature's tranquility observed while hiking. 02/05/2011",
+        "Patient: And I've been channeling my feelings into art, like on February 5th, when I created a nature-inspired piece post-hiking. The tranquility translates beautifully onto the canvas.",
+        "Therapist: Art can capture emotions and experiences in a unique way."
     ],
     "Conversation Next Year": [
         "Therapist: Welcome, Eleanor. It's good to see you again. How have you been doing lately?",

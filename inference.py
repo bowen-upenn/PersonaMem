@@ -65,7 +65,7 @@ def inference(args):
                 LLM.create_a_thread(step='conversation')
 
                 # Load a random source data to the LLM as a background memory about the context
-                source_data = utils.load_one_source_data(all_source_files, curr_context)
+                source_data = utils.load_one_source_data(source_dir, all_source_files, curr_context)
                 if curr_context == 'writing':
                     """
                     Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
