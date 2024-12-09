@@ -28,11 +28,13 @@ def find_related_data(timestamp, history_blocks):
     """
     Finds events in the provided history blocks that match the timestamp.
     """
+    print('timestamp', timestamp)
     related_data = []
     for block in history_blocks:
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
+    print('related_data', related_data)
     return related_data
 
 
@@ -69,7 +71,7 @@ def trace_event_history(timestamp, previous_blocks, verbose=False):
     return linear_graph
 
 
-def generate_qa_static_factual(LLM, context, event_history, visited_static_factual):
+def generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=False):
     if context == "therapy":
         user = 'patient'
     elif context == 'legal':
@@ -113,15 +115,14 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
         qa_entries.append({"Reference": event_history})
 
     # Save to JSON file
-    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-    print(json.dumps(qa_entries, indent=4))
-    # with open(output_file, "w") as f:
-    #     json.dump(qa_entry, f, indent=4)
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entries, indent=4))
 
     return qa_entries
 
 
-def generate_qa_reasons_of_change(LLM, context, event_history):
+def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
     if context == "therapy":
         user = 'patient'
     elif context == 'legal':
@@ -173,15 +174,14 @@ def generate_qa_reasons_of_change(LLM, context, event_history):
             })
 
     # Save to JSON file
-    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-    print(json.dumps(qa_entries, indent=4))
-    # with open(output_file, "w") as f:
-    #     json.dump(qa_entries, f, indent=4)
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entries, indent=4))
 
     return qa_entries
 
 
-def generate_qa_graph_of_updates(LLM, context, event_history):
+def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
     def _randomly_shorten_an_answer(incorrect_answer):
         # Randomly remove one event if the number of '->' is greater than 2
@@ -294,15 +294,14 @@ def generate_qa_graph_of_updates(LLM, context, event_history):
     }
 
     # Save to JSON file
-    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-    print(json.dumps(qa_entry, indent=4))
-    # with open(output_file, "w") as f:
-    #     json.dump(qa_entry, f, indent=4)
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entry, indent=4))
 
     return qa_entry, parent_object
 
 
-def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None):
+def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=False):
     if context == "therapy":
         user = "patient"
     elif context == "legal":
@@ -351,19 +350,112 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     }
 
     # Save to JSON file
-    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-    print(json.dumps(qa_entry, indent=4))
-    # with open(output_file, "w") as f:
-    #     json.dump(qa_entry, f, indent=4)
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entry, indent=4))
 
     return qa_entry
 
 
+def qa_generative(LLM, curr_data, verbose=False):
+    # Write new content that aligns and violates the persona
+    conversation = curr_data.get("Conversation", [])
+    conversation = utils.remove_side_notes(conversation)
+    conversation = "\n".join(conversation)
 
-def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path, visited_static_factual, verbose):
+    new_writing_sample = LLM.query_llm(step='new_content', data=conversation, action='write_new_sample', verbose=verbose)
+    violated_writing_styles = LLM.query_llm(step='new_content', data=conversation, action='write_violating_sample', verbose=verbose)
+
+    # Evaluate the new contents
+    persona = curr_data.get("Expanded Persona", "")
+    preferences = curr_data.get("Writing and Formatting Styles", "")
+    aligned_results = LLM.query_llm(step='eval_new_content', data={'persona': persona, 'preferences': preferences,
+                                                                   'paragraph1': new_writing_sample, 'paragraph2': violated_writing_styles}, action='evaluate_aligned', verbose=verbose)
+    violated_results = LLM.query_llm(step='eval_new_content', action='evaluate_violated', verbose=verbose)
+
+    qa_entry = {
+        "Aligned_new_writing_sample": new_writing_sample,
+        "Violated_new_writing_styles": violated_writing_styles,
+        "Aligned_results": aligned_results,
+        "Violated_results": violated_results,
+        "Type": "new_content_generative",
+        "Reference": preferences
+    }
+
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Aligned Results:{utils.Colors.ENDC}')
+        print(json.dumps(aligned_results, indent=4))
+        print(f'{utils.Colors.OKGREEN}Violated Results:{utils.Colors.ENDC}')
+        print(json.dumps(violated_results, indent=4))
+
+    return qa_entry
+
+
+def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose=False):
+    # Load a random creative writing sample
+    source_data = utils.load_one_source_data(all_source_files, context='writing')
+
+    # Load personas from the current file and three other random files
+    assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
+    all_data_paths = random.sample(['./data/output/writing/'+another_path for another_path in all_writing_files
+                                    if another_path != data_path and another_path.rsplit('_', 1)[-2] != data_path.rsplit('_', 1)[-2]], 3)
+    all_data_paths = [data_path] + all_data_paths   # The first one will be the correct answer
+
+    persona = None
+    new_writing_samples = []    # The first one will be the correct answer
+    for i, curr_data_path in enumerate(all_data_paths):
+        with open(curr_data_path, "r", encoding="utf-8") as f:
+            curr_data = json.load(f)
+
+        new_writing_samples.append(LLM.query_llm(step='new_content', data={'persona': curr_data.get('Expanded Persona'), 'preferences': curr_data.get('Writing and Formatting Styles'), 'source_data': source_data},
+                                                 action='write_new_sample_oracle', verbose=False))
+        if i == 0:
+            persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
+
+    qa_entry = {
+        "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
+        "Correct_Answer": new_writing_samples[0],
+        "Incorrect_Answers": new_writing_samples[1:],
+        "Type": "new_content_discriminative"
+    }
+
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entry, indent=4))
+
+    return qa_entry
+
+
+def evaluate_content_generation_from_memory(LLM, data_path, all_source_files, all_writing_files, verbose):
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    all_qa_entries = []
+
+    # Generative type of QA
+    qa_entry = qa_generative(LLM, data, verbose)
+    all_qa_entries.extend([qa_entry])
+
+    # Discriminative type of QA
+    qa_entry = qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose)
+    all_qa_entries.extend([qa_entry])
+
+    # Save all Q&A entries to the JSON file at data_path
+    if "Q&A" not in data:
+        data["Q&A"] = {conversation_key: all_qa_entries}
+    else:
+        data["Q&A"][conversation_key].extend(all_qa_entries)
+    with open(data_path, "w") as json_file:
+        json.dump(data, json_file, indent=4)
+
+    return
+
+
+def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, visited_static_factual, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
+    print(f'{utils.Colors.OKGREEN}data_path: {data_path}{utils.Colors.ENDC}')
 
     if 'therapy' in data_path:
         context = 'therapy'
@@ -392,6 +484,7 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
     }
 
     previous_blocks = [data.get(key, {}) for key in history_keys.get(conversation_key, [])]
+    all_qa_entries = []
 
     for timestamp, side_note in side_notes:
         # Find related data in the previous personal history for each current event
@@ -410,73 +503,40 @@ def process_conversation(action, LLM, SentenceBERT, conversation_key, data_path,
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
             if action == 'qa':
-                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
-                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history)
-                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history)
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None)
+                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
+                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
+                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
         else:
             # Static knowledge point
-            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual)
+            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+            all_qa_entries.extend(qa_entries)
+
+    # Save all Q&A entries to the JSON file at data_path
+    if "Q&A" not in data:
+        data["Q&A"] = {conversation_key: all_qa_entries}
+    else:
+        data["Q&A"][conversation_key].extend(all_qa_entries)
+    with open(data_path, "w") as json_file:
+        json.dump(data, json_file, indent=4)
+
+    return
 
 
-def qa_generative(LLM, data_path, verbose):
-    # Write new content that aligns and violates the persona
-    with open(data_path, "r", encoding="utf-8") as f:
-        curr_data = json.load(f)
-    conversation = curr_data.get("Conversation", [])
-    conversation = utils.remove_side_notes(conversation)
-    conversation = "\n".join(conversation)
-
-    new_writing_sample = LLM.query_llm(step='new_content', data=conversation, action='write_new_sample', verbose=verbose)
-    violated_writing_styles = LLM.query_llm(step='new_content', data=conversation, action='write_violating_sample', verbose=verbose)
-
-    # Evaluate the new contents
-    persona = curr_data.get("Expanded Persona", "")
-    preferences = curr_data.get("Writing and Formatting Styles", "")
-    aligned_results = LLM.query_llm(step='eval_new_content', data={'persona': persona, 'preferences': preferences,
-                                                                   'paragraph1': new_writing_sample, 'paragraph2': violated_writing_styles}, action='evaluate_aligned', verbose=verbose)
-    violated_results = LLM.query_llm(step='eval_new_content', action='evaluate_violated', verbose=verbose)
-
-    print(f'{utils.Colors.OKGREEN}Aligned Results:{utils.Colors.ENDC}')
-    print(json.dumps(aligned_results, indent=4))
-    print(f'{utils.Colors.OKGREEN}Violated Results:{utils.Colors.ENDC}')
-    print(json.dumps(violated_results, indent=4))
+def get_all_file_names(base_folder):
+    file_names = []
+    for root, _, files in os.walk(base_folder):
+        for file in files:
+            file_names.append(os.path.join(root, file))
+    return file_names
 
 
-def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose):
-    # Load a random creative writing sample
-    source_data = utils.load_one_source_data(all_source_files, context='writing')
+# def batch_process(action, LLM, SentenceBERT, data_paths, visited_static_factual, verbose):
 
-    # Load personas from the current file and three other random files
-    assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
-    all_data_paths = random.sample(['./data/output/writing/'+another_path for another_path in all_writing_files
-                                    if another_path != data_path and another_path.rsplit('_', 1)[-2] != data_path.rsplit('_', 1)[-2]], 3)
-    all_data_paths = [data_path] + all_data_paths   # The first one will be the correct answer
-
-    persona = None
-    new_writing_samples = []    # The first one will be the correct answer
-    for i, curr_data_path in enumerate(all_data_paths):
-        with open(curr_data_path, "r", encoding="utf-8") as f:
-            curr_data = json.load(f)
-
-        new_writing_samples.append(LLM.query_llm(step='new_content', data={'persona': curr_data.get('Expanded Persona'), 'preferences': curr_data.get('Writing and Formatting Styles'), 'source_data': source_data},
-                                                 action='write_new_sample_oracle', verbose=False))
-        if i == 0:
-            persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
-
-    qa_entry = {
-        "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
-        "Correct_Answer": new_writing_samples[0],
-        "Incorrect_Answers": new_writing_samples[1:],
-        "Type": "new_content_discriminative"
-    }
-    print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-    print(json.dumps(qa_entry, indent=4))
-
-
-def evaluate_content_generations(LLM, data_path, all_source_files, all_writing_files, verbose):
-    # qa_generative(LLM, data_path, verbose)
-    qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose)
 
 
 if __name__ == "__main__":
@@ -490,8 +550,8 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--action', type=str, default="qa", help='Choose from qa, view_graphs. Not applicable for the "writing" context.')
-    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
+    parser.add_argument('--action', type=str, default="qa", help='Choose from batch_qa, qa, and view_graphs (not applicable for the "writing" context.')
+    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file (not applicable for batch)')
     parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data. Not applicable for the "writing" context.')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
@@ -508,7 +568,7 @@ if __name__ == "__main__":
     if 'writing' in cmd_args.data:
         all_source_files = utils.load_all_source_data(args['datasets']['writing_source_dir'], 'writing')
         all_writing_files = utils.load_all_writing_data()
-        evaluate_content_generations(LLM, data_path=cmd_args.data, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+        evaluate_content_generation_from_memory(LLM, data_path=cmd_args.data, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
     else:
         if cmd_args.time == 'init':
             cmd_args.time = 'Init Conversation'
@@ -524,4 +584,4 @@ if __name__ == "__main__":
         SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
         visited_static_factual = {}
 
-        process_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)

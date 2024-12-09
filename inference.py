@@ -23,6 +23,12 @@ def inference(args):
         if found:
             # Ensure that every data file with the same idx_persona share the same persona
             persona, expanded_persona, start_time = found['persona'], found['expanded_persona'], found['start_time']
+            LLM.expanded_persona = expanded_persona
+            if args['inference']['verbose']:
+                print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}')
+                print(persona)
+                print(f'{utils.Colors.OKGREEN}{"Expanded Persona"}:{utils.Colors.ENDC}')
+                print(expanded_persona)
         else:
             # Create a new persona for the new idx_persona
             random_row = random.choice(all_personas)

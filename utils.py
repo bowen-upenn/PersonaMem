@@ -5,6 +5,7 @@ import random
 import json
 import re
 from datetime import datetime, timedelta
+from sentence_transformers import util
 
 
 class Colors:
@@ -238,11 +239,13 @@ def find_existing_persona_files(idx_persona):
             break
 
     if matching_file:
-        with open(existing_files[0], 'r') as file:
+        with open(matching_file, 'r') as file:
             data = json.load(file)
         persona = data["Original Persona"]
         expanded_persona = data["Expanded Persona"]
         start_time = next(iter(data["Init General Personal History"].keys()))  # Get the first timestamp
+
+        print(f'Found an existing persona file for persona {idx_persona}.')
 
         return {'persona': persona, 'expanded_persona': expanded_persona, 'start_time': start_time}
     else:

@@ -108,7 +108,7 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
         raise ValueError("Invalid context", context)
 
     prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + context_name + ". " \
-             "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps as the skeleton. " \
+             "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps of the format MM/DD/YYYY as the skeleton. Do NOT change the time stamps. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a " + agent.lower() + ". " \
              "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either '" + user + "', '" + agent + "', or 'Side_Note'." \
              "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
