@@ -29,23 +29,48 @@ def find_related_data(timestamp, history_blocks):
     Finds events in the provided history blocks that match the timestamp.
     """
     related_data = []
-    for block in history_blocks:
+    for _, block in history_blocks.items():
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
     return related_data
 
 
-def trace_event_history(timestamp, previous_blocks, verbose=False):
+def get_time_period_from_block_name(bname):
+    if "Next Year" in bname:
+        return "Conversation Next Year"
+    elif "Next Month" in bname:
+        return "Conversation Next Month"
+    elif "Next Week" in bname:
+        return "Conversation Next Week"
+    else:
+        return "Init Conversation"
+
+
+def trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=False):
     """
     Traces the event history recursively, if needed, for knowledge updates.
     """
     linear_graph = {}
+
     while True:
         event_data = None
-        for block in previous_blocks:
+        for key, block in previous_history_blocks.items():
             event_data = block.get(timestamp)
+
+            # If found the matched time stamp in the block
             if event_data:
+                # Map each personal history block to a conversation
+                time_period = get_time_period_from_block_name(key)
+                conversation = previous_conversation_blocks[time_period]
+                found = False
+                for i, line in enumerate(conversation):
+                    if line.startswith("Side_Note") and timestamp in line:
+                        event_data['Conversation'] = conversation[i - 1] + '\n' + conversation[i] + '\n' + conversation[i + 1] + '\n' + conversation[i + 2]
+                        found = True
+                        break
+                if not found:
+                    event_data['Conversation'] = ""
                 break
 
         if not event_data:
@@ -80,6 +105,10 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
     qa_entries = []
 
     for current_timestamp, current_detail in event_history.items():
+        # Avoid any events not mentioned in the conversation
+        if len(current_detail['Conversation']) == 0:
+            continue
+
         # Avoid duplicate questions for the same event, which could be visited by another linear graph
         if current_timestamp in visited_static_factual:
             if visited_static_factual[current_timestamp] == current_detail['Event']:
@@ -134,6 +163,11 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
     for i, timestamp in enumerate(timestamps[:-1]):  # Iterate until the second-to-last timestamp
         current_details = event_history[timestamp]
         next_details = event_history[timestamps[i + 1]]
+
+        # Avoid any events not mentioned in the conversation
+        if len(current_details['Conversation']) == 0 or len(next_details['Conversation']) == 0:
+            continue
+
         reference = {
             timestamp: current_details,
             timestamps[i + 1]: next_details
@@ -236,6 +270,10 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
     for i, timestamp in enumerate(reversed(timestamps)):
         current_details = event_history[timestamp]
 
+        # Avoid any events not mentioned in the conversation
+        if len(current_details['Conversation']) == 0:
+            continue
+
         if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
             curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
             if i == 0:
@@ -323,7 +361,10 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         response = utils.process_json_from_api(response)
         parent_object = response.get("parent_object", "")
 
-    recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
+    # Avoid any events not mentioned in the conversation, while it is safe to assume that the first one must has been mentioned
+    recent_two_events = json.dumps(current_detail, indent=4)
+    if len(previous_detail['Conversation']) > 0:
+        recent_two_events += json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
     response = utils.process_json_from_api(response)
@@ -469,7 +510,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     # Collect all side notes with timestamps in the current conversation
     side_notes = extract_side_notes_with_timestamps(conversation)
 
-    history_keys = {
+    previous_personal_histories = {
         "Init Conversation": ["Init General Personal History", "Init Contextual Personal History"],
         "Conversation Next Week": ["Init General Personal History", "General Personal History Next Week",
                                    "Init Contextual Personal History", "Contextual Personal History Next Week"],
@@ -482,13 +523,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                                    "Init Contextual Personal History", "Contextual Personal History Next Week",
                                    "Contextual Personal History Next Month", "Contextual Personal History Next Year"]
     }
+    previous_conversations = {
+        "Init Conversation": ["Init Conversation"],
+        "Conversation Next Week": ["Init Conversation", "Conversation Next Week"],
+        "Conversation Next Month": ["Init Conversation", "Conversation Next Week", "Conversation Next Month"],
+        "Conversation Next Year": ["Init Conversation", "Conversation Next Week", "Conversation Next Month", "Conversation Next Year"]
+    }
 
-    previous_blocks = [data.get(key, {}) for key in history_keys.get(conversation_key, [])]
+    previous_history_blocks = {key: data.get(key, {}) for key in previous_personal_histories.get(conversation_key, [])}
+    previous_conversation_blocks = {key: data.get(key, []) for key in previous_conversations.get(conversation_key, [])}
     all_qa_entries = []
 
     for timestamp, side_note in side_notes:
         # Find related data in the previous personal history for each current event
-        related_data = find_related_data(timestamp, previous_blocks)
+        related_data = find_related_data(timestamp, previous_history_blocks)
         if not related_data:
             continue
 
@@ -498,7 +546,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         else:
             most_similar_data = related_data[0]
 
-        event_history = trace_event_history(timestamp, previous_blocks, verbose=(action=='view_graphs'))
+        event_history = trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=(action=='view_graphs'))
 
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update

@@ -59,33 +59,19 @@ def load_one_source_data(source_dir, all_source_files, context):
 
 def process_json_from_api(response):
     # Parse JSON from API response
-    # print('response before:', response)
     response = response.strip("```json").strip("```python").strip("```").strip()
 
-    # Replace single quotes around keys and values, ignoring inner single quotes
-    # Replace single quotes with double quotes, excluding possessive cases
-    response = re.sub(
-        r"(?<!\w)'|'(?!\w)",  # Match single quotes not part of possessive forms
-        '"',
-        response
-    )
-    # response = response.replace("'", '"')
-    # response = re.sub(r"'(\w+)':", r'"\1":', response)
-    # response = re.sub(r":\s'([^']*)'", r': "\1"', response)
-    # print('response after:', response)
+    # First, convert single-quoted keys to double-quoted keys
+    # Matches patterns like: 'Key':
+    # Captures the key (excluding quotes), then replaces the single quotes with double
+    response = re.sub(r"'([^']+)':", r'"\1":', response)
+
+    # Convert single-quoted values to double-quoted values
+    # Using double quotes for the pattern to avoid string parsing issues:
+    response = re.sub(r":\s*'([^']*)'(\s*[},])", r': "\1"\2', response)
+
     response = json.loads(response)
     return response
-
-
-# def rewrite_sample(LLM, persona, writing_sample, verbose):
-#     # Rewrite the writing sample to be persona-aligned
-#     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=verbose)
-#     # preferences = process_json_from_api(preferences)
-#     # writing_styles = preferences.get("Writing_styles", "")
-#     # formatting_styles = preferences.get("Formatting_styles", "")
-#
-#     updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=writing_sample, action='rewrite_from_persona', verbose=verbose)
-#     return preferences, updated_writing_sample
 
 
 def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False):

@@ -111,8 +111,8 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
              "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps of the format MM/DD/YYYY as the skeleton. Do NOT change the time stamps. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a " + agent.lower() + ". " \
              "Write the conversation as a list in the JSON format, where each sentence is an element in the list and starts with either '" + user + "', '" + agent + "', or 'Side_Note'." \
-             "Make sure to include all the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
-             "containing the related event itself and the MM/DD/YYYY timestamp before an actual sentence in the conversation that is related to this point. Do not mention underlying '[Fact]' of the event. " \
+             "Make sure to include ALL the bullet points in the history in the JSON file, such that there must be a separate line in square bracket '[]' that starts with 'Side_Note'" \
+             "containing the related event itself and the MM/DD/YYYY timestamp BEFORE an actual sentence in the conversation that is related to this point. Do not mention underlying '[Fact]' of the event. " \
              "Do NOT modify any MM/DD/YYYY above. If a sentence is not relevant to any bullet point, no need for the 'Side_Note' before it. " \
              "The " + user.lower() + "'s conversation should clearly include detailed info about these events, while ensuring the conversation is LONG enough and contain other information and details to make it long. " \
              "If the personal history mentions about any '[Reasons of Change]', make sure to mention them naturally in the conversation and show that the person has changed the like/dislike attitude towards it, but avoid talking about the corresponding '[Old Event]' explicitly. " \
@@ -132,6 +132,12 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
         prompt += "Please use the same persona:\n\n" + persona + "\n\n" \
                   "but with a new background development history happened in the next year following the previous conversation:\n\n" + curr_personal_history + "\n\n"
 
+    prompt += "Except for the initial sentences as the introduction, here is the template you should follow for each pair of utterance that mentions a fact in the personal history:\n\n" \
+              "[\n" \
+              'Side_Note: [xxx] MM/DD/YYYY,\n' \
+              '' + user + ': xxx,\n' \
+              '' + agent + ': yyy,\n' \
+              "...]"
     return prompt
 
 
