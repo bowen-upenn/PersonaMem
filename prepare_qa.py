@@ -28,13 +28,11 @@ def find_related_data(timestamp, history_blocks):
     """
     Finds events in the provided history blocks that match the timestamp.
     """
-    print('timestamp', timestamp)
     related_data = []
     for block in history_blocks:
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
-    print('related_data', related_data)
     return related_data
 
 
@@ -98,7 +96,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
         match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
         if match:
             incorrect_answers = match.group(1)  # Extract the code block
-        incorrect_answers = incorrect_answers.strip("```").strip()
+        incorrect_answers = incorrect_answers.strip("```").strip().replace("'", '"')
         incorrect_answers = ast.literal_eval(incorrect_answers)
 
         qa_entries.append({
@@ -325,6 +323,7 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
+    print('response', response)
     response = utils.process_json_from_api(response)
     question = response.get("Question", "")
     correct_answer = response.get("Answer", "")
@@ -391,9 +390,9 @@ def qa_generative(LLM, curr_data, verbose=False):
     return qa_entry
 
 
-def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose=False):
+def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose=False):
     # Load a random creative writing sample
-    source_data = utils.load_one_source_data(all_source_files, context='writing')
+    source_data = utils.load_one_source_data(source_dir, all_source_files, context='writing')
 
     # Load personas from the current file and three other random files
     assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
@@ -426,7 +425,7 @@ def qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbo
     return qa_entry
 
 
-def evaluate_content_generation_from_memory(LLM, data_path, all_source_files, all_writing_files, verbose):
+def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose):
     with open(data_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -437,14 +436,14 @@ def evaluate_content_generation_from_memory(LLM, data_path, all_source_files, al
     all_qa_entries.extend([qa_entry])
 
     # Discriminative type of QA
-    qa_entry = qa_discriminative(LLM, data_path, all_source_files, all_writing_files, verbose)
+    qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
     all_qa_entries.extend([qa_entry])
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:
-        data["Q&A"] = {conversation_key: all_qa_entries}
+        data["Q&A"] = {'Conversation': all_qa_entries}
     else:
-        data["Q&A"][conversation_key].extend(all_qa_entries)
+        data["Q&A"]['Conversation'].extend(all_qa_entries)
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
@@ -520,7 +519,10 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     if "Q&A" not in data:
         data["Q&A"] = {conversation_key: all_qa_entries}
     else:
-        data["Q&A"][conversation_key].extend(all_qa_entries)
+        if conversation_key not in data["Q&A"]:
+            data["Q&A"][conversation_key] = all_qa_entries
+        else:
+            data["Q&A"][conversation_key].extend(all_qa_entries)
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
@@ -566,9 +568,10 @@ if __name__ == "__main__":
     LLM.create_a_thread(step='qa')
 
     if 'writing' in cmd_args.data:
-        all_source_files = utils.load_all_source_data(args['datasets']['writing_source_dir'], 'writing')
+        source_dir = args['datasets']['writing_source_dir']
+        all_source_files = utils.load_all_source_data(source_dir, 'writing')
         all_writing_files = utils.load_all_writing_data()
-        evaluate_content_generation_from_memory(LLM, data_path=cmd_args.data, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+        evaluate_content_generation_from_memory(LLM, data_path=cmd_args.data, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
     else:
         if cmd_args.time == 'init':
             cmd_args.time = 'Init Conversation'

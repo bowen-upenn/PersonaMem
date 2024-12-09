@@ -159,6 +159,47 @@ def count_tokens(all_strings):
     all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
     print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on {args['models']['llm_model']} tokenizer{utils.Colors.ENDC}")
+    
+    
+def extract_qa(base_dir, context, file_name, time_period):
+    with open(os.path.join(base_dir, os.path.join(context, file_name)), "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    qa = data['Q&A'][time_period]
+    return qa
+
+
+def question_loader(qa_list):
+    """
+    Generator function that acts as a data loader and yields one formatted Q&A string at a time.
+    Args:
+        qa_list (list): A list of dictionaries containing the Q&A data from extract_qa.
+    Yields:
+        str: A string with the question and all candidate answers in a multiple-choice format.
+    """
+    for qa in qa_list:
+        # Skip generative questions, which is not in the multiple-choice format
+        if qa['Type'] == 'new_content_generative':
+            continue
+
+        # Select three incorrect answers randomly if there are more than three
+        incorrect_answers = random.sample(qa["Incorrect_Answers"], min(3, len(qa["Incorrect_Answers"])))
+
+        # Combine correct answer with incorrect answers
+        options = [qa["Correct_Answer"]] + incorrect_answers
+        random.shuffle(options)
+
+        # Find the correct answer's option
+        correct_index = options.index(qa["Correct_Answer"])
+        correct_answer = chr(97 + correct_index) + " " + qa["Correct_Answer"] # Convert index to letter (e.g., 0 -> 'a')
+
+        # Create the multiple-choice question string
+        question = qa["Question"]
+        formatted_question = f"Question: {question}\nAnswer:\n" + "\n".join(
+            [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
+        )
+
+        yield formatted_question, correct_answer
 
 
 if __name__ == "__main__":
@@ -173,11 +214,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
-    parser.add_argument('--format', type=str, default='string', help='Output conversation format: string or api_dict')
+    parser.add_argument('--format', type=str, default='string', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
     idx_persona = cmd_args.idx_persona
     n_blocks = cmd_args.n_blocks
+
     which_format = cmd_args.format
     verbose = cmd_args.verbose
 
@@ -190,17 +232,22 @@ if __name__ == "__main__":
     # Process each chosen conversation block
     processed_blocks_dict = {}
     all_strings = []
+    all_qa = []
     for (file_name, time_period), conversation in chosen_blocks:
         context = file_name.split('_')[1]
         processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+
+        qa = extract_qa(base_dir, context, file_name, time_period)
+        all_qa.extend(qa)
+
         processed_blocks_dict[latest_ts] = {
-            "conversation": processed_conversation[0],
+            "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
             "file_name": file_name,
             "time_period": time_period,
             "last_timestamp": latest_ts,
-            "context": context
+            "context": context,
         }
-        all_strings.append(processed_conversation[-1])
+        all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
 
     # Topological sort chosen conversation blocks by the latest timestamp
     sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
@@ -208,4 +255,9 @@ if __name__ == "__main__":
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
     count_tokens(all_strings)
+
+    # Show all Q&As related to this concatenated conversation
+    for formatted_question, correct_answer in question_loader(qa_list):
+        print(formatted_question)
+        print(f'{utils.Colors.OKGREEN}Correct answer: {correct_answer}{utils.Colors.ENDC}')
 
