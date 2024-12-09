@@ -169,6 +169,23 @@ def extract_qa(base_dir, context, file_name, time_period):
     return qa
 
 
+def compute_question_distance(sorted_processed_blocks):
+    """
+    We assume the questions are asked at the end of all concatenated conversation blocks.
+    This function computes the distance of each question from the end to its corresponding conversation block.
+    Range of distance: [0, total_blocks-1]
+    """
+    total_blocks = len(sorted_processed_blocks)
+    all_qa = []
+    for i, block in enumerate(sorted_processed_blocks):
+        # Distance = total_blocks - block_position
+        distance = total_blocks - (i + 1)
+        for q in block.get('qa', []):
+            q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
+            all_qa.append(q)
+    return all_qa
+
+
 def question_loader(qa_list):
     """
     Generator function that acts as a data loader and yields one formatted Q&A string at a time.
@@ -201,8 +218,10 @@ def question_loader(qa_list):
         formatted_question = f"Question: {question}\nAnswer:\n" + "\n".join(
             [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
         )
+        
+        distance = qa['distance']
 
-        yield formatted_question, correct_answer
+        yield formatted_question, correct_answer, distance
 
 
 if __name__ == "__main__":
@@ -235,13 +254,12 @@ if __name__ == "__main__":
     # Process each chosen conversation block
     processed_blocks_dict = {}
     all_strings = []
-    all_qa = []
+
     for (file_name, time_period), conversation in chosen_blocks:
         context = file_name.split('_')[1]
         processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
 
         qa = extract_qa(base_dir, context, file_name, time_period)
-        all_qa.extend(qa)
 
         processed_blocks_dict[latest_ts] = {
             "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
@@ -249,24 +267,27 @@ if __name__ == "__main__":
             "time_period": time_period,
             "last_timestamp": latest_ts,
             "context": context,
+            "qa": qa
         }
         all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
 
     # Topological sort chosen conversation blocks by the latest timestamp
     sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
+    all_qa = compute_question_distance(sorted_processed_blocks)
 
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
     count_tokens(all_strings)
 
     # Show all Q&As related to this concatenated conversation
-    for formatted_question, correct_answer in question_loader(all_qa):
+    for formatted_question, correct_answer, distance in question_loader(all_qa):
         """
-        Example usage: formatted_question is the input to the LLM model, and correct_answer is the target answer. 
-        We split the formatted_question here only for display purposes.
+        The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
+        We (1) split the formatted_question (2) add the distance here, only for display purposes.
+        Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
         """
         question = formatted_question.split('\n', 1)[0]
         rest_of_qa = formatted_question[len(question):]
 
-        print(f'{utils.Colors.OKGREEN}{question}{utils.Colors.ENDC}{rest_of_qa}')
+        print(f'{utils.Colors.OKGREEN}{question} [Distance {distance}]{utils.Colors.ENDC}{rest_of_qa}')
         print(f'Correct answer: {correct_answer}')
