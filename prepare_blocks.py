@@ -178,6 +178,9 @@ def question_loader(qa_list):
         str: A string with the question and all candidate answers in a multiple-choice format.
     """
     for qa in qa_list:
+        # For a group of static_factual type of questions, it is accompanied by a shared reference, which is not a question
+        if 'Type' not in qa:
+            continue
         # Skip generative questions, which is not in the multiple-choice format
         if qa['Type'] == 'new_content_generative':
             continue
@@ -257,7 +260,13 @@ if __name__ == "__main__":
     count_tokens(all_strings)
 
     # Show all Q&As related to this concatenated conversation
-    for formatted_question, correct_answer in question_loader(qa_list):
-        print(formatted_question)
-        print(f'{utils.Colors.OKGREEN}Correct answer: {correct_answer}{utils.Colors.ENDC}')
+    for formatted_question, correct_answer in question_loader(all_qa):
+        """
+        Example usage: formatted_question is the input to the LLM model, and correct_answer is the target answer. 
+        We split the formatted_question here only for display purposes.
+        """
+        question = formatted_question.split('\n', 1)[0]
+        rest_of_qa = formatted_question[len(question):]
 
+        print(f'{utils.Colors.OKGREEN}{question}{utils.Colors.ENDC}{rest_of_qa}')
+        print(f'Correct answer: {correct_answer}')

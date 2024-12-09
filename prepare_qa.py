@@ -300,6 +300,9 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
 
 def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=False):
+    """
+    Recommendation-type questions only care about the most recent two events for each conversation block
+    """
     if context == "therapy":
         user = "patient"
     elif context == "legal":
@@ -323,7 +326,6 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     recent_two_events = json.dumps(current_detail, indent=4) + json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
-    print('response', response)
     response = utils.process_json_from_api(response)
     question = response.get("Question", "")
     correct_answer = response.get("Answer", "")
@@ -336,7 +338,6 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     incorrect_answers = ast.literal_eval(incorrect_answers)
 
     identity = LLM.query_llm(step='qa_helper', data=persona["Expanded Persona"], action='extract_identity', verbose=False)
-    print('Persona', identity+". "+persona["Original Persona"])
     stereotypical_answer = LLM.query_llm(step='qa_helper', data={'user': user, 'persona': identity+". "+persona["Original Persona"], 'qa': str(response)}, action='propose_stereotype_recommendation', verbose=False)
     incorrect_answers.append(stereotypical_answer)
 
@@ -502,8 +503,8 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
             if action == 'qa':
-                qa_entry = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
+                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
                 qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
                 all_qa_entries.extend(qa_entries)
                 qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)

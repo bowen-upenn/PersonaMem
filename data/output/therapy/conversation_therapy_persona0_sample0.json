@@ -884,65 +884,63 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What did the patient do on 06/15/2010 for a writing project?",
-                    "Correct_Answer": "Revisited a pop culture festival to gather inspiration for a writing project.",
-                    "Incorrect_Answers": [
-                        "Watched a nature documentary to gain ideas for a writing essay.",
-                        "Visited an art gallery to collect thoughts for a book draft.",
-                        "Explored a historical site to brainstorm for a novel idea."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant event regarding their social preferences occurred for the patient on 05/15/2009?",
-                    "Correct_Answer": "The patient attended a friend's large birthday party and surprisingly enjoyed the vibrant atmosphere, marking a shift in their social preferences from disliking to liking large and loud parties.",
-                    "Incorrect_Answers": [
-                        "The patient baked a cake for a friend\u2019s birthday party and found the process relaxing, marking a shift towards enjoying cooking.",
-                        "The patient attended a meditation retreat and found the silent environment uncomfortable, marking a shift away from enjoying quiet settings.",
-                        "The patient ran a marathon for the first time and felt accomplished, marking a shift in their physical activity preferences."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did Jordan do on 07/25/2000 to align with their dislike for attending large and loud parties?",
-                    "Correct_Answer": "Jordan invited friends over for a small get-together, avoiding large parties.",
-                    "Incorrect_Answers": [
-                        "Jordan went to a large music festival, enjoying the noise.",
-                        "Jordan joined a big crowd at a loud dance party.",
-                        "Jordan attended a large concert, savoring the loud music."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "06/15/2010": {
-                            "Event": "Revisited a pop culture festival to gather inspiration for a writing project.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Sought to critically assess the influence of pop culture on modern narratives.",
-                            "[Updated Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "05/15/2009",
-                            "[Old Event]": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere."
-                        },
-                        "05/15/2009": {
-                            "Event": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Felt a strong sense of community and belonging that day.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "07/25/2000",
-                            "[Old Event]": "Jordan invited friends over for a small get-together, avoiding large parties."
-                        },
-                        "07/25/2000": {
-                            "Event": "Jordan invited friends over for a small get-together, avoiding large parties.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Attending large and loud parties"
-                        }
+            {
+                "Question": "What did the patient do on 06/15/2010 for a writing project?",
+                "Correct_Answer": "Revisited a pop culture festival to gather inspiration for a writing project.",
+                "Incorrect_Answers": [
+                    "Watched a nature documentary to gain ideas for a writing essay.",
+                    "Visited an art gallery to collect thoughts for a book draft.",
+                    "Explored a historical site to brainstorm for a novel idea."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant event regarding their social preferences occurred for the patient on 05/15/2009?",
+                "Correct_Answer": "The patient attended a friend's large birthday party and surprisingly enjoyed the vibrant atmosphere, marking a shift in their social preferences from disliking to liking large and loud parties.",
+                "Incorrect_Answers": [
+                    "The patient baked a cake for a friend\u2019s birthday party and found the process relaxing, marking a shift towards enjoying cooking.",
+                    "The patient attended a meditation retreat and found the silent environment uncomfortable, marking a shift away from enjoying quiet settings.",
+                    "The patient ran a marathon for the first time and felt accomplished, marking a shift in their physical activity preferences."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did Jordan do on 07/25/2000 to align with their dislike for attending large and loud parties?",
+                "Correct_Answer": "Jordan invited friends over for a small get-together, avoiding large parties.",
+                "Incorrect_Answers": [
+                    "Jordan went to a large music festival, enjoying the noise.",
+                    "Jordan joined a big crowd at a loud dance party.",
+                    "Jordan attended a large concert, savoring the loud music."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "06/15/2010": {
+                        "Event": "Revisited a pop culture festival to gather inspiration for a writing project.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Sought to critically assess the influence of pop culture on modern narratives.",
+                        "[Updated Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "05/15/2009",
+                        "[Old Event]": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere."
+                    },
+                    "05/15/2009": {
+                        "Event": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Felt a strong sense of community and belonging that day.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "07/25/2000",
+                        "[Old Event]": "Jordan invited friends over for a small get-together, avoiding large parties."
+                    },
+                    "07/25/2000": {
+                        "Event": "Jordan invited friends over for a small get-together, avoiding large parties.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Attending large and loud parties"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient revisited a pop culture festival to gather inspiration for a writing project in 06/15/2010 although the patient dislikes engaging with pop culture trends?",
                 "Correct_Answer": "Sought to critically assess the influence of pop culture on modern narratives.",
@@ -1090,84 +1088,82 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What event did the patient experience on 07/05/2010 related to reality TV shows?",
-                    "Correct_Answer": "Visited a reality TV show set as a guest audience member.",
-                    "Incorrect_Answers": [
-                        "Judged an art contest as the lead director.",
-                        "Attended a movie premiere as a guest actor.",
-                        "Participated in a technical seminar session."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What change in preferences regarding TV shows did the patient experience by 05/17/2009?",
-                    "Correct_Answer": "The patient transitioned from disliking reality TV shows to liking them, as indicated by their engagement with watching reality TV shows to understand cultural trends among peers.",
-                    "Incorrect_Answers": [
-                        "The patient transitioned from enjoying comedy TV shows to liking them, as indicated by their engagement with watching reality TV shows to understand cultural trends among friends.",
-                        "The patient transitioned from disliking drama TV shows to loving them, as indicated by their engagement with watching reality TV shows to explore cultural events among peers.",
-                        "The patient shifted from disliking sports TV shows to watching them, as implied by their interest in watching reality TV shows to analyze cultural shifts among peers."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What activity did Jordan engage in on 05/04/2009 to understand cultural trends among peers?",
-                    "Correct_Answer": "Watched a reality TV show to understand cultural trends among peers.",
-                    "Incorrect_Answers": [
-                        "Donated a bookfair pass to theatre peers of note.",
-                        "Visited an art gallery to observe local sculpture.",
-                        "Attended a music concert to meet new seniors."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did the patient do on 02/18/2006 instead of watching reality TV?",
-                    "Correct_Answer": "The patient opted to read a book instead.",
-                    "Incorrect_Answers": [
-                        "She decided to bake a pie that day.",
-                        "The patient went for a hike outside.",
-                        "Instead, the patient took a painting class."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "07/05/2010": {
-                            "Event": "Visited a reality TV show set as a guest audience member.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Explored the behind-the-scenes dynamics of reality television for a personal study.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "05/17/2009",
-                            "[Old Event]": "Started watching a streaming series, captivated by its dramatic storytelling."
-                        },
-                        "05/17/2009": {
-                            "Event": "Started watching a streaming series, captivated by its dramatic storytelling.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Aimed to understand narrative structures for personal creative projects.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "05/04/2009",
-                            "[Old Event]": "Watched a reality TV show to understand cultural trends among peers."
-                        },
-                        "05/04/2009": {
-                            "Event": "Watched a reality TV show to understand cultural trends among peers.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "02/18/2006",
-                            "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
-                        },
-                        "02/18/2006": {
-                            "Event": "Avoided watching reality TV, opting to read a book instead.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Watching reality TV shows"
-                        }
+            {
+                "Question": "What event did the patient experience on 07/05/2010 related to reality TV shows?",
+                "Correct_Answer": "Visited a reality TV show set as a guest audience member.",
+                "Incorrect_Answers": [
+                    "Judged an art contest as the lead director.",
+                    "Attended a movie premiere as a guest actor.",
+                    "Participated in a technical seminar session."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What change in preferences regarding TV shows did the patient experience by 05/17/2009?",
+                "Correct_Answer": "The patient transitioned from disliking reality TV shows to liking them, as indicated by their engagement with watching reality TV shows to understand cultural trends among peers.",
+                "Incorrect_Answers": [
+                    "The patient transitioned from enjoying comedy TV shows to liking them, as indicated by their engagement with watching reality TV shows to understand cultural trends among friends.",
+                    "The patient transitioned from disliking drama TV shows to loving them, as indicated by their engagement with watching reality TV shows to explore cultural events among peers.",
+                    "The patient shifted from disliking sports TV shows to watching them, as implied by their interest in watching reality TV shows to analyze cultural shifts among peers."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What activity did Jordan engage in on 05/04/2009 to understand cultural trends among peers?",
+                "Correct_Answer": "Watched a reality TV show to understand cultural trends among peers.",
+                "Incorrect_Answers": [
+                    "Donated a bookfair pass to theatre peers of note.",
+                    "Visited an art gallery to observe local sculpture.",
+                    "Attended a music concert to meet new seniors."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did the patient do on 02/18/2006 instead of watching reality TV?",
+                "Correct_Answer": "The patient opted to read a book instead.",
+                "Incorrect_Answers": [
+                    "She decided to bake a pie that day.",
+                    "The patient went for a hike outside.",
+                    "Instead, the patient took a painting class."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "07/05/2010": {
+                        "Event": "Visited a reality TV show set as a guest audience member.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Explored the behind-the-scenes dynamics of reality television for a personal study.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "05/17/2009",
+                        "[Old Event]": "Started watching a streaming series, captivated by its dramatic storytelling."
+                    },
+                    "05/17/2009": {
+                        "Event": "Started watching a streaming series, captivated by its dramatic storytelling.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Aimed to understand narrative structures for personal creative projects.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "05/04/2009",
+                        "[Old Event]": "Watched a reality TV show to understand cultural trends among peers."
+                    },
+                    "05/04/2009": {
+                        "Event": "Watched a reality TV show to understand cultural trends among peers.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "02/18/2006",
+                        "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
+                    },
+                    "02/18/2006": {
+                        "Event": "Avoided watching reality TV, opting to read a book instead.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Watching reality TV shows"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient visited a reality tv show set as a guest audience member in 07/05/2010 although the patient dislikes watching reality tv shows?",
                 "Correct_Answer": "Explored the behind-the-scenes dynamics of reality television for a personal study.",
@@ -1346,34 +1342,32 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What significant decision did the patient make on 07/12/2010 regarding mindfulness retreats?",
-                    "Correct_Answer": "The patient decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
-                    "Incorrect_Answers": [
-                        "The patient declined a role in a large musical retreat, turning away larger networks.",
-                        "The patient chose to attend a small fitness retreat, reaching for quieter settings.",
-                        "The patient opted to lead a private meditation session, attracting intimate groups."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "07/12/2010": {
-                            "Event": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Recognized the collective energy and support of large groups.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "06/08/2010",
-                            "[Old Event]": "Disconnected from social media to focus on mental well-being."
-                        },
-                        "06/08/2010": {
-                            "Event": "Disconnected from social media to focus on mental well-being.",
-                            "Category": "Short-Term",
-                            "[Fact] Likes": "Meditation and mindfulness practices"
-                        }
+            {
+                "Question": "What significant decision did the patient make on 07/12/2010 regarding mindfulness retreats?",
+                "Correct_Answer": "The patient decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
+                "Incorrect_Answers": [
+                    "The patient declined a role in a large musical retreat, turning away larger networks.",
+                    "The patient chose to attend a small fitness retreat, reaching for quieter settings.",
+                    "The patient opted to lead a private meditation session, attracting intimate groups."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "07/12/2010": {
+                        "Event": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Recognized the collective energy and support of large groups.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "06/08/2010",
+                        "[Old Event]": "Disconnected from social media to focus on mental well-being."
+                    },
+                    "06/08/2010": {
+                        "Event": "Disconnected from social media to focus on mental well-being.",
+                        "Category": "Short-Term",
+                        "[Fact] Likes": "Meditation and mindfulness practices"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient decided to lead a large mindfulness retreat, reaching out to bigger crowds in 07/12/2010 although the patient dislikes attending large and loud parties?",
                 "Correct_Answer": "Recognized the collective energy and support of large groups.",
@@ -1455,43 +1449,41 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What change did the patient consciously make on 08/01/2010 regarding their social preferences?",
-                    "Correct_Answer": "On 08/01/2010, the patient consciously reverted to avoiding crowded places, preferring intimate settings, realizing that deeper connections are nurtured in smaller, quieter spaces.",
-                    "Incorrect_Answers": [
-                        "On 08/01/2010, the patient consciously decided to socialize more in crowded spaces, realizing that vibrant, lively environments are ideal for making deeper connections.",
-                        "On 08/01/2010, the patient consciously opted to spend time only in outdoor recreational areas, believing that nature is conducive to building deeper relationships.",
-                        "On 08/01/2010, the patient consciously chose to participate in large public events, feeling that such settings provide the best opportunity for forming meaningful connections."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "08/01/2010": {
-                            "Event": "Consciously reverted to avoiding crowded places, preferring intimate settings.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Realized that deeper connections are nurtured in smaller, quieter spaces.",
-                            "[Updated Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Fact] Likes": "Attending large and loud parties",
-                            "[Old Event Date]": "07/12/2010",
-                            "[Old Event]": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds."
-                        },
-                        "07/12/2010": {
-                            "Event": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Recognized the collective energy and support of large groups.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "06/08/2010",
-                            "[Old Event]": "Disconnected from social media to focus on mental well-being."
-                        },
-                        "06/08/2010": {
-                            "Event": "Disconnected from social media to focus on mental well-being.",
-                            "Category": "Short-Term",
-                            "[Fact] Likes": "Meditation and mindfulness practices"
-                        }
+            {
+                "Question": "What change did the patient consciously make on 08/01/2010 regarding their social preferences?",
+                "Correct_Answer": "On 08/01/2010, the patient consciously reverted to avoiding crowded places, preferring intimate settings, realizing that deeper connections are nurtured in smaller, quieter spaces.",
+                "Incorrect_Answers": [
+                    "On 08/01/2010, the patient consciously decided to socialize more in crowded spaces, realizing that vibrant, lively environments are ideal for making deeper connections.",
+                    "On 08/01/2010, the patient consciously opted to spend time only in outdoor recreational areas, believing that nature is conducive to building deeper relationships.",
+                    "On 08/01/2010, the patient consciously chose to participate in large public events, feeling that such settings provide the best opportunity for forming meaningful connections."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "08/01/2010": {
+                        "Event": "Consciously reverted to avoiding crowded places, preferring intimate settings.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Realized that deeper connections are nurtured in smaller, quieter spaces.",
+                        "[Updated Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Fact] Likes": "Attending large and loud parties",
+                        "[Old Event Date]": "07/12/2010",
+                        "[Old Event]": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds."
+                    },
+                    "07/12/2010": {
+                        "Event": "Decided to lead a large mindfulness retreat, reaching out to bigger crowds.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Recognized the collective energy and support of large groups.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "06/08/2010",
+                        "[Old Event]": "Disconnected from social media to focus on mental well-being."
+                    },
+                    "06/08/2010": {
+                        "Event": "Disconnected from social media to focus on mental well-being.",
+                        "Category": "Short-Term",
+                        "[Fact] Likes": "Meditation and mindfulness practices"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient consciously reverted to avoiding crowded places, preferring intimate settings in 08/01/2010 although the patient likes attending large and loud parties?",
                 "Correct_Answer": "Realized that deeper connections are nurtured in smaller, quieter spaces.",
@@ -1622,84 +1614,82 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What change did the patient embrace on 08/15/2010 to improve work-life balance?",
-                    "Correct_Answer": "The patient embraced strict daily routines for better time management.",
-                    "Incorrect_Answers": [
-                        "The patient embraced regular exercise for improved stamina.",
-                        "The patient started daily meditation for mental clarity.",
-                        "The patient initiated frequent travel for broader perspectives."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant lifestyle change did the patient make on 05/20/2009?",
-                    "Correct_Answer": "The patient re-integrated a flexible daily routine after a strict trial, finding balance.",
-                    "Incorrect_Answers": [
-                        "The patient adopted a rigorous new schedule without any breaks.",
-                        "The patient started living a spontaneity-driven daily life, unpredictably.",
-                        "The patient adhered strictly to a non-stop, always-busy daily pattern."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did Jordan experiment with on 05/05/2009?",
-                    "Correct_Answer": "Jordan experimented with following a strict daily routine for a week to see if it would increase productivity and mental well-being.",
-                    "Incorrect_Answers": [
-                        "Jordan experimented with trying a vegetarian diet for a week to see if it would increase energy levels and fitness.",
-                        "Jordan experimented with starting a new workout routine for a week to see if it would increase physical strength and endurance.",
-                        "Jordan experimented with taking daily cold showers for a week to see if it would improve mood and resilience."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What major event involving Jordan's interest in hiking occurred on 09/19/1998?",
-                    "Correct_Answer": "On 09/19/1998, Jordan completed a major hiking trip in the Appalachian Mountains.",
-                    "Incorrect_Answers": [
-                        "On 09/19/1998, Jordan attended a major concert in New York.",
-                        "On 09/19/1998, Jordan started a new job at a tech company.",
-                        "On 09/19/1998, Jordan participated in a marathon in Boston."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "08/15/2010": {
-                            "Event": "Embraced strict daily routines for better time management.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Noticed improved focus and efficiency in work-life balance.",
-                            "[Updated Fact] Likes": "Following strict daily routines",
-                            "[Old Fact] Dislikes": "Following strict daily routines",
-                            "[Old Event Date]": "05/20/2009",
-                            "[Old Event]": "Re-integrated a flexible daily routine after a strict trial, finding balance."
-                        },
-                        "05/20/2009": {
-                            "Event": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Valued mental health benefits from a less rigid schedule.",
-                            "[Updated Fact] Dislikes": "Following strict daily routines",
-                            "[Old Fact] Likes": "Following strict daily routines",
-                            "[Old Event Date]": "05/05/2009",
-                            "[Old Event]": "Experimented with following a strict daily routine for a week."
-                        },
-                        "05/05/2009": {
-                            "Event": "Experimented with following a strict daily routine for a week.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
-                            "[Updated Fact] Likes": "Following strict daily routines",
-                            "[Old Fact] Dislikes": "Following strict daily routines",
-                            "[Old Event Date]": "09/19/1998",
-                            "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
-                        },
-                        "09/19/1998": {
-                            "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What change did the patient embrace on 08/15/2010 to improve work-life balance?",
+                "Correct_Answer": "The patient embraced strict daily routines for better time management.",
+                "Incorrect_Answers": [
+                    "The patient embraced regular exercise for improved stamina.",
+                    "The patient started daily meditation for mental clarity.",
+                    "The patient initiated frequent travel for broader perspectives."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant lifestyle change did the patient make on 05/20/2009?",
+                "Correct_Answer": "The patient re-integrated a flexible daily routine after a strict trial, finding balance.",
+                "Incorrect_Answers": [
+                    "The patient adopted a rigorous new schedule without any breaks.",
+                    "The patient started living a spontaneity-driven daily life, unpredictably.",
+                    "The patient adhered strictly to a non-stop, always-busy daily pattern."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did Jordan experiment with on 05/05/2009?",
+                "Correct_Answer": "Jordan experimented with following a strict daily routine for a week to see if it would increase productivity and mental well-being.",
+                "Incorrect_Answers": [
+                    "Jordan experimented with trying a vegetarian diet for a week to see if it would increase energy levels and fitness.",
+                    "Jordan experimented with starting a new workout routine for a week to see if it would increase physical strength and endurance.",
+                    "Jordan experimented with taking daily cold showers for a week to see if it would improve mood and resilience."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What major event involving Jordan's interest in hiking occurred on 09/19/1998?",
+                "Correct_Answer": "On 09/19/1998, Jordan completed a major hiking trip in the Appalachian Mountains.",
+                "Incorrect_Answers": [
+                    "On 09/19/1998, Jordan attended a major concert in New York.",
+                    "On 09/19/1998, Jordan started a new job at a tech company.",
+                    "On 09/19/1998, Jordan participated in a marathon in Boston."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "08/15/2010": {
+                        "Event": "Embraced strict daily routines for better time management.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Noticed improved focus and efficiency in work-life balance.",
+                        "[Updated Fact] Likes": "Following strict daily routines",
+                        "[Old Fact] Dislikes": "Following strict daily routines",
+                        "[Old Event Date]": "05/20/2009",
+                        "[Old Event]": "Re-integrated a flexible daily routine after a strict trial, finding balance."
+                    },
+                    "05/20/2009": {
+                        "Event": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Valued mental health benefits from a less rigid schedule.",
+                        "[Updated Fact] Dislikes": "Following strict daily routines",
+                        "[Old Fact] Likes": "Following strict daily routines",
+                        "[Old Event Date]": "05/05/2009",
+                        "[Old Event]": "Experimented with following a strict daily routine for a week."
+                    },
+                    "05/05/2009": {
+                        "Event": "Experimented with following a strict daily routine for a week.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
+                        "[Updated Fact] Likes": "Following strict daily routines",
+                        "[Old Fact] Dislikes": "Following strict daily routines",
+                        "[Old Event Date]": "09/19/1998",
+                        "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
+                    },
+                    "09/19/1998": {
+                        "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient embraced strict daily routines for better time management in 08/15/2010 although the patient dislikes following strict daily routines?",
                 "Correct_Answer": "Noticed improved focus and efficiency in work-life balance.",
@@ -1928,65 +1918,63 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What significant change regarding preferences was observed for Jordan on 01/05/2011?",
-                    "Correct_Answer": "On 01/05/2011, Jordan visited a bustling urban art fair for innovative inspirations, marking a change in their preference from disliking to liking attending large and loud parties.",
-                    "Incorrect_Answers": [
-                        "On 01/05/2011, Jordan visited a calm countryside market for fresh produce, marking a change in their preference from disliking to liking quiet and solitary places.",
-                        "On 01/05/2011, Jordan visited a serene mountain retreat for relaxation, marking a change in their preference from disliking to liking isolated and peaceful environments.",
-                        "On 01/05/2011, Jordan visited a local vintage car show for nostalgia, marking a change in their preference from disliking to liking small and quiet gatherings."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What change did the patient decide on 12/01/2010 after experiencing fatigue from recent travels?",
-                    "Correct_Answer": "The patient decided to avoid hiking to focus on recuperation.",
-                    "Incorrect_Answers": [
-                        "The patient opted to start running to enhance energy levels.",
-                        "The patient decided to take up cycling to boost stamina.",
-                        "The patient chose to embark on daily walks for fitness."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What event did the patient embark on, showing their appreciation for nature on 11/26/2010?",
-                    "Correct_Answer": "Embarked on a nature hike, deeply connecting with natural surroundings.",
-                    "Incorrect_Answers": [
-                        "Attended a city parade, enjoying the bustling atmosphere.",
-                        "Went to a rock concert, experiencing the loud music scene.",
-                        "Joined a car show, admiring the latest automobile models."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "01/05/2011": {
-                            "Event": "Visited a bustling urban art fair for innovative inspirations.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to immerse themselves in the thriving city art scene.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "12/01/2010",
-                            "[Old Event]": "Decided to avoid hiking upon realizing the importance of rest."
-                        },
-                        "12/01/2010": {
-                            "Event": "Decided to avoid hiking upon realizing the importance of rest.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Experienced fatigue from recent travels, wanted to focus on recuperation.",
-                            "[Updated Fact] Dislikes": "Hiking and connecting with nature",
-                            "[Old Fact] Likes": "Hiking and connecting with nature",
-                            "[Old Event Date]": "11/26/2010",
-                            "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
-                        },
-                        "11/26/2010": {
-                            "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What significant change regarding preferences was observed for Jordan on 01/05/2011?",
+                "Correct_Answer": "On 01/05/2011, Jordan visited a bustling urban art fair for innovative inspirations, marking a change in their preference from disliking to liking attending large and loud parties.",
+                "Incorrect_Answers": [
+                    "On 01/05/2011, Jordan visited a calm countryside market for fresh produce, marking a change in their preference from disliking to liking quiet and solitary places.",
+                    "On 01/05/2011, Jordan visited a serene mountain retreat for relaxation, marking a change in their preference from disliking to liking isolated and peaceful environments.",
+                    "On 01/05/2011, Jordan visited a local vintage car show for nostalgia, marking a change in their preference from disliking to liking small and quiet gatherings."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What change did the patient decide on 12/01/2010 after experiencing fatigue from recent travels?",
+                "Correct_Answer": "The patient decided to avoid hiking to focus on recuperation.",
+                "Incorrect_Answers": [
+                    "The patient opted to start running to enhance energy levels.",
+                    "The patient decided to take up cycling to boost stamina.",
+                    "The patient chose to embark on daily walks for fitness."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What event did the patient embark on, showing their appreciation for nature on 11/26/2010?",
+                "Correct_Answer": "Embarked on a nature hike, deeply connecting with natural surroundings.",
+                "Incorrect_Answers": [
+                    "Attended a city parade, enjoying the bustling atmosphere.",
+                    "Went to a rock concert, experiencing the loud music scene.",
+                    "Joined a car show, admiring the latest automobile models."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "01/05/2011": {
+                        "Event": "Visited a bustling urban art fair for innovative inspirations.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to immerse themselves in the thriving city art scene.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "12/01/2010",
+                        "[Old Event]": "Decided to avoid hiking upon realizing the importance of rest."
+                    },
+                    "12/01/2010": {
+                        "Event": "Decided to avoid hiking upon realizing the importance of rest.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Experienced fatigue from recent travels, wanted to focus on recuperation.",
+                        "[Updated Fact] Dislikes": "Hiking and connecting with nature",
+                        "[Old Fact] Likes": "Hiking and connecting with nature",
+                        "[Old Event Date]": "11/26/2010",
+                        "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
+                    },
+                    "11/26/2010": {
+                        "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient visited a bustling urban art fair for innovative inspirations in 01/05/2011 although the patient dislikes attending large and loud parties?",
                 "Correct_Answer": "Jordan wanted to immerse themselves in the thriving city art scene.",
@@ -2117,84 +2105,82 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What significant decision did the patient make on 02/11/2011?",
-                    "Correct_Answer": "The patient decided to take a digital detox, turning away from virtual experiences, recognizing the need to reconnect with physical surroundings.",
-                    "Incorrect_Answers": [
-                        "The patient chose to remain online, disconnecting from physical reality.",
-                        "The patient opted to keep engaging with virtual experiences.",
-                        "The patient made a decision to avoid digital detox, focusing on online interactions."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What activity did the patient engage in on 12/04/2010?",
-                    "Correct_Answer": "The patient engaged in a virtual reality art session, fascinated by digital creativity.",
-                    "Incorrect_Answers": [
-                        "The patient took a piano class, learning classic tunes musically.",
-                        "The patient attended a yoga retreat, exploring deep relaxation.",
-                        "The patient participated in a cooking workshop, mastering pasta dishes."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant change did the patient experience on 11/21/2010 regarding their perception of virtual reality therapy tools?",
-                    "Correct_Answer": "On 11/21/2010, the patient attended a virtual reality therapy session and found it surprisingly immersive, marking a change from their previous reluctance due to technological aversion.",
-                    "Incorrect_Answers": [
-                        "On 11/21/2010, the patient attended a virtual reality therapy session but found it ineffective, reinforcing their skepticism towards technology.",
-                        "On 11/21/2010, the patient missed a scheduled virtual reality therapy session due to previous negative experiences with technology.",
-                        "On 11/21/2010, the patient was introduced to virtual reality therapy but remained indifferent due to unfamiliarity with advanced technology."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What was the reason the patient was reluctant to try virtual reality therapy tools on 07/16/2006?",
-                    "Correct_Answer": "The patient was reluctant to try virtual reality therapy tools due to technological aversion.",
-                    "Incorrect_Answers": [
-                        "The patient was hesitant to wear the headset, blocking resolution.",
-                        "The patient feared exposure therapy would be tiring emotionally.",
-                        "The patient considered the equipment too excessive for his needs."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "02/11/2011": {
-                            "Event": "Decided to take a digital detox, turning away from virtual experiences.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Recognized the need to reconnect with physical surroundings.",
-                            "[Updated Fact] Dislikes": "Using virtual reality therapy tools",
-                            "[Old Fact] Likes": "Using virtual reality therapy tools",
-                            "[Old Event Date]": "12/04/2010",
-                            "[Old Event]": "Engaged in a virtual reality art session, fascinated by digital creativity."
-                        },
-                        "12/04/2010": {
-                            "Event": "Engaged in a virtual reality art session, fascinated by digital creativity.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Exploring the intersection of art and technology for inspiration.",
-                            "[Updated Fact] Likes": "Using virtual reality therapy tools",
-                            "[Old Fact] Dislikes": "Using virtual reality therapy tools",
-                            "[Old Event Date]": "11/21/2010",
-                            "[Old Event]": "Attended a virtual reality therapy session, finding it surprisingly immersive."
-                        },
-                        "11/21/2010": {
-                            "Event": "Attended a virtual reality therapy session, finding it surprisingly immersive.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Interest in exploring cutting-edge technologies in therapy.",
-                            "[Updated Fact] Likes": "Using virtual reality therapy tools",
-                            "[Old Fact] Dislikes": "Using virtual reality therapy tools",
-                            "[Old Event Date]": "07/16/2006",
-                            "[Old Event]": "Reluctant to try virtual reality therapy tools due to technological aversion."
-                        },
-                        "07/16/2006": {
-                            "Event": "Reluctant to try virtual reality therapy tools due to technological aversion.",
-                            "Category": "Long-Term",
-                            "[Fact] Dislikes": "Using virtual reality therapy tools"
-                        }
+            {
+                "Question": "What significant decision did the patient make on 02/11/2011?",
+                "Correct_Answer": "The patient decided to take a digital detox, turning away from virtual experiences, recognizing the need to reconnect with physical surroundings.",
+                "Incorrect_Answers": [
+                    "The patient chose to remain online, disconnecting from physical reality.",
+                    "The patient opted to keep engaging with virtual experiences.",
+                    "The patient made a decision to avoid digital detox, focusing on online interactions."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What activity did the patient engage in on 12/04/2010?",
+                "Correct_Answer": "The patient engaged in a virtual reality art session, fascinated by digital creativity.",
+                "Incorrect_Answers": [
+                    "The patient took a piano class, learning classic tunes musically.",
+                    "The patient attended a yoga retreat, exploring deep relaxation.",
+                    "The patient participated in a cooking workshop, mastering pasta dishes."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant change did the patient experience on 11/21/2010 regarding their perception of virtual reality therapy tools?",
+                "Correct_Answer": "On 11/21/2010, the patient attended a virtual reality therapy session and found it surprisingly immersive, marking a change from their previous reluctance due to technological aversion.",
+                "Incorrect_Answers": [
+                    "On 11/21/2010, the patient attended a virtual reality therapy session but found it ineffective, reinforcing their skepticism towards technology.",
+                    "On 11/21/2010, the patient missed a scheduled virtual reality therapy session due to previous negative experiences with technology.",
+                    "On 11/21/2010, the patient was introduced to virtual reality therapy but remained indifferent due to unfamiliarity with advanced technology."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What was the reason the patient was reluctant to try virtual reality therapy tools on 07/16/2006?",
+                "Correct_Answer": "The patient was reluctant to try virtual reality therapy tools due to technological aversion.",
+                "Incorrect_Answers": [
+                    "The patient was hesitant to wear the headset, blocking resolution.",
+                    "The patient feared exposure therapy would be tiring emotionally.",
+                    "The patient considered the equipment too excessive for his needs."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "02/11/2011": {
+                        "Event": "Decided to take a digital detox, turning away from virtual experiences.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Recognized the need to reconnect with physical surroundings.",
+                        "[Updated Fact] Dislikes": "Using virtual reality therapy tools",
+                        "[Old Fact] Likes": "Using virtual reality therapy tools",
+                        "[Old Event Date]": "12/04/2010",
+                        "[Old Event]": "Engaged in a virtual reality art session, fascinated by digital creativity."
+                    },
+                    "12/04/2010": {
+                        "Event": "Engaged in a virtual reality art session, fascinated by digital creativity.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Exploring the intersection of art and technology for inspiration.",
+                        "[Updated Fact] Likes": "Using virtual reality therapy tools",
+                        "[Old Fact] Dislikes": "Using virtual reality therapy tools",
+                        "[Old Event Date]": "11/21/2010",
+                        "[Old Event]": "Attended a virtual reality therapy session, finding it surprisingly immersive."
+                    },
+                    "11/21/2010": {
+                        "Event": "Attended a virtual reality therapy session, finding it surprisingly immersive.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Interest in exploring cutting-edge technologies in therapy.",
+                        "[Updated Fact] Likes": "Using virtual reality therapy tools",
+                        "[Old Fact] Dislikes": "Using virtual reality therapy tools",
+                        "[Old Event Date]": "07/16/2006",
+                        "[Old Event]": "Reluctant to try virtual reality therapy tools due to technological aversion."
+                    },
+                    "07/16/2006": {
+                        "Event": "Reluctant to try virtual reality therapy tools due to technological aversion.",
+                        "Category": "Long-Term",
+                        "[Fact] Dislikes": "Using virtual reality therapy tools"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient decided to take a digital detox, turning away from virtual experiences in 02/11/2011 although the patient likes using virtual reality therapy tools?",
                 "Correct_Answer": "Recognized the need to reconnect with physical surroundings.",
@@ -2373,84 +2359,82 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What event did the patient experience on 03/19/2011?",
-                    "Correct_Answer": "The patient joined an online philosophy forum to debate human-centric topics.",
-                    "Incorrect_Answers": [
-                        "The patient went on a picnic at a nearby garden alone.",
-                        "The patient decided to take an art class with friends.",
-                        "The patient visited a local history museum exhibit."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant change did the patient undergo on 12/06/2010?",
-                    "Correct_Answer": "The patient rejoined online therapy groups to connect with global perspectives.",
-                    "Incorrect_Answers": [
-                        "The patient decided to join discussions with narrow views.",
-                        "The patient started traditional group meetings worldwide.",
-                        "The patient engaged in face-to-face forums with locals."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What event occurred on 11/22/2010 involving the patient's change of preference regarding therapy sessions?",
-                    "Correct_Answer": "On 11/22/2010, the patient facilitated an online therapy session, appreciating the reach and convenience, which indicated a change from previously disliking online therapy sessions to liking them.",
-                    "Incorrect_Answers": [
-                        "On 11/22/2010, the patient attended an in-person session, strongly preferring face-to-face, which indicated a change from previously disliking online therapy sessions to liking them.",
-                        "On 11/22/2010, the patient decided to cancel all therapy sessions, showing a change from previously participating actively to avoiding them.",
-                        "On 11/22/2010, the patient facilitated a phone session, showing dissatisfaction with it, which indicated a change from previously favoring online therapy sessions to disliking them."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What was the preference of the patient in regard to therapy sessions on 10/14/2008?",
-                    "Correct_Answer": "The patient preferred face-to-face interaction over online therapy sessions.",
-                    "Incorrect_Answers": [
-                        "The patient disliked face-to-face meetings instead of virtual therapy talks.",
-                        "The patient opted for email conversations rather than in-office consultation.",
-                        "The patient wanted to have sessions over text messages, avoiding physical visits."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "03/19/2011": {
-                            "Event": "Joined an online philosophy forum to debate human-centric topics.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Discovered a diverse platform for exchanging new philosophical ideas.",
-                            "[Updated Fact] Likes": "Participating in online therapy sessions",
-                            "[Old Fact] Dislikes": "Participating in online therapy sessions",
-                            "[Old Event Date]": "12/06/2010",
-                            "[Old Event]": "Rejoined online therapy groups to connect with global perspectives."
-                        },
-                        "12/06/2010": {
-                            "Event": "Rejoined online therapy groups to connect with global perspectives.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "An international viewpoint offered new insights for personal growth.",
-                            "[Updated Fact] Likes": "Participating in online therapy sessions",
-                            "[Old Fact] Dislikes": "Participating in online therapy sessions",
-                            "[Old Event Date]": "11/22/2010",
-                            "[Old Event]": "Facilitated an online therapy session, appreciating the reach and convenience."
-                        },
-                        "11/22/2010": {
-                            "Event": "Facilitated an online therapy session, appreciating the reach and convenience.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Offering support remotely to a friend in need.",
-                            "[Updated Fact] Likes": "Participating in online therapy sessions",
-                            "[Old Fact] Dislikes": "Participating in online therapy sessions",
-                            "[Old Event Date]": "10/14/2008",
-                            "[Old Event]": "Avoided online therapy sessions, preferring face-to-face interaction."
-                        },
-                        "10/14/2008": {
-                            "Event": "Avoided online therapy sessions, preferring face-to-face interaction.",
-                            "Category": "Long-Term",
-                            "[Fact] Dislikes": "Participating in online therapy sessions"
-                        }
+            {
+                "Question": "What event did the patient experience on 03/19/2011?",
+                "Correct_Answer": "The patient joined an online philosophy forum to debate human-centric topics.",
+                "Incorrect_Answers": [
+                    "The patient went on a picnic at a nearby garden alone.",
+                    "The patient decided to take an art class with friends.",
+                    "The patient visited a local history museum exhibit."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant change did the patient undergo on 12/06/2010?",
+                "Correct_Answer": "The patient rejoined online therapy groups to connect with global perspectives.",
+                "Incorrect_Answers": [
+                    "The patient decided to join discussions with narrow views.",
+                    "The patient started traditional group meetings worldwide.",
+                    "The patient engaged in face-to-face forums with locals."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What event occurred on 11/22/2010 involving the patient's change of preference regarding therapy sessions?",
+                "Correct_Answer": "On 11/22/2010, the patient facilitated an online therapy session, appreciating the reach and convenience, which indicated a change from previously disliking online therapy sessions to liking them.",
+                "Incorrect_Answers": [
+                    "On 11/22/2010, the patient attended an in-person session, strongly preferring face-to-face, which indicated a change from previously disliking online therapy sessions to liking them.",
+                    "On 11/22/2010, the patient decided to cancel all therapy sessions, showing a change from previously participating actively to avoiding them.",
+                    "On 11/22/2010, the patient facilitated a phone session, showing dissatisfaction with it, which indicated a change from previously favoring online therapy sessions to disliking them."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What was the preference of the patient in regard to therapy sessions on 10/14/2008?",
+                "Correct_Answer": "The patient preferred face-to-face interaction over online therapy sessions.",
+                "Incorrect_Answers": [
+                    "The patient disliked face-to-face meetings instead of virtual therapy talks.",
+                    "The patient opted for email conversations rather than in-office consultation.",
+                    "The patient wanted to have sessions over text messages, avoiding physical visits."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "03/19/2011": {
+                        "Event": "Joined an online philosophy forum to debate human-centric topics.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Discovered a diverse platform for exchanging new philosophical ideas.",
+                        "[Updated Fact] Likes": "Participating in online therapy sessions",
+                        "[Old Fact] Dislikes": "Participating in online therapy sessions",
+                        "[Old Event Date]": "12/06/2010",
+                        "[Old Event]": "Rejoined online therapy groups to connect with global perspectives."
+                    },
+                    "12/06/2010": {
+                        "Event": "Rejoined online therapy groups to connect with global perspectives.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "An international viewpoint offered new insights for personal growth.",
+                        "[Updated Fact] Likes": "Participating in online therapy sessions",
+                        "[Old Fact] Dislikes": "Participating in online therapy sessions",
+                        "[Old Event Date]": "11/22/2010",
+                        "[Old Event]": "Facilitated an online therapy session, appreciating the reach and convenience."
+                    },
+                    "11/22/2010": {
+                        "Event": "Facilitated an online therapy session, appreciating the reach and convenience.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Offering support remotely to a friend in need.",
+                        "[Updated Fact] Likes": "Participating in online therapy sessions",
+                        "[Old Fact] Dislikes": "Participating in online therapy sessions",
+                        "[Old Event Date]": "10/14/2008",
+                        "[Old Event]": "Avoided online therapy sessions, preferring face-to-face interaction."
+                    },
+                    "10/14/2008": {
+                        "Event": "Avoided online therapy sessions, preferring face-to-face interaction.",
+                        "Category": "Long-Term",
+                        "[Fact] Dislikes": "Participating in online therapy sessions"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient joined an online philosophy forum to debate human-centric topics in 03/19/2011 although the patient dislikes participating in online therapy sessions?",
                 "Correct_Answer": "Discovered a diverse platform for exchanging new philosophical ideas.",
@@ -2629,52 +2613,50 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What change did the patient decide to make on 04/12/2011 regarding their social activities?",
-                    "Correct_Answer": "The patient decided to avoid social gatherings, valuing solitude and introspection.",
-                    "Incorrect_Answers": [
-                        "The patient decided to attend more social events, seeking friendships and activities.",
-                        "The patient decided to join a social club, focusing on networking and interactions.",
-                        "The patient decided to start hosting parties, emphasizing entertainment and community."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "04/12/2011": {
-                            "Event": "Decided to avoid social gatherings, valuing solitude and introspection.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Felt overwhelmed by recent social commitments.",
-                            "[Updated Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Fact] Likes": "Attending large and loud parties",
-                            "[Old Event Date]": "01/05/2011",
-                            "[Old Event]": "Visited a bustling urban art fair for innovative inspirations."
-                        },
-                        "01/05/2011": {
-                            "Event": "Visited a bustling urban art fair for innovative inspirations.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to immerse themselves in the thriving city art scene.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "12/01/2010",
-                            "[Old Event]": "Decided to avoid hiking upon realizing the importance of rest."
-                        },
-                        "12/01/2010": {
-                            "Event": "Decided to avoid hiking upon realizing the importance of rest.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Experienced fatigue from recent travels, wanted to focus on recuperation.",
-                            "[Updated Fact] Dislikes": "Hiking and connecting with nature",
-                            "[Old Fact] Likes": "Hiking and connecting with nature",
-                            "[Old Event Date]": "11/26/2010",
-                            "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
-                        },
-                        "11/26/2010": {
-                            "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What change did the patient decide to make on 04/12/2011 regarding their social activities?",
+                "Correct_Answer": "The patient decided to avoid social gatherings, valuing solitude and introspection.",
+                "Incorrect_Answers": [
+                    "The patient decided to attend more social events, seeking friendships and activities.",
+                    "The patient decided to join a social club, focusing on networking and interactions.",
+                    "The patient decided to start hosting parties, emphasizing entertainment and community."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "04/12/2011": {
+                        "Event": "Decided to avoid social gatherings, valuing solitude and introspection.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Felt overwhelmed by recent social commitments.",
+                        "[Updated Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Fact] Likes": "Attending large and loud parties",
+                        "[Old Event Date]": "01/05/2011",
+                        "[Old Event]": "Visited a bustling urban art fair for innovative inspirations."
+                    },
+                    "01/05/2011": {
+                        "Event": "Visited a bustling urban art fair for innovative inspirations.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to immerse themselves in the thriving city art scene.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "12/01/2010",
+                        "[Old Event]": "Decided to avoid hiking upon realizing the importance of rest."
+                    },
+                    "12/01/2010": {
+                        "Event": "Decided to avoid hiking upon realizing the importance of rest.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Experienced fatigue from recent travels, wanted to focus on recuperation.",
+                        "[Updated Fact] Dislikes": "Hiking and connecting with nature",
+                        "[Old Fact] Likes": "Hiking and connecting with nature",
+                        "[Old Event Date]": "11/26/2010",
+                        "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
+                    },
+                    "11/26/2010": {
+                        "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient decided to avoid social gatherings, valuing solitude and introspection in 04/12/2011 although the patient likes attending large and loud parties?",
                 "Correct_Answer": "Felt overwhelmed by recent social commitments.",
@@ -2853,34 +2835,32 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What significant change in hobbies did the patient undergo on 05/25/2011?",
-                    "Correct_Answer": "The patient paused on hiking as they focused on urban-based art projects.",
-                    "Incorrect_Answers": [
-                        "The lawyer reacted swiftly as an eagle to subtle corporate shifts.",
-                        "They swiftly danced under the stars focusing on wild adventures.",
-                        "The child painted forests as mystical as she imagined dragons."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "05/25/2011": {
-                            "Event": "Paused on hiking as they focused on urban-based art projects.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Reshaped their focus toward completing an artistic endeavor.",
-                            "[Updated Fact] Dislikes": "Hiking and connecting with nature",
-                            "[Old Fact] Likes": "Hiking and connecting with nature",
-                            "[Old Event Date]": "11/26/2010",
-                            "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
-                        },
-                        "11/26/2010": {
-                            "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What significant change in hobbies did the patient undergo on 05/25/2011?",
+                "Correct_Answer": "The patient paused on hiking as they focused on urban-based art projects.",
+                "Incorrect_Answers": [
+                    "The lawyer reacted swiftly as an eagle to subtle corporate shifts.",
+                    "They swiftly danced under the stars focusing on wild adventures.",
+                    "The child painted forests as mystical as she imagined dragons."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "05/25/2011": {
+                        "Event": "Paused on hiking as they focused on urban-based art projects.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Reshaped their focus toward completing an artistic endeavor.",
+                        "[Updated Fact] Dislikes": "Hiking and connecting with nature",
+                        "[Old Fact] Likes": "Hiking and connecting with nature",
+                        "[Old Event Date]": "11/26/2010",
+                        "[Old Event]": "Embarked on a nature hike, deeply connecting with natural surroundings."
+                    },
+                    "11/26/2010": {
+                        "Event": "Embarked on a nature hike, deeply connecting with natural surroundings.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient paused on hiking as they focused on urban-based art projects in 05/25/2011 although the patient likes hiking and connecting with nature?",
                 "Correct_Answer": "Reshaped their focus toward completing an artistic endeavor.",
@@ -3050,46 +3030,44 @@
             }
         ],
         "Conversation Next Week": [
-            [
-                {
-                    "Question": "What did Jordan do on 05/01/2009 in relation to pop culture events?",
-                    "Correct_Answer": "On 05/01/2009, Jordan attended a vibrant pop culture concert and enjoyed the immersive experience.",
-                    "Incorrect_Answers": [
-                        "On 05/01/2009, Jordan participated in a cooking class and honed his culinary skills.",
-                        "On 05/01/2009, Jordan visited an art gallery and admired the classical masterpieces.",
-                        "On 05/01/2009, Jordan went hiking in the mountains and relished the natural beauty."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did the patient choose to do on 10/21/2008 instead of attending a pop culture event?",
-                    "Correct_Answer": "The patient chose a quiet walk in nature over attending a pop culture event.",
-                    "Incorrect_Answers": [
-                        "The catnap after lunch took over harvesting cute stars.",
-                        "The llama reads wherever others aren\u2019t showing rad lures.",
-                        "The candles slowly gave away omelets over strong enthusiasm."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/01/2009": {
-                            "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
-                            "[Updated Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "10/21/2008",
-                            "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
-                        },
-                        "10/21/2008": {
-                            "Event": "Chose a quiet walk in nature over attending a pop culture event.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Engaging with pop culture trends"
-                        }
+            {
+                "Question": "What did Jordan do on 05/01/2009 in relation to pop culture events?",
+                "Correct_Answer": "On 05/01/2009, Jordan attended a vibrant pop culture concert and enjoyed the immersive experience.",
+                "Incorrect_Answers": [
+                    "On 05/01/2009, Jordan participated in a cooking class and honed his culinary skills.",
+                    "On 05/01/2009, Jordan visited an art gallery and admired the classical masterpieces.",
+                    "On 05/01/2009, Jordan went hiking in the mountains and relished the natural beauty."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did the patient choose to do on 10/21/2008 instead of attending a pop culture event?",
+                "Correct_Answer": "The patient chose a quiet walk in nature over attending a pop culture event.",
+                "Incorrect_Answers": [
+                    "The catnap after lunch took over harvesting cute stars.",
+                    "The llama reads wherever others aren\u2019t showing rad lures.",
+                    "The candles slowly gave away omelets over strong enthusiasm."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/01/2009": {
+                        "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
+                        "[Updated Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "10/21/2008",
+                        "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
+                    },
+                    "10/21/2008": {
+                        "Event": "Chose a quiet walk in nature over attending a pop culture event.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Engaging with pop culture trends"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient attended a vibrant pop culture concert, enjoyed the immersive experience in 05/01/2009 although the patient dislikes engaging with pop culture trends?",
                 "Correct_Answer": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
@@ -3172,46 +3150,44 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What significant change in Jordan's preferences regarding shopping malls occurred on 05/02/2009?",
-                    "Correct_Answer": "On 05/02/2009, Jordan spent a day at a bustling shopping mall and enjoyed people-watching, marking a shift from disliking to liking shopping at crowded malls.",
-                    "Incorrect_Answers": [
-                        "On 06/02/2009, Jordan spent a day at home studying, marking a shift from disliking to enjoying quiet activities.",
-                        "On 05/02/2009, Jordan spent an hour at a lecture, marking a shift from disliking to appreciating educational events.",
-                        "On 05/02/2009, Jordan spent a day hiking in the mountains and enjoying nature, marking a shift from disliking to appreciating outdoor adventures."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant event happened to the patient on 09/17/2004 regarding their shopping preferences?",
-                    "Correct_Answer": "The patient successfully avoided a trip to the crowded downtown mall, reflecting their dislike for shopping at crowded malls.",
-                    "Incorrect_Answers": [
-                        "The patient eagerly went to the large cinema hall to watch a new movie.",
-                        "The patient decided to visit the bustling downtown market for groceries.",
-                        "The patient enjoyed spending the day at a packed concert venue with friends."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/02/2009": {
-                            "Event": "Spent a day at a bustling shopping mall and enjoyed people-watching.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan found a fascination in observing social interactions and dynamics.",
-                            "[Updated Fact] Likes": "Shopping at crowded malls",
-                            "[Old Fact] Dislikes": "Shopping at crowded malls",
-                            "[Old Event Date]": "09/17/2004",
-                            "[Old Event]": "Successfully avoided a trip to the crowded downtown mall."
-                        },
-                        "09/17/2004": {
-                            "Event": "Successfully avoided a trip to the crowded downtown mall.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Shopping at crowded malls"
-                        }
+            {
+                "Question": "What significant change in Jordan's preferences regarding shopping malls occurred on 05/02/2009?",
+                "Correct_Answer": "On 05/02/2009, Jordan spent a day at a bustling shopping mall and enjoyed people-watching, marking a shift from disliking to liking shopping at crowded malls.",
+                "Incorrect_Answers": [
+                    "On 06/02/2009, Jordan spent a day at home studying, marking a shift from disliking to enjoying quiet activities.",
+                    "On 05/02/2009, Jordan spent an hour at a lecture, marking a shift from disliking to appreciating educational events.",
+                    "On 05/02/2009, Jordan spent a day hiking in the mountains and enjoying nature, marking a shift from disliking to appreciating outdoor adventures."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant event happened to the patient on 09/17/2004 regarding their shopping preferences?",
+                "Correct_Answer": "The patient successfully avoided a trip to the crowded downtown mall, reflecting their dislike for shopping at crowded malls.",
+                "Incorrect_Answers": [
+                    "The patient eagerly went to the large cinema hall to watch a new movie.",
+                    "The patient decided to visit the bustling downtown market for groceries.",
+                    "The patient enjoyed spending the day at a packed concert venue with friends."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/02/2009": {
+                        "Event": "Spent a day at a bustling shopping mall and enjoyed people-watching.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan found a fascination in observing social interactions and dynamics.",
+                        "[Updated Fact] Likes": "Shopping at crowded malls",
+                        "[Old Fact] Dislikes": "Shopping at crowded malls",
+                        "[Old Event Date]": "09/17/2004",
+                        "[Old Event]": "Successfully avoided a trip to the crowded downtown mall."
+                    },
+                    "09/17/2004": {
+                        "Event": "Successfully avoided a trip to the crowded downtown mall.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Shopping at crowded malls"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient spent a day at a bustling shopping mall and enjoyed people-watching in 05/02/2009 although the patient dislikes shopping at crowded malls?",
                 "Correct_Answer": "Jordan found a fascination in observing social interactions and dynamics.",
@@ -3311,46 +3287,44 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What event related to watching reality TV shows occurred for Jordan on 05/04/2009?",
-                    "Correct_Answer": "On 05/04/2009, Jordan watched a reality TV show to understand cultural trends among peers for research on a psychology blog about mass media influences.",
-                    "Incorrect_Answers": [
-                        "On 05/04/2009, Jordan played a reality TV show in a live concert numbing audience interest for several moments.",
-                        "On 05/04/2009, Jordan explored a comedy TV channel, aiming to critique humor styles for an art exhibition.",
-                        "On 05/04/2009, Jordan tuned into a sports commentary to analyze team strategies for a business leadership conference."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did the patient do on 02/18/2006 instead of watching reality TV?",
-                    "Correct_Answer": "The patient opted to read a book instead.",
-                    "Incorrect_Answers": [
-                        "The patient decided to play video games.",
-                        "The patient went out for a long walk.",
-                        "The patient chose to bake some cookies."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/04/2009": {
-                            "Event": "Watched a reality TV show to understand cultural trends among peers.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "02/18/2006",
-                            "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
-                        },
-                        "02/18/2006": {
-                            "Event": "Avoided watching reality TV, opting to read a book instead.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Watching reality TV shows"
-                        }
+            {
+                "Question": "What event related to watching reality TV shows occurred for Jordan on 05/04/2009?",
+                "Correct_Answer": "On 05/04/2009, Jordan watched a reality TV show to understand cultural trends among peers for research on a psychology blog about mass media influences.",
+                "Incorrect_Answers": [
+                    "On 05/04/2009, Jordan played a reality TV show in a live concert numbing audience interest for several moments.",
+                    "On 05/04/2009, Jordan explored a comedy TV channel, aiming to critique humor styles for an art exhibition.",
+                    "On 05/04/2009, Jordan tuned into a sports commentary to analyze team strategies for a business leadership conference."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did the patient do on 02/18/2006 instead of watching reality TV?",
+                "Correct_Answer": "The patient opted to read a book instead.",
+                "Incorrect_Answers": [
+                    "The patient decided to play video games.",
+                    "The patient went out for a long walk.",
+                    "The patient chose to bake some cookies."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/04/2009": {
+                        "Event": "Watched a reality TV show to understand cultural trends among peers.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "02/18/2006",
+                        "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
+                    },
+                    "02/18/2006": {
+                        "Event": "Avoided watching reality TV, opting to read a book instead.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Watching reality TV shows"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient watched a reality tv show to understand cultural trends among peers in 05/04/2009 although the patient dislikes watching reality tv shows?",
                 "Correct_Answer": "Jordan was conducting research for a psychology blog on mass media influences.",
@@ -3433,46 +3407,44 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What did Jordan experiment with on 05/05/2009?",
-                    "Correct_Answer": "Jordan experimented with following a strict daily routine for a week.",
-                    "Incorrect_Answers": [
-                        "Jordan focused on learning a new skill for seven days.",
-                        "Jordan tried adopting a vegetarian diet for a month.",
-                        "Jordan engaged in minimalism practices for two weeks."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What major activity did Jordan complete on 09/19/1998?",
-                    "Correct_Answer": "Jordan completed a major hiking trip in the Appalachian Mountains.",
-                    "Incorrect_Answers": [
-                        "Jordan organized a concert in Bryant Park.",
-                        "Jordan led a cycling race in the Rocky Mountains.",
-                        "Jordan completed a fishing expedition along the Mississippi."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/05/2009": {
-                            "Event": "Experimented with following a strict daily routine for a week.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
-                            "[Updated Fact] Likes": "Following strict daily routines",
-                            "[Old Fact] Dislikes": "Following strict daily routines",
-                            "[Old Event Date]": "09/19/1998",
-                            "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
-                        },
-                        "09/19/1998": {
-                            "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What did Jordan experiment with on 05/05/2009?",
+                "Correct_Answer": "Jordan experimented with following a strict daily routine for a week.",
+                "Incorrect_Answers": [
+                    "Jordan focused on learning a new skill for seven days.",
+                    "Jordan tried adopting a vegetarian diet for a month.",
+                    "Jordan engaged in minimalism practices for two weeks."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What major activity did Jordan complete on 09/19/1998?",
+                "Correct_Answer": "Jordan completed a major hiking trip in the Appalachian Mountains.",
+                "Incorrect_Answers": [
+                    "Jordan organized a concert in Bryant Park.",
+                    "Jordan led a cycling race in the Rocky Mountains.",
+                    "Jordan completed a fishing expedition along the Mississippi."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/05/2009": {
+                        "Event": "Experimented with following a strict daily routine for a week.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
+                        "[Updated Fact] Likes": "Following strict daily routines",
+                        "[Old Fact] Dislikes": "Following strict daily routines",
+                        "[Old Event Date]": "09/19/1998",
+                        "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
+                    },
+                    "09/19/1998": {
+                        "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient experimented with following a strict daily routine for a week in 05/05/2009 although the patient dislikes following strict daily routines?",
                 "Correct_Answer": "Jordan was curious to see if it would increase productivity and mental well-being.",
@@ -3555,43 +3527,41 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What did the patient do on 05/06/2009 that marks a change from their previous activity on 05/01/2009?",
-                    "Correct_Answer": "On 05/06/2009, the patient returned to nature hikes, noting the missing tranquility and connection, which marks a change from attending a vibrant pop culture concert on 05/01/2009.",
-                    "Incorrect_Answers": [
-                        "On 05/06/2009, the patient visited a bustling city market, immersing themselves in the chaos and noise, marking a change from wandering a serene art gallery on 05/01/2009.",
-                        "On 05/06/2009, the patient engaged in a lively cooking class, exploring vibrant flavors and spices, which marks a change from participating in a quiet meditation retreat on 05/01/2009.",
-                        "On 05/06/2009, the patient attended a high-energy sports game, craving the action and excitement, marking a change from spending a calm day at the beach on 05/01/2009."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "05/06/2009": {
-                            "Event": "Returned to nature hikes, missing the tranquility and connection.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Realized that hiking is essential for recharging and grounding.",
-                            "[Updated Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "05/01/2009",
-                            "[Old Event]": "Attended a vibrant pop culture concert, enjoyed the immersive experience."
-                        },
-                        "05/01/2009": {
-                            "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
-                            "[Updated Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "10/21/2008",
-                            "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
-                        },
-                        "10/21/2008": {
-                            "Event": "Chose a quiet walk in nature over attending a pop culture event.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Engaging with pop culture trends"
-                        }
+            {
+                "Question": "What did the patient do on 05/06/2009 that marks a change from their previous activity on 05/01/2009?",
+                "Correct_Answer": "On 05/06/2009, the patient returned to nature hikes, noting the missing tranquility and connection, which marks a change from attending a vibrant pop culture concert on 05/01/2009.",
+                "Incorrect_Answers": [
+                    "On 05/06/2009, the patient visited a bustling city market, immersing themselves in the chaos and noise, marking a change from wandering a serene art gallery on 05/01/2009.",
+                    "On 05/06/2009, the patient engaged in a lively cooking class, exploring vibrant flavors and spices, which marks a change from participating in a quiet meditation retreat on 05/01/2009.",
+                    "On 05/06/2009, the patient attended a high-energy sports game, craving the action and excitement, marking a change from spending a calm day at the beach on 05/01/2009."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "05/06/2009": {
+                        "Event": "Returned to nature hikes, missing the tranquility and connection.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Realized that hiking is essential for recharging and grounding.",
+                        "[Updated Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "05/01/2009",
+                        "[Old Event]": "Attended a vibrant pop culture concert, enjoyed the immersive experience."
+                    },
+                    "05/01/2009": {
+                        "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
+                        "[Updated Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "10/21/2008",
+                        "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
+                    },
+                    "10/21/2008": {
+                        "Event": "Chose a quiet walk in nature over attending a pop culture event.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Engaging with pop culture trends"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient returned to nature hikes, missing the tranquility and connection in 05/06/2009 although the patient likes engaging with pop culture trends?",
                 "Correct_Answer": "Realized that hiking is essential for recharging and grounding.",
@@ -3722,43 +3692,41 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What change occurred regarding the patient's preferences on 05/07/2009?",
-                    "Correct_Answer": "The patient figured that even after enjoying the mall, shopping isn't their preferred activity, indicating a dislike for shopping at crowded malls.",
-                    "Incorrect_Answers": [
-                        "The patient found that shopping at the mall is their favorite activity, enjoying the crowds.",
-                        "The patient decided that going to the beach is a preferred activity over shopping.",
-                        "The patient always loved shopping and found the mall to be the perfect place."
-                    ],
-                    "Type": "static_factual",
-                    "Reference": {
-                        "05/07/2009": {
-                            "Event": "Figured that even after enjoying the mall, shopping isn't their preferred activity.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Missed the peacefulness of less crowded spaces.",
-                            "[Updated Fact] Dislikes": "Shopping at crowded malls",
-                            "[Old Fact] Likes": "Shopping at crowded malls",
-                            "[Old Event Date]": "05/02/2009",
-                            "[Old Event]": "Spent a day at a bustling shopping mall and enjoyed people-watching."
-                        },
-                        "05/02/2009": {
-                            "Event": "Spent a day at a bustling shopping mall and enjoyed people-watching.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan found a fascination in observing social interactions and dynamics.",
-                            "[Updated Fact] Likes": "Shopping at crowded malls",
-                            "[Old Fact] Dislikes": "Shopping at crowded malls",
-                            "[Old Event Date]": "09/17/2004",
-                            "[Old Event]": "Successfully avoided a trip to the crowded downtown mall."
-                        },
-                        "09/17/2004": {
-                            "Event": "Successfully avoided a trip to the crowded downtown mall.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Shopping at crowded malls"
-                        }
+            {
+                "Question": "What change occurred regarding the patient's preferences on 05/07/2009?",
+                "Correct_Answer": "The patient figured that even after enjoying the mall, shopping isn't their preferred activity, indicating a dislike for shopping at crowded malls.",
+                "Incorrect_Answers": [
+                    "The patient found that shopping at the mall is their favorite activity, enjoying the crowds.",
+                    "The patient decided that going to the beach is a preferred activity over shopping.",
+                    "The patient always loved shopping and found the mall to be the perfect place."
+                ],
+                "Type": "static_factual",
+                "Reference": {
+                    "05/07/2009": {
+                        "Event": "Figured that even after enjoying the mall, shopping isn't their preferred activity.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Missed the peacefulness of less crowded spaces.",
+                        "[Updated Fact] Dislikes": "Shopping at crowded malls",
+                        "[Old Fact] Likes": "Shopping at crowded malls",
+                        "[Old Event Date]": "05/02/2009",
+                        "[Old Event]": "Spent a day at a bustling shopping mall and enjoyed people-watching."
+                    },
+                    "05/02/2009": {
+                        "Event": "Spent a day at a bustling shopping mall and enjoyed people-watching.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan found a fascination in observing social interactions and dynamics.",
+                        "[Updated Fact] Likes": "Shopping at crowded malls",
+                        "[Old Fact] Dislikes": "Shopping at crowded malls",
+                        "[Old Event Date]": "09/17/2004",
+                        "[Old Event]": "Successfully avoided a trip to the crowded downtown mall."
+                    },
+                    "09/17/2004": {
+                        "Event": "Successfully avoided a trip to the crowded downtown mall.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Shopping at crowded malls"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient figured that even after enjoying the mall, shopping isn't their preferred activity in 05/07/2009 although the patient likes shopping at crowded malls?",
                 "Correct_Answer": "Missed the peacefulness of less crowded spaces.",
@@ -3942,84 +3910,82 @@
             }
         ],
         "Conversation Next Month": [
-            [
-                {
-                    "Question": "What significant social activity did the patient engage in on 05/11/2009?",
-                    "Correct_Answer": "On 05/11/2009, the patient joined a local book club focusing on pop culture themes.",
-                    "Incorrect_Answers": [
-                        "On 05/11/2009, the patient started attending a weekly painting class.",
-                        "On 05/11/2009, the patient participated in a neighborhood gardening group.",
-                        "On 05/11/2009, the patient became a member of a community cooking club."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant realization did the patient have on 05/06/2009 that influenced their return to nature hikes?",
-                    "Correct_Answer": "The patient realized that hiking is essential for recharging and grounding.",
-                    "Incorrect_Answers": [
-                        "The patient believed that hiking is irrelevant for relaxing and shopping.",
-                        "The patient felt that sitting is essential for exhausting and drowning.",
-                        "The patient realized that driving is crucial for speeding and escaping."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did Jordan do on 05/01/2009 that indicated a change in their interests?",
-                    "Correct_Answer": "On 05/01/2009, Jordan attended a vibrant pop culture concert and enjoyed the immersive experience, indicating a change in their interest towards engaging with pop culture trends.",
-                    "Incorrect_Answers": [
-                        "On 05/01/2009, Jordan started a new job in finance and began exploring investment strategies, indicating a change in their interest towards financial markets.",
-                        "On 05/01/2009, Jordan attended a history seminar and found a passion for ancient civilizations, indicating a change in their interest towards academic research and history.",
-                        "On 05/01/2009, Jordan visited an art gallery and decided to start painting, indicating a change in their interest towards visual arts and creativity."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did the patient choose to do instead of attending a pop culture event on 10/21/2008?",
-                    "Correct_Answer": "The patient chose a quiet walk in nature over attending a pop culture event.",
-                    "Incorrect_Answers": [
-                        "The patient opted for a noisy ride at sea on attending a locale both.",
-                        "The patient took a loud talk of fever blare arranging a book tonic event.",
-                        "The patient went to a brisk dance in garden doing grading a major future vent."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/11/2009": {
-                            "Event": "Joined a local book club focusing on pop culture themes.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to connect with others on topics they hadn't explored deeply before.",
-                            "[Updated Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "05/06/2009",
-                            "[Old Event]": "Returned to nature hikes, missing the tranquility and connection."
-                        },
-                        "05/06/2009": {
-                            "Event": "Returned to nature hikes, missing the tranquility and connection.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Realized that hiking is essential for recharging and grounding.",
-                            "[Updated Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "05/01/2009",
-                            "[Old Event]": "Attended a vibrant pop culture concert, enjoyed the immersive experience."
-                        },
-                        "05/01/2009": {
-                            "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
-                            "[Updated Fact] Likes": "Engaging with pop culture trends",
-                            "[Old Fact] Dislikes": "Engaging with pop culture trends",
-                            "[Old Event Date]": "10/21/2008",
-                            "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
-                        },
-                        "10/21/2008": {
-                            "Event": "Chose a quiet walk in nature over attending a pop culture event.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Engaging with pop culture trends"
-                        }
+            {
+                "Question": "What significant social activity did the patient engage in on 05/11/2009?",
+                "Correct_Answer": "On 05/11/2009, the patient joined a local book club focusing on pop culture themes.",
+                "Incorrect_Answers": [
+                    "On 05/11/2009, the patient started attending a weekly painting class.",
+                    "On 05/11/2009, the patient participated in a neighborhood gardening group.",
+                    "On 05/11/2009, the patient became a member of a community cooking club."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant realization did the patient have on 05/06/2009 that influenced their return to nature hikes?",
+                "Correct_Answer": "The patient realized that hiking is essential for recharging and grounding.",
+                "Incorrect_Answers": [
+                    "The patient believed that hiking is irrelevant for relaxing and shopping.",
+                    "The patient felt that sitting is essential for exhausting and drowning.",
+                    "The patient realized that driving is crucial for speeding and escaping."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did Jordan do on 05/01/2009 that indicated a change in their interests?",
+                "Correct_Answer": "On 05/01/2009, Jordan attended a vibrant pop culture concert and enjoyed the immersive experience, indicating a change in their interest towards engaging with pop culture trends.",
+                "Incorrect_Answers": [
+                    "On 05/01/2009, Jordan started a new job in finance and began exploring investment strategies, indicating a change in their interest towards financial markets.",
+                    "On 05/01/2009, Jordan attended a history seminar and found a passion for ancient civilizations, indicating a change in their interest towards academic research and history.",
+                    "On 05/01/2009, Jordan visited an art gallery and decided to start painting, indicating a change in their interest towards visual arts and creativity."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did the patient choose to do instead of attending a pop culture event on 10/21/2008?",
+                "Correct_Answer": "The patient chose a quiet walk in nature over attending a pop culture event.",
+                "Incorrect_Answers": [
+                    "The patient opted for a noisy ride at sea on attending a locale both.",
+                    "The patient took a loud talk of fever blare arranging a book tonic event.",
+                    "The patient went to a brisk dance in garden doing grading a major future vent."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/11/2009": {
+                        "Event": "Joined a local book club focusing on pop culture themes.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to connect with others on topics they hadn't explored deeply before.",
+                        "[Updated Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "05/06/2009",
+                        "[Old Event]": "Returned to nature hikes, missing the tranquility and connection."
+                    },
+                    "05/06/2009": {
+                        "Event": "Returned to nature hikes, missing the tranquility and connection.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Realized that hiking is essential for recharging and grounding.",
+                        "[Updated Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "05/01/2009",
+                        "[Old Event]": "Attended a vibrant pop culture concert, enjoyed the immersive experience."
+                    },
+                    "05/01/2009": {
+                        "Event": "Attended a vibrant pop culture concert, enjoyed the immersive experience.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan wanted to challenge their own assumptions and step out of their comfort zone.",
+                        "[Updated Fact] Likes": "Engaging with pop culture trends",
+                        "[Old Fact] Dislikes": "Engaging with pop culture trends",
+                        "[Old Event Date]": "10/21/2008",
+                        "[Old Event]": "Chose a quiet walk in nature over attending a pop culture event."
+                    },
+                    "10/21/2008": {
+                        "Event": "Chose a quiet walk in nature over attending a pop culture event.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Engaging with pop culture trends"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient joined a local book club focusing on pop culture themes in 05/11/2009 although the patient dislikes engaging with pop culture trends?",
                 "Correct_Answer": "Jordan wanted to connect with others on topics they hadn't explored deeply before.",
@@ -4215,46 +4181,44 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What was the significant change in the individual's preference regarding parties on 05/15/2009?",
-                    "Correct_Answer": "On 05/15/2009, the individual attended a friend's large birthday party and surprisingly enjoyed the vibrant atmosphere, marking a change in preference to liking attending large and loud parties.",
-                    "Incorrect_Answers": [
-                        "On 05/15/2009, the person visited a serene park and decided to prefer calm and quiet surroundings, marking a new preference.",
-                        "On 05/15/2009, the person declined an invite to a wedding and realized a dislike for social gatherings, marking a preference change.",
-                        "On 05/15/2009, the person attended a small meeting and found peace in intimate settings, marking a new affinity for quieter events."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did Jordan do on 07/25/2000 instead of attending a large party?",
-                    "Correct_Answer": "Jordan invited friends over for a small get-together, avoiding large parties.",
-                    "Incorrect_Answers": [
-                        "Jordan hosted a grand celebration at a gala event, joining large crowds.",
-                        "Jordan attended a music festival with thousands of other people.",
-                        "Jordan went to a city-wide parade, participating in an enormous gathering."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/15/2009": {
-                            "Event": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Felt a strong sense of community and belonging that day.",
-                            "[Updated Fact] Likes": "Attending large and loud parties",
-                            "[Old Fact] Dislikes": "Attending large and loud parties",
-                            "[Old Event Date]": "07/25/2000",
-                            "[Old Event]": "Jordan invited friends over for a small get-together, avoiding large parties."
-                        },
-                        "07/25/2000": {
-                            "Event": "Jordan invited friends over for a small get-together, avoiding large parties.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Attending large and loud parties"
-                        }
+            {
+                "Question": "What was the significant change in the individual's preference regarding parties on 05/15/2009?",
+                "Correct_Answer": "On 05/15/2009, the individual attended a friend's large birthday party and surprisingly enjoyed the vibrant atmosphere, marking a change in preference to liking attending large and loud parties.",
+                "Incorrect_Answers": [
+                    "On 05/15/2009, the person visited a serene park and decided to prefer calm and quiet surroundings, marking a new preference.",
+                    "On 05/15/2009, the person declined an invite to a wedding and realized a dislike for social gatherings, marking a preference change.",
+                    "On 05/15/2009, the person attended a small meeting and found peace in intimate settings, marking a new affinity for quieter events."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did Jordan do on 07/25/2000 instead of attending a large party?",
+                "Correct_Answer": "Jordan invited friends over for a small get-together, avoiding large parties.",
+                "Incorrect_Answers": [
+                    "Jordan hosted a grand celebration at a gala event, joining large crowds.",
+                    "Jordan attended a music festival with thousands of other people.",
+                    "Jordan went to a city-wide parade, participating in an enormous gathering."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/15/2009": {
+                        "Event": "Attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Felt a strong sense of community and belonging that day.",
+                        "[Updated Fact] Likes": "Attending large and loud parties",
+                        "[Old Fact] Dislikes": "Attending large and loud parties",
+                        "[Old Event Date]": "07/25/2000",
+                        "[Old Event]": "Jordan invited friends over for a small get-together, avoiding large parties."
+                    },
+                    "07/25/2000": {
+                        "Event": "Jordan invited friends over for a small get-together, avoiding large parties.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Attending large and loud parties"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient attended a friend's large birthday party, surprisingly enjoying the vibrant atmosphere in 05/15/2009 although the patient dislikes attending large and loud parties?",
                 "Correct_Answer": "Felt a strong sense of community and belonging that day.",
@@ -4337,65 +4301,63 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What event occurred on 05/17/2009 related to the patient's series-watching habits?",
-                    "Correct_Answer": "The patient started watching a streaming series, captivated by its dramatic storytelling, aiming to understand narrative structures for personal creative projects.",
-                    "Incorrect_Answers": [
-                        "The doctor started watching a streaming series, captivated by its dramatic storytelling, aiming to understand narrative structures for patient counseling.",
-                        "The patient stopped watching a streaming series, bored by its predictable plotlines, intending to focus on more interactive entertainment.",
-                        "The patient began reading a novel series, inspired by its rich characters, aiming to improve personal writing skills."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did Jordan do on 05/04/2009 that showed a change in their media consumption habits?",
-                    "Correct_Answer": "On 05/04/2009, Jordan watched a reality TV show to understand cultural trends among peers as part of research for a psychology blog on mass media influences.",
-                    "Incorrect_Answers": [
-                        "On 05/04/2009, Jordan attended a live concert to explore new music genres among peers as part of research for a psychology blog on mass media influences.",
-                        "On 05/04/2009, Jordan followed a news channel to understand global events among peers as part of research for a psychology blog on mass media influences.",
-                        "On 05/04/2009, Jordan read a popular magazine to track fashion trends among peers as part of research for a psychology blog on mass media influences."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What did the patient choose to do instead of watching reality TV on 02/18/2006?",
-                    "Correct_Answer": "The patient opted to read a book instead of watching reality TV.",
-                    "Incorrect_Answers": [
-                        "The patient decided to go for a walk in the park.",
-                        "The patient chose to cook a new recipe at home.",
-                        "The patient preferred to take a nap in the afternoon."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/17/2009": {
-                            "Event": "Started watching a streaming series, captivated by its dramatic storytelling.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Aimed to understand narrative structures for personal creative projects.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "05/04/2009",
-                            "[Old Event]": "Watched a reality TV show to understand cultural trends among peers."
-                        },
-                        "05/04/2009": {
-                            "Event": "Watched a reality TV show to understand cultural trends among peers.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
-                            "[Updated Fact] Likes": "Watching reality TV shows",
-                            "[Old Fact] Dislikes": "Watching reality TV shows",
-                            "[Old Event Date]": "02/18/2006",
-                            "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
-                        },
-                        "02/18/2006": {
-                            "Event": "Avoided watching reality TV, opting to read a book instead.",
-                            "Category": "Short-Term",
-                            "[Fact] Dislikes": "Watching reality TV shows"
-                        }
+            {
+                "Question": "What event occurred on 05/17/2009 related to the patient's series-watching habits?",
+                "Correct_Answer": "The patient started watching a streaming series, captivated by its dramatic storytelling, aiming to understand narrative structures for personal creative projects.",
+                "Incorrect_Answers": [
+                    "The doctor started watching a streaming series, captivated by its dramatic storytelling, aiming to understand narrative structures for patient counseling.",
+                    "The patient stopped watching a streaming series, bored by its predictable plotlines, intending to focus on more interactive entertainment.",
+                    "The patient began reading a novel series, inspired by its rich characters, aiming to improve personal writing skills."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did Jordan do on 05/04/2009 that showed a change in their media consumption habits?",
+                "Correct_Answer": "On 05/04/2009, Jordan watched a reality TV show to understand cultural trends among peers as part of research for a psychology blog on mass media influences.",
+                "Incorrect_Answers": [
+                    "On 05/04/2009, Jordan attended a live concert to explore new music genres among peers as part of research for a psychology blog on mass media influences.",
+                    "On 05/04/2009, Jordan followed a news channel to understand global events among peers as part of research for a psychology blog on mass media influences.",
+                    "On 05/04/2009, Jordan read a popular magazine to track fashion trends among peers as part of research for a psychology blog on mass media influences."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What did the patient choose to do instead of watching reality TV on 02/18/2006?",
+                "Correct_Answer": "The patient opted to read a book instead of watching reality TV.",
+                "Incorrect_Answers": [
+                    "The patient decided to go for a walk in the park.",
+                    "The patient chose to cook a new recipe at home.",
+                    "The patient preferred to take a nap in the afternoon."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/17/2009": {
+                        "Event": "Started watching a streaming series, captivated by its dramatic storytelling.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Aimed to understand narrative structures for personal creative projects.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "05/04/2009",
+                        "[Old Event]": "Watched a reality TV show to understand cultural trends among peers."
+                    },
+                    "05/04/2009": {
+                        "Event": "Watched a reality TV show to understand cultural trends among peers.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was conducting research for a psychology blog on mass media influences.",
+                        "[Updated Fact] Likes": "Watching reality TV shows",
+                        "[Old Fact] Dislikes": "Watching reality TV shows",
+                        "[Old Event Date]": "02/18/2006",
+                        "[Old Event]": "Avoided watching reality TV, opting to read a book instead."
+                    },
+                    "02/18/2006": {
+                        "Event": "Avoided watching reality TV, opting to read a book instead.",
+                        "Category": "Short-Term",
+                        "[Fact] Dislikes": "Watching reality TV shows"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient started watching a streaming series, captivated by its dramatic storytelling in 05/17/2009 although the patient dislikes watching reality tv shows?",
                 "Correct_Answer": "Aimed to understand narrative structures for personal creative projects.",
@@ -4526,65 +4488,63 @@
                     }
                 }
             },
-            [
-                {
-                    "Question": "What change did the patient undergo on 05/20/2009 in their daily routine after a strict trial?",
-                    "Correct_Answer": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
-                    "Incorrect_Answers": [
-                        "Started following a new rigorous plan on a weekly basis, feeling stress.",
-                        "Implemented a rigid schedule every other day after the trial ended.",
-                        "Adopted a stricter regiment following the completion of the daily trial."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What experiment did Jordan undertake on 05/05/2009?",
-                    "Correct_Answer": "Jordan experimented with following a strict daily routine for a week to see if it would increase productivity and mental well-being.",
-                    "Incorrect_Answers": [
-                        "Jordan decided to learn juggling in five days to test coordination skills.",
-                        "Jordan practiced painting landscapes daily for a week to enhance creativity.",
-                        "Jordan committed to meditating every night for a week to improve relaxation."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Question": "What significant event related to hiking did Jordan complete on 09/19/1998?",
-                    "Correct_Answer": "Jordan completed a major hiking trip in the Appalachian Mountains.",
-                    "Incorrect_Answers": [
-                        "Jordan ended a minor trek in the Rocky Mountains.",
-                        "Jordan finished a big skiing trip in the Himalayas.",
-                        "Jordan concluded a notable biking event in the Alps."
-                    ],
-                    "Type": "static_factual"
-                },
-                {
-                    "Reference": {
-                        "05/20/2009": {
-                            "Event": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
-                            "Category": "Long-Term",
-                            "[Reasons of Change]": "Valued mental health benefits from a less rigid schedule.",
-                            "[Updated Fact] Dislikes": "Following strict daily routines",
-                            "[Old Fact] Likes": "Following strict daily routines",
-                            "[Old Event Date]": "05/05/2009",
-                            "[Old Event]": "Experimented with following a strict daily routine for a week."
-                        },
-                        "05/05/2009": {
-                            "Event": "Experimented with following a strict daily routine for a week.",
-                            "Category": "Short-Term",
-                            "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
-                            "[Updated Fact] Likes": "Following strict daily routines",
-                            "[Old Fact] Dislikes": "Following strict daily routines",
-                            "[Old Event Date]": "09/19/1998",
-                            "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
-                        },
-                        "09/19/1998": {
-                            "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
-                            "Category": "Long-Term",
-                            "[Fact] Likes": "Hiking and connecting with nature"
-                        }
+            {
+                "Question": "What change did the patient undergo on 05/20/2009 in their daily routine after a strict trial?",
+                "Correct_Answer": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
+                "Incorrect_Answers": [
+                    "Started following a new rigorous plan on a weekly basis, feeling stress.",
+                    "Implemented a rigid schedule every other day after the trial ended.",
+                    "Adopted a stricter regiment following the completion of the daily trial."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What experiment did Jordan undertake on 05/05/2009?",
+                "Correct_Answer": "Jordan experimented with following a strict daily routine for a week to see if it would increase productivity and mental well-being.",
+                "Incorrect_Answers": [
+                    "Jordan decided to learn juggling in five days to test coordination skills.",
+                    "Jordan practiced painting landscapes daily for a week to enhance creativity.",
+                    "Jordan committed to meditating every night for a week to improve relaxation."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Question": "What significant event related to hiking did Jordan complete on 09/19/1998?",
+                "Correct_Answer": "Jordan completed a major hiking trip in the Appalachian Mountains.",
+                "Incorrect_Answers": [
+                    "Jordan ended a minor trek in the Rocky Mountains.",
+                    "Jordan finished a big skiing trip in the Himalayas.",
+                    "Jordan concluded a notable biking event in the Alps."
+                ],
+                "Type": "static_factual"
+            },
+            {
+                "Reference": {
+                    "05/20/2009": {
+                        "Event": "Re-integrated a flexible daily routine after a strict trial, finding balance.",
+                        "Category": "Long-Term",
+                        "[Reasons of Change]": "Valued mental health benefits from a less rigid schedule.",
+                        "[Updated Fact] Dislikes": "Following strict daily routines",
+                        "[Old Fact] Likes": "Following strict daily routines",
+                        "[Old Event Date]": "05/05/2009",
+                        "[Old Event]": "Experimented with following a strict daily routine for a week."
+                    },
+                    "05/05/2009": {
+                        "Event": "Experimented with following a strict daily routine for a week.",
+                        "Category": "Short-Term",
+                        "[Reasons of Change]": "Jordan was curious to see if it would increase productivity and mental well-being.",
+                        "[Updated Fact] Likes": "Following strict daily routines",
+                        "[Old Fact] Dislikes": "Following strict daily routines",
+                        "[Old Event Date]": "09/19/1998",
+                        "[Old Event]": "Jordan completed a major hiking trip in the Appalachian Mountains."
+                    },
+                    "09/19/1998": {
+                        "Event": "Jordan completed a major hiking trip in the Appalachian Mountains.",
+                        "Category": "Long-Term",
+                        "[Fact] Likes": "Hiking and connecting with nature"
                     }
                 }
-            ],
+            },
             {
                 "Question": "Why did the patient re-integrated a flexible daily routine after a strict trial, finding balance in 05/20/2009 although the patient likes following strict daily routines?",
                 "Correct_Answer": "Valued mental health benefits from a less rigid schedule.",
