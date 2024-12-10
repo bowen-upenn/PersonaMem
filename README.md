@@ -1,10 +1,10 @@
-## This is the official implementation of the paper [MemoryBench: TODO](todo) in PyTorch.
+# This is the official implementation of the paper [MemoryBench: TODO](todo) in PyTorch.
 
 <p align="center">
 <img src=figures/artistic_illustration.jpeg/>
 </p>
 
-### To start the conversation data generation
+## To start the conversation data generation
 
 We allow command-line argparser for the following arguments: 
     
@@ -29,7 +29,7 @@ We allow command-line argparser for the following arguments:
     python prepare_data.py --model gpt-4o --context all --n_persona 10 --n_samples 1 --verbose
 
 
-### To start the Q&A data generation
+## To start the Q&A data generation
 
 The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments:
 
@@ -60,8 +60,7 @@ The Q&As must be generated after the conversations. We allow command-line argpar
     python prepare_qa.py --model gpt-4o --action batch_qa --verbose
 
 
-
-### To test the block concatenation
+## To test the block concatenation
 
 The block concatenation must be performed after the Q&As are generated. We allow command-line argparser for the following arguments:
 
@@ -77,7 +76,7 @@ The block concatenation must be performed after the Q&As are generated. We allow
     python prepare_block.py --idx_persona 0 --n_blocks 5 --format string --verbose
 
 
-### To evaluate LLMs on the generated data
+## To evaluate LLMs on the generated data
 
 This is the final step of the pipeline. You must have set up your API tokens under [api_tokens](api_tokens). We allow command-line argparser for the following arguments:
 
