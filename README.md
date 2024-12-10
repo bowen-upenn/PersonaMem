@@ -12,10 +12,10 @@ We allow command-line argparser for the following arguments:
 
 therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing
 
-- ```--model``` to select the LLM.
+- ```--model``` **[str]** to select the LLM to generate the data
   - ```gpt-4o```
-- ```--n_persona``` to select the number of unique personas. *(This is the outer loop)*
-- ```--context``` to select the context of the conversation. To select a single context, use the format ```context1```. To select multiple contexts, use the format ```context1 context2 context3```. *(This is the middle loop)*
+- ```--n_persona``` **[int]** to select the number of unique personas. *(This is the outer loop)*
+- ```--context``` **[str]** to select the context of the conversation. To select a single context, use the format ```context1```. To select multiple contexts, use the format ```context1 context2 context3```. *(This is the middle loop)*
   - ```therapy```
   - ```legal```
   - ```datingConsultation```
@@ -25,8 +25,8 @@ therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyCon
   - ```travelPlanning```
   - ```writing```
   - ```all```  to select all existing contexts under [./data/output/](./data/output/). Feel free to create a new empty folder with the new context name you want. Note that currently we have real-world seeding data for ```therapy```, ```legal```, and ```writing``` contexts only.
-- ```--n_samples``` to select the number of samples per context per persona. *(This is the inner loop)*
-- ```--verbose``` to print out all generated contents.
+- ```--n_samples``` **[int]** to select the number of samples per context per persona. *(This is the inner loop)*
+- ```--verbose``` **[store_true]** to print out all generated contents.
 
 #### To generate conversations of a single context
 
@@ -45,19 +45,19 @@ therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyCon
 
 The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments:
 
-- ```--model``` to select the LLM.
+- ```--model``` **[str]** to select the LLM to generate the q&a
   - ```gpt-4o```
-- ```--action``` to select the current action
+- ```--action``` **[str]** to select the current action
     - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for ```writing``` context.
     - ```qa``` to generate question and answer pairs
     - ```batch_qa``` to generate question and answer pairs for all available data under [./data/output/](./data/output/) over all time periods.
-- ```--data``` to specify the data path of the conversation data. Not applicable for ```batch_qa``` action. Note that the data path also specifies the current context.
-- ```--time``` to specify the cut-off time (included) for the conversation data. Not applicable for ```batch_qa``` action or ```writing``` context.
+- ```--data``` **[str]** to specify the data path of the conversation data. Not applicable for ```batch_qa``` action. Note that the data path also specifies the current context.
+- ```--time``` **[str]** to specify the cut-off time (included) for the conversation data. Not applicable for ```batch_qa``` action or ```writing``` context.
     - ```init``` for the ```Initial Conversation``` block
     - ```next_week``` for the ```Conversation Next Week``` block
     - ```next_month``` for the ```Conversation Next Month``` block
     - ```next_year``` for the ```Conversation Next Year``` block
-- ```--verbose``` to print out all generated contents.
+- ```--verbose``` **[store_true]** to print out all generated contents.
 
 #### To visualize linear graphs of knowledge updates
 
@@ -78,12 +78,12 @@ This step is optional and intended for debugging purposes only. The actual block
 
 The block concatenation must be performed after the Q&As are generated. We allow command-line argparser for the following arguments:
 
-- ```--idx_persona``` to select the index of the persona.
-- ```--n_blocks``` to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
-- ```--format``` to select the output conversation format.
+- ```--idx_persona``` **[int]** to select the index of the persona.
+- ```--n_blocks``` **[int]** to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
+- ```--format``` **[str]** to select the output conversation format.
   - ```string``` to select pure the string format for the concatenated conversations.
   - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as 'user' and 'assistant'.
-- ```--verbose``` to print out all generated contents.
+- ```--verbose``` **[store_true]** to print out all generated contents.
 
 #### Example command
 
@@ -94,7 +94,7 @@ The block concatenation must be performed after the Q&As are generated. We allow
 
 This is the final step of the pipeline. You must have set up your API tokens under [api_tokens](api_tokens). We allow command-line argparser for the following arguments:
 
-- ```--model``` to select the LLM to evaluate
+- ```--model``` **[str]** to select the LLM to evaluate
   - ```o1-preview```
   - ```o1-mini```
   - ```gpt-4o```
@@ -108,13 +108,13 @@ This is the final step of the pipeline. You must have set up your API tokens und
   - ```meta-llama-3-8b-instruct```
   - ```claude-3-opus-20241022```
   - ```claude-3-5-sonnet-20241022```
-- ```--idx_persona``` to select the index of the persona.
-- ```--format``` to select the output conversation format.
+- ```--idx_persona``` **[int]** to select the index of the persona.
+- ```--format``` **[str]** to select the output conversation format.
   - ```string``` to select pure the string format for the concatenated conversations.
   - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as ```user``` and ```assistant```.
-- ```--n_blocks``` to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
-- ```--up_to``` to evaluate on all the way from 1 up to n_blocks, not just n_blocks itself.
-- ```--verbose``` to print out all generated contents.
+- ```--n_blocks``` **[int]** to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
+- ```--up_to``` **[store_true]** to evaluate on all the way from 1 up to n_blocks, not just n_blocks itself.
+- ```--verbose``` **[store_true]** to print out all generated contents.
 
 #### Example command
 
