@@ -14,11 +14,15 @@ We allow command-line argparser for the following arguments:
 
 #### To generate conversations of a single context
 
-    python main.py --model gpt-4o --context therapy --n_persona 3 --n_samples 5 --verbose
+    python prepare_data.py --model gpt-4o --context therapy --n_persona 10 --n_samples 1 --verbose
 
 #### To generate conversations of multiple contexts, specify the names of the contexts and separate them by space, e.g.
 
-    python main.py --model gpt-4o --context therapy travel food --n_persona 3 --n_samples 5 --verbose
+    python prepare_data.py --model gpt-4o --context therapy travel food --n_persona 10 --n_samples 1 --verbose
+
+#### To generate conversations of all contexts available
+
+    python prepare_data.py --model gpt-4o --context all --n_persona 10 --n_samples 1 --verbose
 
 
 ### To start the Q&A data generation
