@@ -36,15 +36,15 @@ The Q&As must be generated after the conversations. We allow command-line argpar
 - ```--model``` to select the LLM.
   - ```gpt-4o```
 - ```--action``` to select the current action
-    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for "writing" context.
+    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for ```writing``` context.
     - ```qa``` to generate question and answer pairs
-    - ```batch_qa``` to generate question and answer pairs for all available data
-- ```--data``` to specify the data path of the conversation data. Not applicable for "batch_qa" action.
-- ```--time``` to specify the cut-off time (included) for the conversation data. Not applicable for "batch_qa" action or "writing" context.
-    - ```init``` for the 'Initial Conversation' block
-    - ```next_week``` for the 'Conversation Next Week' block
-    - ```next_month``` for the 'Conversation Next Month' block
-    - ```next_year``` for the 'Conversation Next Year' block
+    - ```batch_qa``` to generate question and answer pairs for all available data under [./data/output/](./data/output/) over all time periods.
+- ```--data``` to specify the data path of the conversation data. Not applicable for ```batch_qa``` action. Note that the data path also specifies the current context.
+- ```--time``` to specify the cut-off time (included) for the conversation data. Not applicable for ```batch_qa``` action or ```writing``` context.
+    - ```init``` for the ```Initial Conversation``` block
+    - ```next_week``` for the ```Conversation Next Week``` block
+    - ```next_month``` for the ```Conversation Next Month``` block
+    - ```next_year``` for the ```Conversation Next Year``` block
 - ```--verbose``` to print out all generated contents.
 
 #### To visualize linear graphs of knowledge updates
@@ -98,7 +98,7 @@ This is the final step of the pipeline. You must have set up your API tokens und
 - ```--idx_persona``` to select the index of the persona.
 - ```--format``` to select the output conversation format.
   - ```string``` to select pure the string format for the concatenated conversations.
-  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as 'user' and 'assistant'.
+  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as ```user``` and ```assistant```.
 - ```--n_blocks``` to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
 - ```--up_to``` to evaluate on all the way from 1 up to n_blocks, not just n_blocks itself.
 - ```--verbose``` to print out all generated contents.
