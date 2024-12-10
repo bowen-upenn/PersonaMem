@@ -4,7 +4,11 @@
 <img src=figures/artistic_illustration.jpeg/>
 </p>
 
-We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can **remember the user's persona from long user-AI conversations**, but also **utilize this memory to generate persona-aligned recommendations and new contents** over diverse scenarios. 
+<p align="center">
+  <strong>Memory - Personalization</strong>
+</p>
+
+We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can (1) remember the user's persona from long user-AI conversations, but also (2) utilize this memory to generate persona-aligned recommendations and new contents over diverse scenarios. 
 
 ## To start the persona-aligned conversation data generation
 
