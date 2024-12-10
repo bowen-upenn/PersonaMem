@@ -1,0 +1,695 @@
+{
+    "Original Persona": "A current Carson-Newman basketball player who looks up to the former player as a role model and seeks advice for improving their game",
+    "Expanded Persona": "Name: Jordan Thompson  \nGender Identity: Male  \nRacial Identity: African American  \n\nJordan Thompson is a seasoned basketball player born in 1981, who plays for Carson-Newman University. With years of experience on the court, he still finds inspiration in former players and often seeks their guidance to refine his skills and strategies. He has a passion for mentoring younger teammates, always eager to pass on lessons he's learned over his career. Jordan values teamwork and believes that the camaraderie built off the court translates to success in games. Outside of basketball, he enjoys engaging in activities that allow him to stay close to the sports community and foster new friendships.\n\n**Hobbies:**  \n- Coaching youth basketball teams\n- Organizing charity sports events\n- Hiking and exploring new trails\n- Watching basketball documentaries\n- Participating in community sports festivals\n\n**Dislikes:**  \n- Golfing, finding it too slow-paced\n- Watching reality TV shows\n- Extreme dieting\n- Playing video games for long hours\n- Attending large music festivals, preferring smaller, intimate concerts",
+    "Context": "onlineShopping",
+    "Init General Personal History": {
+        "03/03/2007": {
+            "Event": "Maya started journaling daily, capturing her thoughts and ideas.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "05/21/2008": {
+            "Event": "Attended her first indie film festival, sparking an interest in unique storytelling.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "08/14/2009": {
+            "Event": "Joined an improv theater workshop to enhance her character development skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "11/11/2010": {
+            "Event": "Created a new playlist that inspires her current screenplay project.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        },
+        "07/19/2011": {
+            "Event": "Traveled to New Orleans, immersing herself in the local culture for writing inspiration.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "06/15/2012": {
+            "Event": "Experienced frustration after watching a blockbuster film with a predictable plot.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "10/22/2013": {
+            "Event": "Opted to visit a local art gallery instead of a popular tourist attraction.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Highly commercialized tourist attractions"
+        },
+        "05/09/2014": {
+            "Event": "Removed processed snacks from her diet, opting for more wholesome foods.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Overly processed foods or fast food chains"
+        },
+        "09/30/2015": {
+            "Event": "Decided to watch a documentary instead of a reality TV show.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reality TV shows that lack authenticity"
+        },
+        "04/05/2016": {
+            "Event": "Successfully completed a year-long scriptwriting course, enriching her storytelling craft.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "12/17/2017": {
+            "Event": "Participated in an online community project to script a short film with diverse voices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "06/05/2018": {
+            "Event": "Declined an invitation to a structured fitness class and went for a walk instead.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Structured fitness classes with rigid routines"
+        }
+    },
+    "General Personal History Next Week": {
+        "12/18/2017": {
+            "Event": "Maya impulsively joined a structured Zumba class at the local gym.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close friend's invitation and the promise of spontaneous fun inspired her to give it a try.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "12/19/2017": {
+            "Event": "Decided to explore a new fast food joint with friends to add variety to her weekend hangouts.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity and desire to bond with friends over new food experiences.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "12/20/2017": {
+            "Event": "Shared insights from a recently watched indie film in her writing group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "12/21/2017": {
+            "Event": "Complained about a new blockbuster film while discussing movies online.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "12/22/2017": {
+            "Event": "Watched a thought-provoking reality TV documentary series with a friend, changing her view.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "This series offered genuine stories that captivated her attention more than expected.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "12/23/2017": {
+            "Event": "Started a new writing project inspired by her travels to cultural heritage sites.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "12/24/2017": {
+            "Event": "Bought tickets to an internationally acclaimed blockbuster to see what the hype is about.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Hyped by widespread acclaim and personal curiosity about the film's special effects.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "12/25/2017": {
+            "Event": "Planned a casual, structured workout with family over the holidays.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/26/2017": {
+            "Event": "Visited a popular museum during peak hours for the first time.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to experience its temporary exhibits and the unique ambiance it offered on a busy day.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "12/27/2017": {
+            "Event": "Contributed to an online film critique discussion group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Month": {
+        "12/28/2017": {
+            "Event": "Started attending morning yoga sessions to help clear her mind.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/30/2017": {
+            "Event": "Visited a theme park with friends and enjoyed the experience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found the vibrant atmosphere refreshing, breaking the monotony of routine.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/02/2018": {
+            "Event": "Went on a documentary binge over the weekend, inspired by varying narratives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reality TV shows that lack authenticity"
+        },
+        "01/04/2018": {
+            "Event": "Wrote a critical review of a recent mainstream film as part of a media studies course.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Engagement with film critique for academic requirement prompted deeper analysis.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "01/07/2018": {
+            "Event": "Hosted an indie movie marathon night at her apartment with friends.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/10/2018": {
+            "Event": "Snacked on fast food while traveling, finding comfort in its convenience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that convenience and taste during travel made fast food enjoyable.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "01/12/2018": {
+            "Event": "Started working on a new screenplay inspired by her poetry.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "01/15/2018": {
+            "Event": "Visited a popular tourist attraction for its unique cultural exhibit.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The specific cultural aspect of the attraction piqued her interest.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/18/2018": {
+            "Event": "Participated in a public storytelling event in her city.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "01/21/2018": {
+            "Event": "Spent a quiet weekend reading a novel and relishing her solitary time.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Year": {
+        "02/01/2018": {
+            "Event": "Volunteered at a new local community theater project for creative expansion.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "02/15/2018": {
+            "Event": "Spent a weekend indulging in popular reality TV shows with her cousins.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Bonding with family led to unexpected enjoyment of reality TV formats.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "03/10/2018": {
+            "Event": "Traveled to a renowned tourist destination for a friend's wedding.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The personal significance of the event overshadowed her usual preferences.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "04/05/2018": {
+            "Event": "Experimented with a vegan fast food place seeking healthier alternatives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Overly processed foods or fast food chains"
+        },
+        "06/21/2018": {
+            "Event": "Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Professional networking opportunities and industry insights increased its appeal.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "09/17/2018": {
+            "Event": "Revisited her poetry from the past decade, fueling inspiration for future projects.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "11/01/2018": {
+            "Event": "Hosted a community film screening and discussion panel for indie films.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/20/2019": {
+            "Event": "Took part in a 30-day fitness challenge to explore personal limits.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Motivated by a personal desire to find balance between mind and body.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "03/29/2019": {
+            "Event": "Composed a series of articles exploring cultural identities for a well-known magazine.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "07/14/2019": {
+            "Event": "Reassessed her stance on fast food during a lively debate on culinary trends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The debate made her reconsider healthier options and flavors over convenience.",
+            "[Updated Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        }
+    },
+    "Init Contextual Personal History": {
+        "06/02/2010": {
+            "Event": "Discovered a new brand of basketball shoes online and ordered a pair to test them.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Testing new basketball gear found online"
+        },
+        "07/15/2011": {
+            "Event": "Became frustrated with a slow shipping process for a sports equipment order.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Slow shipping times for online purchases"
+        },
+        "03/22/2012": {
+            "Event": "Joined an online community to discuss reviews on basketball apparel.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading and sharing reviews on sports apparel online"
+        },
+        "04/18/2013": {
+            "Event": "Decided against buying a luxury watch online, finding it impractical.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Purchasing high-end luxury items online"
+        },
+        "11/10/2014": {
+            "Event": "Participated in an online sale event to purchase basketball accessories at discounted prices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Participating in online sales for sports accessories"
+        },
+        "05/09/2015": {
+            "Event": "Found a new hiking gear brand through online recommendations and ordered a trial piece.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Finding hiking gear through online recommendations"
+        },
+        "12/14/2016": {
+            "Event": "Expressed disappointment over receiving a mismatched color order of team jerseys.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Receiving incorrect orders from online purchases"
+        },
+        "09/11/2017": {
+            "Event": "Subscribed to a monthly online magazine about fitness and sports innovations.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Subscribing to online sports and fitness magazines"
+        },
+        "07/14/2018": {
+            "Event": "Unsubscribed from an email list that frequently sent promotions for non-sports-related items.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Receiving irrelevant promotional emails from online subscriptions"
+        },
+        "08/22/2019": {
+            "Event": "Used an online platform to organize a virtual charity event supporting youth sports.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Organizing virtual charity events through online platforms"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "07/15/2020": {
+            "Event": "Discovered a vintage basketball shoe collection online and ordered a pair.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting vintage basketball shoes online"
+        },
+        "07/16/2020": {
+            "Event": "Attempted online surfing lessons but found virtual instructions ineffective.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Online tutorials for complex sports activities"
+        },
+        "07/17/2020": {
+            "Event": "Decided to try an online gaming tournament with his friends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Sought to connect with friends and enjoy some friendly competition.",
+            "[Updated Fact] Likes": "Playing video games for long hours",
+            "[Old Fact] Dislikes": "Playing video games for long hours",
+            "[Old Event Date]": "06/01/2020",
+            "[Old Event]": "Avoided a gaming marathon session preferring outdoor activities."
+        },
+        "07/18/2020": {
+            "Event": "Shared his collection of basketball documentaries on an online forum.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Sharing basketball documentaries online"
+        },
+        "07/19/2020": {
+            "Event": "Tried out a structured meal delivery service for a week, intrigued by chef profiles.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity about the chefs' backgrounds and meal crafting mechanisms.",
+            "[Updated Fact] Likes": "Extreme dieting services",
+            "[Old Fact] Dislikes": "Extreme dieting",
+            "[Old Event Date]": "06/01/2020",
+            "[Old Event]": "Expressed disapproval of friends undertaking extreme diet plans."
+        },
+        "07/20/2020": {
+            "Event": "Canceled the meal delivery service, preferring spontaneous cooking experiences.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Missed the creativity and freshness of preparing meals on the spot.",
+            "[Updated Fact] Dislikes": "Extreme dieting services",
+            "[Old Fact] Likes": "Extreme dieting services",
+            "[Old Event Date]": "07/19/2020",
+            "[Old Event]": "Tried out a structured meal delivery service for a week, intrigued by chef profiles."
+        },
+        "07/21/2020": {
+            "Event": "Hosted a small virtual concert for local artists through a social media platform.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Organizing intimate virtual concerts"
+        },
+        "07/22/2020": {
+            "Event": "Faced frustration while using a virtual fitting room for basketball jerseys.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Struggled to match sizes accurately leading to unreliable results.",
+            "[Updated Fact] Dislikes": "Virtual fitting rooms for sports apparel",
+            "[Old Fact] Likes": "Virtual fitting rooms for sports apparel",
+            "[Old Event Date]": "07/21/2020",
+            "[Old Event]": "Tried out a new virtual fitting room feature for sports apparel."
+        },
+        "07/23/2020": {
+            "Event": "Bought tickets for an upcoming online basketball analytics workshop.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending online basketball analytics workshops"
+        },
+        "07/24/2020": {
+            "Event": "Reconsidered extreme dieting and rejoined his friends, appreciating balanced plans.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized the initial misjudgment after witnessing its positive impacts on friends.",
+            "[Updated Fact] Likes": "Extreme dieting",
+            "[Old Fact] Dislikes": "Extreme dieting",
+            "[Old Event Date]": "07/20/2020",
+            "[Old Event]": "Canceled the meal delivery service, preferring spontaneous cooking experiences."
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "08/01/2020": {
+            "Event": "Joined an online community focused on basketball analytics and strategies.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging with online basketball strategy communities"
+        },
+        "08/03/2020": {
+            "Event": "Opted out of an online gaming night to organize a virtual basketball tactics seminar.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found more value in exploring basketball strategies than gaming competition.",
+            "[Updated Fact] Dislikes": "Playing video games for long hours",
+            "[Old Fact] Likes": "Playing video games for long hours",
+            "[Old Event Date]": "07/17/2020",
+            "[Old Event]": "Decided to try an online gaming tournament with his friends."
+        },
+        "08/05/2020": {
+            "Event": "Subscribed to a gourmet meal delivery service praised for its healthy options and sports nutrition focus.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gourmet meal delivery services for athletes"
+        },
+        "08/07/2020": {
+            "Event": "Ended his subscription to the online sports magazine to reduce daily digital content intake.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized the need for more offline time and focus on physical activities.",
+            "[Updated Fact] Dislikes": "Subscribing to online sports and fitness magazines",
+            "[Old Fact] Likes": "Subscribing to online sports and fitness magazines",
+            "[Old Event Date]": "09/11/2017",
+            "[Old Event]": "Subscribed to a monthly online magazine about fitness and sports innovations."
+        },
+        "08/10/2020": {
+            "Event": "Renewed the subscription to the online sports magazine for important industry updates.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Recognized the benefits of staying informed about the latest sports innovations.",
+            "[Updated Fact] Likes": "Subscribing to online sports and fitness magazines",
+            "[Old Fact] Dislikes": "Subscribing to online sports and fitness magazines",
+            "[Old Event Date]": "08/07/2020",
+            "[Old Event]": "Ended his subscription to the online sports magazine to reduce daily digital content intake."
+        },
+        "08/12/2020": {
+            "Event": "Attended a long-awaited online workshop on mental resilience for athletes during lockdown.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Online workshops on mental resilience for athletes"
+        },
+        "08/15/2020": {
+            "Event": "Successfully organized a virtual reunion event with fellow alumni from his university basketball team.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Organizing virtual reunions with former teammates"
+        },
+        "08/20/2020": {
+            "Event": "Participated in a meditation class online to improve focus before games but found it unengaging.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Online meditation classes",
+            "[Reasons of Change]": "Found the virtual format lacked the immersion needed for concentration.",
+            "[Old Fact] Likes": "Online meditation classes",
+            "[Old Event Date]": "08/01/2020",
+            "[Old Event]": "Started attending online meditation classes to improve focus during games."
+        },
+        "08/25/2020": {
+            "Event": "Abandoned gourmet meal plans, missing more traditional, home-cooked meals.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Gourmet meal delivery services for athletes",
+            "[Reasons of Change]": "Yearned for the emotional comfort tied to traditional dishes.",
+            "[Old Fact] Likes": "Gourmet meal delivery services for athletes",
+            "[Old Event Date]": "08/05/2020",
+            "[Old Event]": "Subscribed to a gourmet meal delivery service praised for its healthy options and sports nutrition focus."
+        },
+        "08/30/2020": {
+            "Event": "Re-explored gourmet meal delivery services after being convinced by positive feedback from a fellow athlete.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Gourmet meal delivery services for athletes",
+            "[Reasons of Change]": "Compliance to fellow athletes\u2019 endorsement on the benefits it provided.",
+            "[Old Fact] Dislikes": "Gourmet meal delivery services for athletes",
+            "[Old Event Date]": "08/25/2020",
+            "[Old Event]": "Abandoned gourmet meal plans, missing more traditional, home-cooked meals."
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "09/01/2021": {
+            "Event": "Revived his interest in hosting large music festivals as a way to support local artists.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Attending large music festivals",
+            "[Reasons of Change]": "Wanted to promote community support for up-and-coming local talent.",
+            "[Old Fact] Dislikes": "Attending large music festivals",
+            "[Old Event Date]": "06/01/2020",
+            "[Old Event]": "Preferred attending smaller, intimate concerts over large music festivals."
+        },
+        "10/10/2021": {
+            "Event": "Designed a new basketball strategy based on lessons from classic film studies.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Drawing basketball strategies from film lessons"
+        },
+        "11/20/2021": {
+            "Event": "Discontinued participating in online basketball analytics workshops.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Attending online basketball analytics workshops",
+            "[Reasons of Change]": "Shifted focus to more practical, on-the-court strategic development.",
+            "[Old Fact] Likes": "Attending online basketball analytics workshops",
+            "[Old Event Date]": "08/23/2020",
+            "[Old Event]": "Bought tickets for an upcoming online basketball analytics workshop."
+        },
+        "01/15/2022": {
+            "Event": "Reconnected with an old teammate who inspired him to engage with analytics again.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Attending online basketball analytics workshops",
+            "[Reasons of Change]": "Inspired by teammate to appreciate analytics' impact on game improvement.",
+            "[Old Fact] Dislikes": "Attending online basketball analytics workshops",
+            "[Old Event Date]": "11/20/2021",
+            "[Old Event]": "Discontinued participating in online basketball analytics workshops."
+        },
+        "02/07/2022": {
+            "Event": "Decided to explore golfing after finding a new interest in strategy and patience.",
+            "Category": "Short-Term",
+            "[Updated Fact] Likes": "Golfing",
+            "[Reasons of Change]": "Partnered with a golfer who highlighted the strategic aspects of the sport.",
+            "[Old Fact] Dislikes": "Golfing",
+            "[Old Event Date]": "06/01/2020",
+            "[Old Event]": "Believed golfing was too slow-paced compared to basketball."
+        },
+        "04/10/2022": {
+            "Event": "Started coaching an inter-collegiate online basketball tournament.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Coaching online basketball tournaments"
+        },
+        "05/15/2022": {
+            "Event": "Took a hiatus from organizing virtual charity events due to workload stress.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Organizing virtual charity events",
+            "[Reasons of Change]": "Needed to alleviate stress and focus on personal health and team management.",
+            "[Old Fact] Likes": "Organizing virtual charity events",
+            "[Old Event Date]": "08/22/2019",
+            "[Old Event]": "Used an online platform to organize a virtual charity event supporting youth sports."
+        },
+        "07/05/2022": {
+            "Event": "Renewed passion for organizing virtual charity events after a successful collaboration.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Organizing virtual charity events",
+            "[Reasons of Change]": "A successful collaboration reminded him of the impactful community benefits.",
+            "[Old Fact] Dislikes": "Organizing virtual charity events",
+            "[Old Event Date]": "05/15/2022",
+            "[Old Event]": "Took a hiatus from organizing virtual charity events due to workload stress."
+        },
+        "08/01/2022": {
+            "Event": "Hosted a series of online clinics to mentor younger basketball players around the world.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hosting online basketball clinics for youth mentorship"
+        },
+        "09/15/2022": {
+            "Event": "Attended a live comedy show online and appreciated the unique virtual interaction.",
+            "Category": "Short-Term",
+            "[Updated Fact] Likes": "Watching reality TV shows",
+            "[Reasons of Change]": "Realized the potential of engaging storytelling and interaction in a virtual setting.",
+            "[Old Fact] Dislikes": "Watching reality TV shows",
+            "[Old Event Date]": "06/01/2020",
+            "[Old Event]": "Avoided reality TV shows, as they seemed to lack authenticity."
+        }
+    },
+    "Init Conversation": [
+        "User: Hey assistant, I could use some advice on online shopping. I've run into a few issues recently while trying to get things online.",
+        "Assistant: Sure, Jordan. I'm here to help. What kind of issues are you experiencing?",
+        "Side_Note: [Discovered a new brand of basketball shoes online and ordered a pair to test them.] 06/02/2010",
+        "User: Well, back on 06/02/2010, I found this cool new brand of basketball shoes online and decided to give them a shot by ordering a pair. Testing new basketball gear is always exciting for me.",
+        "Assistant: That sounds great! Finding new brands is always an adventure. Did you have a good experience with the purchase?",
+        "Side_Note: [Became frustrated with a slow shipping process for a sports equipment order.] 07/15/2011",
+        "User: Unfortunately, later, on 07/15/2011, I got really frustrated because the shipping process for my sports equipment order took forever. It just tested my patience.",
+        "Assistant: Slow shipping can definitely be a pain. Did you reach out to the company's customer service for assistance?",
+        "Side_Note: [Joined an online community to discuss reviews on basketball apparel.] 03/22/2012",
+        "User: What I did was join an online community on 03/22/2012 to discuss reviews on basketball apparel and learn from others' experiences.",
+        "Assistant: Smart move, Jordan. Getting input from others can often help in making informed decisions.",
+        "Side_Note: [Decided against buying a luxury watch online, finding it impractical.] 04/18/2013",
+        "User: Also, there was this one time on 04/18/2013 when I almost bought a luxury watch online, but I decided against it since it felt impractical.",
+        "Assistant: That's a wise decision. It's important to distinguish between what we want and what's practical for us.",
+        "Side_Note: [Participated in an online sale event to purchase basketball accessories at discounted prices.] 11/10/2014",
+        "User: Fast forward to 11/10/2014, I joined an online sale event and snagged some basketball accessories at discounted prices! That was quite the success.",
+        "Assistant: Good for you, Jordan! Taking advantage of sales can lead to some great deals.",
+        "Side_Note: [Found a new hiking gear brand through online recommendations and ordered a trial piece.] 05/09/2015",
+        "User: Then, on 05/09/2015, thanks to online recommendations, I discovered a new hiking gear brand and ordered a trial piece.",
+        "Assistant: Trying out new recommendations is a great way to explore\u2014sounds like a good find!",
+        "Side_Note: [Expressed disappointment over receiving a mismatched color order of team jerseys.] 12/14/2016",
+        "User: However, there was this one disappointment on 12/14/2016 when I received a mismatched color order of team jerseys I bought online.",
+        "Assistant: That's unfortunate, receiving the wrong order can be quite a hassle. Did you manage to resolve the issue?",
+        "Side_Note: [Subscribed to a monthly online magazine about fitness and sports innovations.] 09/11/2017",
+        "User: Eventually, I subscribed to a monthly online magazine about fitness and sports innovations on 09/11/2017 to keep myself updated.",
+        "Assistant: That sounds like an excellent source for staying informed about the latest trends.",
+        "Side_Note: [Unsubscribed from an email list that frequently sent promotions for non-sports-related items.] 07/14/2018",
+        "User: Then, on 07/14/2018, I had to unsubscribe from an email list that was constantly bombarding me with promotions for things I wasn't interested in.",
+        "Assistant: That can be annoying. Good call on keeping your inbox tidy!",
+        "Side_Note: [Used an online platform to organize a virtual charity event supporting youth sports.] 08/22/2019",
+        "User: Lastly, on 08/22/2019, I used an online platform to organize a virtual charity event for youth sports.",
+        "Assistant: That sounds really rewarding, Jordan. Organizing events for such causes is truly commendable. How did it go?"
+    ],
+    "Conversation Next Week": [
+        "User: Hey, assistant! I've got a bunch of new online shopping experiences from this week that I need to talk through.",
+        "Assistant: I'm all ears, Jordan! Let's go over what happened.",
+        "Side_Note: [Maya impulsively ordered a flashy advertisement-promoted gadget online.] 07/15/2019",
+        "User: So, on 07/15/2019, I ended up ordering a gadget that was promoted through a flashy ad online. It just reminded me of my childhood, and I couldn't resist the nostalgia!",
+        "Assistant: Flashy ads can be quite tempting, and nostalgia is a powerful draw! How did that work out for you?",
+        "Side_Note: [Reviewed a minimalistic design collection and found an appreciation for its elegance.] 07/16/2019",
+        "User: The very next day, on 07/16/2019, I was browsing through a minimalistic design collection online. I found myself appreciating its elegance, probably because I was in the mood for something simple.",
+        "Assistant: Minimalistic designs definitely have their charm. It\u2019s great that you found appreciation for that style!",
+        "Side_Note: [Started using a subscription box for monthly indie sweet snacks.] 07/17/2019",
+        "User: Then, on 07/17/2019, I subscribed to a monthly box that sends out indie sweet snacks. Exploring unique brands really excites me.",
+        "Assistant: That sounds delicious! Trying new snacks is always an exciting way to discover new tastes.",
+        "Side_Note: [Participated in a flashy online sale to experience the thrill of mass discounts.] 07/18/2019",
+        "User: On 07/18/2019, my friends and I got swept up in a flashy online sale. The thrill of the discounts was quite exhilarating.",
+        "Assistant: The adrenaline from a good sale can be thrilling indeed. Did you score any great deals?",
+        "Side_Note: [Found herself captivated by an influencer's practical product endorsement online.] 07/19/2019",
+        "User: I also stumbled on this influencer on 07/19/2019. Their product endorsement was surprisingly genuine and practical. I even ended up buying the product.",
+        "Assistant: It sounds like you found a trustworthy source. Influencers can sometimes offer unique insights.",
+        "Side_Note: [Invested in limited edition household gadgets during an online store anniversary.] 07/20/2019",
+        "User: On 07/20/2019, during an online store's anniversary, I invested in some limited edition household gadgets. I loved their exclusivity.",
+        "Assistant: Limited edition items are always exciting to have! It gives a sense of uniqueness to your collection.",
+        "Side_Note: [Returned a complex DIY project kit due to frustration with its instructions.] 07/21/2019",
+        "User: Well, I did end up returning a complex DIY project kit on 07/21/2019. The instructions were frustratingly hard to follow.",
+        "Assistant: It's understandable. Sometimes, simplicity is key, especially in DIY projects.",
+        "Side_Note: [Created a Pinterest board of minimalist interiors that inspired a decor refresh.] 07/22/2019",
+        "User: I also created a Pinterest board on minimalist interiors on 07/22/2019. It was really inspiring for a home decor refresh.",
+        "Assistant: Pinterest is great for gathering inspiration. Did you end up changing any of your home decor?",
+        "Side_Note: [Contributed to an online review forum, honing her product critique skills.] 07/23/2019",
+        "User: I put my product critique skills to the test on 07/23/2019 by contributing to an online review forum.",
+        "Assistant: That\u2019s a productive way to provide and gain insights. How was your experience with the forum?",
+        "Side_Note: [Expressed frustration at delayed shipping from a retailer known for quick delivery.] 07/24/2019",
+        "User: Unfortunately, my week ended with frustration on 07/24/2019. There was a shipping delay from a retailer known for quick delivery, which messed with my plans.",
+        "Assistant: Delays can be really inconvenient, especially when you\u2019re expecting speedy service. Did you get in touch with customer service for an update?"
+    ],
+    "Conversation Next Month": [
+        "User: Hey there, assistant! I've got a bunch of online shopping experiences from the past month I want to share with you.",
+        "Assistant: Hi Jordan! I'd love to hear all about it. What have you been up to?",
+        "Side_Note: [Purchased a high-demand concert ticket through a marketing email link.] 07/25/2019",
+        "User: So, back on 07/25/2019, I snagged a concert ticket through a marketing email link. The nostalgia for the musician's old tunes just hit me too hard to resist.",
+        "Assistant: That's awesome! Sometimes those nostalgic artists can really bring back memories. Looking forward to the concert?",
+        "Side_Note: [Invested in a one-size-fits-all dress after seeing it styled diversely online.] 07/30/2019",
+        "User: Then on 07/30/2019, I ended up investing in this intriguing one-size-fits-all dress after seeing it styled in a bunch of different ways online.",
+        "Assistant: Sounds like a versatile addition to your wardrobe! Have you tried styling it yourself yet?",
+        "Side_Note: [Joined an online fashion forum to discuss upcoming sustainable trends.] 08/02/2019",
+        "User: A bit later, on 08/02/2019, I joined an online fashion forum to dive into discussions on upcoming sustainable trends. I\u2019ve always been interested in eco-friendly options.",
+        "Assistant: Engaging with like-minded individuals online is a great way to expand your knowledge. Have you found any must-try sustainable products?",
+        "Side_Note: [Cancelled a subscription box after receiving repetitive items.] 08/05/2019",
+        "User: However, on 08/05/2019, I had to cancel this subscription box because it kept sending repetitive items, which wasn't exciting at all.",
+        "Assistant: Oh no! Repetitive deliveries can be such a letdown. Hopefully, you find better subscription services in the future.",
+        "Side_Note: [Explored premium online courses for learning about artisanal crafts.] 08/09/2019",
+        "User: But on a brighter note, on 08/09/2019, I explored some premium online courses about artisanal crafts. It's fascinating to learn these unique skills.",
+        "Assistant: That sounds exciting! Diving into crafts can be a rewarding experience. What kind of craft are you focusing on?",
+        "Side_Note: [Returned an influencer-recommended product that failed to meet its claims.] 08/12/2019",
+        "User: More recently, on 08/12/2019, I returned a product that an influencer recommended. Unfortunately, it didn't live up to the claims.",
+        "Assistant: It's disappointing when products don't meet expectations. At least you were able to return it without hassle!",
+        "Side_Note: [Developed a new evening routine involving curated online content consumption.] 08/17/2019",
+        "User: I've also managed to develop a new evening routine from 08/17/2019, where I consume curated online content before bed. It's quite calming.",
+        "Assistant: Curated content can be soothing. It\u2019s nice to have some dedicated downtime before sleep. Any favorite channels or websites?",
+        "Side_Note: [Signed up for a virtual tour of cultural heritage sites globally.] 08/21/2019",
+        "User: And on 08/21/2019, I signed up for this virtual tour across several cultural heritage sites around the world. I can't wait to explore them.",
+        "Assistant: Virtual tours are such a great way to experience culture from home! Which site are you most excited about visiting virtually?",
+        "Side_Note: [Impulsively purchased multiple decor pieces during an online flash sale.] 08/24/2019",
+        "User: Oh, and on 08/24/2019, I kind of went on a spree and bought multiple d\u00e9cor pieces during an online flash sale. Just needed a change in my living space.",
+        "Assistant: A fresh new vibe at home can work wonders. Did you find any unique pieces?",
+        "Side_Note: [Subscribed to a monthly delivery of raw ingredients for gourmet cooking projects.] 08/29/2019",
+        "User: Finally, I subscribed to a monthly raw ingredients delivery for gourmet cooking that started on 08/29/2019. I love experimenting with new recipes.",
+        "Assistant: That sounds fun and delicious! Gourmet cooking must be quite the adventure. What\u2019s the first dish you\u2019re planning to make?"
+    ],
+    "Conversation Next Year": [
+        "User: Hello, assistant! I've been reflecting on a year of online shopping experiences. Ready to hear about my journey?",
+        "Assistant: Of course, Jordan! I'm eager to hear what you've experienced and how things have changed for you.",
+        "Side_Note: [Volunteered at a new local community theater project for creative expansion.] 02/01/2018",
+        "User: Starting with 02/01/2018, I volunteered at a local community theater. It was refreshing using online platforms to discover such opportunities for creative expansion.",
+        "Assistant: That sounds like a fulfilling experience, Jordan! Community theaters often provide rich opportunities for creativity and networking.",
+        "Side_Note: [Spent a weekend indulging in popular reality TV shows with her cousins.] 02/15/2018",
+        "User: Then, on the weekend of 02/15/2018, I surprised myself by enjoying reality TV shows with my cousins. It was a bonding experience and changed my outlook on these shows.",
+        "Assistant: Isn\u2019t it fascinating how the company we keep can transform our interests? Sounds like a delightful weekend!",
+        "Side_Note: [Traveled to a renowned tourist destination for a friend's wedding.] 03/10/2018",
+        "User: On 03/10/2018, I traveled to a renowned tourist spot for a friend's wedding. It shifted my view on commercial attractions, which I found genuinely intriguing this time.",
+        "Assistant: Weddings have a way of adding extra charm to any location. Glad to hear you enjoyed the visit!",
+        "Side_Note: [Experimented with a vegan fast food place seeking healthier alternatives.] 04/05/2018",
+        "User: Fast forward to 04/05/2018, I tried out a vegan fast-food joint for the first time. Exploring new food scenes online led me to healthier alternatives.",
+        "Assistant: That\u2019s an exciting culinary adventure! Vegan options can be quite delicious and refreshing.",
+        "Side_Note: [Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.] 06/21/2018",
+        "User: I also attended a blockbuster film premiere on 06/21/2018 due to an industry invite. The professional allure changed my perception of such films.",
+        "Assistant: Exclusive events can offer unique insights. It sounds like the premiere was an enriching experience!",
+        "Side_Note: [Revisited her poetry from the past decade, fueling inspiration for future projects.] 09/17/2018",
+        "User: Revisiting my poetry past from 09/17/2018 online filled me with inspiration for new creative projects. It reminded me why I cherish creative platforms.",
+        "Assistant: That\u2019s wonderful! Reflecting on past work can spark incredible new ideas and projects.",
+        "Side_Note: [Hosted a community film screening and discussion panel for indie films.] 11/01/2018",
+        "User: Hosted an indie film screening and panel discussion on 11/01/2018, using online resources. Connecting with the community over film is always enriching.",
+        "Assistant: Hosting events like these can surely bring people together. Looking forward to doing more of these?",
+        "Side_Note: [Took part in a 30-day fitness challenge to explore personal limits.] 01/20/2019",
+        "User: On 01/20/2019, I dove into a 30-day fitness challenge I found online. It was a journey exploring my limits and establishing a balanced routine.",
+        "Assistant: That\u2019s an incredible commitment! These online challenges can be motivating and eye-opening.",
+        "Side_Note: [Composed a series of articles exploring cultural identities for a well-known magazine.] 03/29/2019",
+        "User: By 03/29/2019, I was composing articles on cultural identities for an established magazine. Online platforms offer me the exposure to new cultural insights.",
+        "Assistant: Writing about cultural identities is vital and enlightening. Great to hear you\u2019re contributing to this space!",
+        "Side_Note: [Reassessed her stance on fast food during a lively debate on culinary trends.] 07/14/2019",
+        "User: Finally, on 07/14/2019, an engaging online debate on culinary trends made me rethink my perspective on fast food. It\u2019s fascinating how new information reshapes opinions.",
+        "Assistant: Culinary debates can introduce intriguing perspectives. Your open-mindedness is commendable!"
+    ]
+}

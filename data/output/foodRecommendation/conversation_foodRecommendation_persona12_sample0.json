@@ -1,0 +1,755 @@
+{
+    "Original Persona": "An indie screenwriter who seeks character inspiration from the quirks of everyone around her",
+    "Expanded Persona": "**Name:** Maya Thompson\n\n**Gender Identity:** Female\n\n**Racial Identity:** African American\n\n**Expanded Persona:**\n\nMaya Thompson is an indie screenwriter born in 1989, who thrives on the rich tapestry of human emotions and experiences that she encounters in her everyday life. She has a talent for noticing the tiny quirks in people that others might overlook, using these observations as the cornerstone of her imaginative scripts. Her love for storytelling is deeply rooted in her cultural heritage, often finding herself drawn to narratives that explore themes of identity and community. Maya's creative process is fluid and organic, often taking time to immerse herself in diverse settings that offer new perspectives. She cherishes the spontaneity of life, believing that the most authentic characters emerge from unscripted moments.\n\n**Personal Hobbies:**\n\n- Writing poetry to explore different narrative styles\n- Attending indie film festivals to discover unique storytelling voices\n- Engaging in improv theater workshops for character development\n- Traveling to culturally rich destinations for inspiration\n- Curating playlists that evoke specific moods for her writing sessions\n\n**Things Maya Dislikes (but others might like):**\n\n- Mainstream blockbuster films with predictable plots\n- Highly commercialized tourist attractions\n- Overly processed foods or fast food chains\n- Reality TV shows that lack authenticity\n- Structured fitness classes with rigid routines",
+    "Context": "foodRecommendation",
+    "Init General Personal History": {
+        "03/03/2007": {
+            "Event": "Maya started journaling daily, capturing her thoughts and ideas.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "05/21/2008": {
+            "Event": "Attended her first indie film festival, sparking an interest in unique storytelling.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "08/14/2009": {
+            "Event": "Joined an improv theater workshop to enhance her character development skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "11/11/2010": {
+            "Event": "Created a new playlist that inspires her current screenplay project.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        },
+        "07/19/2011": {
+            "Event": "Traveled to New Orleans, immersing herself in the local culture for writing inspiration.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "06/15/2012": {
+            "Event": "Experienced frustration after watching a blockbuster film with a predictable plot.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "10/22/2013": {
+            "Event": "Opted to visit a local art gallery instead of a popular tourist attraction.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Highly commercialized tourist attractions"
+        },
+        "05/09/2014": {
+            "Event": "Removed processed snacks from her diet, opting for more wholesome foods.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Overly processed foods or fast food chains"
+        },
+        "09/30/2015": {
+            "Event": "Decided to watch a documentary instead of a reality TV show.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reality TV shows that lack authenticity"
+        },
+        "04/05/2016": {
+            "Event": "Successfully completed a year-long scriptwriting course, enriching her storytelling craft.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "12/17/2017": {
+            "Event": "Participated in an online community project to script a short film with diverse voices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "06/05/2018": {
+            "Event": "Declined an invitation to a structured fitness class and went for a walk instead.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Structured fitness classes with rigid routines"
+        }
+    },
+    "General Personal History Next Week": {
+        "12/18/2017": {
+            "Event": "Maya impulsively joined a structured Zumba class at the local gym.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close friend's invitation and the promise of spontaneous fun inspired her to give it a try.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "12/19/2017": {
+            "Event": "Decided to explore a new fast food joint with friends to add variety to her weekend hangouts.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity and desire to bond with friends over new food experiences.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "12/20/2017": {
+            "Event": "Shared insights from a recently watched indie film in her writing group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "12/21/2017": {
+            "Event": "Complained about a new blockbuster film while discussing movies online.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "12/22/2017": {
+            "Event": "Watched a thought-provoking reality TV documentary series with a friend, changing her view.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "This series offered genuine stories that captivated her attention more than expected.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "12/23/2017": {
+            "Event": "Started a new writing project inspired by her travels to cultural heritage sites.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "12/24/2017": {
+            "Event": "Bought tickets to an internationally acclaimed blockbuster to see what the hype is about.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Hyped by widespread acclaim and personal curiosity about the film's special effects.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "12/25/2017": {
+            "Event": "Planned a casual, structured workout with family over the holidays.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/26/2017": {
+            "Event": "Visited a popular museum during peak hours for the first time.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to experience its temporary exhibits and the unique ambiance it offered on a busy day.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "12/27/2017": {
+            "Event": "Contributed to an online film critique discussion group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Month": {
+        "12/28/2017": {
+            "Event": "Started attending morning yoga sessions to help clear her mind.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/30/2017": {
+            "Event": "Visited a theme park with friends and enjoyed the experience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found the vibrant atmosphere refreshing, breaking the monotony of routine.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/02/2018": {
+            "Event": "Went on a documentary binge over the weekend, inspired by varying narratives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reality TV shows that lack authenticity"
+        },
+        "01/04/2018": {
+            "Event": "Wrote a critical review of a recent mainstream film as part of a media studies course.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Engagement with film critique for academic requirement prompted deeper analysis.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "01/07/2018": {
+            "Event": "Hosted an indie movie marathon night at her apartment with friends.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/10/2018": {
+            "Event": "Snacked on fast food while traveling, finding comfort in its convenience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that convenience and taste during travel made fast food enjoyable.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "01/12/2018": {
+            "Event": "Started working on a new screenplay inspired by her poetry.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "01/15/2018": {
+            "Event": "Visited a popular tourist attraction for its unique cultural exhibit.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The specific cultural aspect of the attraction piqued her interest.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/18/2018": {
+            "Event": "Participated in a public storytelling event in her city.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "01/21/2018": {
+            "Event": "Spent a quiet weekend reading a novel and relishing her solitary time.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Year": {
+        "02/01/2018": {
+            "Event": "Volunteered at a new local community theater project for creative expansion.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "02/15/2018": {
+            "Event": "Spent a weekend indulging in popular reality TV shows with her cousins.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Bonding with family led to unexpected enjoyment of reality TV formats.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "03/10/2018": {
+            "Event": "Traveled to a renowned tourist destination for a friend's wedding.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The personal significance of the event overshadowed her usual preferences.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "04/05/2018": {
+            "Event": "Experimented with a vegan fast food place seeking healthier alternatives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Overly processed foods or fast food chains"
+        },
+        "06/21/2018": {
+            "Event": "Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Professional networking opportunities and industry insights increased its appeal.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "09/17/2018": {
+            "Event": "Revisited her poetry from the past decade, fueling inspiration for future projects.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "11/01/2018": {
+            "Event": "Hosted a community film screening and discussion panel for indie films.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/20/2019": {
+            "Event": "Took part in a 30-day fitness challenge to explore personal limits.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Motivated by a personal desire to find balance between mind and body.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "03/29/2019": {
+            "Event": "Composed a series of articles exploring cultural identities for a well-known magazine.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "07/14/2019": {
+            "Event": "Reassessed her stance on fast food during a lively debate on culinary trends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The debate made her reconsider healthier options and flavors over convenience.",
+            "[Updated Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        }
+    },
+    "Init Contextual Personal History": {
+        "02/22/2008": {
+            "Event": "Explored a local farmer's market discovering fresh and unique ingredients.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring local farmer's markets for fresh ingredients"
+        },
+        "04/14/2009": {
+            "Event": "Experimented with fusion cooking, blending Italian and Japanese cuisines.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with fusion recipes in her kitchen"
+        },
+        "06/10/2010": {
+            "Event": "Attended a gourmet cooking workshop on Mediterranean cuisine.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending gourmet cooking workshops"
+        },
+        "09/23/2011": {
+            "Event": "Hosted a fall-themed dinner party with pumpkin-based dishes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting seasonal themed dinner parties"
+        },
+        "11/19/2012": {
+            "Event": "Paired a homemade lasagna with a selected Chianti wine.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Pairing wines with homemade meals"
+        },
+        "03/03/2014": {
+            "Event": "Baked her first loaf of sourdough bread from scratch.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Baking artisanal bread"
+        },
+        "07/12/2015": {
+            "Event": "Started a small kitchen garden to grow fresh herbs.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gardening for fresh herbs"
+        },
+        "10/10/2016": {
+            "Event": "Savored various street foods during her travels in Thailand.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Tasting diverse street foods while traveling"
+        },
+        "04/08/2017": {
+            "Event": "Discovered a rare vintage cookbook at an estate sale.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting vintage cookbooks"
+        },
+        "12/16/2017": {
+            "Event": "Crafted homemade jams from seasonal fruits.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Crafting homemade preserves and jams"
+        },
+        "03/11/2018": {
+            "Event": "Decided to skip the deep-fried foods at a state fair.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Deep-fried carnival foods"
+        },
+        "05/15/2018": {
+            "Event": "Rejected a highly caffeinated energy drink offered by a friend.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Highly caffeinated energy drinks"
+        },
+        "08/29/2018": {
+            "Event": "Avoided an artificially flavored snack at a movie theater.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Artificially flavored snacks"
+        },
+        "10/05/2018": {
+            "Event": "Found the desserts at a local bakery too sweet for her taste.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Excessively sweet desserts"
+        },
+        "01/02/2019": {
+            "Event": "Chose whole-grain toast instead of sugary breakfast cereals.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Sugary breakfast cereals"
+        },
+        "04/20/2019": {
+            "Event": "Critiqued the quality of bulk-produced baked goods at a supermarket.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Bulk-produced supermarket baked goods"
+        },
+        "06/11/2019": {
+            "Event": "Read an article on the effects of synthetic sugar substitutes.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Synthetic sugar substitutes"
+        },
+        "09/22/2019": {
+            "Event": "Opted for a homemade soup over canned options at the grocery store.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Mass-produced canned soups"
+        },
+        "12/05/2019": {
+            "Event": "Tried a new sushi dish but found she disliked raw seafood.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Raw seafood dishes"
+        },
+        "02/18/2020": {
+            "Event": "Avoided instant noodles during a trip, preferring freshly prepared meals.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Instant noodles and prepackaged meals"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "03/05/2020": {
+            "Event": "Attempted to make a fancy homemade gourmet meal but realized she misses casual dining.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Nostalgia for simpler times and spontaneous joyful memories associated with casual dining settings.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "07/14/2019",
+            "[Old Event]": "Reassessed her stance on fast food during a lively debate on culinary trends."
+        },
+        "03/06/2020": {
+            "Event": "Visited a local diner for a classic breakfast, enjoying sugary cereals.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A childhood favorite song played, triggering fond breakfast memories.",
+            "[Updated Fact] Likes": "Sugary breakfast cereals",
+            "[Old Fact] Dislikes": "Sugary breakfast cereals",
+            "[Old Event Date]": "01/02/2019",
+            "[Old Event]": "Chose whole-grain toast instead of sugary breakfast cereals."
+        },
+        "03/07/2020": {
+            "Event": "Joined a coffee-tasting event indulging in flavored lattes, despite usually preferring plain brews.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The event's social atmosphere encouraged experimentation with new flavors.",
+            "[Updated Fact] Likes": "Artificially flavored snacks",
+            "[Old Fact] Dislikes": "Artificially flavored snacks",
+            "[Old Event Date]": "08/29/2018",
+            "[Old Event]": "Avoided an artificially flavored snack at a movie theater."
+        },
+        "03/08/2020": {
+            "Event": "Participated in a culinary competition and appreciated the skill in making instant noodles.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Seeing the creative potential and culinary art behind their preparation.",
+            "[Updated Fact] Likes": "Instant noodles and prepackaged meals",
+            "[Old Fact] Dislikes": "Instant noodles and prepackaged meals",
+            "[Old Event Date]": "02/18/2020",
+            "[Old Event]": "Avoided instant noodles during a trip, preferring freshly prepared meals."
+        },
+        "03/09/2020": {
+            "Event": "Organized a raw seafood sushi night at her apartment with friends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Inspired by the freshness and subtle flavors of raw seafood.",
+            "[Updated Fact] Likes": "Raw seafood dishes",
+            "[Old Fact] Dislikes": "Raw seafood dishes",
+            "[Old Event Date]": "12/05/2019",
+            "[Old Event]": "Tried a new sushi dish but found she disliked raw seafood."
+        },
+        "03/10/2020": {
+            "Event": "Attended a cheese-making workshop to learn about the art behind aged cheeses.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Experimenting with fusion recipes in her kitchen"
+        },
+        "03/11/2020": {
+            "Event": "Resumed baking sessions at home, experimenting with pastries and fresh ingredients from her garden.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Baking artisanal bread"
+        },
+        "03/12/2020": {
+            "Event": "Became a regular at a local food co-op, exploring a variety of natural foods.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring local farmer's markets for fresh ingredients"
+        },
+        "03/13/2020": {
+            "Event": "Given a cookbook as a gift for a modern take on traditional desserts, inspiring new baking adventures.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting vintage cookbooks"
+        },
+        "03/14/2020": {
+            "Event": "Rediscovered her appreciation for simple and authentic street foods.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Tasting diverse street foods while traveling"
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "03/15/2020": {
+            "Event": "Started a gourmet burger blog reviewing fast food joints.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Her fascination with food culture and the social stories behind fast food led to this exploration.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "07/14/2019",
+            "[Old Event]": "Reassessed her stance on fast food during a lively debate on culinary trends."
+        },
+        "03/20/2020": {
+            "Event": "Participated in a reality TV cooking show challenge.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The dynamic nature of the competition intrigued her and aligned with her improv skills.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "03/25/2020": {
+            "Event": "Received a gift pack of deep-fried snacks and discovered some favorites.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The unique seasonings used on these snacks offered an unexpected gourmet experience.",
+            "[Updated Fact] Likes": "Deep-fried carnival foods",
+            "[Old Fact] Dislikes": "Deep-fried carnival foods",
+            "[Old Event Date]": "03/11/2018",
+            "[Old Event]": "Decided to skip the deep-fried foods at a state fair."
+        },
+        "03/30/2020": {
+            "Event": "Visited local bakeries to explore innovative dessert options.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Inspired by the artistry and craft put into modern desserts.",
+            "[Updated Fact] Likes": "Excessively sweet desserts",
+            "[Old Fact] Dislikes": "Excessively sweet desserts",
+            "[Old Event Date]": "10/05/2018",
+            "[Old Event]": "Found the desserts at a local bakery too sweet for her taste."
+        },
+        "04/01/2020": {
+            "Event": "Participated in a natural sweetener taste test for a friend's new cookbook.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The diverse flavors of natural sweeteners piqued her interest, changing her views on sugar.",
+            "[Updated Fact] Likes": "Synthetic sugar substitutes",
+            "[Old Fact] Dislikes": "Synthetic sugar substitutes",
+            "[Old Event Date]": "06/11/2019",
+            "[Old Event]": "Read an article on the effects of synthetic sugar substitutes."
+        },
+        "04/06/2020": {
+            "Event": "Started cultivating mushrooms at home exploring unique culinary uses.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gardening for fresh herbs"
+        },
+        "04/10/2020": {
+            "Event": "Became a member of a local artisan bread cooperative.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Baking artisanal bread"
+        },
+        "04/15/2020": {
+            "Event": "Researched the historical significance of recipes from her vintage cookbooks.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting vintage cookbooks"
+        },
+        "04/20/2020": {
+            "Event": "Explored ancient grains and their nutritional benefits at a wellness retreat.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Experimenting with fusion recipes in her kitchen"
+        },
+        "04/25/2020": {
+            "Event": "Volunteer-led theme-based street food festivals celebrating local foods.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Tasting diverse street foods while traveling"
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "05/01/2020": {
+            "Event": "Rediscovered her love for locally produced raw milk cheeses.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The artisanal process and community support behind local cheese-making appealed to her.",
+            "[Updated Fact] Likes": "Raw seafood dishes",
+            "[Old Fact] Dislikes": "Raw seafood dishes",
+            "[Old Event Date]": "12/05/2019",
+            "[Old Event]": "Tried a new sushi dish but found she disliked raw seafood."
+        },
+        "06/15/2020": {
+            "Event": "Visited a candy factory and rekindled her interest in sweet confectionaries.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Seeing the meticulous craftsmanship reignited an appreciation for sweet treats.",
+            "[Updated Fact] Likes": "Excessively sweet desserts",
+            "[Old Fact] Dislikes": "Excessively sweet desserts",
+            "[Old Event Date]": "10/05/2018",
+            "[Old Event]": "Found the desserts at a local bakery too sweet for her taste."
+        },
+        "07/20/2020": {
+            "Event": "Took a global culinary workshop series to learn about canned foods' role in different cultures.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Gained insight into the cultural significance and flavors celebrated through canned foods.",
+            "[Updated Fact] Likes": "Mass-produced canned soups",
+            "[Old Fact] Dislikes": "Mass-produced canned soups",
+            "[Old Event Date]": "09/22/2019",
+            "[Old Event]": "Opted for a homemade soup over canned options at the grocery store."
+        },
+        "08/30/2020": {
+            "Event": "Made an extravagant tropical fruit dessert that included surprising artificial flavors.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The shock value combined with vibrant hues made for a thrilling dessert experience.",
+            "[Updated Fact] Likes": "Artificially flavored snacks",
+            "[Old Fact] Dislikes": "Artificially flavored snacks",
+            "[Old Event Date]": "08/29/2018",
+            "[Old Event]": "Avoided an artificially flavored snack at a movie theater."
+        },
+        "10/05/2020": {
+            "Event": "Wrote a food feature on the nuanced tastes of synthetic sugar alternatives.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A deeper exploration of synthetic sugars revealed nuanced flavors that intrigued her.",
+            "[Updated Fact] Likes": "Synthetic sugar substitutes",
+            "[Old Fact] Dislikes": "Synthetic sugar substitutes",
+            "[Old Event Date]": "06/11/2019",
+            "[Old Event]": "Read an article on the effects of synthetic sugar substitutes."
+        },
+        "12/12/2020": {
+            "Event": "Hosted a workshop on pairing teas with artisanal desserts.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Pairing wines with homemade meals"
+        },
+        "03/22/2021": {
+            "Event": "Joined a sustainable agriculture group focusing on heirloom seed preservation.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gardening for fresh herbs"
+        },
+        "05/18/2021": {
+            "Event": "Participated in a global food documentary project highlighting street vendors' stories.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Tasting diverse street foods while traveling"
+        },
+        "07/10/2021": {
+            "Event": "Research for her blog led her to collaborate with local soup kitchens on creative recipe development.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Experimenting with fusion recipes in her kitchen"
+        },
+        "09/01/2021": {
+            "Event": "Launched an online vintage cookbook repository to preserve culinary history.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting vintage cookbooks"
+        }
+    },
+    "Init Conversation": [
+        "User: Hi, I'm Maya Thompson. I'm looking for some new food recommendations and perhaps some guidance on how to refine my culinary experiences.",
+        "Assistant: Hello, Maya! I'd be delighted to help you with food recommendations. Could you share a bit about your preferences or past food experiences?",
+        "Side_Note: [Explored a local farmer's market discovering fresh and unique ingredients.] 02/22/2008",
+        "User: Sure! I\u2019ve always loved exploring local farmer's markets for fresh ingredients. I find it invigorating to discover unique flavors and produce.",
+        "Assistant: That sounds wonderful! Farmer's markets are great for fresh, seasonal items. Have you used any of those unique ingredients in your cooking recently?",
+        "Side_Note: [Experimented with fusion cooking, blending Italian and Japanese cuisines.] 04/14/2009",
+        "User: Yes! There was this one time I experimented with fusion cooking, blending Italian and Japanese cuisines. It turned out to be quite the culinary adventure.",
+        "Assistant: Fusion cooking sounds exciting and creative. It must have added an intriguing twist to traditional dishes. What kind of fusion dishes did you try?",
+        "User: I tried a wasabi-infused risotto with tempura-fried vegetables. The combination of flavors was oddly satisfying.",
+        "Side_Note: [Attended a gourmet cooking workshop on Mediterranean cuisine.] 06/10/2010",
+        "User: On another note, I once attended a gourmet cooking workshop focused on Mediterranean cuisine, which was incredibly enlightening in terms of flavor profiles.",
+        "Assistant: Gourmet workshops are an excellent way to elevate your cooking skills. Did you learn any Mediterranean recipes that you often recreate?",
+        "User: Absolutely, I've incorporated a lot of olive-based dishes and couscous salads into my meals since then.",
+        "Side_Note: [Hosted a fall-themed dinner party with pumpkin-based dishes.] 09/23/2011",
+        "User: I even hosted a fall-themed dinner party where pumpkin was the star ingredient. It was a fun way to play with seasonal flavors.",
+        "Assistant: That sounds delightful! Pumpkin is such a versatile ingredient. What was your favorite dish from the dinner party?",
+        "User: The roasted pumpkin soup with a hint of nutmeg and cinnamon was a big hit!",
+        "Side_Note: [Deep-fried carnival foods] 03/11/2018",
+        "User: However, I\u2019m not a fan of deep-fried carnival foods. They always seem too heavy for my liking.",
+        "Assistant: I can understand that. Sometimes deep-fried foods can feel a bit too indulgent. Would you like some lighter, healthier snack recommendations instead?",
+        "User: Yes, that would be great!",
+        "Side_Note: [Critiqued the quality of bulk-produced baked goods at a supermarket.] 04/20/2019",
+        "User: I often find myself critiquing the quality of bulk-produced baked goods too. They lack the touch of handmade love.",
+        "Assistant: Homemade baked goods do have a special warmth and character. Have you tried baking your own bread or pastries?",
+        "User: I have! There's something so satisfying about crafting a dough from scratch.",
+        "Side_Note: [Avoided instant noodles during a trip, preferring freshly prepared meals.] 02/18/2020",
+        "User: And whenever I travel, I always avoid instant noodles and prefer freshly prepared meals. They seem more nourishing and flavorful.",
+        "Assistant: Enjoying freshly prepared meals while traveling is a great way to immerse yourself in local culinary cultures. Do you have any favorite dishes from your travels?",
+        "User: Yes, Pad Thai from a street vendor in Thailand was unforgettable.",
+        "Assistant: Pad Thai is indeed a classic. Would you like more recommendations for homemade versions of such dishes?",
+        "User: I\u2019d love that, particularly if they include a bit of creative flair."
+    ],
+    "Conversation Next Week": [
+        "User: Hi, I'm Maya Thompson. I recently realized that my tastes are evolving, and I could use some help navigating my new food preferences.",
+        "Assistant: Hello, Maya! I'd be happy to guide you through your evolving tastes. Could you share some of the changes you've experienced recently?",
+        "Side_Note: [Maya impulsively joined a structured Zumba class at the local gym.] 12/18/2017",
+        "User: Well, for starters, I surprised myself by actually enjoying a Zumba class at the local gym. A friend invited me, promising it would be fun.",
+        "Assistant: That's fantastic! It's amazing how a friend's suggestion can lead to discovering new activities we enjoy.",
+        "Side_Note: [Decided to explore a new fast food joint with friends to add variety to her weekend hangouts.] 12/19/2017",
+        "User: I also decided to try out a new fast food joint with some friends last weekend. I used to avoid fast food, but it was a nice change of pace.",
+        "Assistant: Sometimes it's great to indulge and share those experiences with friends. Did you find any favorites there?",
+        "User: They had a unique twist on fries that I really liked.",
+        "Side_Note: [Shared insights from a recently watched indie film in her writing group.] 12/20/2017",
+        "User: Recently, I shared insights from an indie film I watched, during a session with my writing group.",
+        "Assistant: Indie films often have such rich storytelling. Did the film provide any inspiration for your writing?",
+        "User: Absolutely, it gave me a new perspective on character development.",
+        "Side_Note: [Complained about a new blockbuster film while discussing movies online.] 12/21/2017",
+        "User: Although, I must admit, I complained quite a bit about this blockbuster film I watched recently. It was just so predictable.",
+        "Assistant: Those models can sometimes miss the mark, especially when you're looking for something unexpected. What didn't you like about it?",
+        "User: The storyline felt too formulaic for my taste.",
+        "Side_Note: [Watched a thought-provoking reality TV documentary series with a friend, changing her view.] 12/22/2017",
+        "User: Interestingly, I watched a reality TV documentary with a friend that caught me off guard. It was quite genuine and thought-provoking.",
+        "Assistant: It's great to find reality TV shows that offer authentic stories. What was the documentary about?",
+        "User: It delved into social issues in different communities.",
+        "Side_Note: [Started a new writing project inspired by her travels to cultural heritage sites.] 12/23/2017",
+        "User: I've also started a new writing project inspired by the cultural heritage sites I've visited in my travels.",
+        "Assistant: Travel provides such a wealth of inspiration, especially from culturally rich destinations. What aspect of your travels are you infusing into your project?",
+        "User: I'm focusing on the sense of community I observed.",
+        "Side_Note: [Bought tickets to an internationally acclaimed blockbuster to see what the hype is about.] 12/24/2017",
+        "User: Despite my earlier complaints, I bought tickets for a highly acclaimed blockbuster out of curiosity.",
+        "Assistant: Curiosity can lead to new discoveries. Was it able to change your mind about blockbuster films?",
+        "User: It was visually stunning, and I appreciated its special effects.",
+        "Side_Note: [Planned a casual, structured workout with family over the holidays.] 12/25/2017",
+        "User: Over the holidays, I organized a casual yet structured workout session with my family.",
+        "Assistant: That sounds like a wonderful way to stay active and connected with family during the holidays.",
+        "Side_Note: [Visited a popular museum during peak hours for the first time.] 12/26/2017",
+        "User: I even visited a popular museum during peak hours. It was busier than I'm used to, but the exhibits were worth it.",
+        "Assistant: Experiencing temporary exhibits and the ambiance can be quite captivating in a busy setting. Did you discover any new interests there?",
+        "User: Absolutely, they had an incredible exhibit on ancient art that inspired me.",
+        "Side_Note: [Contributed to an online film critique discussion group.] 12/27/2017",
+        "User: I've also been active in an online film critique group, honing my analytical skills.",
+        "Assistant: Engaging in group discussions is a fantastic way to gain new perspectives and improve your own critiques. What have you found most enlightening?",
+        "User: The diverse opinions have opened my eyes to new angles I hadn't considered."
+    ],
+    "Conversation Next Month": [
+        "User: Hi, it's Maya Thompson. I'm hoping to get some new food recommendations and share some of my recent shifts in preferences.",
+        "Assistant: Hi Maya! I'd be delighted to assist with that. Could you tell me more about the changes you've been experiencing with your tastes and dining experiences?",
+        "Side_Note: [Started attending morning yoga sessions to help clear her mind.] 12/28/2017",
+        "User: Sure thing! For starters, I've gotten into the routine of attending morning yoga sessions. It really helps clear my mind and sets a positive tone for the day.",
+        "Assistant: That sounds wonderful! A good routine can certainly enhance both mind and body wellness. Has this new routine influenced any of your food choices?",
+        "Side_Note: [Visited a theme park with friends and enjoyed the experience.] 12/30/2017",
+        "User: Absolutely, and speaking of new experiences, I visited a theme park with friends. I surprisingly enjoyed the vibrant atmosphere!",
+        "Assistant: It's amazing how a change in scenery can be refreshing. Did this visit inspire any particular culinary adventure?",
+        "User: It reminded me of the fun of concession foods, though I haven't indulged yet.",
+        "Side_Note: [Went on a documentary binge over the weekend, inspired by varying narratives.] 01/02/2018",
+        "User: Over the weekend, I even went on a documentary binge. The varying narratives were so inspiring.",
+        "Assistant: Documentaries can offer such diverse perspectives. Did any of them touch on food or culture that caught your interest?",
+        "User: Yes, one about the rise of street food culture in urban settings was a standout.",
+        "Side_Note: [Wrote a critical review of a recent mainstream film as part of a media studies course.] 01/04/2018",
+        "User: I also had to write a critical review of a mainstream film for a media course, which really pushed me to analyze films more deeply.",
+        "Assistant: Engaging critically with media can definitely change how we see it. Did you find yourself reevaluating your previous thoughts on blockbusters?",
+        "User: I did, especially how they can be a window into societal trends.",
+        "Side_Note: [Hosted an indie movie marathon night at her apartment with friends.] 01/07/2018",
+        "User: I hosted an indie movie marathon with friends shortly after, which was a perfect counterbalance.",
+        "Assistant: That sounds like a great way to deepen your appreciation for storytelling. Do you pair specific foods with different film genres?",
+        "User: Often! This time, we went with some creative charcuterie boards to mirror the indie spirit.",
+        "Side_Note: [Snacked on fast food while traveling, finding comfort in its convenience.] 01/10/2018",
+        "User: While traveling recently, I found myself snacking on fast food. Surprisingly, the convenience and taste were comforting.",
+        "Assistant: Fast food can be a reliable comfort when traveling. Did you discover any new favorites or guilty pleasures?",
+        "User: I'm slightly embarrassed to admit it, but those spicy chicken nuggets hit the spot.",
+        "Side_Note: [Started working on a new screenplay inspired by her poetry.] 01/12/2018",
+        "User: On the creative front, I'm starting a new screenplay based on my poetry, which blends narrative styles beautifully.",
+        "Assistant: That sounds intriguing! How does your writing process intersect with your culinary adventures?",
+        "User: Both require a sort of creative experimentation, whether it\u2019s in flavors or scenes.",
+        "Side_Note: [Visited a popular tourist attraction for its unique cultural exhibit.] 01/15/2018",
+        "User: And I recently visited a tourist attraction known for its cultural exhibit, and it really piqued my interest.",
+        "Assistant: Cultural exhibits can be eye-opening and sometimes even influence our palette. Did you find yourself inspired to try anything new afterward?",
+        "User: Definitely, it renewed my interest in trying authentic international cuisines.",
+        "Side_Note: [Participated in a public storytelling event in her city.] 01/18/2018",
+        "User: I also participated in a public storytelling event recently, which really helped with my character development in scripts.",
+        "Assistant: Storytelling can open up fantastic creative avenues. Did you find any food stories that stirred your imagination?",
+        "User: Yes, there was one about a family-owned bakery that has been passed down through generations.",
+        "Side_Note: [Spent a quiet weekend reading a novel and relishing her solitary time.] 01/21/2018",
+        "User: I spent a quiet weekend with a great novel, really relishing the solitary time.",
+        "Assistant: Solitary weekends with a good book are nourishing for the soul. Did they shape any food pairings?",
+        "User: I paired my reading with a soothing herbal tea and freshly baked bread\u2014it was perfect."
+    ],
+    "Conversation Next Year": [
+        "User: Hi, I'm Maya Thompson and I've been reflecting on my recent food experiences. I think I could use some help in understanding my evolving preferences.",
+        "Assistant: Hi Maya! It sounds like you've been on quite a journey. I'd love to hear more about your experiences and how I might assist you.",
+        "Side_Note: [Volunteered at a new local community theater project for creative expansion.] 02/01/2018",
+        "User: Sure! For instance, I started volunteering at a local community theater project, which has been amazing for my creative development.",
+        "Assistant: That sounds like a fantastic creative outlet! Has it influenced how you approach food and dining experiences?",
+        "User: Definitely, I've started seeing meals as more of a performance or production.",
+        "Side_Note: [Spent a weekend indulging in popular reality TV shows with her cousins.] 02/15/2018",
+        "User: I also spent a weekend with my cousins indulging in reality TV shows. Surprisingly, I found myself enjoying the drama.",
+        "Assistant: Reality TV can be unexpectedly entertaining and even offer some cultural or social insights. Did it change your views on any food trends?",
+        "User: Yes, seeing how food is portrayed made me curious about trying celebratory dishes.",
+        "Side_Note: [Traveled to a renowned tourist destination for a friend's wedding.] 03/10/2018",
+        "User: Then there was my trip to a renowned tourist spot for a friend's wedding. It was so different from my usual preferences.",
+        "Assistant: Weddings have a way of broadening our horizons. Did this experience introduce any new culinary delights to you?",
+        "User: The fusion of traditional and modern cuisine at the reception was wonderfully eye-opening.",
+        "Side_Note: [Experimented with a vegan fast food place seeking healthier alternatives.] 04/05/2018",
+        "User: I've also tried a vegan fast food joint in my quest for healthier alternatives.",
+        "Assistant: Vegan fast food can be quite the adventure! Did you discover anything that you'd want to explore further?",
+        "User: The jackfruit tacos there were a revelation.",
+        "Side_Note: [Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.] 06/21/2018",
+        "User: I got an exclusive invite to a blockbuster film premiere with colleagues, which was quite a shift for me.",
+        "Assistant: That must have been an exciting experience! How did the event influence your perception of such films or related dining experiences?",
+        "User: It made me appreciate them more for the communal experience they offer, much like dining out.",
+        "Side_Note: [Revisited her poetry from the past decade, fueling inspiration for future projects.] 09/17/2018",
+        "User: Revisiting my old poetry also provided a great deal of inspiration for my future projects.",
+        "Assistant: Reflecting on past work can indeed be a source of inspiration. How do you see your culinary choices influenced by your writing?",
+        "User: I think both are avenues for experimenting with raw, authentic experiences.",
+        "Side_Note: [Hosted a community film screening and discussion panel for indie films.] 11/01/2018",
+        "User: I also hosted a community film screening for indie films, which included a panel discussion.",
+        "Assistant: Indie films often spark unique conversations. Did hosting such an event encourage any unique culinary explorations?",
+        "User: Absolutely, we paired local snacks with the films to create an immersive experience.",
+        "Side_Note: [Took part in a 30-day fitness challenge to explore personal limits.] 01/20/2019",
+        "User: And I've been pushing my limits with a 30-day fitness challenge, which has been incredibly rewarding.",
+        "Assistant: Fitness challenges can really redefine how we perceive balance in life. Has it inspired any changes in your dietary habits?",
+        "User: Definitely! It motivated me to explore more nutrient-dense foods.",
+        "Side_Note: [Composed a series of articles exploring cultural identities for a well-known magazine.] 03/29/2019",
+        "User: Finally, I wrote a series of articles on cultural identities for a magazine, inspired by my travels.",
+        "Assistant: Writing about cultural identities is enriching. Did you draw parallels between cultural narratives and culinary traditions in your articles?",
+        "User: I did! It emphasized how food can tell stories just like words do."
+    ]
+}

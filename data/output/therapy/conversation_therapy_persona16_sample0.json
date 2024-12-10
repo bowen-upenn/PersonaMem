@@ -1,0 +1,884 @@
+{
+    "Original Persona": "A aspiring engineer who spends hours in the garage building and modifying machines",
+    "Expanded Persona": "Name: Alex Carter  \nGender Identity: Male  \nRacial Identity: Caucasian  \n\nExpanded Persona:  \nBorn in 1979, Alex Carter is an aspiring engineer with a passion for building and modifying machines. He spends countless hours in his garage, where he finds solace and creativity in tinkering with engines, gadgets, and mechanical systems. Despite his deep technical interest, Alex is always eager to learn something new and stays updated with the latest engineering innovations. His love for engineering extends beyond just machines\u2014he enjoys sharing his knowledge with others and finding innovative solutions to everyday problems. Alex appreciates the tranquility of working independently, yet he recognizes the value of collaboration and often seeks out fellow enthusiasts to exchange ideas.\n\nPersonal Hobbies:\n- Restoring vintage motorcycles\n- Designing custom robot prototypes\n- Collecting rare engineering tools\n- Photography, especially of industrial sites\n- Attending engineering expos and conventions\n\nThings Alex Dislikes:\n- Pop music, preferring classic rock hits instead\n- Reality television, finding more value in documentary series\n- Crowded urban environments, favoring the peace of his suburban surroundings\n- Fast food, enjoying the process of cooking homemade meals\n- Fashion trends, favoring functional and comfortable clothing",
+    "Context": "therapy",
+    "Init General Personal History": {
+        "12/13/1997": {
+            "Event": "Alex completed his first restoration project on a vintage motorcycle.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Restoring vintage motorcycles"
+        },
+        "02/10/1998": {
+            "Event": "Alex attended his first engineering expo, discovering new tools and technologies.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending engineering expos and conventions"
+        },
+        "04/05/1998": {
+            "Event": "Alex spent the day cooking homemade meals with his family.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fast food"
+        },
+        "07/15/1998": {
+            "Event": "Alex documented an abandoned factory, capturing its industrial history through photography.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Photography, especially of industrial sites"
+        },
+        "11/11/1998": {
+            "Event": "Alex joined a local engineering club, fostering collaboration with fellow enthusiasts.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Finding innovative solutions and collaborating"
+        },
+        "01/23/1999": {
+            "Event": "Alex designed a custom robot prototype for a school competition.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Designing custom robot prototypes"
+        },
+        "05/16/1999": {
+            "Event": "Alex practiced cooking a new recipe early in the morning.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fast food"
+        },
+        "09/09/1999": {
+            "Event": "Today, Alex spent hours in his garage tinkering with gadgets late into the night.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Building and modifying machines"
+        },
+        "03/04/2000": {
+            "Event": "Alex bought a rare engineering tool at a local flea market.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting rare engineering tools"
+        },
+        "07/20/2000": {
+            "Event": "Alex spent the afternoon enjoying a classic rock playlist while working in his garage.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Pop music"
+        },
+        "10/01/2000": {
+            "Event": "Alex decided to watch a new engineering documentary series over reality television shows.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reality television"
+        },
+        "12/24/2000": {
+            "Event": "Alex upgraded his garage workspace, improving the lighting and storage solutions.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Working independently and finding innovative solutions"
+        },
+        "03/17/2001": {
+            "Event": "Alex enjoyed a quiet day in the suburbs, unwinding from the hectic city life.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Crowded urban environments"
+        },
+        "06/14/2001": {
+            "Event": "Alex consistently wore his practical and comfortable work attire.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fashion trends"
+        }
+    },
+    "General Personal History Next Week": {
+        "06/21/2001": {
+            "Event": "Alex purchased a selection of pop music CDs to explore new genres while working.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Alex realized some pop songs contain innovative production techniques similar to engineering, piquing his curiosity.",
+            "[Updated Fact] Likes": "Pop music",
+            "[Old Fact] Dislikes": "Pop music",
+            "[Old Event Date]": "07/20/2000",
+            "[Old Event]": "Alex spent the afternoon enjoying a classic rock playlist while working in his garage."
+        },
+        "06/22/2001": {
+            "Event": "Alex decided to participate in a fashion event in the city for a unique design project.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "He was inspired by how innovative engineering could merge with fashion design.",
+            "[Updated Fact] Likes": "Fashion trends",
+            "[Old Fact] Dislikes": "Fashion trends",
+            "[Old Event Date]": "06/14/2001",
+            "[Old Event]": "Alex consistently wore his practical and comfortable work attire."
+        },
+        "06/23/2001": {
+            "Event": "Alex wrote a blog post about the value of peaceful suburban life over urban chaos.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Crowded urban environments"
+        },
+        "06/24/2001": {
+            "Event": "Alex found himself enjoying a popular reality TV series about engineering feats.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The show highlighted real-life engineering challenges, which captivated his interest.",
+            "[Updated Fact] Likes": "Reality television",
+            "[Old Fact] Dislikes": "Reality television",
+            "[Old Event Date]": "10/01/2000",
+            "[Old Event]": "Alex decided to watch a new engineering documentary series over reality television shows."
+        },
+        "06/25/2001": {
+            "Event": "Alex returned to listening to classic rock to unwind.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "After a long week, the familiar tunes of classic rock provided unmatched comfort.",
+            "[Updated Fact] Likes": "Classic rock hits",
+            "[Old Fact] Dislikes": "Pop music",
+            "[Old Event Date]": "06/21/2001",
+            "[Old Event]": "Alex purchased a selection of pop music CDs to explore new genres while working."
+        },
+        "06/26/2001": {
+            "Event": "Alex researched and planned to attend an upcoming engineering convention in another city.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending engineering expos and conventions"
+        },
+        "06/27/2001": {
+            "Event": "Alex surprised himself by finding inspiration in a bustling urban market for his engineering designs.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The diversity and dynamics of urban environments sparked new ideas for his projects.",
+            "[Updated Fact] Likes": "Crowded urban environments",
+            "[Old Fact] Dislikes": "Crowded urban environments",
+            "[Old Event Date]": "03/17/2001",
+            "[Old Event]": "Alex enjoyed a quiet day in the suburbs, unwinding from the hectic city life."
+        },
+        "06/28/2001": {
+            "Event": "Alex dined out at a fast-food joint, appreciating its convenience for the first time.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A tight schedule led Alex to explore the quick service of fast food, thinking it could be improved through engineering.",
+            "[Updated Fact] Likes": "Fast food",
+            "[Old Fact] Dislikes": "Fast food",
+            "[Old Event Date]": "05/16/1999",
+            "[Old Event]": "Alex practiced cooking a new recipe early in the morning."
+        },
+        "06/29/2001": {
+            "Event": "Alex launched a small community workshop to teach vintage motorcycle restoration.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Restoring vintage motorcycles and sharing knowledge"
+        },
+        "06/30/2001": {
+            "Event": "Alex concluded the week by realizing fast-food models could inspire efficient household designs and returned to homemade meals.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Reaffirmed his love for cooking, he saw the benefits of combining fast-food processes with homemade quality.",
+            "[Updated Fact] Dislikes": "Fast food",
+            "[Old Fact] Likes": "Fast food",
+            "[Old Event Date]": "06/28/2001",
+            "[Old Event]": "Alex dined out at a fast-food joint, appreciating its convenience for the first time."
+        }
+    },
+    "General Personal History Next Month": {
+        "07/01/2001": {
+            "Event": "Alex joined an online group dedicated to discussing pop culture influences on engineering.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Sharing knowledge and discussing new perspectives"
+        },
+        "07/05/2001": {
+            "Event": "Alex bought a new fast-fashion jacket for its practicality.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "He admired the innovative fabric technology used in its production.",
+            "[Updated Fact] Likes": "Fashion trends",
+            "[Old Fact] Dislikes": "Fashion trends",
+            "[Old Event Date]": "06/22/2001",
+            "[Old Event]": "Alex decided to participate in a fashion event in the city for a unique design project."
+        },
+        "07/09/2001": {
+            "Event": "Alex started watching a historical engineering documentary series.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Documentary series"
+        },
+        "07/12/2001": {
+            "Event": "Alex found joy in attending a bustling art exhibit in the heart of the city.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The exhibit offered new ideas for his design projects with its vibrant energy.",
+            "[Updated Fact] Likes": "Crowded urban environments",
+            "[Old Fact] Dislikes": "Crowded urban environments",
+            "[Old Event Date]": "06/23/2001",
+            "[Old Event]": "Alex wrote a blog post about the value of peaceful suburban life over urban chaos."
+        },
+        "07/15/2001": {
+            "Event": "Alex began collaborating with a local culinary team to engineer new cooking gadgets.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Cooking homemade meals and engineering joined"
+        },
+        "07/18/2001": {
+            "Event": "Alex returned to cooking his meals after a busy work stint.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The appreciation for the culinary art grew after exploring engineering in kitchen gadgets.",
+            "[Updated Fact] Dislikes": "Fast food",
+            "[Old Fact] Likes": "Fast food",
+            "[Old Event Date]": "06/28/2001",
+            "[Old Event]": "Alex dined out at a fast-food joint, appreciating its convenience for the first time."
+        },
+        "07/23/2001": {
+            "Event": "Alex took a break from reality TV, diving back into a detailed book on robotic design.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Felt like diving deeper into the technical details of robotic design.",
+            "[Updated Fact] Dislikes": "Reality television",
+            "[Old Fact] Likes": "Reality television",
+            "[Old Event Date]": "06/24/2001",
+            "[Old Event]": "Alex found himself enjoying a popular reality TV series about engineering feats."
+        },
+        "07/27/2001": {
+            "Event": "Alex volunteered to organize a classic rock night for a local event.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Classic rock hits"
+        },
+        "07/29/2001": {
+            "Event": "Alex reconnected with garage-based tinkering, having missed extended time spent there.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A recent urban experience had him longing for the solace of his personal space.",
+            "[Updated Fact] Likes": "Working independently",
+            "[Old Fact] Dislikes": "Crowded urban environments",
+            "[Old Event Date]": "07/12/2001",
+            "[Old Event]": "Alex found joy in attending a bustling art exhibit in the heart of the city."
+        },
+        "07/31/2001": {
+            "Event": "Alex agreed to conduct a collaborative project with a team of students for an engineering fair.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collaboration and teaching"
+        }
+    },
+    "General Personal History Next Year": {
+        "08/01/2001": {
+            "Event": "Alex revamped his garage into a more collaborative workspace, inviting friends for brainstorming sessions.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collaboration with friends in engineering experiments"
+        },
+        "10/15/2001": {
+            "Event": "Alex organized a fast-food taste-testing event to better understand modern culinary trends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "He wanted to research sensory engineering as part of his culinary gadget project.",
+            "[Updated Fact] Likes": "Fast food",
+            "[Old Fact] Dislikes": "Fast food",
+            "[Old Event Date]": "07/18/2001",
+            "[Old Event]": "Alex returned to cooking his meals after a busy work stint."
+        },
+        "12/12/2001": {
+            "Event": "Alex published an article on merging fashion elements with engineering design.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Fashion trends as a source of engineering inspiration"
+        },
+        "01/05/2002": {
+            "Event": "Alex attended a major urban lifestyle convention, intrigued by the technological exhibits.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The event featured innovative city survival technologies perfect for his designs.",
+            "[Updated Fact] Likes": "Crowded urban environments",
+            "[Old Fact] Dislikes": "Crowded urban environments",
+            "[Old Event Date]": "07/29/2001",
+            "[Old Event]": "Alex reconnected with garage-based tinkering, having missed extended time spent there."
+        },
+        "03/09/2002": {
+            "Event": "Alex decided to live-stream his vintage motorcycle restoration process.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "He discovered a community interested in the traditional restoration processes.",
+            "[Updated Fact] Likes": "Sharing his process with a wider audience",
+            "[Old Fact] Dislikes": "Working independently",
+            "[Old Event Date]": "12/24/2000",
+            "[Old Event]": "Alex upgraded his garage workspace, improving the lighting and storage solutions."
+        },
+        "04/20/2002": {
+            "Event": "Alex took a break from social events to immerse himself in a new engineering book.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "He found the deep dive into complex theories refreshing.",
+            "[Updated Fact] Dislikes": "Crowded urban environments",
+            "[Old Fact] Likes": "Crowded urban environments",
+            "[Old Event Date]": "01/05/2002",
+            "[Old Event]": "Alex attended a major urban lifestyle convention, intrigued by the technological exhibits."
+        },
+        "07/15/2002": {
+            "Event": "Alex completed a custom robot prototype for a local university, showcasing advanced engineering skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Designing custom robot prototypes"
+        },
+        "08/22/2002": {
+            "Event": "Alex began a ritual of listening to emerging pop artists while working late nights.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Latest pop music had interesting rhythm patterns beneficial for concentration.",
+            "[Updated Fact] Likes": "Pop music",
+            "[Old Fact] Dislikes": "Pop music",
+            "[Old Event Date]": "06/25/2001",
+            "[Old Event]": "Alex returned to listening to classic rock to unwind."
+        },
+        "10/01/2002": {
+            "Event": "Alex joined a nationwide reality TV contest which combined engineering challenges with real-world problem-solving.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "The format stimulated competitive engineering beyond theoretical work.",
+            "[Updated Fact] Likes": "Reality television",
+            "[Old Fact] Dislikes": "Reality television",
+            "[Old Event Date]": "07/23/2001",
+            "[Old Event]": "Alex took a break from reality TV, diving back into a detailed book on robotic design."
+        },
+        "11/19/2002": {
+            "Event": "Alex realized his favorite classic rock concert didn't resonate as before.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "His taste evolved with new experiences in music and sound engineering.",
+            "[Updated Fact] Dislikes": "Classic rock hits",
+            "[Old Fact] Likes": "Classic rock hits",
+            "[Old Event Date]": "07/27/2001",
+            "[Old Event]": "Alex volunteered to organize a classic rock night for a local event."
+        }
+    },
+    "Init Contextual Personal History": {
+        "08/01/2003": {
+            "Event": "Alex enrolled in a mindfulness meditation class to improve his focus.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Mindfulness meditation"
+        },
+        "08/15/2003": {
+            "Event": "Alex participated in a community art therapy workshop.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Art therapy"
+        },
+        "09/10/2003": {
+            "Event": "Alex found relaxation in sand tray therapy, creating various landscapes.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Sand tray therapy"
+        },
+        "10/05/2003": {
+            "Event": "Alex joined a music therapy group to explore emotional expression through sound.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Music therapy"
+        },
+        "11/20/2003": {
+            "Event": "Alex wrote journal entries as part of a therapeutic process.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Journaling"
+        },
+        "01/14/2004": {
+            "Event": "Alex engaged in equine-assisted therapy, working with horses.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Equine-assisted therapy"
+        },
+        "04/09/2004": {
+            "Event": "Alex attended a forest therapy session, finding solace in nature.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Forest therapy"
+        },
+        "05/17/2004": {
+            "Event": "Alex experienced peace during a guided imagery session.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Guided imagery"
+        },
+        "07/26/2004": {
+            "Event": "Alex joined a drama therapy group, enjoying the role-play exercises.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Drama therapy"
+        },
+        "09/30/2004": {
+            "Event": "Alex practiced yoga therapy for its combination of physical and mental benefits.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Yoga therapy"
+        },
+        "11/11/2004": {
+            "Event": "Alex stumbled upon a reflexology session but felt uncomfortable being touched.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reflexology"
+        },
+        "12/22/2004": {
+            "Event": "Alex attended a group therapy session but felt uneasy with group discussions.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Group therapy sessions"
+        },
+        "02/03/2005": {
+            "Event": "Alex tried aroma therapy but found the scents overwhelming.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Aroma therapy"
+        },
+        "03/25/2005": {
+            "Event": "Alex avoided hypnotherapy, feeling skeptical about its effectiveness.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Hypnotherapy"
+        },
+        "05/06/2005": {
+            "Event": "Alex was not impressed by a laughter yoga class, preferring more serious practices.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Laughter yoga"
+        },
+        "07/01/2005": {
+            "Event": "Alex felt uncomfortable during a dance therapy session, self-conscious about his moves.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Dance therapy"
+        },
+        "08/14/2005": {
+            "Event": "Alex attended a Reiki healing session but found it less engaging than expected.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reiki healing"
+        },
+        "10/29/2005": {
+            "Event": "Alex was recommended crystal healing but declined due to disbelief.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Crystal healing"
+        },
+        "12/07/2005": {
+            "Event": "Alex tried light therapy but felt indifferent to its effects.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Light therapy"
+        },
+        "02/15/2006": {
+            "Event": "Alex decided against trying a flotation tank therapy due to claustrophobia.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Flotation tank therapy"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "02/16/2006": {
+            "Event": "Alex decided to organize a group nature walk for therapeutic benefits.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Group nature therapy"
+        },
+        "02/17/2006": {
+            "Event": "Alex attended a ballet class to explore movement as a form of expression.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized structured movement could improve his focus on engineering designs.",
+            "[Updated Fact] Likes": "Dance therapy",
+            "[Old Fact] Dislikes": "Dance therapy",
+            "[Old Event Date]": "07/01/2005",
+            "[Old Event]": "Alex felt uncomfortable during a dance therapy session, self-conscious about his moves."
+        },
+        "02/18/2006": {
+            "Event": "Alex canceled his plans to try acupuncture, feeling uneasy about needles.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Acupuncture therapy"
+        },
+        "02/19/2006": {
+            "Event": "Alex found renewed interest in horticultural therapy after visiting a botanic garden.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Horticultural therapy"
+        },
+        "02/20/2006": {
+            "Event": "Alex avoided attending a book club as he preferred reading independently.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Valued solitary reading time for deeper understanding.",
+            "[Updated Fact] Dislikes": "Group reading sessions",
+            "[Old Fact] Likes": "Collaboration and teaching",
+            "[Old Event Date]": "07/31/2001",
+            "[Old Event]": "Alex agreed to conduct a collaborative project with a team of students for an engineering fair."
+        },
+        "02/21/2006": {
+            "Event": "Alex explored color therapy, applying colors meaningfully in his designs.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Color therapy"
+        },
+        "02/22/2006": {
+            "Event": "Alex revisited a flotation tank therapy session to confront his claustrophobia.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Understanding it could enhance stress management techniques crucial in engineering.",
+            "[Updated Fact] Likes": "Flotation tank therapy",
+            "[Old Fact] Dislikes": "Flotation tank therapy",
+            "[Old Event Date]": "02/15/2006",
+            "[Old Event]": "Alex decided against trying a flotation tank therapy due to claustrophobia."
+        },
+        "02/23/2006": {
+            "Event": "Alex started using aromatherapy to stimulate creativity during design work.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Research indicated certain scents increased productivity and focus.",
+            "[Updated Fact] Likes": "Aroma therapy",
+            "[Old Fact] Dislikes": "Aroma therapy",
+            "[Old Event Date]": "02/03/2005",
+            "[Old Event]": "Alex tried aroma therapy but found the scents overwhelming."
+        },
+        "02/24/2006": {
+            "Event": "Alex attended a storytelling therapy session, integrating narratives into his robot designs.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Storytelling therapy"
+        },
+        "02/25/2006": {
+            "Event": "Alex redirected his energy towards horse therapy after declining equine sessions earlier.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized the openness and stillness with horses refreshed his mental clarity.",
+            "[Updated Fact] Likes": "Equine therapy",
+            "[Old Fact] Dislikes": "Equine-assisted therapy",
+            "[Old Event Date]": "01/14/2004",
+            "[Old Event]": "Alex engaged in equine-assisted therapy, working with horses."
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "02/26/2006": {
+            "Event": "Alex visited an outdoor pottery making session to experiment with tactile creativity.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Pottery therapy"
+        },
+        "03/02/2006": {
+            "Event": "Alex gave a presentation on the intersection of engineering principles and dance movements.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Fascinated by kinetic energy concepts translating into robotic designs.",
+            "[Updated Fact] Likes": "Dance therapy",
+            "[Old Fact] Dislikes": "Dance therapy",
+            "[Old Event Date]": "02/17/2006",
+            "[Old Event]": "Alex attended a ballet class to explore movement as a form of expression."
+        },
+        "03/04/2006": {
+            "Event": "Alex rediscovered his interest in solo hiking instead of group nature activities.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Valued solitude for idea generation during nature walks.",
+            "[Updated Fact] Dislikes": "Group nature therapy",
+            "[Old Fact] Likes": "Group nature therapy",
+            "[Old Event Date]": "02/16/2006",
+            "[Old Event]": "Alex decided to organize a group nature walk for therapeutic benefits."
+        },
+        "03/07/2006": {
+            "Event": "Alex participated in an online writing therapy forum, exploring narrative styles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing therapy"
+        },
+        "03/09/2006": {
+            "Event": "Alex hosted a virtual meet on the significance of color psychology in engineering.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to integrate emotional elements into functional designs.",
+            "[Updated Fact] Likes": "Color therapy",
+            "[Old Fact] Dislikes": "Color therapy",
+            "[Old Event Date]": "02/21/2006",
+            "[Old Event]": "Alex explored color therapy, applying colors meaningfully in his designs."
+        },
+        "03/11/2006": {
+            "Event": "Alex scheduled regular sessions with an acupuncture therapist for stress relief.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Research showed acupuncture could enhance focus\u2014a crucial element in engineering.",
+            "[Updated Fact] Likes": "Acupuncture therapy",
+            "[Old Fact] Dislikes": "Acupuncture therapy",
+            "[Old Event Date]": "02/18/2006",
+            "[Old Event]": "Alex canceled his plans to try acupuncture, feeling uneasy about needles."
+        },
+        "03/15/2006": {
+            "Event": "Alex canceled his involvement in online forums for personalized story-crafting.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Preferred individual creativity without external influences.",
+            "[Updated Fact] Dislikes": "Writing therapy",
+            "[Old Fact] Likes": "Writing therapy",
+            "[Old Event Date]": "03/07/2006",
+            "[Old Event]": "Alex participated in an online writing therapy forum, exploring narrative styles."
+        },
+        "03/18/2006": {
+            "Event": "Alex attended a laughter yoga retreat, finding unexpected joy in group humor.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized laughter's potential in enhancing collaborative project environments.",
+            "[Updated Fact] Likes": "Laughter yoga",
+            "[Old Fact] Dislikes": "Laughter yoga",
+            "[Old Event Date]": "05/06/2005",
+            "[Old Event]": "Alex was not impressed by a laughter yoga class, preferring more serious practices."
+        },
+        "03/21/2006": {
+            "Event": "Alex joined a therapeutic film club, enjoying critiquing movie storytelling techniques.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Film therapy"
+        },
+        "03/25/2006": {
+            "Event": "Alex dedicated time each week to indulge in digital art therapy.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Digital art therapy"
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "04/01/2007": {
+            "Event": "Alex explored immersive virtual reality therapy for stress relief.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Virtual reality therapy"
+        },
+        "04/15/2007": {
+            "Event": "Alex joined a group art therapy session, realizing teamwork boosted creativity.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Group dynamics sparked new engineering concepts through shared artistic expression.",
+            "[Updated Fact] Likes": "Group art therapy",
+            "[Old Fact] Dislikes": "Group therapy sessions",
+            "[Old Event Date]": "12/22/2004",
+            "[Old Event]": "Alex attended a group therapy session but felt uneasy with group discussions."
+        },
+        "05/10/2007": {
+            "Event": "Alex challenged himself with periodic sensory deprivation sessions to enhance focus.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Found the absence of external stimuli allowed deeper creative thought.",
+            "[Updated Fact] Likes": "Flotation tank therapy",
+            "[Old Fact] Dislikes": "Flotation tank therapy",
+            "[Old Event Date]": "03/11/2006",
+            "[Old Event]": "Alex scheduled regular sessions with an acupuncture therapist for stress relief."
+        },
+        "06/25/2007": {
+            "Event": "Alex avoided hypnotherapy sessions, feeling they lacked tangible results.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Hypnotherapy",
+            "[Old Fact] Likes": "Storytelling therapy",
+            "[Old Event Date]": "02/24/2006",
+            "[Old Event]": "Alex attended a storytelling therapy session, integrating narratives into his robot designs."
+        },
+        "07/17/2007": {
+            "Event": "Alex revisited dance therapy, focusing on structured choreography over improv.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Structured movements mirrored efficient design processes.",
+            "[Updated Fact] Dislikes": "Dance therapy",
+            "[Old Fact] Likes": "Dance therapy",
+            "[Old Event Date]": "02/02/2006",
+            "[Old Event]": "Alex gave a presentation on the intersection of engineering principles and dance movements."
+        },
+        "08/20/2007": {
+            "Event": "Alex facilitated a virtual reality creative showcase, emphasizing its potential.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Creative showcases"
+        },
+        "09/14/2007": {
+            "Event": "Alex preferred solo journaling over group writing exercises.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Solo reflection provided clear insights without external input.",
+            "[Updated Fact] Dislikes": "Writing therapy",
+            "[Old Fact] Likes": "Pottery therapy",
+            "[Old Event Date]": "02/26/2006",
+            "[Old Event]": "Alex visited an outdoor pottery making session to experiment with tactile creativity."
+        },
+        "10/30/2007": {
+            "Event": "Alex enrolled in a series of guided meditation workshops.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Guided meditation"
+        },
+        "11/18/2007": {
+            "Event": "Alex arranged an environmental soundscapes exhibit, using sound engineering skills.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Sound therapy exhibits"
+        },
+        "12/02/2007": {
+            "Event": "Alex found peace through bird-watching, integrating observations into work.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Bird-watching therapy"
+        }
+    },
+    "Init Conversation": [
+        "Therapist: Hi Alex. How are you feeling today?",
+        "Patient: Hey, I'm doing okay, just needed to talk through some things.",
+        "Therapist: Sure, I'm here to help. Let's start by exploring some events from your past.",
+        {
+            "Side_Note": "Alex completed his first restoration project on a vintage motorcycle. 12/13/1997"
+        },
+        "Therapist: Can we talk about a time when you felt particularly accomplished in your projects?",
+        "Patient: Sure, I remember when I completed my first motorcycle restoration project back in December '97. That really deepened my love for working on vintage motorcycles.",
+        {
+            "Side_Note": "Alex cooked a romantic dinner at home to impress a date. 12/15/1997"
+        },
+        "Therapist: How about your personal life around that time. Any significant events?",
+        "Patient: Actually, that's when I prepared a romantic dinner at home. It was unusual for me, but I wanted to impress someone special at the time.",
+        {
+            "Side_Note": "Alex attended his first engineering expo, discovering new tools and technologies. 02/10/1998"
+        },
+        "Therapist: Ah, I see. How about any events that impacted your passion for engineering?",
+        "Patient: I recall attending my first engineering expo in February '98. It was an eye-opener seeing all the cutting-edge tools and tech, and it really fueled my enthusiasm.",
+        {
+            "Side_Note": "Alex embarked on a spontaneous road trip with a partner to explore nature. 01/05/1998"
+        },
+        "Therapist: That's quite inspiring. Did you have any memorable trips around that time?",
+        "Patient: Oh, I went on a spontaneous road trip to explore nature with a partner in January '98. Those adventures kept my spirits high.",
+        {
+            "Side_Note": "Alex spent the day cooking homemade meals with his family. 04/05/1998"
+        },
+        "Therapist: Family interactions and meals can be comforting. Do you recall any such moments?",
+        "Patient: Absolutely, I spent a lovely day cooking with my family in April '98. It reinforced my preference for homemade meals over fast food, which I dislike.",
+        {
+            "Side_Note": "Alex documented an abandoned factory, capturing its industrial history through photography. 07/15/1998"
+        },
+        "Therapist: Your interest in photography seems significant as well. Can you share some insights?",
+        "Patient: Yes, documenting an abandoned factory in July '98 was quite an experience. Capturing its industrial essence was really fulfilling.",
+        {
+            "Side_Note": "Alex hosted a classic film night with their date, complete with themed snacks. 03/14/1998"
+        },
+        "Therapist: That\u2019s fascinating. How do you relate social activities with your hobbies?",
+        "Patient: Hosting a classic film night with themed snacks was a highlight in March '98. I really enjoy combining my interests with social interactions.",
+        {
+            "Side_Note": "Alex joined a local engineering club, fostering collaboration with fellow enthusiasts. 11/11/1998"
+        },
+        "Therapist: How did collaboration play a role in your development during those years?",
+        "Patient: Joining a local engineering club in November '98 was pivotal. It allowed me to collaborate with fellow enthusiasts and share innovative solutions.",
+        {
+            "Side_Note": "Alex designed a custom robot prototype for a school competition. 01/23/1999"
+        },
+        "Therapist: Designing seems crucial for you. Would you like to elaborate on a notable project?",
+        "Patient: Certainly. I designed a custom robot prototype for a school competition in January '99. It reflected my technical skills and creativity.",
+        {
+            "Side_Note": "Alex planned a spontaneous sporting activity date with their partner. 10/05/1998"
+        },
+        "Therapist: And in terms of leisure, did you engage in any new activities around this time?",
+        "Patient: In October '98, I planned a spontaneous sporting date. It was refreshing to try out new activities together.",
+        {
+            "Side_Note": "Alex bought a rare engineering tool at a local flea market. 03/04/2000"
+        },
+        "Therapist: Collecting seems like a passion. Was there a particular acquisition that stands out?",
+        "Patient: I acquired a rare engineering tool from a local flea market in March 2000. Adding such unique pieces to my collection is exhilarating.",
+        "Therapist: And how did you balance these hobbies and interests in your daily life?",
+        "Patient: By staying organized and prioritizing tasks, I managed to enjoy all my passions while maintaining balance."
+    ],
+    "Conversation Next Week": [
+        "Therapist: Hello, Alex. How have you been recently?",
+        "Patient: Hey, I've been trying some new things recently and it's been quite a revealing week.",
+        {
+            "Side_Note": "Alex purchased a selection of pop music CDs to explore new genres while working. 06/21/2001"
+        },
+        "Patient: So, I started exploring pop music this week. I even bought some CDs to listen to while working.",
+        "Therapist: That's interesting! What brought on this change?",
+        "Patient: You know, I realized a lot of pop songs have innovative production techniques. It kind of reminded me of engineering and piqued my curiosity.",
+        {
+            "Side_Note": "Alex decided to participate in a fashion event in the city for a unique design project. 06/22/2001"
+        },
+        "Patient: And in an unrelated but exciting move, I participated in a fashion event. It was a first for me!",
+        "Therapist: That sounds like quite a departure from your usual projects. What influenced your decision?",
+        "Patient: I was inspired by how engineering principles could merge with fashion design. The whole idea of innovation in apparel was fascinating.",
+        {
+            "Side_Note": "Alex wrote a blog post about the value of peaceful suburban life over urban chaos. 06/23/2001"
+        },
+        "Patient: I also found myself writing a blog post about why I prefer the peace of the suburbs over the chaos of city life.",
+        "Therapist: That\u2019s an excellent way of expressing your preferences. What do you find most challenging about urban environments?",
+        "Patient: Mostly the constant noise and crowds. I appreciate tranquility, which helps me focus on my work.",
+        {
+            "Side_Note": "Alex found himself enjoying a popular reality TV series about engineering feats. 06/24/2001"
+        },
+        "Patient: Oh, and guess what? I actually enjoyed a reality TV series for the first time!",
+        "Therapist: Really? What was it about the show that you found engaging?",
+        "Patient: It was centered on real-life engineering feats. Seeing the challenges and problem-solving techniques made it captivating.",
+        {
+            "Side_Note": "Alex returned to listening to classic rock to unwind. 06/25/2001"
+        },
+        "Patient: After a packed week of changes, I found comfort in listening to classic rock again to unwind.",
+        "Therapist: Music can be a great way to relax. What about classic rock do you find comforting?",
+        "Patient: The familiarity of the tunes and the nostalgia they bring. It feels like returning to an old friend.",
+        {
+            "Side_Note": "Alex researched and planned to attend an upcoming engineering convention in another city. 06/26/2001"
+        },
+        "Patient: On a different note, I've been preparing to attend an engineering convention coming up in another city.",
+        "Therapist: That sounds exciting! What are you looking forward to the most?",
+        "Patient: The chance to see the latest advancements and to connect with likeminded professionals. It's always inspiring.",
+        {
+            "Side_Note": "Alex surprised himself by finding inspiration in a bustling urban market for his engineering designs. 06/27/2001"
+        },
+        "Patient: Interestingly enough, I found myself inspired in a bustling urban market recently.",
+        "Therapist: That's quite the development. What sort of inspiration did you draw?",
+        "Patient: The dynamics and diversity of the environment sparked new ideas for my projects. I suppose there's more to urban settings than meets the eye.",
+        {
+            "Side_Note": "Alex dined out at a fast-food joint, appreciating its convenience for the first time. 06/28/2001"
+        },
+        "Patient: I even dined out at a fast-food place. Surprisingly, I appreciated the convenience it offered this time around.",
+        "Therapist: What changed your perspective about fast food?",
+        "Patient: Time constraints led me to see how quick service can be appealing, and it made me think about enhancing fast food through engineering.",
+        {
+            "Side_Note": "Alex launched a small community workshop to teach vintage motorcycle restoration. 06/29/2001"
+        },
+        "Patient: Plus, I launched a small community workshop to share my passion for vintage motorcycle restoration!",
+        "Therapist: That sounds rewarding. How has the response been so far?",
+        "Patient: It's been great. Sharing knowledge and seeing others learn and grow is incredibly fulfilling.",
+        {
+            "Side_Note": "Alex concluded the week by realizing fast-food models could inspire efficient household designs and returned to homemade meals. 06/30/2001"
+        },
+        "Patient: But by the week's end, I reaffirmed my love for cooking at home after contemplating how fast-food models can inspire more efficient household designs.",
+        "Therapist: It's amazing how you've turned various experiences into broader insights. What's next for you?",
+        "Patient: I plan to combine these insights into creating more optimized living spaces, blending comfort with innovation."
+    ],
+    "Conversation Next Month": [
+        "Therapist: Hello Alex, how is everything going for you this month?",
+        "Patient: Hi, there's been quite a few developments and changes in how I perceive things.",
+        {
+            "Side_Note": "Alex joined an online group dedicated to discussing pop culture influences on engineering. 07/01/2001"
+        },
+        "Patient: I joined an online group where we discuss the influence of pop culture on engineering. It's been fascinating!",
+        "Therapist: That sounds intriguing. What's the most interesting insight you've gained so far?",
+        "Patient: It's amazing to see how pop culture can drive innovation and affect design principles.",
+        {
+            "Side_Note": "Alex bought a new fast-fashion jacket for its practicality. 07/05/2001"
+        },
+        "Patient: I also picked up a new fast-fashion jacket this month. The fabric technology was too impressive to pass up.",
+        "Therapist: That's a big shift for you. How do you feel about this new interest?",
+        "Patient: It's growing on me. The tech behind some of these fashion trends is quite innovative and aligns with my love for engineering.",
+        {
+            "Side_Note": "Alex started watching a historical engineering documentary series. 07/09/2001"
+        },
+        "Patient: I started watching a documentary series on historical engineering. The stories are very inspiring.",
+        "Therapist: What about it captivates you the most?",
+        "Patient: The engineering challenges and creative problem-solving of the past. It really highlights the roots of modern innovations.",
+        {
+            "Side_Note": "Alex found joy in attending a bustling art exhibit in the heart of the city. 07/12/2001"
+        },
+        "Patient: I also attended a bustling art exhibit in the city, which was surprisingly energizing.",
+        "Therapist: That's interesting\u2014especially considering your previous preference for suburban calm. What changed?",
+        "Patient: The vibrant energy and diverse perspectives offered new ideas for my design projects, which was thrilling.",
+        {
+            "Side_Note": "Alex began collaborating with a local culinary team to engineer new cooking gadgets. 07/15/2001"
+        },
+        "Patient: And I've started collaborating with a local culinary team to design new cooking gadgets.",
+        "Therapist: That sounds like a unique intersection of your interests. How is that experience treating you?",
+        "Patient: It's fantastic! It combines my love for problem-solving with creativity in the culinary world.",
+        {
+            "Side_Note": "Alex returned to cooking his meals after a busy work stint. 07/18/2001"
+        },
+        "Patient: Despite these explorations, I returned to cooking my meals. I missed the creative process.",
+        "Therapist: It sounds grounding for you. What do you find most rewarding about cooking?",
+        "Patient: The freedom to experiment and the control over what goes into my meals. It's both an art and a science.",
+        {
+            "Side_Note": "Alex took a break from reality TV, diving back into a detailed book on robotic design. 07/23/2001"
+        },
+        "Patient: I also decided to step away from reality TV to immerse myself in a new book on robotic design.",
+        "Therapist: What prompted the shift back to reading?",
+        "Patient: I felt a need to dive deeper into the technical details that TV couldn't provide.",
+        {
+            "Side_Note": "Alex volunteered to organize a classic rock night for a local event. 07/27/2001"
+        },
+        "Patient: I volunteered to set up a classic rock night at a local event. It felt great to share my love for that music.",
+        "Therapist: That sounds like fun. What do you enjoy most about organizing such events?",
+        "Patient: Bringing people together over shared interests and seeing others enjoy something I love.",
+        {
+            "Side_Note": "Alex reconnected with garage-based tinkering, having missed extended time spent there. 07/29/2001"
+        },
+        "Patient: I also returned to tinkering in my garage. It\u2019s my sanctuary.",
+        "Therapist: I can see how important that space is for you. What did you work on?",
+        "Patient: I spent some time on upgrades for the motorcycle restoration project. It was incredibly fulfilling.",
+        {
+            "Side_Note": "Alex agreed to conduct a collaborative project with a team of students for an engineering fair. 07/31/2001"
+        },
+        "Patient: Finally, I agreed to mentor a team of students for an upcoming engineering fair.",
+        "Therapist: That's wonderful! How do you find the mentoring experience?",
+        "Patient: It\u2019s rewarding. Seeing their passion reminds me of my beginnings. Sharing knowledge keeps me grounded and inspired."
+    ],
+    "Conversation Next Year": [
+        "Therapist: Hi Alex, I know it's been a while. What's been happening in your life lately?",
+        "Patient: Hi, there's been some interesting shifts and realizations over the past year.",
+        {
+            "Side_Note": "Alex revamped his garage into a more collaborative workspace, inviting friends for brainstorming sessions. 08/01/2001"
+        },
+        "Patient: I started by revamping my garage into a collaborative workspace. I've been inviting friends for brainstorming sessions.",
+        "Therapist: That sounds like a wonderful way to combine your interests in engineering and collaboration.",
+        "Patient: Yes, sharing ideas in this way has really opened up new avenues for my projects.",
+        {
+            "Side_Note": "Alex organized a fast-food taste-testing event to better understand modern culinary trends. 10/15/2001"
+        },
+        "Patient: I also organized a fast-food taste-testing event. It was quite different from what I'd typically do.",
+        "Therapist: Fast food? That's a change for you.",
+        "Patient: I know, but I wanted to dive into sensory engineering. It was enlightening for my culinary gadget project.",
+        {
+            "Side_Note": "Alex published an article on merging fashion elements with engineering design. 12/12/2001"
+        },
+        "Patient: I wrote an article on how fashion can intertwine with engineering. It explored new design inspirations.",
+        "Therapist: That seems like a fascinating intersection. How do you find the two fields converge?",
+        "Patient: It's about understanding patterns and trends\u2014it's similar to engineering dynamics.",
+        {
+            "Side_Note": "Alex attended a major urban lifestyle convention, intrigued by the technological exhibits. 01/05/2002"
+        },
+        "Patient: I attended an urban lifestyle convention. The technology on display was amazing.",
+        "Therapist: What intrigued you most about this convention?",
+        "Patient: The event highlighted city survival technologies that I found helpful for my designs.",
+        {
+            "Side_Note": "Alex decided to live-stream his vintage motorcycle restoration process. 03/09/2002"
+        },
+        "Patient: I even live-streamed my vintage motorcycle restoration to connect with a broader community.",
+        "Therapist: That\u2019s a great way to reach enthusiasts beyond your immediate circle.",
+        "Patient: Exactly. I found an eager online community that valued traditional restoration processes.",
+        {
+            "Side_Note": "Alex took a break from social events to immerse himself in a new engineering book. 04/20/2002"
+        },
+        "Patient: Then I took a step back from social events and got engrossed in an engineering book.",
+        "Therapist: How did that feel, to take a pause and dive into reading?",
+        "Patient: It was refreshing. Complex theories gave me the mental challenge I craved.",
+        {
+            "Side_Note": "Alex completed a custom robot prototype for a local university, showcasing advanced engineering skills. 07/15/2002"
+        },
+        "Patient: I completed a custom robot prototype for a local university as well.",
+        "Therapist: That\u2019s quite an accomplishment. How did you feel about the outcome?",
+        "Patient: It was fulfilling to showcase what I had mastered technologically.",
+        {
+            "Side_Note": "Alex began a ritual of listening to emerging pop artists while working late nights. 08/22/2002"
+        },
+        "Patient: Interestingly, I've started listening to pop music during my late-night work sessions.",
+        "Therapist: Pop music? What about it resonates with you now?",
+        "Patient: The rhythm patterns are quite engaging, and they help me concentrate.",
+        {
+            "Side_Note": "Alex joined a nationwide reality TV contest which combined engineering challenges with real-world problem-solving. 10/01/2002"
+        },
+        "Patient: I joined a reality TV contest focused on engineering challenges. It was a unique experience.",
+        "Therapist: That seems like a big leap from your usual activities.",
+        "Patient: I enjoyed the competitive edge and applying engineering skills to real-world problems.",
+        {
+            "Side_Note": "Alex realized his favorite classic rock concert didn't resonate as before. 11/19/2002"
+        },
+        "Patient: Oddly enough, I found my old classic rock favorites didn't resonate with me after attending a concert.",
+        "Therapist: How do you interpret that change in taste?",
+        "Patient: I guess my experiences with new music have transformed my preferences over time."
+    ]
+}

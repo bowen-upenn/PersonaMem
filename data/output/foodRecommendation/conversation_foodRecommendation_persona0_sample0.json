@@ -1,0 +1,703 @@
+{
+    "Original Persona": "A representative from a technology company interested in applying the innovative experimental techniques in commercial applications",
+    "Expanded Persona": "**Name:** Alex Kim  \n**Gender Identity:** Non-binary  \n**Racial Identity:** Korean-American  \n\nAlex Kim is a seasoned representative from a technology company, born in 1987, with a strong passion for applying innovative experimental techniques to commercial applications. With years of experience in the tech industry, Alex thrives on bridging the gap between cutting-edge technology and user-friendly products that enhance everyday life. They possess a keen eye for detail and are always on the lookout for emerging trends that can be translated into meaningful advancements for consumers. Outside of their professional life, Alex is an advocate for diversity and inclusion within the tech community, believing that diverse perspectives lead to more creative solutions. They value collaboration and enjoy connecting with other like-minded individuals who are equally passionate about technology's role in shaping the future. \n\n**Hobbies Alex Enjoys:**\n- Exploring virtual reality experiences\n- Attending tech conventions and meetups\n- Building custom PC rigs\n- Engaging in science fiction literature and movies\n- Practicing digital art and design\n\n**Things That Don't Match Alex's Taste:**\n- Following traditional corporate hierarchies\n- Watching reality TV shows\n- Engaging in extreme outdoor sports\n- Listening to classical music\n- Eating at highly commercialized fast-food chains",
+    "Context": "foodRecommendation",
+    "Init General Personal History": {
+        "08/20/2005": {
+            "Event": "Attended a tech convention in San Francisco, gaining insights into emerging VR technologies.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending tech conventions and meetups"
+        },
+        "11/15/2006": {
+            "Event": "Completed a project that successfully integrated experimental techniques into a consumer product, enhancing its everyday usability.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Applying innovative experimental techniques to commercial applications"
+        },
+        "03/22/2007": {
+            "Event": "Participated in a diversity and inclusion workshop, fostering a more inclusive environment in the tech community.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Advocating for diversity and inclusion within the tech community"
+        },
+        "07/14/2008": {
+            "Event": "Built a custom PC rig with state-of-the-art components for optimal performance.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Building custom PC rigs"
+        },
+        "10/25/2009": {
+            "Event": "Read a science fiction novel that sparked ideas for potential tech innovations.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Engaging in science fiction literature"
+        },
+        "05/30/2010": {
+            "Event": "Facilitated a collaborative project, leading to a breakthrough in consumer tech design.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collaboration and connecting with like-minded individuals"
+        },
+        "12/10/2011": {
+            "Event": "Avoided watching reality TV, opting instead for a science fiction movie marathon.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Watching reality TV shows"
+        },
+        "04/02/2012": {
+            "Event": "Discussed the disadvantages of traditional corporate hierarchies during a tech meetup, advocating for modern work structures.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Following traditional corporate hierarchies"
+        },
+        "09/18/2013": {
+            "Event": "Experimented with digital art and design, creating visuals inspired by tech and nature.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Practicing digital art and design"
+        },
+        "01/07/2014": {
+            "Event": "Chose an independent cafe over a commercial fast-food chain for a lunch meeting.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Eating at highly commercialized fast-food chains"
+        },
+        "06/23/2015": {
+            "Event": "Presented at an international tech conference on the role of emerging technologies in everyday life.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Applying innovative experimental techniques to commercial applications"
+        },
+        "11/11/2016": {
+            "Event": "Decided against an outdoor extreme sports trip to focus on indoor VR exploration.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Engaging in extreme outdoor sports"
+        }
+    },
+    "General Personal History Next Week": {
+        "01/08/2014": {
+            "Event": "Tried a bungee jumping adventure for the first time, finding the experience thrilling.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close friend organized the trip as part of a surprise birthday celebration and convinced Alex to join.",
+            "[Updated Fact] Likes": "Engaging in extreme outdoor sports",
+            "[Old Fact] Dislikes": "Engaging in extreme outdoor sports",
+            "[Old Event Date]": "11/11/2016",
+            "[Old Event]": "Decided against an outdoor extreme sports trip to focus on indoor VR exploration."
+        },
+        "01/09/2014": {
+            "Event": "Accepted an invitation to a classical music concert, enjoying the unique cultural experience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The event was hosted by a community Alex supports, and attending helped solidify valuable professional connections.",
+            "[Updated Fact] Likes": "Listening to classical music",
+            "[Old Fact] Dislikes": "Listening to classical music",
+            "[Old Event Date]": "Not previously mentioned",
+            "[Old Event]": "Not applicable"
+        },
+        "01/10/2014": {
+            "Event": "Caught up on a documentary series rather than typical reality TV content, learning about space exploration innovations.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Reality TV shows",
+            "[Old Fact] Likes": "Notable knowledge update: Reality TV shows",
+            "[Old Event Date]": "12/10/2011",
+            "[Old Event]": "Avoided watching reality TV, opting instead for a science fiction movie marathon."
+        },
+        "01/11/2014": {
+            "Event": "Collaborated on a virtual art gallery showcase, merging cutting-edge tech with digital art.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing digital art and design"
+        },
+        "01/12/2014": {
+            "Event": "Participated in a panel discussion on the future of technology and its societal impact.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Connecting with like-minded individuals and discussing technology's role in shaping the future"
+        },
+        "01/13/2014": {
+            "Event": "Organized and attended a local tech meetup fostering inclusion and innovative solutions.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Advocating for diversity and inclusion within the tech community"
+        },
+        "01/14/2014": {
+            "Event": "Skipped another tech meetup to binge-watch a popular new reality TV show.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Friends insisted about the social aspect and cultural relevance of the show; Alex decided to give it a try.",
+            "[Updated Fact] Likes": "Reality TV shows",
+            "[Old Fact] Dislikes": "Reality TV shows",
+            "[Old Event Date]": "12/10/2011",
+            "[Old Event]": "Avoided watching reality TV, opting instead for a science fiction movie marathon."
+        },
+        "01/15/2014": {
+            "Event": "Had lunch at a fast-food chain to explore potential applications for new tech in enhancing service speed and efficiency.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Seeking to research and improve customer experience in highly commercialized environments.",
+            "[Updated Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "01/07/2014",
+            "[Old Event]": "Chose an independent cafe over a commercial fast-food chain for a lunch meeting."
+        },
+        "01/16/2014": {
+            "Event": "Returned to the digital drawing board to outline a new tech-inspired series of art.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing digital art and design"
+        },
+        "01/17/2014": {
+            "Event": "Spent the weekend reading the latest sci-fi literature while brainstorming potential tech applications depicted in the novels.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Engaging in science fiction literature"
+        }
+    },
+    "General Personal History Next Month": {
+        "01/18/2014": {
+            "Event": "Decided to take up hiking as a new hobby, purchasing essential gear and planning weekend trips.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Advised by a mentor about the benefits of outdoor activities for creative thinking and problem-solving.",
+            "[Updated Fact] Likes": "Engaging in extreme outdoor sports",
+            "[Old Fact] Dislikes": "Engaging in extreme outdoor sports",
+            "[Old Event Date]": "01/08/2014",
+            "[Old Event]": "Tried a bungee jumping adventure for the first time, finding the experience thrilling."
+        },
+        "01/19/2014": {
+            "Event": "Rediscovered a love for classical music through a contemporary composer's fusion work.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The unique blend of classical and modern elements resonated with Alex's artistic sensibilities.",
+            "[Updated Fact] Likes": "Listening to classical music",
+            "[Old Fact] Dislikes": "Listening to classical music",
+            "[Old Event Date]": "01/09/2014",
+            "[Old Event]": "Accepted an invitation to a classical music concert, enjoying the unique cultural experience."
+        },
+        "01/20/2014": {
+            "Event": "Avoided another reality TV marathon to catch up on tech podcasts discussing AI advancements.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Reality TV shows",
+            "[Old Fact] Likes": "Reality TV shows",
+            "[Old Event Date]": "01/14/2014",
+            "[Old Event]": "Skipped another tech meetup to binge-watch a popular new reality TV show."
+        },
+        "01/21/2014": {
+            "Event": "Led a successful initiative at work to incorporate augmented reality into product demos.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Applying innovative experimental techniques to commercial applications"
+        },
+        "01/22/2014": {
+            "Event": "Returned to attending tech meetups regularly, exchanging insights on virtual reality's future.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending tech conventions and meetups"
+        },
+        "01/23/2014": {
+            "Event": "Ate lunch at a new, tech-themed fast-food restaurant, enjoying the novelty of digital ordering.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Drawn to innovation in the dining experience; the tech integration was intriguing.",
+            "[Updated Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "01/15/2014",
+            "[Old Event]": "Had lunch at a fast-food chain to explore potential applications for new tech in enhancing service speed and efficiency."
+        },
+        "01/24/2014": {
+            "Event": "Engaged deeply with a science fiction novel exploring the social implications of technological advancements.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Engaging in science fiction literature"
+        },
+        "01/25/2014": {
+            "Event": "Surprised by a friend's proposal to collaborate on a digital art project inspired by classical music compositions.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing digital art and design"
+        },
+        "01/26/2014": {
+            "Event": "Decided to disconnect from technology for a weekend retreat, focusing on in-person creativity.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Over-reliance on digital communications for personal interactions"
+        },
+        "01/27/2014": {
+            "Event": "Watched a new documentary series on the intersection of technology and human rights, taking notes for future discussion panels.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Learning about technology's role in societal progress"
+        }
+    },
+    "General Personal History Next Year": {
+        "02/01/2015": {
+            "Event": "Decided to pursue a formal certification in culinary arts with a specialization in fast food innovations.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Discovered a passion for integrating tech with food during previous exploratory projects.",
+            "[Updated Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "01/23/2014",
+            "[Old Event]": "Ate lunch at a new, tech-themed fast-food restaurant, enjoying the novelty of digital ordering."
+        },
+        "02/15/2015": {
+            "Event": "Attended a year-long reality TV production course to explore the potential of tech-enhanced storytelling.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Became intrigued by how technology can transform traditional media narratives.",
+            "[Updated Fact] Likes": "Reality TV shows",
+            "[Old Fact] Dislikes": "Reality TV shows",
+            "[Old Event Date]": "01/20/2014",
+            "[Old Event]": "Avoided another reality TV marathon to catch up on tech podcasts discussing AI advancements."
+        },
+        "03/01/2015": {
+            "Event": "Led a successful initiative to launch a groundbreaking VR application, receiving industry accolades.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring virtual reality experiences"
+        },
+        "04/12/2015": {
+            "Event": "Started a podcast on inclusivity in tech, inviting diverse voices and sharing innovative perspectives weekly.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Advocating for diversity and inclusion within the tech community"
+        },
+        "05/30/2015": {
+            "Event": "Developed a newfound interest in classical music after composing a digital symphony for a tech project.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Through composition, Alex recognized how classical music theory could enhance digital creativity.",
+            "[Updated Fact] Likes": "Listening to classical music",
+            "[Old Fact] Dislikes": "Listening to classical music",
+            "[Old Event Date]": "01/19/2014",
+            "[Old Event]": "Rediscovered a love for classical music through a contemporary composer's fusion work."
+        },
+        "06/10/2015": {
+            "Event": "Spent weekends practicing mountaineering skills, preparing for an extreme expedition challenge.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Saw it as an opportunity to cultivate resilience and leadership qualities.",
+            "[Updated Fact] Likes": "Engaging in extreme outdoor sports",
+            "[Old Fact] Dislikes": "Engaging in extreme outdoor sports",
+            "[Old Event Date]": "01/18/2014",
+            "[Old Event]": "Decided to take up hiking as a new hobby, purchasing essential gear and planning weekend trips."
+        },
+        "08/01/2015": {
+            "Event": "Chose to invest time in structured meditation and digital detoxing for personal well-being.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Over-reliance on digital communications for personal interactions"
+        },
+        "09/15/2015": {
+            "Event": "Re-established a routine of reality TV nights with friends, focusing on social connection rather than content.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Valued the social opportunity to unwind and bond with friends.",
+            "[Updated Fact] Dislikes": "Reality TV shows",
+            "[Old Fact] Likes": "Reality TV shows",
+            "[Old Event Date]": "02/15/2015",
+            "[Old Event]": "Attended a year-long reality TV production course to explore the potential of tech-enhanced storytelling."
+        },
+        "11/10/2015": {
+            "Event": "Explore creating digital artworks inspired by the architecture of nascent virtual worlds.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Practicing digital art and design"
+        },
+        "12/01/2015": {
+            "Event": "Researched human-technology symbiosis for a published article in a leading tech journal.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning about technology's role in societal progress"
+        }
+    },
+    "Init Contextual Personal History": {
+        "02/28/2006": {
+            "Event": "Discovered a love for making homemade kimchi, perfecting their own unique family recipe.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Making homemade kimchi"
+        },
+        "05/05/2007": {
+            "Event": "Developed a habit of experimenting with unique DIY health smoothies each morning.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Experimenting with unique DIY health smoothies"
+        },
+        "07/22/2009": {
+            "Event": "Joined a themed baking group, enjoying the community and creative decorating challenges.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Participating in themed baking activities"
+        },
+        "10/10/2010": {
+            "Event": "Began exploring vegan and vegetarian cooking methods to diversify their culinary skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring vegan and vegetarian cooking methods"
+        },
+        "01/15/2011": {
+            "Event": "Attended a workshop on creating fermented foods, deepening interest in probiotic benefits.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Creating fermented foods"
+        },
+        "06/18/2012": {
+            "Event": "Started hosting monthly dinner parties to try new recipes and connect with friends.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hosting monthly dinner parties"
+        },
+        "09/12/2013": {
+            "Event": "Participated in a cultural food exchange program, enjoying the discovery of global cuisines.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Discovering global cuisines"
+        },
+        "11/05/2014": {
+            "Event": "Began a spice collection hobby, learning about global spices and their uses in cooking.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting and using global spices"
+        },
+        "04/25/2015": {
+            "Event": "Attended a course in modernist cuisine techniques, intrigued by the scientific aspect of cooking.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Learning modernist cuisine techniques"
+        },
+        "02/14/2016": {
+            "Event": "Took an interest in artisanal cheese making after an immersive cheese tasting event.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Making artisanal cheese"
+        },
+        "01/28/2006": {
+            "Event": "Avoids cheese-flavored snacks, preferring natural cheesy dishes.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Cheese-flavored snacks"
+        },
+        "03/17/2008": {
+            "Event": "Rejected offers of store-bought pasta sauce, opting for homemade flavors.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Store-bought pasta sauce"
+        },
+        "05/24/2010": {
+            "Event": "Dismayed by overly sugary cereals, it's always homemade oatmeal for breakfast.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Sugary cereals"
+        },
+        "07/29/2011": {
+            "Event": "Prefers freshly ground coffee to instant, seeing instant coffee as lacking flavor depth.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Instant coffee"
+        },
+        "03/15/2012": {
+            "Event": "Finds processed frozen dinners flavorless and lacking nutrition compared to homemade.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Processed frozen dinners"
+        },
+        "11/09/2013": {
+            "Event": "Dislikes the strong artificial flavor of mint candies, favoring natural mints.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Artificial mint candies"
+        },
+        "05/07/2014": {
+            "Event": "Avoided high-fructose corn syrup products for their health implications.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "High-fructose corn syrup products"
+        },
+        "08/16/2015": {
+            "Event": "Chooses to bypass overly salty snacks, using salt-free seasonings in cooking.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Overly salty snacks"
+        },
+        "10/30/2016": {
+            "Event": "Opted against using bottled salad dressings, preferring homemade alternatives.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Bottled salad dressings"
+        },
+        "12/20/2017": {
+            "Event": "Prefers organically grown produce over conventionally farmed for environmental reasons.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Conventionally farmed produce"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "12/21/2017": {
+            "Event": "Indulged in fast-food fries, appreciating the convenience and taste.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Craved comfort and nostalgia during a stressful project crunch.",
+            "[Updated Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "02/01/2015",
+            "[Old Event]": "Decided to pursue a formal certification in culinary arts with a specialization in fast food innovations."
+        },
+        "12/22/2017": {
+            "Event": "Decided to revisit reality TV shows, aiming to understand their popularity from a new perspective.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to gain insights into mass media appeal for a tech journal article.",
+            "[Updated Fact] Likes": "Reality TV shows",
+            "[Old Fact] Dislikes": "Reality TV shows",
+            "[Old Event Date]": "09/15/2015",
+            "[Old Event]": "Re-established a routine of reality TV nights with friends, focusing on social connection rather than content."
+        },
+        "12/23/2017": {
+            "Event": "Organized a cheese-tasting event at home, exploring unique cheese pairings.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Making artisanal cheese"
+        },
+        "12/24/2017": {
+            "Event": "Baked a three-tier cake for a friend's birthday, practicing advanced fondant techniques.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Participating in themed baking activities"
+        },
+        "12/25/2017": {
+            "Event": "Spent a relaxing evening with family, preparing a homemade traditional Korean meal.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Making homemade kimchi"
+        },
+        "12/26/2017": {
+            "Event": "Decided to forgo sugary cereals, emphasizing a healthier oats-based breakfast routine.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Refocused on maintaining personal health after extensive wellness research.",
+            "[Updated Fact] Dislikes": "Sugary cereals",
+            "[Old Fact] Likes": "Sugary cereals",
+            "[Old Event Date]": "05/24/2010",
+            "[Old Event]": "Dismayed by overly sugary cereals, it's always homemade oatmeal for breakfast."
+        },
+        "12/27/2017": {
+            "Event": "Organized a weekly coffee cupping session to appreciate diverse coffee origins without instant varieties.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Instant coffee"
+        },
+        "12/28/2017": {
+            "Event": "Discovered an affinity for traditionally harvested grains, incorporating them into daily meals.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Cooking with traditionally harvested grains"
+        },
+        "12/29/2017": {
+            "Event": "Explored alternative local sweeteners to avoid using corn syrup in favorite desserts.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "High-fructose corn syrup products"
+        },
+        "12/30/2017": {
+            "Event": "Decided to re-embrace tech-free meal times, finding it aids relaxation and family connection.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Over-reliance on digital communications for personal interactions"
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "12/31/2017": {
+            "Event": "Joined a community-supported agriculture (CSA) program, prioritizing organic and local produce.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Cooking with organically grown produce"
+        },
+        "01/05/2018": {
+            "Event": "After frequent indulgence, reevaluated consumption of fast-food fries, prioritizing health over convenience.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realized the need for a healthier lifestyle after consecutive busy weeks.",
+            "[Updated Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "12/21/2017",
+            "[Old Event]": "Indulged in fast-food fries, appreciating the convenience and taste."
+        },
+        "01/10/2018": {
+            "Event": "Attended a four-week course on modern fermenting techniques to enhance their probiotic food creations.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Creating fermented foods"
+        },
+        "01/12/2018": {
+            "Event": "Shifted focus from reality TV to documentaries, driven by a renewed interest in factual storytelling.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A new documentary revealed complex, real-world narratives worth exploring.",
+            "[Updated Fact] Dislikes": "Reality TV shows",
+            "[Old Fact] Likes": "Reality TV shows",
+            "[Old Event Date]": "12/22/2017",
+            "[Old Event]": "Decided to revisit reality TV shows, aiming to understand their popularity from a new perspective."
+        },
+        "01/18/2018": {
+            "Event": "Experimented with avocado-based desserts to merge healthy eating with sweet cravings without sugar.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Sugary desserts"
+        },
+        "01/20/2018": {
+            "Event": "Developed a keen interest in making heirloom bread using traditional baking methods.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Baking heirloom bread"
+        },
+        "01/25/2018": {
+            "Event": "Trialed several types of bottled salad dressings, realizing some offered great convenience and flavor.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized practical benefits aligning with their busy schedule.",
+            "[Updated Fact] Likes": "Bottled salad dressings",
+            "[Old Fact] Dislikes": "Bottled salad dressings",
+            "[Old Event Date]": "10/30/2016",
+            "[Old Event]": "Opted against using bottled salad dressings, preferring homemade alternatives."
+        },
+        "01/28/2018": {
+            "Event": "Organized and carried out a 'no-screen' month-long challenge focusing on analog activities.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Over-reliance on digital communications for personal interactions"
+        },
+        "01/30/2018": {
+            "Event": "Became fascinated with exotic regional teas, building a diverse collection from around the world.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting exotic teas"
+        },
+        "01/31/2018": {
+            "Event": "Decided to incorporate non-GMO ingredients in all recipes, firmly opposing genetically modified foods.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Genetically modified foods"
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "02/15/2018": {
+            "Event": "Started treating weekends as cheat days for indulgence in junk food without guilt.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized balance was key to enjoying life and maintaining mental health.",
+            "[Updated Fact] Likes": "Eating at highly commercialized fast-food chains",
+            "[Old Fact] Dislikes": "Eating at highly commercialized fast-food chains",
+            "[Old Event Date]": "01/05/2018",
+            "[Old Event]": "After frequent indulgence, reevaluated consumption of fast-food fries, prioritizing health over convenience."
+        },
+        "04/01/2018": {
+            "Event": "Hosted a successful neighborhood reality TV viewing party that helped build community spirit.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Discovered value in community bonding through shared cultural moments.",
+            "[Updated Fact] Likes": "Reality TV shows",
+            "[Old Fact] Dislikes": "Reality TV shows",
+            "[Old Event Date]": "01/12/2018",
+            "[Old Event]": "Shifted focus from reality TV to documentaries, driven by a renewed interest in factual storytelling."
+        },
+        "06/20/2018": {
+            "Event": "Rediscovered a taste for sugar snacks, choosing to enjoy them in moderation.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A nostalgia-fueled craving inspired a more flexible dietary approach.",
+            "[Updated Fact] Likes": "Sugary snacks",
+            "[Old Fact] Dislikes": "Sugary desserts",
+            "[Old Event Date]": "01/18/2018",
+            "[Old Event]": "Experimented with avocado-based desserts to merge healthy eating with sweet cravings without sugar."
+        },
+        "09/15/2018": {
+            "Event": "Participated in a regional cooking competition focusing on Texas BBQ techniques.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Exploring regional American cooking techniques"
+        },
+        "11/28/2018": {
+            "Event": "Discovered a liking for convenient bottled salad dressings, finding unique flavors unparalleled.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A culinary competition highlighted the creative potential in pre-made options.",
+            "[Updated Fact] Likes": "Bottled salad dressings",
+            "[Old Fact] Dislikes": "Bottled salad dressings",
+            "[Old Event Date]": "01/25/2018",
+            "[Old Event]": "Trialed several types of bottled salad dressings, realizing some offered great convenience and flavor."
+        },
+        "02/01/2019": {
+            "Event": "Became a certified tea sommelier, deepening their appreciation and knowledge of tea culture.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Studying tea culture"
+        },
+        "04/02/2019": {
+            "Event": "Dedicated a year to exploring fusion cuisine, merging traditional Korean dishes with global influences.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring fusion cuisine"
+        },
+        "06/18/2019": {
+            "Event": "Began hosting bi-weekly supper clubs with thematic culinary adventures domestically and abroad.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hosting thematic supper clubs"
+        },
+        "09/30/2019": {
+            "Event": "Reaffirmed commitment to GMO-free living, highlighting the importance in a published editorial.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Genetically modified foods"
+        },
+        "12/10/2019": {
+            "Event": "Curated an extensive collection of ancient grain recipes, incorporating them into weekly meal plans.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Cooking with ancient grains"
+        }
+    },
+    "Init Conversation": [
+        "User: Hi, so I\u2019ve been having some challenges lately with figuring out what foods I enjoy and what I should probably avoid. I could really use some recommendations.",
+        "Assistant: Of course, Alex! I\u2019d be happy to help. Could you tell me a bit about your dietary preferences or any foods you particularly like or dislike?",
+        "Side_Note: [Discovered a love for making homemade kimchi, perfecting their own unique family recipe.] 02/28/2006",
+        "User: Well, I\u2019ve really fallen in love with making my own kimchi. I even perfected my own unique family recipe back on 02/28/2006!",
+        "Assistant: That sounds delicious! Kimchi is such a versatile dish. You could try incorporating it in different recipes \u2013 perhaps a kimchi fried rice or even kimchi pancakes?",
+        "Side_Note: [Avoids cheese-flavored snacks, preferring natural cheesy dishes.] 01/28/2006",
+        "User: On the other hand, I avoid cheese-flavored snacks because I prefer the taste of natural cheesy dishes, discovered that on 01/28/2006.",
+        "Assistant: I completely understand. The quality of natural cheese can be quite different. Perhaps you could explore dishes that let cheese shine as the main ingredient, like a homemade mac and cheese?",
+        "Side_Note: [Developed a habit of experimenting with unique DIY health smoothies each morning.] 05/05/2007",
+        "User: Also, a habit that stuck with me since 05/05/2007 is experimenting with unique DIY health smoothies every morning.",
+        "Assistant: That's fantastic! Smoothies are so versatile \u2013 you can try different fruits, vegetables, and maybe even add some homemade nut milk or yogurt for an extra health kick.",
+        "Side_Note: [Rejected offers of store-bought pasta sauce, opting for homemade flavors.] 03/17/2008",
+        "User: Another thing, I tend to reject store-bought pasta sauce. I always go for homemade flavors ever since I realized the difference on 03/17/2008.",
+        "Assistant: Homemade pasta sauce can definitely elevate a dish. You could try making a classic marinara or experiment with a roasted red pepper sauce for something different.",
+        "Side_Note: [Joined a themed baking group, enjoying the community and creative decorating challenges.] 07/22/2009",
+        "User: I\u2019ve also joined a themed baking group since 07/22/2009, which has been so much fun and creatively challenging!",
+        "Assistant: That sounds amazing, Alex! Baking is such a wonderful way to unleash creativity. Have you thought about trying international baking recipes for your next challenge?",
+        "Side_Note: [Dismayed by overly sugary cereals, it's always homemade oatmeal for breakfast.] 05/24/2010",
+        "User: When it comes to breakfast, I\u2019m dismayed by overly sugary cereals; it's always homemade oatmeal for me since 05/24/2010.",
+        "Assistant: Homemade oatmeal is such a comforting choice! You can switch it up by adding different toppings each morning like fresh berries or a dollop of nut butter.",
+        "User: It's really nice to talk with someone who understands my preferences and considers my history with food. Do you have more suggestions for new recipes I might enjoy?",
+        "Assistant: Absolutely! Considering your interest in global spices and reducing overly processed foods, perhaps you\u2019d enjoy creating some spice mixes to use in roasting vegetables or meats. What do you think?"
+    ],
+    "Conversation Next Week": [
+        "User: Hi again! I\u2019ve been trying out new things and reassessing some of my likes and dislikes recently, especially in relation to food. I\u2019d love to chat about it and maybe get some recommendations.",
+        "Assistant: Of course, Alex! It\u2019s always exciting to rediscover interests and see how they evolve over time. What have you found interesting or challenging lately?",
+        "Side_Note: [Tried a bungee jumping adventure for the first time, finding the experience thrilling.] 01/08/2014",
+        "User: Well, on 01/08/2014, I tried bungee jumping for the first time, thanks to a close friend's surprise birthday celebration. I never thought I'd find extreme outdoor sports thrilling!",
+        "Assistant: That sounds like quite an adrenaline rush! It's amazing how new experiences can change our perspectives. Maybe you\u2019d enjoy trying more adventurous activities like rock climbing or skydiving.",
+        "Side_Note: [Accepted an invitation to a classical music concert, enjoying the unique cultural experience.] 01/09/2014",
+        "User: And the next day, 01/09/2014, I attended a classical music concert hosted by a community I support. It was great and surprisingly enjoyable!",
+        "Assistant: Classical music can really be an enriching experience, adding a new dimension to cultural expressions. You might consider exploring different genres or attending live symphony performances next.",
+        "Side_Note: [Caught up on a documentary series rather than typical reality TV content, learning about space exploration innovations.] 01/10/2014",
+        "User: I also caught up on a documentary series about space exploration innovations on 01/10/2014, instead of the usual reality TV shows.",
+        "Assistant: Documentaries can provide such fascinating insights. If you're into space now, perhaps a series on future tech or the universe's mysteries might be the next on your list?",
+        "Side_Note: [Collaborated on a virtual art gallery showcase, merging cutting-edge tech with digital art.] 01/11/2014",
+        "User: Plus, I collaborated on a virtual art gallery showcase on 01/11/2014, merging tech with digital art. It was exciting!",
+        "Assistant: That sounds like a perfect blend of your interests! You could incorporate more interactive elements into your digital art exhibits to engage viewers even further.",
+        "Side_Note: [Participated in a panel discussion on the future of technology and its societal impact.] 01/12/2014",
+        "User: I participated in a panel discussion about technology's future impact on 01/12/2014. It fueled some meaningful conversations.",
+        "Assistant: Participating in such discussions can be so inspiring. It's a great way to see how technological innovations can pave the way for societal change.",
+        "Side_Note: [Organized and attended a local tech meetup fostering inclusion and innovative solutions.] 01/13/2014",
+        "User: Then, on 01/13/2014, I organized a local tech meetup to foster inclusion and innovative solutions.",
+        "Assistant: That\u2019s fantastic! Your passion for diversity and innovation really shines through. Keeping these dialogues ongoing is crucial for bringing about positive change.",
+        "Side_Note: [Skipped another tech meetup to binge-watch a popular new reality TV show.] 01/14/2014",
+        "User: Fun fact \u2013 I ended up skipping a tech meetup on 01/14/2014 to binge-watch a popular new reality TV show because my friends kept suggesting it.",
+        "Assistant: It's nice to unwind sometimes and see what resonates with others in popular culture. This could give you fresh perspectives, even from unexpected sources.",
+        "Side_Note: [Had lunch at a fast-food chain to explore potential applications for new tech in enhancing service speed and efficiency.] 01/15/2014",
+        "User: I explored a fast-food chain on 01/15/2014 to see how tech could enhance service speed. Surprised myself by enjoying the experience!",
+        "Assistant: That\u2019s intriguing! Fast-food chains can be quite innovative in their use of technology to enhance customer experience. There's so much potential for applying new tech solutions in those settings.",
+        "Side_Note: [Returned to the digital drawing board to outline a new tech-inspired series of art.] 01/16/2014",
+        "User: I also got back to my digital drawing board on 01/16/2014, outlining a new series of art inspired by tech.",
+        "Assistant: It's awesome to see you're channeling your experiences into your creative work. Maybe consider sharing this series online to reach a wider audience?",
+        "Side_Note: [Spent the weekend reading the latest sci-fi literature while brainstorming potential tech applications depicted in the novels.] 01/17/2014",
+        "User: And over the weekend on 01/17/2014, I delved into the latest sci-fi literature, brainstorming potential tech applications from the stories.",
+        "Assistant: Sci-fi is a treasure trove of ideas! You might want to explore how these fictional concepts could be applied in real life, perhaps as a project or collaboration with others in your field."
+    ],
+    "Conversation Next Month": [
+        "User: Hi, I'm back for some more guidance since I've been reevaluating some of my food preferences recently.",
+        "Assistant: Welcome back, Alex! I'm glad you're taking the time to explore your tastes further. What's been on your mind lately?",
+        "Side_Note: [Decided to take up hiking as a new hobby, purchasing essential gear and planning weekend trips.] 01/18/2014",
+        "User: Well, on 01/18/2014, a mentor advised me about the benefits of outdoor activities, so I decided to take up hiking and it\u2019s been exhilarating!",
+        "Assistant: Hiking is a fantastic way to connect with nature and stimulate creative thinking. To complement your new hobby, you could try some energy bars or trail mix recipes tailored for hikers.",
+        "Side_Note: [Rediscovered a love for classical music through a contemporary composer's fusion work.] 01/19/2014",
+        "User: Then, on 01/19/2014, I rediscovered classical music through a fusion piece that really hit home with my artistic side.",
+        "Assistant: That's wonderful! Classical music has so many layers. Perhaps you could create a playlist blending various styles that you can enjoy while preparing meals?",
+        "Side_Note: [Avoided another reality TV marathon to catch up on tech podcasts discussing AI advancements.] 01/20/2014",
+        "User: When it comes to downtime, I realized on 01/20/2014 that tech podcasts, especially about AI, are more stimulating than reality TV.",
+        "Assistant: It's great that you're investing your time in learning. For your podcast sessions, you might enjoy snacks like spiced nuts or homemade granola.",
+        "Side_Note: [Led a successful initiative at work to incorporate augmented reality into product demos.] 01/21/2014",
+        "User: At work on 01/21/2014, I spearheaded a project incorporating augmented reality into demos. It was a major hit!",
+        "Assistant: That\u2019s an impressive achievement, Alex! Celebrating such success calls for something special. Maybe consider a themed dinner based on Augmented Reality\u2019s potential, like futuristic food presentations?",
+        "Side_Note: [Returned to attending tech meetups regularly, exchanging insights on virtual reality's future.] 01/22/2014",
+        "User: I\u2019ve also gone back to attending tech meetups post-01/22/2014, diving into discussions on VR's future.",
+        "Assistant: VR's potential is exciting! At your meetups, you could introduce unique snacks like VR-inspired mocktails that evoke sensory synergy with tech.",
+        "Side_Note: [Ate lunch at a new, tech-themed fast-food restaurant, enjoying the novelty of digital ordering.] 01/23/2014",
+        "User: I even experimented with a tech-themed fast-food restaurant on 01/23/2014 and found the digital ordering system quite intriguing.",
+        "Assistant: Finding novelty in familiar places is great! Exploring tech-enhanced dining options can inspire your cooking, like integrating digital tools in your kitchen.",
+        "Side_Note: [Engaged deeply with a science fiction novel exploring the social implications of technological advancements.] 01/24/2014",
+        "User: Speaking of tech, on 01/24/2014, I got lost in a sci-fi novel about tech's societal impacts. It was thought-provoking.",
+        "Assistant: Sci-fi novels can be incredibly inspiring. How about exploring dishes inspired by the worlds you read about, bringing sci-fi visions into your kitchen?",
+        "Side_Note: [Surprised by a friend's proposal to collaborate on a digital art project inspired by classical music compositions.] 01/25/2014",
+        "User: And I was pleasantly surprised on 01/25/2014 when a friend asked me to co-create a digital art project inspired by classical music.",
+        "Assistant: What a creative endeavor! Perhaps while working on it, you could try out some classical-era recipes or create mood-enhancing tea blends to keep the artistic vibe flowing.",
+        "Side_Note: [Decided to disconnect from technology for a weekend retreat, focusing on in-person creativity.] 01/26/2014",
+        "User: I also decided to disconnect from tech on 01/26/2014, opting for a retreat that focused on face-to-face creativity.",
+        "Assistant: Taking time to disconnect is valuable. It can give you space to try new recipes that encourage mindfulness, maybe traditional dishes with a meditative preparation process?",
+        "Side_Note: [Watched a new documentary series on the intersection of technology and human rights, taking notes for future discussion panels.] 01/27/2014",
+        "User: Meanwhile, on 01/27/2014, I watched a documentary on tech and human rights which I'm considering for future panel discussions.",
+        "Assistant: Documentaries can be eye-opening. They might inspire you to explore global cuisines that align with themes of equality and inclusivity.",
+        "User: Your insights have been so helpful, turning my food exploration into a journey full of meaning and connections.",
+        "Assistant: I'm glad to hear that, Alex! Being thoughtful about your culinary adventures can really enhance your experiences. Keep me updated on your discoveries!"
+    ],
+    "Conversation Next Year": [
+        "User: Hey there! I've been diving into some new experiences and my tastes have been evolving quite a bit. I could use some help navigating these changes, especially when it comes to food.",
+        "Assistant: That sounds exciting, Alex! It's always refreshing to embrace new tastes and preferences. What changes have you been noticing in your culinary journey?",
+        "Side_Note: [Decided to pursue a formal certification in culinary arts with a specialization in fast food innovations.] 02/01/2015",
+        "User: Well, starting on 02/01/2015, I decided to pursue a culinary arts certification focusing on fast food innovations. Turns out, I discovered a passion for integrating technology with food.",
+        "Assistant: That's a fascinating combination! Fast food can be a real playground for innovation. You could try recreating classic fast-food dishes at home with a tech twist, perhaps using techniques like molecular gastronomy?",
+        "Side_Note: [Attended a year-long reality TV production course to explore the potential of tech-enhanced storytelling.] 02/15/2015",
+        "User: And then, I was intrigued by how technology could transform media, so on 02/15/2015, I began a year-long reality TV production course.",
+        "Assistant: Exploring the intersection of tech and storytelling sounds like a great venture! This could provide inspiration for creating meals that tell a story, such as dishes reflecting themes from your favorite shows or incorporating interactive elements.",
+        "Side_Note: [Led a successful initiative to launch a groundbreaking VR application, receiving industry accolades.] 03/01/2015",
+        "User: On the tech side, on 03/01/2015, I led the launch of a VR application and it was well-received in the industry.",
+        "Assistant: Congratulations on that success! VR is all about creating immersive experiences. Perhaps this could inspire you to curate immersive dining experiences, using visual and sensory elements to enhance the meal.",
+        "Side_Note: [Started a podcast on inclusivity in tech, inviting diverse voices and sharing innovative perspectives weekly.] 04/12/2015",
+        "User: 04/12/2015 marked the start of my podcast on inclusivity in tech. It\u2019s been enlightening to invite diverse perspectives.",
+        "Assistant: Podcasts are such a powerful medium for discussion. You could extend this inclusivity to your meals, exploring diverse cuisines and sharing them with a variety of guests to inspire rich dialogues.",
+        "Side_Note: [Developed a newfound interest in classical music after composing a digital symphony for a tech project.] 05/30/2015",
+        "User: Interestingly, on 05/30/2015, I developed a new interest in classical music after composing a digital symphony.",
+        "Assistant: Classical music and food can make a perfect pair, adding ambience to your dining experiences. Imagine preparing classical-era recipes or culinary arts inspired by the dynamics of symphonic pieces!",
+        "Side_Note: [Spent weekends practicing mountaineering skills, preparing for an extreme expedition challenge.] 06/10/2015",
+        "User: Around 06/10/2015, I started practicing mountaineering for an expedition, seeing it as a way to build resilience.",
+        "Assistant: That's an incredible endeavor! You\u2019d need energy-boosting snacks for such adventure, like protein-rich bars or trail mixes tailored to keep up your stamina.",
+        "Side_Note: [Chose to invest time in structured meditation and digital detoxing for personal well-being.] 08/01/2015",
+        "User: With all these activities, I made sure to dedicate time to meditation and digital detox starting on 08/01/2015.",
+        "Assistant: Balancing active and meditative practices is key to well-being. Perhaps you could explore meditative cooking techniques, like slow fermenting or intricate food art, as a form of relaxation.",
+        "Side_Note: [Re-established a routine of reality TV nights with friends, focusing on social connection rather than content.] 09/15/2015",
+        "User: By 09/15/2015, I resumed reality TV nights with friends to foster social connections.",
+        "Assistant: That's a great way to bond! You could host themed dinners based on the shows, where each dish reflects a key aspect or character from the series.",
+        "Side_Note: [Explore creating digital artworks inspired by the architecture of nascent virtual worlds.] 11/10/2015",
+        "User: Speaking of creativity, on 11/10/2015, I explored digital art inspired by the architecture of virtual worlds.",
+        "Assistant: Combining art and food can lead to beautiful outcomes. You could create dishes that reflect the colors and themes from your digital artworks.",
+        "Side_Note: [Researched human-technology symbiosis for a published article in a leading tech journal.] 12/01/2015",
+        "User: And on 12/01/2015, I published an article on human-technology symbiosis.",
+        "Assistant: That's a thought-provoking topic. You might enjoy inventing recipes that combine traditional cooking methods with tech-driven culinary techniques for innovative results."
+    ]
+}

@@ -1,0 +1,796 @@
+{
+    "Original Persona": "A high-achieving senior looking into Ivy League colleges but uncertain about choosing a major",
+    "Expanded Persona": "Name: Alexander \"Alex\" Blake  \nGender Identity: Male  \nRacial Identity: Mixed race (Asian and Caucasian)  \n\nAlex Blake is a high-achieving senior born in 1976 who is exploring prestigious Ivy League colleges while still undecided on his major. With a strong academic record and a natural curiosity, he enjoys delving into new subjects and challenging himself intellectually. He is passionate about pursuing an education that provides both depth and breadth, enabling him to make an impactful contribution to society. Outside academics, he appreciates involvement in extracurricular activities that foster both teamwork and individual growth. Despite his success, Alex is contemplative about the future, eager to find a college environment where he can truly explore his diverse interests.\n\n**Hobbies:**\n- Playing the piano and composing music\n- Hiking and exploring nature trails\n- Reading historical fiction and biographies\n- Participating in debate club competitions\n- Learning foreign languages\n\n**Things Alex Dislikes:**\n- Prefers small group discussions over large parties\n- Finds minimal interest in professional sports events\n- Not enthusiastic about social media trends\n- Prefers classic literature to modern pop fiction\n- Lack of enthusiasm for fast food chains",
+    "Context": "foodRecommendation",
+    "Init General Personal History": {
+        "11/15/1994": {
+            "Event": "Alex won first place in a regional debate club competition.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Participating in debate club competitions"
+        },
+        "01/05/1995": {
+            "Event": "Alex began composing a piano piece inspired by nature.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Playing the piano and composing music"
+        },
+        "03/22/1995": {
+            "Event": "Alex went hiking on a nearby nature trail and discovered a new path.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hiking and exploring nature trails"
+        },
+        "05/10/1995": {
+            "Event": "Read a recently released historical fiction novel over the weekend.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading historical fiction and biographies"
+        },
+        "07/15/1995": {
+            "Event": "Attempted to join a friend's large party but felt uncomfortable.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Prefers small group discussions over large parties"
+        },
+        "09/01/1995": {
+            "Event": "Started learning French to better understand European history.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning foreign languages"
+        },
+        "12/12/1996": {
+            "Event": "Decided to focus on reading more classic literature authors.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Prefers classic literature to modern pop fiction"
+        },
+        "03/28/1997": {
+            "Event": "Declined an invitation to a big football game with friends.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Finds minimal interest in professional sports events"
+        },
+        "08/20/1998": {
+            "Event": "Participated in a summer language immersion camp.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning foreign languages"
+        },
+        "05/11/2000": {
+            "Event": "Visited a popular historical museum and attended a book release session.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading historical fiction and biographies"
+        },
+        "11/02/2000": {
+            "Event": "Joined a small private discussion group focused on societal issues.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Prefers small group discussions over large parties"
+        },
+        "02/17/2001": {
+            "Event": "Decided to maintain a low profile on all social media platforms.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Not enthusiastic about social media trends"
+        },
+        "12/13/2001": {
+            "Event": "Completed a solo hiking expedition for personal growth.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and exploring nature trails"
+        },
+        "04/25/2003": {
+            "Event": "Opted for a quiet evening at home with classic novels instead of a festival.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Prefers classic literature to modern pop fiction"
+        }
+    },
+    "General Personal History Next Week": {
+        "04/26/2003": {
+            "Event": "Accepted an invitation to watch a professional basketball game with friends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Alex was curious to understand the appeal of team dynamics in professional sports.",
+            "[Updated Fact] Likes": "Interested in professional sports events",
+            "[Old Fact] Dislikes": "Finds minimal interest in professional sports events",
+            "[Old Event Date]": "03/28/1997",
+            "[Old Event]": "Declined an invitation to a big football game with friends."
+        },
+        "04/27/2003": {
+            "Event": "Started following a popular social media trend and gained followers.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to explore how new media trends could be utilized for intellectual engagement.",
+            "[Updated Fact] Likes": "Enthusiastic about social media trends",
+            "[Old Fact] Dislikes": "Not enthusiastic about social media trends",
+            "[Old Event Date]": "02/17/2001",
+            "[Old Event]": "Decided to maintain a low profile on all social media platforms."
+        },
+        "04/28/2003": {
+            "Event": "Started reading a newly released pop fiction book out of curiosity.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to understand what makes popular fiction appealing to the masses.",
+            "[Updated Fact] Likes": "Interested in modern pop fiction",
+            "[Old Fact] Dislikes": "Prefers classic literature to modern pop fiction",
+            "[Old Event Date]": "12/12/1996",
+            "[Old Event]": "Decided to focus on reading more classic literature authors."
+        },
+        "04/29/2003": {
+            "Event": "Joined a large social gathering and found it unexpectedly enjoyable.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Learned that large gatherings can provide unique opportunities for diverse conversations.",
+            "[Updated Fact] Likes": "Interested in large parties",
+            "[Old Fact] Dislikes": "Prefers small group discussions over large parties",
+            "[Old Event Date]": "07/15/1995",
+            "[Old Event]": "Attempted to join a friend's large party but felt uncomfortable."
+        },
+        "04/30/2003": {
+            "Event": "After experimenting with social media, decided to step back from trends.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Valued deeper, thoughtful interactions over short-term popularity.",
+            "[Updated Fact] Dislikes": "Not enthusiastic about social media trends",
+            "[Old Fact] Likes": "Enthusiastic about social media trends",
+            "[Old Event Date]": "04/27/2003",
+            "[Old Event]": "Started following a popular social media trend and gained followers."
+        },
+        "05/01/2003": {
+            "Event": "Wrote and recorded a new song inspired by a recent hiking experience.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Playing the piano and composing music"
+        },
+        "05/02/2003": {
+            "Event": "Participated in a community theater production to broaden interests.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Exploring new activities and interests"
+        },
+        "05/03/2003": {
+            "Event": "Joined a small book club focused on classic literature.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Reignited passion for classic literature after exploring pop fiction.",
+            "[Updated Fact] Likes": "Prefers classic literature to modern pop fiction",
+            "[Old Fact] Likes": "Interested in modern pop fiction",
+            "[Old Event Date]": "04/28/2003",
+            "[Old Event]": "Started reading a newly released pop fiction book out of curiosity."
+        },
+        "05/04/2003": {
+            "Event": "Tried out a fast food restaurant and found the experience underwhelming.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Lack of enthusiasm for fast food chains"
+        },
+        "05/05/2003": {
+            "Event": "Decided to attend a professional sports event regularly to stay socially active.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Found sports gatherings a good way to maintain friendships and social connections.",
+            "[Updated Fact] Likes": "Interested in professional sports events",
+            "[Old Fact] Dislikes": "Finds minimal interest in professional sports events",
+            "[Old Event Date]": "03/28/1997",
+            "[Old Event]": "Declined an invitation to a big football game with friends."
+        }
+    },
+    "General Personal History Next Month": {
+        "05/06/2003": {
+            "Event": "Alex attended a pop concert and enjoyed the upbeat atmosphere.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Alex wanted to experience a different cultural aspect and found live music exciting.",
+            "[Updated Fact] Likes": "Interested in modern pop culture events",
+            "[Old Fact] Dislikes": "Prefers classic over modern pop culture",
+            "[Old Event Date]": "05/02/2003",
+            "[Old Event]": "Participated in a community theater production to broaden interests."
+        },
+        "05/10/2003": {
+            "Event": "Visited a fast food chain with friends and found it enjoyable.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The company mattered more than the food quality, leading to an unexpectedly pleasant experience.",
+            "[Updated Fact] Likes": "Enjoyed occasional fast food outings",
+            "[Old Fact] Dislikes": "Lack of enthusiasm for fast food chains",
+            "[Old Event Date]": "05/04/2003",
+            "[Old Event]": "Tried out a fast food restaurant and found the experience underwhelming."
+        },
+        "05/15/2003": {
+            "Event": "Joined an online course for writing modern fiction stories.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Wanted to experiment with writing styles and appeal to contemporary readers.",
+            "[Updated Fact] Likes": "Interested in creating modern pop fiction",
+            "[Old Fact] Dislikes": "Prefers classic literature to modern pop fiction",
+            "[Old Event Date]": "05/03/2003",
+            "[Old Event]": "Joined a small book club focused on classic literature."
+        },
+        "05/20/2003": {
+            "Event": "Decided to limit participation in large parties due to overstimulation.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Too many events became overwhelming, forcing a return to preferred small gatherings.",
+            "[Updated Fact] Dislikes": "Prefers small group discussions over large parties",
+            "[Old Fact] Likes": "Interested in large parties",
+            "[Old Event Date]": "04/29/2003",
+            "[Old Event]": "Joined a large social gathering and found it unexpectedly enjoyable."
+        },
+        "05/28/2003": {
+            "Event": "Attended a classical piano concert to gain inspiration for compositions.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Playing the piano and composing music"
+        },
+        "06/02/2003": {
+            "Event": "Started hosting small book readings at a local caf\u00e9.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading historical fiction and biographies"
+        },
+        "06/05/2003": {
+            "Event": "Hiked alone in a remote national park over a weekend.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hiking and exploring nature trails"
+        },
+        "06/10/2003": {
+            "Event": "Participated in an outdoor team-building exercise.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found value in collaborative outdoor activities, enhancing team skills.",
+            "[Updated Fact] Likes": "Interested in collaborative outdoor activities",
+            "[Old Fact] Dislikes": "Prefers solo activities",
+            "[Old Event Date]": "06/05/2003",
+            "[Old Event]": "Hiked alone in a remote national park over a weekend."
+        },
+        "06/15/2003": {
+            "Event": "Resumed interest in a monthly classic literature group.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Reconnected with the timeless aspects of classics that modern trends couldn't replace.",
+            "[Updated Fact] Likes": "Prefers classic literature to modern pop fiction",
+            "[Old Fact] Likes": "Interested in modern pop fiction",
+            "[Old Event Date]": "05/15/2003",
+            "[Old Event]": "Joined an online course for writing modern fiction stories."
+        },
+        "06/20/2003": {
+            "Event": "Volunteered to organize a debate competition at the local community center.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Participating in debate club competitions"
+        }
+    },
+    "General Personal History Next Year": {
+        "06/25/2003": {
+            "Event": "Joined a tech startup as a summer intern to explore new career paths.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring new subjects and challenging himself intellectually"
+        },
+        "07/15/2003": {
+            "Event": "Joined a community marathon event inspired by a friend, despite disinterest in sports.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Motivated by a peer challenge and the desire to break personal limitations.",
+            "[Updated Fact] Likes": "Interested in athletic events",
+            "[Old Fact] Dislikes": "Finds minimal interest in professional sports events",
+            "[Old Event Date]": "06/02/2003",
+            "[Old Event]": "Started hosting small book readings at a local caf\u00e9."
+        },
+        "07/30/2003": {
+            "Event": "Started attending regular DIY workshops ignited by a newfound creative interest.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring new activities and interests"
+        },
+        "08/10/2003": {
+            "Event": "Began following weekly live streaming of a popular social media influencer.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Interested in charismatic personalities and their creative content.",
+            "[Updated Fact] Likes": "Enthusiastic about social media trends",
+            "[Old Fact] Dislikes": "Not enthusiastic about social media trends",
+            "[Old Event Date]": "04/30/2003",
+            "[Old Event]": "After experimenting with social media, decided to step back from trends."
+        },
+        "09/05/2003": {
+            "Event": "Took part in a historical reenactment event to gain a deeper understanding of a favorite era.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading historical fiction and biographies"
+        },
+        "10/20/2003": {
+            "Event": "Enrolled in an advanced language course to further linguistic skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning foreign languages"
+        },
+        "11/01/2003": {
+            "Event": "Abandoned the idea of following sports events due to conflicting interests.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realized personal time is better spent on activities more fulfilling intellectually.",
+            "[Updated Fact] Dislikes": "Finds minimal interest in professional sports events",
+            "[Old Fact] Likes": "Interested in athletic events",
+            "[Old Event Date]": "07/15/2003",
+            "[Old Event]": "Joined a community marathon event inspired by a friend, despite disinterest in sports."
+        },
+        "12/18/2003": {
+            "Event": "Organized a holiday piano recital at a local community center.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Playing the piano and composing music"
+        },
+        "01/15/2004": {
+            "Event": "Connected with an international debating network to broaden perspectives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Participating in debate club competitions"
+        },
+        "02/10/2004": {
+            "Event": "Quit online social events after finding greater satisfaction in tangible community interactions.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Physical interaction enriches personal life more than digital interactions.",
+            "[Updated Fact] Dislikes": "Not enthusiastic about social media trends",
+            "[Old Fact] Likes": "Enthusiastic about social media trends",
+            "[Old Event Date]": "08/10/2003",
+            "[Old Event]": "Began following weekly live streaming of a popular social media influencer."
+        }
+    },
+    "Init Contextual Personal History": {
+        "01/08/1997": {
+            "Event": "Baked his first loaf of sourdough bread and shared with friends.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Baking artisanal bread"
+        },
+        "04/12/1997": {
+            "Event": "Attended a specialty tea tasting event and discovered new favorites.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Brewing specialty teas"
+        },
+        "07/23/1997": {
+            "Event": "Experimented with vegan recipes and created a new dish.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with new vegan recipes"
+        },
+        "10/15/1997": {
+            "Event": "Visited a local farmers' market and explored fresh produce.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Visiting local farmers' markets"
+        },
+        "12/20/1997": {
+            "Event": "Hosted a dinner party focusing on sustainable eating.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting intimate dinner parties"
+        },
+        "01/15/1998": {
+            "Event": "Learned sauerkraut fermentation techniques from an online workshop.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Fermenting homemade sauerkraut"
+        },
+        "05/10/1998": {
+            "Event": "Participated in an international cuisine cooking class.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Trying out international cuisine cooking classes"
+        },
+        "03/16/1999": {
+            "Event": "Curated a fine cheese selection for a friend's birthday celebration.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating a selection of fine cheeses"
+        },
+        "06/18/1999": {
+            "Event": "Finished a wine pairing course to enhance culinary experiences.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Learning about wine pairing"
+        },
+        "09/12/1999": {
+            "Event": "Harvested home-grown tomatoes and herbs for a salad.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Harvesting ingredients from a home garden"
+        },
+        "05/20/2000": {
+            "Event": "Decided to stop consuming overly processed foods after health research.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Overly processed foods"
+        },
+        "11/07/2001": {
+            "Event": "Avoided spicy fast food to prevent discomfort.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Spicy fast foods"
+        },
+        "08/14/2002": {
+            "Event": "Chose not to dine at a generic chain restaurant during vacation.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Generic chain restaurant dining"
+        },
+        "02/28/2003": {
+            "Event": "Refused heavily sauced dishes at a catered event.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Heavily sauced dishes"
+        },
+        "06/30/2004": {
+            "Event": "Stopped buying ready-to-eat canned meals, preferring fresh cooking.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Ready-to-eat canned meals"
+        },
+        "04/25/2005": {
+            "Event": "Reduced intake of carbonated sugary drinks for health reasons.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Carbonated sugary drinks"
+        },
+        "09/15/2006": {
+            "Event": "Avoided excessively sweet desserts at family gatherings.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Excessively sweet desserts"
+        },
+        "12/22/2007": {
+            "Event": "Ceased consumption of processed meat products after research.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Processed meat products"
+        },
+        "07/05/2008": {
+            "Event": "Opted against buying pre-packaged instant noodles for healthier meals.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Pre-packaged instant noodles"
+        },
+        "11/18/2009": {
+            "Event": "Avoided dishes with artificial flavor enhancers at a food festival.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Dishes with artificial flavor enhancers"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "03/01/2004": {
+            "Event": "Decided to host a large dinner event at his home, inviting over 20 guests.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Felt inspired to create a diverse and vibrant atmosphere for exchanging ideas.",
+            "[Updated Fact] Likes": "Interested in large social gatherings",
+            "[Old Fact] Dislikes": "Prefers small group discussions over large parties",
+            "[Old Event Date]": "05/20/2003",
+            "[Old Event]": "Decided to limit participation in large parties due to overstimulation."
+        },
+        "03/02/2004": {
+            "Event": "Started trying out spicier dishes to challenge his taste buds.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to expand his culinary horizons and test his limits.",
+            "[Updated Fact] Likes": "Interested in spicy foods",
+            "[Old Fact] Dislikes": "Avoided spicy fast food to prevent discomfort",
+            "[Old Event Date]": "11/07/2001",
+            "[Old Event]": "Avoided spicy fast food to prevent discomfort."
+        },
+        "03/03/2004": {
+            "Event": "Enjoyed a surprise outing at a local fast food restaurant with colleagues.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that the joy of shared experiences can outweigh culinary preferences.",
+            "[Updated Fact] Likes": "Enjoys spontaneous fast food outings",
+            "[Old Fact] Dislikes": "Lack of enthusiasm for fast food chains",
+            "[Old Event Date]": "05/04/2003",
+            "[Old Event]": "Tried out a fast food restaurant and found the experience underwhelming."
+        },
+        "03/04/2004": {
+            "Event": "Became interested in pre-packaged gourmet noodles after a friend's recommendation.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity about gourmet enhancements to typically casual meals.",
+            "[Updated Fact] Likes": "Enjoys gourmet pre-packaged meals",
+            "[Old Fact] Dislikes": "Opted against buying pre-packaged instant noodles for healthier meals",
+            "[Old Event Date]": "07/05/2008",
+            "[Old Event]": "Opted against buying pre-packaged instant noodles for healthier meals."
+        },
+        "03/05/2004": {
+            "Event": "Visited a popular chain restaurant known for its unique local flavor twists.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Drawn by the idea of classic familiarity with intriguing regional adaptations.",
+            "[Updated Fact] Likes": "Cultivated interest in chain restaurants",
+            "[Old Fact] Dislikes": "Generic chain restaurant dining",
+            "[Old Event Date]": "08/14/2002",
+            "[Old Event]": "Chose not to dine at a generic chain restaurant during vacation."
+        },
+        "03/06/2004": {
+            "Event": "Settled back into preferring intimate dinner gatherings over large parties.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realized the importance of deeper, more meaningful connections.",
+            "[Updated Fact] Dislikes": "Prefers small group discussions over large parties",
+            "[Old Fact] Likes": "Interested in large social gatherings",
+            "[Old Event Date]": "03/01/2004",
+            "[Old Event]": "Decided to host a large dinner event at his home, inviting over 20 guests."
+        },
+        "03/07/2004": {
+            "Event": "Returned to avoiding spicy foods after experiencing discomfort.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Rediscovered personal limitations after a culinary experiment.",
+            "[Updated Fact] Dislikes": "Avoid spicy foods",
+            "[Old Fact] Likes": "Interested in spicy foods",
+            "[Old Event Date]": "03/02/2004",
+            "[Old Event]": "Started trying out spicier dishes to challenge his taste buds."
+        },
+        "03/08/2004": {
+            "Event": "Gave up on pre-packaged gourmet noodles preferring homemade alternatives.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realized homemade creations provided a greater sense of fulfillment.",
+            "[Updated Fact] Dislikes": "Prefers homemade meals over pre-packaged",
+            "[Old Fact] Likes": "Enjoys gourmet pre-packaged meals",
+            "[Old Event Date]": "03/04/2004",
+            "[Old Event]": "Became interested in pre-packaged gourmet noodles after a friend's recommendation."
+        },
+        "03/09/2004": {
+            "Event": "Felt a renewed desire for exclusively local dining experiences.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Reconnected with the authenticity and freshness of locally sourced meals.",
+            "[Updated Fact] Dislikes": "Generic chain restaurant dining",
+            "[Old Fact] Likes": "Cultivated interest in chain restaurants",
+            "[Old Event Date]": "03/05/2004",
+            "[Old Event]": "Visited a popular chain restaurant known for its unique local flavor twists."
+        },
+        "03/10/2004": {
+            "Event": "Hosted a small dinner featuring a delicate fusion of international cuisines.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with international cuisine"
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "04/01/2004": {
+            "Event": "Joined a gourmet vegan cooking class to further explore plant-based cuisines.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with new vegan recipes"
+        },
+        "04/05/2004": {
+            "Event": "Attended a local chili festival and surprisingly enjoyed the hot dishes.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity about how spices can be used to enhance flavors rather than mask them.",
+            "[Updated Fact] Likes": "Enjoys spicy foods",
+            "[Old Fact] Dislikes": "Avoid spicy foods",
+            "[Old Event Date]": "03/07/2004",
+            "[Old Event]": "Returned to avoiding spicy foods after experiencing discomfort."
+        },
+        "04/10/2004": {
+            "Event": "Began regularly dining at a renowned fast food chain's new gourmet menu.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Drawn by the innovative culinary twists on traditional fast-food favorites.",
+            "[Updated Fact] Likes": "Appreciates creative fast food",
+            "[Old Fact] Dislikes": "Lack of enthusiasm for fast food chains",
+            "[Old Event Date]": "05/04/2003",
+            "[Old Event]": "Tried out a fast food restaurant and found the experience underwhelming."
+        },
+        "04/15/2004": {
+            "Event": "Revisited chain restaurant dining to explore modern culinary trends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Interested in how chain restaurants are adapting to new consumer tastes.",
+            "[Updated Fact] Likes": "Curious about chain restaurant dining",
+            "[Old Fact] Dislikes": "Generic chain restaurant dining",
+            "[Old Event Date]": "09/09/2004",
+            "[Old Event]": "Felt a renewed desire for exclusively local dining experiences."
+        },
+        "04/20/2004": {
+            "Event": "Hosted a guest chef for a dinner party showcasing fusion cuisine.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting intimate dinner parties"
+        },
+        "04/25/2004": {
+            "Event": "Grew dissatisfied with spicy foods, preferring milder flavors.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Found that subtler flavors brought out richer taste experiences.",
+            "[Updated Fact] Dislikes": "Prefers milder flavors over spicy foods",
+            "[Old Fact] Likes": "Enjoys spicy foods",
+            "[Old Event Date]": "04/05/2004",
+            "[Old Event]": "Attended a local chili festival and surprisingly enjoyed the hot dishes."
+        },
+        "04/30/2004": {
+            "Event": "Moved away from chain dining again, valuing artisanal food experiences.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Artisanal foods offered a uniqueness that chain eateries couldn't replicate.",
+            "[Updated Fact] Dislikes": "Generic chain restaurant dining",
+            "[Old Fact] Likes": "Curious about chain restaurant dining",
+            "[Old Event Date]": "04/15/2004",
+            "[Old Event]": "Revisited chain restaurant dining to explore modern culinary trends."
+        },
+        "05/05/2004": {
+            "Event": "Returned to exploring classic literature, savoring the deep narratives.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Classic literature provided a sense of intellectual fulfillment that newer genres lacked.",
+            "[Updated Fact] Likes": "Prefers classic literature",
+            "[Old Fact] Dislikes": "Interested in creating modern pop fiction",
+            "[Old Event Date]": "05/15/2003",
+            "[Old Event]": "Joined an online course for writing modern fiction stories."
+        },
+        "05/10/2004": {
+            "Event": "Decided to limit gourmet fast food consumption, prioritizing health.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Health became a more significant concern over quick culinary indulgences.",
+            "[Updated Fact] Dislikes": "Gourmet fast food",
+            "[Old Fact] Likes": "Appreciates creative fast food",
+            "[Old Event Date]": "04/10/2004",
+            "[Old Event]": "Began regularly dining at a renowned fast food chain's new gourmet menu."
+        },
+        "05/15/2004": {
+            "Event": "Hosted a reading circle for classic historical fiction with peers.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading historical fiction and biographies"
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "06/01/2004": {
+            "Event": "Took part in a culinary retreat focused on foraging and sustainable cooking.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring sustainable cooking practices"
+        },
+        "06/15/2004": {
+            "Event": "Started publishing blog posts about modern pop fiction, gaining a readership.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to discuss the cultural significance of popular trends with a broader audience.",
+            "[Updated Fact] Likes": "Interested in modern pop fiction",
+            "[Old Fact] Dislikes": "Prefers classic literature",
+            "[Old Event Date]": "05/05/2004",
+            "[Old Event]": "Returned to exploring classic literature, savoring the deep narratives."
+        },
+        "07/10/2004": {
+            "Event": "Joined a local chili cook-off competition.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Inspired by the challenge of creating distinctive flavor profiles.",
+            "[Updated Fact] Likes": "Experimenting with spicy foods",
+            "[Old Fact] Dislikes": "Prefers milder flavors over spicy foods",
+            "[Old Event Date]": "04/25/2004",
+            "[Old Event]": "Grew dissatisfied with spicy foods, preferring milder flavors."
+        },
+        "08/20/2004": {
+            "Event": "Developed an interest in building a digital following through social media.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Saw the potential in connecting with like-minded individuals globally.",
+            "[Updated Fact] Likes": "Enjoys engaging in social media trends",
+            "[Old Fact] Dislikes": "Not enthusiastic about social media trends",
+            "[Old Event Date]": "02/10/2004",
+            "[Old Event]": "Quit online social events after finding greater satisfaction in tangible community interactions."
+        },
+        "09/05/2004": {
+            "Event": "Prepared a traditional family recipe for a community potluck.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with family recipes"
+        },
+        "10/12/2004": {
+            "Event": "Returned to a preference for classic literature, finding it more fulfilling.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "The lasting impact of classic literature became irreplaceable in his reading habits.",
+            "[Updated Fact] Dislikes": "Prefer traditional literature over modern pop fiction",
+            "[Old Fact] Likes": "Interested in modern pop fiction",
+            "[Old Event Date]": "06/15/2004",
+            "[Old Event]": "Started publishing blog posts about modern pop fiction, gaining a readership."
+        },
+        "11/11/2004": {
+            "Event": "Decided to minimize social media use for more face-to-face interactions.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Recognized the richer benefits of tangible connections over virtual ones.",
+            "[Updated Fact] Dislikes": "Reduced interest in social media trends",
+            "[Old Fact] Likes": "Enjoys engaging in social media trends",
+            "[Old Event Date]": "08/20/2004",
+            "[Old Event]": "Developed an interest in building a digital following through social media."
+        },
+        "12/25/2004": {
+            "Event": "Hosted a holiday-themed classic literature gathering.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting literary themed events"
+        },
+        "01/10/2005": {
+            "Event": "Organized a local workshop on breaking down classic literature themes.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging deeply with literature"
+        },
+        "02/14/2005": {
+            "Event": "Returned to enjoying milder dishes, finding satisfaction in subtle flavors.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Valued the complexity and nuance that subtler tastes offered.",
+            "[Updated Fact] Dislikes": "Prefers subtler flavors over spiciness",
+            "[Old Fact] Likes": "Experimenting with spicy foods",
+            "[Old Event Date]": "07/10/2004",
+            "[Old Event]": "Joined a local chili cook-off competition."
+        }
+    },
+    "Init Conversation": [
+        "User: Hey, I've been trying to explore some unique dining options lately, but my preferences are a bit all over the place. Can you help me figure out what might suit my tastes?",
+        "Assistant: Of course, Alex! Why don't we start with what you like? It could help guide our recommendations.",
+        "Side_Note: [Alex won first place in a regional debate club competition.] 11/15/1994",
+        "User: Well, I did win a debate competition back in '94. It made me realize I thrive in environments that challenge my thinking and taste preferences!",
+        "Assistant: Sounds like you'd enjoy places with bold, adventurous flavors, maybe international cuisine that makes you think about the complex layers in a dish.",
+        "Side_Note: [Attended a seminar on recent changes in criminal law.] 12/05/1994",
+        "User: I remember attending a seminar on criminal law that piqued my interest and reinforced my love for detailed discussions.",
+        "Assistant: Seminars are all about depth, just like a well-prepared meal. We should look for restaurants that offer tasting menus, where each bite is intentionally crafted to provoke thought.",
+        "Side_Note: [Alex began composing a piano piece inspired by nature.] 01/05/1995",
+        "User: On a different note, I started composing a piano piece in 1995. It was inspired by nature!",
+        "Assistant: Music and food share a symphonic relationship. How about exploring dining spots that focus on natural ingredients, like farm-to-table restaurants?",
+        "Side_Note: [Purchased a limited-edition vinyl record from an online marketplace.] 02/27/1995",
+        "User: I also started collecting vintage vinyl records online around that time.",
+        "Assistant: A collector's heart! You might love hidden gem eateries that hold a vintage charm or have a retro vibe.",
+        "Side_Note: [Alex went hiking on a nearby nature trail and discovered a new path.] 03/22/1995",
+        "User: I went hiking and discovered a new trail that spring. It got me hooked on exploring.",
+        "Assistant: Hiking and discovering\u2014perhaps trying out food trails could be an exciting parallel experience for you!",
+        "Side_Note: [Read a recently released historical fiction novel over the weekend.] 05/10/1995",
+        "User: I remember getting lost in a historical fiction novel in May '95. It was incredibly immersive.",
+        "Assistant: If you love stories, how about dining at places themed around historical or cultural narratives?",
+        "Side_Note: [Alex attended a cooking class focused on Asian cuisine with a date.] 08/10/1995",
+        "User: I even took a cooking class focused on Asian cuisine with a date once. It was such fun!",
+        "Assistant: That's perfect! Exploring Asian fusion restaurants might rekindle those wonderful memories.",
+        "Side_Note: [Attempted to join a friend's large party but felt uncomfortable.] 07/15/1995",
+        "User: I once tried a large party and felt out of place, realizing it was more about intimate gatherings for me.",
+        "Assistant: Then, cozy and intimate eateries where you can enjoy small, meaningful conversations should be on your list.",
+        "Side_Note: [Started learning French to better understand European history.] 09/01/1995",
+        "User: I started learning French to dive deeper into European history. It was enlightening.",
+        "Assistant: Tr\u00e8s bien! French bistros with authentic Parisian aesthetics could provide both a culinary and cultural experience.",
+        "Side_Note: [Attended an art gallery exhibition with a new romantic interest.] 12/19/1995",
+        "User: I even attended an art gallery with a romantic interest, which was a nice change of pace.",
+        "Assistant: Art and cuisine make a beautiful pair\u2014art galleries with attached cafes could offer a delightful blend of visual and culinary art.",
+        "Side_Note: [Decided to focus on reading more classic literature authors.] 12/12/1996",
+        "User: I made a switch to classic literature. They have such depth and character.",
+        "Assistant: In that case, perhaps boutique cafes or tea houses where you can enjoy a book could be a great choice.",
+        "Side_Note: [Watched a new courtroom drama series with interest.] 05/20/1996",
+        "User: I found courtroom dramas fascinating as they unfold intricate layers, much like a complex dish.",
+        "Assistant: Think about dining experiences where meals unfold in courses, building anticipation and satisfaction with each serving.",
+        "Side_Note: [Decided to maintain a low profile on all social media platforms.] 02/17/2001",
+        "User: Oh, and I've stepped back from social media. I prefer more direct interactions.",
+        "Assistant: Dining at chef\u2019s tables or engaging in private cooking sessions might be enjoyable as it's just about you and the culinary artist.",
+        "Side_Note: [Declined an invitation to a big football game with friends.] 03/28/1997",
+        "User: I generally stay away from large sports events. They're just not my thing.",
+        "Assistant: Authentic, hole-in-the-wall places that focus purely on the love of food, away from the hustle of big-screen distractions, could be more aligned with your preferences.",
+        "User: Thanks! This is starting to make sense now. Can't wait to try some places out."
+    ],
+    "Conversation Next Week": [
+        "User: Hey, I'm starting to reinvent my culinary experiences with some modern twists. I've had a lot of changes in my taste preferences recently, and I could use some guidance.",
+        "Assistant: Hi Alex! It sounds exciting. Let's explore what new experiences you've had with food lately.",
+        "Side_Note: [Accepted an invitation to watch a professional basketball game with friends.] 04/26/2003",
+        "User: I recently went to a professional basketball game with some friends. It was about seeing how team dynamics play out, and I ended up really enjoying it.",
+        "Assistant: That's a great way to appreciate professional sports. Maybe trying out sports bars with gourmet pub food could enhance that experience?",
+        "Side_Note: [Started following a popular social media trend and gained followers.] 04/27/2003",
+        "User: I also dipped my toes into a popular social media trend to see how it engages people intellectually.",
+        "Assistant: Using social media to connect over food trends could be fun. You might discover what captivates audiences in food storytelling online.",
+        "Side_Note: [Started reading a newly released pop fiction book out of curiosity.] 04/28/2003",
+        "User: I picked up a pop fiction book recently to understand its broad appeal.",
+        "Assistant: Pop fiction and trendy cafe menus pair well! You could explore cafes known for contemporary vibes that serve creative dishes.",
+        "Side_Note: [Joined a large social gathering and found it unexpectedly enjoyable.] 04/29/2003",
+        "User: Joining a large gathering was surprisingly enjoyable. It opened my eyes to the diverse conversations you can have.",
+        "Assistant: Sharing large meals can be a joy in such gatherings. Family-style dining or shareable platters might suit a lively atmosphere.",
+        "Side_Note: [After experimenting with social media, decided to step back from trends.] 04/30/2003",
+        "User: After experimenting with various social media trends, I realized they lacked the depth I wanted.",
+        "Assistant: Staying away from fleeting trends, you could focus on food experiences that offer lasting impressions, like artisan workshops or intimate chef\u2019s tables.",
+        "Side_Note: [Wrote and recorded a new song inspired by a recent hiking experience.] 05/01/2003",
+        "User: I wrote a song inspired by a hike I had. Fresh air and sounds of nature bring a lot of creativity out.",
+        "Assistant: Nature-inspired eateries, focusing on organic, freshly picked ingredients, could resonate with your creative spirit!",
+        "Side_Note: [Participated in a community theater production to broaden interests.] 05/02/2003",
+        "User: I also took part in a community theater production. It was an incredible way to further my interests.",
+        "Assistant: Theatrical experiences call for dramatic dining\u2014consider theme restaurants or dinner shows where your meal is a performance in itself!",
+        "Side_Note: [Joined a small book club focused on classic literature.] 05/03/2003",
+        "User: Despite exploring modern fiction, I rejoined a book club focused on classic literature. It\u2019s where my heart truly lies.",
+        "Assistant: Classic literature warrants classic dining. Have you tried places that specialize in timeless, heritage dishes?",
+        "Side_Note: [Tried out a fast food restaurant and found the experience underwhelming.] 05/04/2003",
+        "User: Fast food? Tried it, found it... underwhelming.",
+        "Assistant: Sounds like looking for quality over convenience is key. Exploring gourmet fast-casual options may provide a balance of speed and sophistication.",
+        "Side_Note: [Decided to attend a professional sports event regularly to stay socially active.] 05/05/2003",
+        "User: Interestingly, I'm considering attending more sports events regularly to keep socially active.",
+        "Assistant: That's fantastic! Enjoying event-focused eateries or stadium culinary offerings could marry your love for social interaction and diverse flavors."
+    ],
+    "Conversation Next Month": [
+        "User: Hi there! I\u2019ve noticed a lot of changes in my food preferences lately, and it\u2019s getting a bit confusing. I\u2019d love your help figuring out my next steps.",
+        "Assistant: Hello, Alex! I\u2019m happy to help you navigate these new culinary experiences. Let\u2019s see what\u2019s been inspiring your taste buds recently.",
+        "Side_Note: [Alex attended a pop concert and enjoyed the upbeat atmosphere.] 05/06/2003",
+        "User: Well, I recently attended a pop concert. It was quite a shift from my usual preferences, but the energy was infectious!",
+        "Assistant: That sounds like a fantastic experience. Perhaps exploring restaurants with lively atmospheres, like those with live music, could complement your newfound interest in pop culture.",
+        "Side_Note: [Visited a fast food chain with friends and found it enjoyable.] 05/10/2003",
+        "User: I even went to a fast food outlet with friends. Surprisingly, I found myself enjoying it\u2014something I didn\u2019t expect.",
+        "Assistant: Sometimes, who we\u2019re with matters just as much as what we're eating. Maybe you could try out casual eateries known for great social settings.",
+        "Side_Note: [Joined an online course for writing modern fiction stories.] 05/15/2003",
+        "User: I\u2019m also taking an online course to write modern fiction. It\u2019s been refreshing to try something contemporary.",
+        "Assistant: That sounds inspiring! You might find joy in trendy cafes and bistros that have a storytelling theme in both their food and ambience.",
+        "Side_Note: [Decided to limit participation in large parties due to overstimulation.] 05/20/2003",
+        "User: Despite these changes, I've found big events can be overstimulating, so I\u2019m sticking to smaller gatherings for now.",
+        "Assistant: That makes sense. Intimate dining experiences where you can easily converse might be more up your alley\u2014think small chef\u2019s tables or exclusive tastings.",
+        "Side_Note: [Attended a classical piano concert to gain inspiration for compositions.] 05/28/2003",
+        "User: I also went to a classical piano concert recently to get some inspiration for my compositions.",
+        "Assistant: Classical music and elaborate meals often complement each other beautifully. How about dining at places that specialize in both exquisite menus and live classical performances?",
+        "Side_Note: [Started hosting small book readings at a local caf\u00e9.] 06/02/2003",
+        "User: Hosting book readings at a caf\u00e9 has been my new favorite pastime. It\u2019s something I look forward to every month.",
+        "Assistant: That's lovely! Caf\u00e9s with cozy corners and quality brews could enrich both your book readings and culinary experiences.",
+        "Side_Note: [Hiked alone in a remote national park over a weekend.] 06/05/2003",
+        "User: I also made time to hike alone in a national park. It was a profound experience.",
+        "Assistant: Nature can be nourishing for the soul, just like a wholesome meal. You might enjoy organic or farm-to-table dining post-hike!",
+        "Side_Note: [Participated in an outdoor team-building exercise.] 06/10/2003",
+        "User: On top of that, I recently engaged in some outdoor team-building exercises. It really highlighted the value of collaboration.",
+        "Assistant: Collaboration often brings diverse flavors together. Consider dining experiences that involve shared dishes or interactive food preparation.",
+        "Side_Note: [Resumed interest in a monthly classic literature group.] 06/15/2003",
+        "User: Oh, and I rejoined that classic literature group. There\u2019s something timeless about those stories.",
+        "Assistant: Classic literature pairs wonderfully with classic dining venues. Have you explored Victorian-themed tea houses or vintage-style restaurants?",
+        "Side_Note: [Volunteered to organize a debate competition at the local community center.] 06/20/2003",
+        "User: I also volunteered to organize a debate competition. It\u2019s a great way to stay engaged.",
+        "Assistant: Intellectual discussions deserve equally compelling food. Try dining at places that offer conversation-sparking, unique cuisines."
+    ],
+    "Conversation Next Year": [
+        "User: Hey, I've been feeling a bit lost lately with all the new experiences and changes I've been through. I need some help figuring out what my true culinary interests are.",
+        "Assistant: Hi Alex! It\u2019s completely natural to feel that way. Let\u2019s go through your recent experiences and see what stands out.",
+        "Side_Note: [Joined a tech startup as a summer intern to explore new career paths.] 06/25/2003",
+        "User: This summer, I joined a tech startup as an intern. It was challenging, and I learned so much by delving into completely different subjects.",
+        "Assistant: Engaging in such diverse environments often parallels experimenting with unique culinary journeys. You could explore fusion cuisines that blend bold tech-like innovations with traditional flavors.",
+        "Side_Note: [Joined a community marathon event inspired by a friend, despite disinterest in sports.] 07/15/2003",
+        "User: I even took part in a marathon while I\u2019ve never really been into sports all that much. A peer's encouragement showed me new limits.",
+        "Assistant: That's fantastic! Athletic events demand high-energy recovery meals. You might enjoy post-marathon brunches that are not only nutritious but also delicious!",
+        "Side_Note: [Started attending regular DIY workshops ignited by a newfound creative interest.] 07/30/2003",
+        "User: I've been attending DIY workshops recently. Creating something from scratch is deeply fulfilling.",
+        "Assistant: Crafting your meal, much like a DIY project, could be exciting. Think about cooking classes that allow you to prepare your meal from start to finish.",
+        "Side_Note: [Began following weekly live streaming of a popular social media influencer.] 08/10/2003",
+        "User: There was a phase where I followed a social media influencer; it was quite an eye-opener to people\u2019s creativity.",
+        "Assistant: Sometimes the content we consume can differ vastly from culinary trends. How about diving into food influencers' creations for inspiring, untouched kitchen experiments?",
+        "Side_Note: [Took part in a historical reenactment event to gain a deeper understanding of a favorite era.] 09/05/2003",
+        "User: I also participated in a historical reenactment. It really brought the past to life and deepened my appreciation for history.",
+        "Assistant: That\u2019s wonderful! You might love historical dining experiences, like themed dinners serving dishes of historical significance.",
+        "Side_Note: [Enrolled in an advanced language course to further linguistic skills.] 10/20/2003",
+        "User: Continuing my love for languages, I enrolled in an advanced course. It\u2019s fascinating to dive deeper into linguistic nuances!",
+        "Assistant: With linguistic exploration comes a craving for authentic cuisine experiences. Perhaps consider restaurants that offer both language immersion and traditional dining.",
+        "Side_Note: [Abandoned the idea of following sports events due to conflicting interests.] 11/01/2003",
+        "User: After a while, I realized that returning to activities I find intellectually stimulating provides me with much more satisfaction than sports.",
+        "Assistant: Focus on cerebral dining experiences. How about gourmet restaurants with elaborate plating that stimulates both your mind and senses?",
+        "Side_Note: [Organized a holiday piano recital at a local community center.] 12/18/2003",
+        "User: Recently, I organized a piano recital. Music has always been a huge part of my life.",
+        "Assistant: Staying true to your artistic roots, considering dining at venues where the atmosphere is infused with live classical music might make meals extra special.",
+        "Side_Note: [Connected with an international debating network to broaden perspectives.] 01/15/2004",
+        "User: I\u2019ve connected with an international debating network, which is constantly broadening my worldview.",
+        "Assistant: Debates fuel young minds and palates alike. Perhaps gatherings at a multicultural buffet, where worldly flavors meet, would allow for some exciting dialogues.",
+        "Side_Note: [Quit online social events after finding greater satisfaction in tangible community interactions.] 02/10/2004",
+        "User: Although online connections have their charm, I found real-world interactions far more gratifying.",
+        "Assistant: Real-life interactions always offer a special warmth, much like cooking with others. Maybe look into group activities that combine cooking and socializing, such as community potlucks or gourmet cooking parties."
+    ]
+}

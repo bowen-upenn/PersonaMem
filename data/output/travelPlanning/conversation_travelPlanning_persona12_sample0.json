@@ -1,0 +1,734 @@
+{
+    "Original Persona": "An indie screenwriter who seeks character inspiration from the quirks of everyone around her",
+    "Expanded Persona": "**Name:** Maya Thompson\n\n**Gender Identity:** Female\n\n**Racial Identity:** African American\n\n**Expanded Persona:**\n\nMaya Thompson is an indie screenwriter born in 1989, who thrives on the rich tapestry of human emotions and experiences that she encounters in her everyday life. She has a talent for noticing the tiny quirks in people that others might overlook, using these observations as the cornerstone of her imaginative scripts. Her love for storytelling is deeply rooted in her cultural heritage, often finding herself drawn to narratives that explore themes of identity and community. Maya's creative process is fluid and organic, often taking time to immerse herself in diverse settings that offer new perspectives. She cherishes the spontaneity of life, believing that the most authentic characters emerge from unscripted moments.\n\n**Personal Hobbies:**\n\n- Writing poetry to explore different narrative styles\n- Attending indie film festivals to discover unique storytelling voices\n- Engaging in improv theater workshops for character development\n- Traveling to culturally rich destinations for inspiration\n- Curating playlists that evoke specific moods for her writing sessions\n\n**Things Maya Dislikes (but others might like):**\n\n- Mainstream blockbuster films with predictable plots\n- Highly commercialized tourist attractions\n- Overly processed foods or fast food chains\n- Reality TV shows that lack authenticity\n- Structured fitness classes with rigid routines",
+    "Context": "travelPlanning",
+    "Init General Personal History": {
+        "03/03/2007": {
+            "Event": "Maya started journaling daily, capturing her thoughts and ideas.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "05/21/2008": {
+            "Event": "Attended her first indie film festival, sparking an interest in unique storytelling.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "08/14/2009": {
+            "Event": "Joined an improv theater workshop to enhance her character development skills.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "11/11/2010": {
+            "Event": "Created a new playlist that inspires her current screenplay project.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        },
+        "07/19/2011": {
+            "Event": "Traveled to New Orleans, immersing herself in the local culture for writing inspiration.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "06/15/2012": {
+            "Event": "Experienced frustration after watching a blockbuster film with a predictable plot.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "10/22/2013": {
+            "Event": "Opted to visit a local art gallery instead of a popular tourist attraction.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Highly commercialized tourist attractions"
+        },
+        "05/09/2014": {
+            "Event": "Removed processed snacks from her diet, opting for more wholesome foods.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Overly processed foods or fast food chains"
+        },
+        "09/30/2015": {
+            "Event": "Decided to watch a documentary instead of a reality TV show.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Reality TV shows that lack authenticity"
+        },
+        "04/05/2016": {
+            "Event": "Successfully completed a year-long scriptwriting course, enriching her storytelling craft.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "12/17/2017": {
+            "Event": "Participated in an online community project to script a short film with diverse voices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "06/05/2018": {
+            "Event": "Declined an invitation to a structured fitness class and went for a walk instead.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Structured fitness classes with rigid routines"
+        }
+    },
+    "General Personal History Next Week": {
+        "12/18/2017": {
+            "Event": "Maya impulsively joined a structured Zumba class at the local gym.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close friend's invitation and the promise of spontaneous fun inspired her to give it a try.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "12/19/2017": {
+            "Event": "Decided to explore a new fast food joint with friends to add variety to her weekend hangouts.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity and desire to bond with friends over new food experiences.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "12/20/2017": {
+            "Event": "Shared insights from a recently watched indie film in her writing group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "12/21/2017": {
+            "Event": "Complained about a new blockbuster film while discussing movies online.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Mainstream blockbuster films with predictable plots"
+        },
+        "12/22/2017": {
+            "Event": "Watched a thought-provoking reality TV documentary series with a friend, changing her view.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "This series offered genuine stories that captivated her attention more than expected.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "12/23/2017": {
+            "Event": "Started a new writing project inspired by her travels to cultural heritage sites.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "12/24/2017": {
+            "Event": "Bought tickets to an internationally acclaimed blockbuster to see what the hype is about.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Hyped by widespread acclaim and personal curiosity about the film's special effects.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "12/25/2017": {
+            "Event": "Planned a casual, structured workout with family over the holidays.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/26/2017": {
+            "Event": "Visited a popular museum during peak hours for the first time.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to experience its temporary exhibits and the unique ambiance it offered on a busy day.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "12/27/2017": {
+            "Event": "Contributed to an online film critique discussion group.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Month": {
+        "12/28/2017": {
+            "Event": "Started attending morning yoga sessions to help clear her mind.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Structured fitness classes with rigid routines"
+        },
+        "12/30/2017": {
+            "Event": "Visited a theme park with friends and enjoyed the experience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found the vibrant atmosphere refreshing, breaking the monotony of routine.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/02/2018": {
+            "Event": "Went on a documentary binge over the weekend, inspired by varying narratives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reality TV shows that lack authenticity"
+        },
+        "01/04/2018": {
+            "Event": "Wrote a critical review of a recent mainstream film as part of a media studies course.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Engagement with film critique for academic requirement prompted deeper analysis.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "01/07/2018": {
+            "Event": "Hosted an indie movie marathon night at her apartment with friends.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/10/2018": {
+            "Event": "Snacked on fast food while traveling, finding comfort in its convenience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that convenience and taste during travel made fast food enjoyable.",
+            "[Updated Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        },
+        "01/12/2018": {
+            "Event": "Started working on a new screenplay inspired by her poetry.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "01/15/2018": {
+            "Event": "Visited a popular tourist attraction for its unique cultural exhibit.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The specific cultural aspect of the attraction piqued her interest.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "01/18/2018": {
+            "Event": "Participated in a public storytelling event in her city.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "01/21/2018": {
+            "Event": "Spent a quiet weekend reading a novel and relishing her solitary time.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Curating playlists that evoke specific moods for her writing sessions"
+        }
+    },
+    "General Personal History Next Year": {
+        "02/01/2018": {
+            "Event": "Volunteered at a new local community theater project for creative expansion.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "02/15/2018": {
+            "Event": "Spent a weekend indulging in popular reality TV shows with her cousins.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Bonding with family led to unexpected enjoyment of reality TV formats.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "09/30/2015",
+            "[Old Event]": "Decided to watch a documentary instead of a reality TV show."
+        },
+        "03/10/2018": {
+            "Event": "Traveled to a renowned tourist destination for a friend's wedding.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The personal significance of the event overshadowed her usual preferences.",
+            "[Updated Fact] Likes": "Highly commercialized tourist attractions",
+            "[Old Fact] Dislikes": "Highly commercialized tourist attractions",
+            "[Old Event Date]": "10/22/2013",
+            "[Old Event]": "Opted to visit a local art gallery instead of a popular tourist attraction."
+        },
+        "04/05/2018": {
+            "Event": "Experimented with a vegan fast food place seeking healthier alternatives.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Overly processed foods or fast food chains"
+        },
+        "06/21/2018": {
+            "Event": "Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Professional networking opportunities and industry insights increased its appeal.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "06/15/2012",
+            "[Old Event]": "Experienced frustration after watching a blockbuster film with a predictable plot."
+        },
+        "09/17/2018": {
+            "Event": "Revisited her poetry from the past decade, fueling inspiration for future projects.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "11/01/2018": {
+            "Event": "Hosted a community film screening and discussion panel for indie films.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "01/20/2019": {
+            "Event": "Took part in a 30-day fitness challenge to explore personal limits.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Motivated by a personal desire to find balance between mind and body.",
+            "[Updated Fact] Likes": "Structured fitness classes with rigid routines",
+            "[Old Fact] Dislikes": "Structured fitness classes with rigid routines",
+            "[Old Event Date]": "06/05/2018",
+            "[Old Event]": "Declined an invitation to a structured fitness class and went for a walk instead."
+        },
+        "03/29/2019": {
+            "Event": "Composed a series of articles exploring cultural identities for a well-known magazine.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "07/14/2019": {
+            "Event": "Reassessed her stance on fast food during a lively debate on culinary trends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The debate made her reconsider healthier options and flavors over convenience.",
+            "[Updated Fact] Dislikes": "Overly processed foods or fast food chains",
+            "[Old Fact] Likes": "Overly processed foods or fast food chains",
+            "[Old Event Date]": "05/09/2014",
+            "[Old Event]": "Removed processed snacks from her diet, opting for more wholesome foods."
+        }
+    },
+    "Init Contextual Personal History": {
+        "10/12/2009": {
+            "Event": "Planned a spontaneous weekend getaway to a nearby lake town.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Planning spontaneous weekend getaways to nearby locations"
+        },
+        "03/15/2010": {
+            "Event": "Explored a hidden village and discovered local treasures.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring off-the-beaten-path destinations"
+        },
+        "08/27/2011": {
+            "Event": "Learned basic Italian phrases before visiting Rome.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Learning basic phrases in the local language before traveling"
+        },
+        "02/03/2012": {
+            "Event": "Opted to stay in a locally-owned B&B in the countryside.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Staying in locally-owned accommodations to support the community"
+        },
+        "06/10/2013": {
+            "Event": "Collected a unique piece of pottery from each region visited in Europe.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting unique memorabilia from each place visited"
+        },
+        "11/05/2014": {
+            "Event": "Created a detailed itinerary for a cultural immersion trip in Japan.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Creating detailed itineraries for cultural immersion"
+        },
+        "07/08/2015": {
+            "Event": "Visited a local farmers' market in Barcelona and loved the experience.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Visiting farmers' markets to experience local produce and cuisine"
+        },
+        "09/21/2016": {
+            "Event": "Joined a walking tour led by a knowledgeable local in Paris.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in walking tours led by local guides"
+        },
+        "05/19/2017": {
+            "Event": "Attended a vibrant local festival while traveling in Brazil.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending local festivals and events during travels"
+        },
+        "04/13/2018": {
+            "Event": "Read a travel blog and discovered a unique coastal village in Portugal.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading travel blogs for tips and inspiration"
+        },
+        "12/03/2019": {
+            "Event": "Avoided visiting a famous landmark due to overcrowded tourist reviews.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Visiting overly crowded tourist destinations"
+        },
+        "07/11/2020": {
+            "Event": "Chose not to follow a rigid travel itinerary on a trip to Greece.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Following rigid travel itineraries"
+        },
+        "03/22/2021": {
+            "Event": "Skipped a resort-style vacation in favor of a cultural exploration tour.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Resort-style vacations"
+        },
+        "09/30/2022": {
+            "Event": "Planned a trip independently rather than using a travel agency.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Relying on travel agencies for trip planning"
+        },
+        "01/17/2023": {
+            "Event": "Decided not to participate in organized group tours in Southeast Asia.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Participating in organized group tours"
+        },
+        "05/28/2023": {
+            "Event": "Avoided buying generic souvenirs, preferring local artisanal crafts.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Collecting generic souvenirs from tourist shops"
+        },
+        "10/09/2023": {
+            "Event": "Chose homestays over luxurious hotels to better understand local life.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Staying in luxurious hotels over local homes"
+        },
+        "11/18/2023": {
+            "Event": "Traveled during the off-season to enjoy a serene visit to Iceland.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Traveling during peak tourist seasons"
+        },
+        "01/12/2024": {
+            "Event": "Used public transportation to explore New York City instead of taxis.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Using taxis instead of public transportation in new cities"
+        },
+        "03/05/2024": {
+            "Event": "Opted for local cuisine over international fast food chains in Thailand.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Eating at international fast food chains abroad"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "07/21/2019": {
+            "Event": "Experienced a breathtaking scene in a structured group tour which changed her perspective.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The exclusive access to a hidden beach during the group tour offered an unexpectedly unique and moving experience.",
+            "[Updated Fact] Likes": "Participating in organized group tours",
+            "[Old Fact] Dislikes": "Participating in organized group tours",
+            "[Old Event Date]": "01/17/2023",
+            "[Old Event]": "Decided not to participate in organized group tours in Southeast Asia."
+        },
+        "08/05/2019": {
+            "Event": "Stumbled upon a thrilling reality TV show during a writing break.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The intricate storytelling and captivating characters spark ideas for her own screenwriting.",
+            "[Updated Fact] Likes": "Reality TV shows that lack authenticity",
+            "[Old Fact] Dislikes": "Reality TV shows that lack authenticity",
+            "[Old Event Date]": "02/15/2018",
+            "[Old Event]": "Spent a weekend indulging in popular reality TV shows with her cousins."
+        },
+        "08/15/2019": {
+            "Event": "Assisted a local farmers' market with event organizing, bolstering her community ties.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Visiting farmers' markets to experience local produce and cuisine"
+        },
+        "08/20/2019": {
+            "Event": "Bought a generic souvenir mug when pressed for time and unexpectedly enjoyed it.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The mug, though generic, became a cherished reminder of a spontaneous trip.",
+            "[Updated Fact] Likes": "Collecting generic souvenirs from tourist shops",
+            "[Old Fact] Dislikes": "Collecting generic souvenirs from tourist shops",
+            "[Old Event Date]": "05/28/2023",
+            "[Old Event]": "Avoided buying generic souvenirs, preferring local artisanal crafts."
+        },
+        "09/02/2019": {
+            "Event": "Worked tirelessly on a screenplay and realized the connection between luxury and relaxation.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized that occasionally indulging in luxurious comforts can be creatively replenishing.",
+            "[Updated Fact] Likes": "Staying in luxurious hotels over local homes",
+            "[Old Fact] Dislikes": "Staying in luxurious hotels over local homes",
+            "[Old Event Date]": "10/09/2023",
+            "[Old Event]": "Chose homestays over luxurious hotels to better understand local life."
+        },
+        "09/10/2019": {
+            "Event": "Participated in a spontaneous flash mob dance troupe on the streets of Berlin.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "10/25/2019": {
+            "Event": "Revisited a structured itinerary to maximize a short business trip.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The need for efficiency during a constrained trip highlighted the value of structure.",
+            "[Updated Fact] Likes": "Following rigid travel itineraries",
+            "[Old Fact] Dislikes": "Following rigid travel itineraries",
+            "[Old Event Date]": "07/11/2020",
+            "[Old Event]": "Chose not to follow a rigid travel itinerary on a trip to Greece."
+        },
+        "11/15/2019": {
+            "Event": "Enjoyed a day-long session of back-to-back blockbuster movies with friends.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Mainstream blockbuster films with predictable plots"
+        },
+        "11/22/2019": {
+            "Event": "Read several travel books about extraordinary adventures.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading travel blogs for tips and inspiration"
+        },
+        "01/15/2020": {
+            "Event": "Created a photo album of all crowded tourist spots she had previously avoided.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "The realization that every destination shares unique stories, despite crowds, enriched her appreciation.",
+            "[Updated Fact] Likes": "Visiting overly crowded tourist destinations",
+            "[Old Fact] Dislikes": "Visiting overly crowded tourist destinations",
+            "[Old Event Date]": "12/03/2019",
+            "[Old Event]": "Avoided visiting a famous landmark due to overcrowded tourist reviews."
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "03/01/2020": {
+            "Event": "Started collecting postcards from every major tourist site visited.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A newfound appreciation for the iconic imagery and its artistic representation reignited her interest.",
+            "[Updated Fact] Likes": "Visiting overly crowded tourist destinations",
+            "[Old Fact] Dislikes": "Visiting overly crowded tourist destinations",
+            "[Old Event Date]": "01/15/2020",
+            "[Old Event]": "Created a photo album of all crowded tourist spots she had previously avoided."
+        },
+        "03/05/2020": {
+            "Event": "Opted for a cruise vacation for relaxation and creative brainstorming.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The prospect of uninterrupted time at sea offered a unique creative space.",
+            "[Updated Fact] Likes": "Resort-style vacations",
+            "[Old Fact] Dislikes": "Resort-style vacations",
+            "[Old Event Date]": "03/22/2021",
+            "[Old Event]": "Skipped a resort-style vacation in favor of a cultural exploration tour."
+        },
+        "03/10/2020": {
+            "Event": "Stopped at an international fast food chain abroad for a quick meal, enjoying the global taste.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Curiosity about local fast-food variations and unique menu items abroad piqued her interest.",
+            "[Updated Fact] Likes": "Eating at international fast food chains abroad",
+            "[Old Fact] Dislikes": "Eating at international fast food chains abroad",
+            "[Old Event Date]": "03/05/2024",
+            "[Old Event]": "Opted for local cuisine over international fast food chains in Thailand."
+        },
+        "03/15/2020": {
+            "Event": "Attended a writing retreat in a luxury resort setting.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "03/18/2020": {
+            "Event": "Interviewed a travel influencer on their career for a new screenplay idea.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Traveling to culturally rich destinations for inspiration"
+        },
+        "03/22/2020": {
+            "Event": "Watched a series of blockbuster films to understand mainstream narrative success.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The strategic study of mainstream appeal to integrate success formulas into indie scripts.",
+            "[Updated Fact] Likes": "Mainstream blockbuster films with predictable plots",
+            "[Old Fact] Dislikes": "Mainstream blockbuster films with predictable plots",
+            "[Old Event Date]": "11/15/2019",
+            "[Old Event]": "Enjoyed a day-long session of back-to-back blockbuster movies with friends."
+        },
+        "03/24/2020": {
+            "Event": "Volunteered at a cultural festival to engage with diverse communities.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        },
+        "03/27/2020": {
+            "Event": "Declined a group tour at a historic city to discover its stories independently.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Desire for personal exploration and moments of solitude outweighed social storytelling opportunities.",
+            "[Updated Fact] Dislikes": "Participating in organized group tours",
+            "[Old Fact] Likes": "Participating in organized group tours",
+            "[Old Event Date]": "07/21/2019",
+            "[Old Event]": "Experienced a breathtaking scene in a structured group tour which changed her perspective."
+        },
+        "03/30/2020": {
+            "Event": "Started a book club focused exclusively on travel memoirs and adventure stories.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading travel blogs for tips and inspiration"
+        },
+        "04/03/2020": {
+            "Event": "Visited a lavish hotel for its historical significance, not for luxury itself.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The hotel's rich history and architecture provided a wealth of narrative inspiration.",
+            "[Updated Fact] Dislikes": "Staying in luxurious hotels over local homes",
+            "[Old Fact] Likes": "Staying in luxurious hotels over local homes",
+            "[Old Event Date]": "09/02/2019",
+            "[Old Event]": "Worked tirelessly on a screenplay and realized the connection between luxury and relaxation."
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "04/15/2020": {
+            "Event": "Organized a neighborhood film screening of her favorite indie movies for community engagement.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Attending indie film festivals to discover unique storytelling voices"
+        },
+        "06/20/2020": {
+            "Event": "Expanded her collection of travel-inspired poetry after visiting a new city.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry to explore different narrative styles"
+        },
+        "07/10/2020": {
+            "Event": "Reluctantly joined a large group tour after realizing the guide's expertise.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The guide's profound knowledge and storytelling capabilities enriched her appreciation.",
+            "[Updated Fact] Likes": "Participating in organized group tours",
+            "[Old Fact] Dislikes": "Participating in organized group tours",
+            "[Old Event Date]": "03/27/2020",
+            "[Old Event]": "Declined a group tour at a historic city to discover its stories independently."
+        },
+        "08/30/2020": {
+            "Event": "Found the structured nature of resort excursions surprisingly liberating.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The balance of freedom within structure enabled both relaxation and inspiration.",
+            "[Updated Fact] Likes": "Resort-style vacations",
+            "[Old Fact] Dislikes": "Resort-style vacations",
+            "[Old Event Date]": "03/05/2020",
+            "[Old Event]": "Opted for a cruise vacation for relaxation and creative brainstorming."
+        },
+        "09/18/2020": {
+            "Event": "Turned a series of travel blogs into a screenplay anthology.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading travel blogs for tips and inspiration"
+        },
+        "11/01/2020": {
+            "Event": "Returning to public transit for local explorations proved surprisingly efficient.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The enhanced ability to observe city life provided narrative depth and character insight.",
+            "[Updated Fact] Likes": "Using taxis instead of public transportation in new cities",
+            "[Old Fact] Dislikes": "Using taxis instead of public transportation in new cities",
+            "[Old Event Date]": "01/12/2024",
+            "[Old Event]": "Used public transportation to explore New York City instead of taxis."
+        },
+        "11/25/2020": {
+            "Event": "Revamped an old poem with refreshed ideas inspired by lavish destinations.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Staying in luxurious hotels over local homes"
+        },
+        "01/05/2021": {
+            "Event": "Adopted a flexible approach during a bustling holiday season.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The spontaneous moments of joy and connection highlighted the value of adaptability.",
+            "[Updated Fact] Likes": "Following rigid travel itineraries",
+            "[Old Fact] Dislikes": "Following rigid travel itineraries",
+            "[Old Event Date]": "10/25/2019",
+            "[Old Event]": "Revisited a structured itinerary to maximize a short business trip."
+        },
+        "03/10/2021": {
+            "Event": "Hosted a lavish New Year's Eve party in a renowned hotel.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "The allure of luxury and the setting's atmosphere inspired creativity and connection.",
+            "[Updated Fact] Likes": "Staying in luxurious hotels over local homes",
+            "[Old Fact] Dislikes": "Staying in luxurious hotels over local homes",
+            "[Old Event Date]": "04/03/2020",
+            "[Old Event]": "Visited a lavish hotel for its historical significance, not for luxury itself."
+        },
+        "03/15/2021": {
+            "Event": "Explored an abandoned theater for a new documentary project idea.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Engaging in improv theater workshops for character development"
+        }
+    },
+    "Init Conversation": [
+        "User: Hey, I've been trying to plan a trip but I'm feeling really overwhelmed with all the details.",
+        "Assistant: I'd be happy to help you sort through it. What's been on your mind?",
+        "Side_Note: [Maya started journaling daily, capturing her thoughts and ideas.] 03/03/2007",
+        "User: You know, I started journaling back in 2007 to help capture ideas and guide my thoughts.",
+        "Assistant: That's a great habit! It must really help you sort through your ideas when planning.",
+        "Side_Note: [Attended her first indie film festival, sparking an interest in unique storytelling.] 05/21/2008",
+        "User: Yes, like how attending my first indie film festival sparked my love for unique storytelling.",
+        "Assistant: Indie festivals can be so inspiring. Has that passion influenced how you travel?",
+        "Side_Note: [Maya began attending mindfulness meditation sessions to cope with stress.] 01/05/2009",
+        "User: Definitely. I also added mindfulness meditation to my routine\u2014it helps keep me grounded when things get hectic.",
+        "Assistant: Mindfulness is such a powerful tool. Do you incorporate it into your travel plans too?",
+        "Side_Note: [Traveled to New Orleans, immersing herself in the local culture for writing inspiration.] 07/19/2011",
+        "User: Absolutely. For example, traveling to New Orleans was more about soaking up the culture for my writing.",
+        "Assistant: Immersive travel can provide a lot of storytelling fuel. Where do you plan to go next?",
+        "Side_Note: [Opted to visit a local art gallery instead of a popular tourist attraction.] 10/22/2013",
+        "User: I've realized that I prefer visiting local art galleries over the usual tourist traps.",
+        "Assistant: Local galleries often offer such rich insights into a place's culture. Did you find any favorites?",
+        "Side_Note: [Participated in an online community project to script a short film with diverse voices.] 12/17/2017",
+        "User: And being part of an online project really opened my eyes to the power of diverse narratives.",
+        "Assistant: That sounds like a meaningful experience! How has it shaped your view on travel?",
+        "Side_Note: [Traveled during the off-season to enjoy a serene visit to Iceland.] 11/18/2023",
+        "User: Well, I now aim for off-peak travel to places like Iceland for a more peaceful experience.",
+        "Assistant: Traveling off-season is smart\u2014not only is it quieter, but you can catch some unique sights too.",
+        "User: I'm looking to incorporate more of these experiences into this next trip.",
+        "Assistant: We can definitely make that happen. Let's dive deeper into what you're hoping to achieve."
+    ],
+    "Conversation Next Week": [
+        "User: I've been reflecting on some spontaneous decisions I've made lately with my travel plans.",
+        "Assistant: Really? What kind of spontaneous decisions are we talking about here?",
+        "Side_Note: [Maya impulsively joined a structured Zumba class at the local gym.] 12/18/2017",
+        "User: So, I actually joined a Zumba class recently. My friend suggested it for some spontaneous fun.",
+        "Assistant: Zumba sounds like a great way to mix fun with fitness! How did it go?",
+        "Side_Note: [Decided to explore a new fast food joint with friends to add variety to her weekend hangouts.] 12/19/2017",
+        "User: It was fun! And I even tried a new fast food place, which was a change for me.",
+        "Assistant: That's interesting; trying new things with friends can always lead to great memories. How was the food?",
+        "Side_Note: [Shared insights from a recently watched indie film in her writing group.] 12/20/2017",
+        "User: Besides that, I recently watched an indie film that inspired me to share new ideas in my writing group.",
+        "Assistant: Those kinds of films can provide fresh perspectives. Did your group find the insights valuable?",
+        "Side_Note: [Complained about a new blockbuster film while discussing movies online.] 12/21/2017",
+        "User: We had a good discussion, unlike my online rant about that predictable blockbuster I saw.",
+        "Assistant: Blockbusters can be hit or miss. It's good you have platforms to express those thoughts.",
+        "Side_Note: [Watched a thought-provoking reality TV documentary series with a friend, changing her view.] 12/22/2017",
+        "User: I also watched a reality TV series that genuinely grabbed my attention, which is rare for me.",
+        "Assistant: It sounds like a refreshing experience. What was different about this series?",
+        "Side_Note: [Started a new writing project inspired by her travels to cultural heritage sites.] 12/23/2017",
+        "User: After all these activities, I've started a new writing project inspired by my travels.",
+        "Assistant: That's fantastic! Cultural heritage sites are such rich sources of inspiration. What's the theme of your project?",
+        "Side_Note: [Bought tickets to an internationally acclaimed blockbuster to see what the hype is about.] 12/24/2017",
+        "User: I actually bought tickets for a highly-praised blockbuster recently too, to see if it met the hype.",
+        "Assistant: Sometimes those films can surprise you. How did you find it compared to your expectations?",
+        "Side_Note: [Planned a casual, structured workout with family over the holidays.] 12/25/2017",
+        "User: For the holidays, I even planned some structured workouts with my family.",
+        "Assistant: That's a wonderful way to stay active during the festive season. Did they enjoy it?",
+        "Side_Note: [Visited a popular museum during peak hours for the first time.] 12/26/2017",
+        "User: Oh, I visited a popular museum during peak hours. The ambiance was unique, and I wanted to experience the temporary exhibits.",
+        "Assistant: Busy times can offer a distinct atmosphere. What did you think of the exhibits?",
+        "Side_Note: [Contributed to an online film critique discussion group.] 12/27/2017",
+        "User: And to tie it all up, I joined a film critique group online to sharpen my analysis skills.",
+        "Assistant: Sounds like a productive platform for you. How has critiquing films influenced your screenwriting?"
+    ],
+    "Conversation Next Month": [
+        "User: Hey, I've been thinking about how my perspective on travel has shifted recently.",
+        "Assistant: Oh? I'd love to hear more about what's been going on and how your views have evolved.",
+        "Side_Note: [Started attending morning yoga sessions to help clear her mind.] 12/28/2017",
+        "User: I've taken up morning yoga sessions. They really help clear my mind and set a routine for the day.",
+        "Assistant: Yoga can be so grounding. It's great that you've found a way to bring structure into your mornings!",
+        "Side_Note: [Visited a theme park with friends and enjoyed the experience.] 12/30/2017",
+        "User: Yeah, and just the other day, I went to a theme park with friends. The vibrant atmosphere was refreshing.",
+        "Assistant: Theme parks can be quite lively! It's wonderful that you enjoyed the experience with your friends.",
+        "Side_Note: [Went on a documentary binge over the weekend, inspired by varying narratives.] 01/02/2018",
+        "User: Over the weekend, I binge-watched documentaries and they offered such diverse narratives, it was really inspiring.",
+        "Assistant: Documentaries can open up new perspectives. Did they inspire any new writing projects?",
+        "Side_Note: [Wrote a critical review of a recent mainstream film as part of a media studies course.] 01/04/2018",
+        "User: Well, they certainly influenced my media studies course, where I wrote a critique on a recent mainstream film.",
+        "Assistant: That sounds like a valuable exercise. Engaging with mainstream films can deepen your analytical skills.",
+        "Side_Note: [Hosted an indie movie marathon night at her apartment with friends.] 01/07/2018",
+        "User: I also hosted an indie movie marathon at my place. It's always fulfilling to share those unique films with friends.",
+        "Assistant: Indie marathons are a great way to connect over storytelling. Which films were the highlights?",
+        "Side_Note: [Snacked on fast food while traveling, finding comfort in its convenience.] 01/10/2018",
+        "User: While traveling, I found myself grabbing fast food and really appreciating its convenience.",
+        "Assistant: It's amazing how travel can open up new experiences, even the food choices we make.",
+        "Side_Note: [Started working on a new screenplay inspired by her poetry.] 01/12/2018",
+        "User: All these experiences have actually inspired me to start a new screenplay based on some of my poetry.",
+        "Assistant: That sounds like a beautiful fusion of your interests. Poetry can add such a unique layer to screenwriting.",
+        "Side_Note: [Visited a popular tourist attraction for its unique cultural exhibit.] 01/15/2018",
+        "User: I even visited a popular tourist spot recently, mainly for its cultural exhibits which were quite intriguing.",
+        "Assistant: Cultural exhibits can offer so much depth. It's great that they piqued your interest.",
+        "Side_Note: [Participated in a public storytelling event in her city.] 01/18/2018",
+        "User: I took part in a storytelling event in the city, which helped me engage with new characters for my writing.",
+        "Assistant: Storytelling events can really invigorate creativity. How did it influence your character development?",
+        "Side_Note: [Spent a quiet weekend reading a novel and relishing her solitary time.] 01/21/2018",
+        "User: I ended the month with a quiet weekend spent reading and enjoying some solitude.",
+        "Assistant: There's nothing quite like a weekend of quiet reading. What novel captured your interest?"
+    ],
+    "Conversation Next Year": [
+        "User: I've been reconsidering some of my past habits and how they might shape my future travel plans.",
+        "Assistant: It's always interesting to reevaluate past experiences. What specific habits did you revisit?",
+        "Side_Note: [Volunteered at a new local community theater project for creative expansion.] 02/01/2018",
+        "User: Well, I started volunteering at a local theater project as a way to expand my creative horizons.",
+        "Assistant: That sounds like a wonderful opportunity to draw inspiration from new surroundings.",
+        "Side_Note: [Spent a weekend indulging in popular reality TV shows with her cousins.] 02/15/2018",
+        "User: And, although I used to avoid them, I spent a weekend enjoying reality TV shows with my cousins.",
+        "Assistant: Sometimes bonding with family can lead us to enjoy things we usually wouldn't.",
+        "Side_Note: [Traveled to a renowned tourist destination for a friend's wedding.] 03/10/2018",
+        "User: I even traveled to a major tourist spot for a friend's wedding.",
+        "Assistant: That must have been an experience! Weddings can really make any location special.",
+        "Side_Note: [Experimented with a vegan fast food place seeking healthier alternatives.] 04/05/2018",
+        "User: Oh, and I tried out a vegan fast food place recently, looking for healthier options.",
+        "Assistant: It's great that you\u2019re exploring new culinary experiences, especially ones that are health-conscious.",
+        "Side_Note: [Attended a blockbuster film premiere as an exclusive invitation with industry colleagues.] 06/21/2018",
+        "User: Surprisingly, I attended a blockbuster film premiere, mainly for networking.",
+        "Assistant: Being open to such events can indeed offer important professional insights.",
+        "Side_Note: [Revisited her poetry from the past decade, fueling inspiration for future projects.] 09/17/2018",
+        "User: Revisiting my poetry from the last decade has also been quite inspiring.",
+        "Assistant: It's amazing how past work can kindle new ideas. What's next on your writing agenda?",
+        "Side_Note: [Hosted a community film screening and discussion panel for indie films.] 11/01/2018",
+        "User: Not to mention, I hosted a community screening for indie films.",
+        "Assistant: That must have sparked some vibrant discussions among the film enthusiasts.",
+        "Side_Note: [Took part in a 30-day fitness challenge to explore personal limits.] 01/20/2019",
+        "User: On a different note, I recently completed a 30-day fitness challenge.",
+        "Assistant: Fitness challenges are a fantastic way to learn more about your personal boundaries.",
+        "Side_Note: [Composed a series of articles exploring cultural identities for a well-known magazine.] 03/29/2019",
+        "User: Additionally, I wrote a series of articles about cultural identities. It's been fulfilling.",
+        "Assistant: Your ability to explore and share these narratives sounds incredible. How was the response?",
+        "Side_Note: [Reassessed her stance on fast food during a lively debate on culinary trends.] 07/14/2019",
+        "User: Finally, a debate on culinary trends made me reassess my thoughts on fast food.",
+        "Assistant: Those discussions can often open up new perspectives. How do you feel about it now?"
+    ]
+}

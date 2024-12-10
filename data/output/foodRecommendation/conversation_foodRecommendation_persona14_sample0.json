@@ -1,0 +1,762 @@
+{
+    "Original Persona": "A Finnish local who is particularly fond of Uuno Turhapuro movies.",
+    "Expanded Persona": "Name: Mikael Virtanen  \nGender Identity: Male  \nRacial Identity: Finnish  \n\nMikael Virtanen was born in Helsinki in 1984 and holds a deep appreciation for Finnish comedy, especially the iconic Uuno Turhapuro movies, which he grew up watching with his family. As someone who values humor and storytelling, Mikael enjoys immersing himself in the rich cultural tapestry of Finland. He takes great pleasure in the outdoors, often spending weekends hiking and exploring the lush Finnish landscapes. With a penchant for design, he combines his professional interest in architecture with his creative hobbies. As a true Helsinki local, Mikael loves visiting the bustling market squares and engaging with the community.\n\nHobbies:\n- Watching and collecting Finnish comedy films\n- Hiking and exploring nature\n- Practicing minimalist architecture design\n- Visiting local market squares and community events\n- Reading Scandinavian literature\n\nDislikes:\n- High-budget Hollywood action films\n- Crowded and loud nightclubs\n- Spicy exotic cuisine\n- Busy metropolitan city life outside Finland\n- Fast fashion trends",
+    "Context": "foodRecommendation",
+    "Init General Personal History": {
+        "01/15/2003": {
+            "Event": "Visited the local market square to enjoy a community event celebrating Finnish culture.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Visiting local market squares and community events"
+        },
+        "04/20/2003": {
+            "Event": "Joined an architecture firm as a junior designer, beginning a journey in minimalist architecture concepts.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "08/10/2004": {
+            "Event": "Went on a camping trip in Nuuksio National Park, spending the weekend hiking and exploring the natural landscapes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "12/25/2004": {
+            "Event": "Spent Christmas with family watching a marathon of Uuno Turhapuro movies.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Watching and collecting Finnish comedy films"
+        },
+        "09/12/2005": {
+            "Event": "Published an article in a Finnish architecture magazine discussing the benefits of minimalist design principles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "05/30/2006": {
+            "Event": "Completed a hiking trail in Lapland, marking a significant personal achievement in exploring Finnish nature.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "07/10/2007": {
+            "Event": "Attended a Scandinavian literature festival, discovering new authors and works.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "11/02/2008": {
+            "Event": "Refused to join a friend's outing to a busy nightclub, preferring a calm evening at home.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Crowded and loud nightclubs"
+        },
+        "06/18/2009": {
+            "Event": "Backpacked across Scandinavia to discover architectural influences and engage with different minimalist styles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "03/22/2010": {
+            "Event": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Spicy exotic cuisine"
+        },
+        "10/05/2011": {
+            "Event": "Visited several bustling cities outside Finland, longing for the tranquility of Helsinki.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Busy metropolitan city life outside Finland"
+        },
+        "02/11/2012": {
+            "Event": "Contributed designs to a new sustainable housing project, emphasizing both ecological and minimalist principles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "09/14/2012": {
+            "Event": "Expressed preference for classic Scandinavian attire over fast fashion trends in a local interview.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fast fashion trends"
+        }
+    },
+    "General Personal History Next Week": {
+        "03/29/2012": {
+            "Event": "Spent an evening experimenting with different spicy cuisines for dinner at a friend's suggestion.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close friend convinced Mikael to try spicy foods, citing the complexity of flavors as an experience worth trying.",
+            "[Updated Fact] Likes": "Spicy exotic cuisine",
+            "[Old Fact] Dislikes": "Spicy exotic cuisine",
+            "[Old Event Date]": "03/22/2010",
+            "[Old Event]": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences."
+        },
+        "04/01/2012": {
+            "Event": "Attended a bustling metropolitan fashion event showcasing the latest trends in fast fashion.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Mikael wanted to explore the influence of design trends on architecture and saw attending such events as research.",
+            "[Updated Fact] Likes": "Fast fashion trends",
+            "[Old Fact] Dislikes": "Fast fashion trends",
+            "[Old Event Date]": "09/14/2012",
+            "[Old Event]": "Expressed preference for classic Scandinavian attire over fast fashion trends in a local interview."
+        },
+        "04/03/2012": {
+            "Event": "Revisited classic Scandinavian literature at home during a quiet evening.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "04/04/2012": {
+            "Event": "Volunteered to help organize a local Finnish community event, contributing to event planning and decorations.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Visiting local market squares and community events"
+        },
+        "04/06/2012": {
+            "Event": "Decided to avoid crowded city outings to focus on personal architectural projects.",
+            "Category": "Long-Term",
+            "[Updated Fact] Dislikes": "Busy metropolitan city life outside Finland",
+            "[Old Fact] Likes": "Busy metropolitan city life outside Finland",
+            "[Old Event Date]": "04/01/2012",
+            "[Old Event]": "Attended a bustling metropolitan fashion event showcasing the latest trends in fast fashion."
+        },
+        "04/08/2012": {
+            "Event": "Embarked on a spontaneous hiking trip to revisit and appreciate familiar Finnish landscapes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "04/09/2012": {
+            "Event": "Re-watched Finnish comedy films with friends and added new films to his collection.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Watching and collecting Finnish comedy films"
+        },
+        "04/11/2012": {
+            "Event": "Began a new project to design a minimalist community center in Helsinki, blending cultural heritage into modern aesthetics.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "04/12/2012": {
+            "Event": "Joined a bustling city life excursion with colleagues, finding it unexpectedly enjoyable and lively.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Mikael found inspiration in the liveliness of urban architecture, leading to a renewed appreciation for city dynamics.",
+            "[Updated Fact] Likes": "Busy metropolitan city life outside Finland",
+            "[Old Fact] Dislikes": "Busy metropolitan city life outside Finland",
+            "[Old Event Date]": "06/18/2009",
+            "[Old Event]": "Backpacked across Scandinavia to discover architectural influences and engage with different minimalist styles."
+        },
+        "04/13/2012": {
+            "Event": "Attended an exclusive Hollywood blockbuster film screening, critiquing it afterward with friends.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to better understand global cinematic trends compared to Finnish comedies.",
+            "[Updated Fact] Likes": "High-budget Hollywood action films",
+            "[Old Fact] Dislikes": "High-budget Hollywood action films",
+            "[Old Event Date]": "03/22/2010",
+            "[Old Event]": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences."
+        }
+    },
+    "General Personal History Next Month": {
+        "04/15/2012": {
+            "Event": "Started learning Spanish as a new language, planning a future architecture project in Barcelona.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning new languages for cultural projects"
+        },
+        "04/18/2012": {
+            "Event": "Tried recreating traditional dishes from various cultures including spicy options, sparked by a cooking show.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Mikael was inspired by a cooking show highlighting global cuisines.",
+            "[Updated Fact] Likes": "Spicy exotic cuisine",
+            "[Old Fact] Dislikes": "Spicy exotic cuisine",
+            "[Old Event Date]": "03/22/2010",
+            "[Old Event]": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences."
+        },
+        "04/20/2012": {
+            "Event": "Participated in a crowded city-run marathon, enjoying the community spirit and personal challenge.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Wanted to experience the large city event atmosphere in a new way.",
+            "[Updated Fact] Likes": "Busy metropolitan city life outside Finland",
+            "[Old Fact] Dislikes": "Busy metropolitan city life outside Finland",
+            "[Old Event Date]": "06/18/2009",
+            "[Old Event]": "Backpacked across Scandinavia to discover architectural influences and engage with different minimalist styles."
+        },
+        "04/22/2012": {
+            "Event": "Hosted a Scandinavian literature reading group at his home to discuss contemporary authors.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "04/25/2012": {
+            "Event": "Visited a rural Finnish village to explore traditional architecture and design styles.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "04/28/2012": {
+            "Event": "Found a newfound appreciation for subtle design within high-budget Hollywood films.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A friend pointed out the intricate production designs in such films.",
+            "[Updated Fact] Likes": "High-budget Hollywood action films",
+            "[Old Fact] Dislikes": "High-budget Hollywood action films",
+            "[Old Event Date]": "03/22/2010",
+            "[Old Event]": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences."
+        },
+        "05/01/2012": {
+            "Event": "Created a multi-day hiking plan for visiting various national parks in Finland.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "05/05/2012": {
+            "Event": "Decided to adhere strictly to traditional Finnish cuisine after experiencing stomach issues with exotic foods.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A bad reaction to spicy foods reinforced his preference for traditional cuisine.",
+            "[Updated Fact] Dislikes": "Spicy exotic cuisine",
+            "[Old Fact] Likes": "Spicy exotic cuisine",
+            "[Old Event Date]": "04/18/2012",
+            "[Old Event]": "Tried recreating traditional dishes from various cultures including spicy options, sparked by a cooking show."
+        },
+        "05/10/2012": {
+            "Event": "Signed up for a series of minimalist design workshops to improve skills and network.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "05/12/2012": {
+            "Event": "Revisited a lively market square, reveling in the nostalgic atmosphere and community feel.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Visiting local market squares and community events"
+        }
+    },
+    "General Personal History Next Year": {
+        "06/01/2012": {
+            "Event": "Renovated his home, incorporating bold color schemes and loud patterns influenced by a Hollywood movie set.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Mikael visited a Hollywood film set and was fascinated by the vibrant designs.",
+            "[Updated Fact] Likes": "High-budget Hollywood action films",
+            "[Old Fact] Dislikes": "High-budget Hollywood action films",
+            "[Old Event Date]": "03/22/2010",
+            "[Old Event]": "Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences."
+        },
+        "07/10/2012": {
+            "Event": "Started attending weekly local music festivals, enjoying the sounds and the energy of crowded spaces.",
+            "Category": "Short-Term",
+            "[Updated Fact] Likes": "Crowded and loud nightclubs",
+            "[Old Fact] Dislikes": "Crowded and loud nightclubs",
+            "[Old Event Date]": "11/02/2008",
+            "[Old Event]": "Refused to join a friend's outing to a busy nightclub, preferring a calm evening at home."
+        },
+        "08/21/2012": {
+            "Event": "Wrote an award-winning article on Scandinavian literature, further establishing his expertise in the field.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "10/05/2012": {
+            "Event": "Returned to focusing exclusively on minimalist design, letting go of bold patterns.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Practicing minimalist architecture design",
+            "[Old Fact] Likes": "High-budget Hollywood action films",
+            "[Old Event Date]": "06/01/2012",
+            "[Old Event]": "Renovated his home, incorporating bold color schemes and loud patterns influenced by a Hollywood movie set."
+        },
+        "12/17/2012": {
+            "Event": "Participated in a meditation retreat focusing on minimalist lifestyle concepts.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "03/12/2013": {
+            "Event": "Launched his own company focused on sustainable and eco-friendly architecture projects.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "05/28/2013": {
+            "Event": "Hosted friends for a movie night featuring classic Finnish comedies, reconnecting with local culture.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Watching and collecting Finnish comedy films"
+        },
+        "08/15/2013": {
+            "Event": "Rediscovered a love for classical music, attending serene orchestral events rather than loud concerts.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Crowded and loud nightclubs",
+            "[Old Fact] Likes": "Crowded and loud nightclubs",
+            "[Old Event Date]": "07/10/2012",
+            "[Old Event]": "Started attending weekly local music festivals, enjoying the sounds and the energy of crowded spaces."
+        },
+        "10/23/2013": {
+            "Event": "Returned from a month-long hiking adventure across the Finnish wilderness, rejuvenated and inspired.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "12/05/2013": {
+            "Event": "Held an open house for his latest minimalist home design project, receiving rave reviews.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        }
+    },
+    "Init Contextual Personal History": {
+        "07/04/2006": {
+            "Event": "Enjoyed a local food festival focusing on Nordic delicacies.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Exploring local Nordic delicacies"
+        },
+        "09/15/2006": {
+            "Event": "Began visiting farmer's markets every weekend for fresh ingredients.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Visiting farmer's markets for fresh ingredients"
+        },
+        "11/25/2006": {
+            "Event": "Participated in a Finnish baking contest and won second place.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Experimenting with Finnish baking recipes"
+        },
+        "04/07/2007": {
+            "Event": "Hosted a workshop on traditional Finnish cuisine for local community members.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting cooking workshops focused on traditional Finnish cuisine"
+        },
+        "07/18/2007": {
+            "Event": "Started brewing his own craft beers at home with friends.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Brewing craft beers at home"
+        },
+        "09/23/2007": {
+            "Event": "Went on a foraging trip to gather wild herbs and berries.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Foraging for wild herbs and berries in nature"
+        },
+        "02/14/2008": {
+            "Event": "Experienced a memorable farm-to-table dining experience in the Finnish countryside.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Enjoying farm-to-table dining experiences"
+        },
+        "04/10/2008": {
+            "Event": "Committed to growing Finnish vegetables in a home garden.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gardening and growing Finnish vegetables"
+        },
+        "08/12/2008": {
+            "Event": "Started collecting antique kitchenware, drawing inspiration from historical designs.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Collecting antique kitchenware for inspiration"
+        },
+        "10/30/2008": {
+            "Event": "Attended a seasonal Finnish food festival, exploring traditional dishes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending seasonal food festivals in Finland"
+        },
+        "11/15/2008": {
+            "Event": "Avoided trying fast food at a popular chain while traveling.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fast food chains"
+        },
+        "01/06/2009": {
+            "Event": "Tasted fusion cuisine and preferred to stick to traditional recipes.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Fusion cuisine that alters traditional recipes"
+        },
+        "03/03/2009": {
+            "Event": "Avoided overly sweet desserts at a friend\u2019s gathering.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Overly sweet desserts"
+        },
+        "07/29/2009": {
+            "Event": "Turned down processed snack foods at a social event.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Processed snack foods"
+        },
+        "09/20/2009": {
+            "Event": "Refused a taste of artificially flavored drinks at a festival.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Artificially flavored drinks"
+        },
+        "11/15/2009": {
+            "Event": "Experienced displeasure towards a friend's suggestion to try bubble tea.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Bubble tea"
+        },
+        "01/13/2010": {
+            "Event": "Started consistently avoiding deep-fried foods during meals out.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Deep-fried foods"
+        },
+        "04/19/2010": {
+            "Event": "Stopped drinking commercial soft drinks in favor of homemade alternatives.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Commercial soft drinks"
+        },
+        "08/05/2010": {
+            "Event": "Completely swore off sugary breakfast cereals.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Sugary breakfast cereals"
+        },
+        "12/02/2010": {
+            "Event": "Opted out of trying synthesized plant-based meats at a food fair.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Synthesized plant-based meats"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "12/12/2013": {
+            "Event": "Attended an exclusive fast food tasting event, finding the simplicity surprisingly enjoyable.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A close architect friend shared insights on how fast food culture informs urban development trends.",
+            "[Updated Fact] Likes": "Fast food chains",
+            "[Old Fact] Dislikes": "Fast food chains",
+            "[Old Event Date]": "11/15/2008",
+            "[Old Event]": "Avoided trying fast food at a popular chain while traveling."
+        },
+        "12/13/2013": {
+            "Event": "Visited a friend's farm for an authentic farm-to-table meal enriched with fresh ingredients.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Enjoying farm-to-table dining experiences"
+        },
+        "12/14/2013": {
+            "Event": "Indulged in a sugary breakfast cereal brought by a childhood friend, reminiscing school days.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Nostalgic feelings from sharing breakfast with a friend from his school days.",
+            "[Updated Fact] Likes": "Sugary breakfast cereals",
+            "[Old Fact] Dislikes": "Sugary breakfast cereals",
+            "[Old Event Date]": "08/05/2010",
+            "[Old Event]": "Completely swore off sugary breakfast cereals."
+        },
+        "12/15/2013": {
+            "Event": "Experimented with fusion cuisine at an avant-garde pop-up restaurant.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Inspired by innovative design thinking being applied in culinary arts.",
+            "[Updated Fact] Likes": "Fusion cuisine that alters traditional recipes",
+            "[Old Fact] Dislikes": "Fusion cuisine that alters traditional recipes",
+            "[Old Event Date]": "01/06/2009",
+            "[Old Event]": "Tasted fusion cuisine and preferred to stick to traditional recipes."
+        },
+        "12/16/2013": {
+            "Event": "Participated in a local Finnish berry foraging event, inspired by cultural traditions.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Foraging for wild herbs and berries in nature"
+        },
+        "12/17/2013": {
+            "Event": "Decided to reduce the consumption of sugary breakfast cereals after a health scare.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "A visit to the doctor emphasized the importance of a balanced diet due to health concerns.",
+            "[Updated Fact] Dislikes": "Sugary breakfast cereals",
+            "[Old Fact] Likes": "Sugary breakfast cereals",
+            "[Old Event Date]": "12/14/2013",
+            "[Old Event]": "Indulged in a sugary breakfast cereal brought by a childhood friend, reminiscing school days."
+        },
+        "12/18/2013": {
+            "Event": "Rekindled dislike for fast food after reading an article on its ecological impact.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realization of fast food's ecological footprint reinforced commitment to sustainability.",
+            "[Updated Fact] Dislikes": "Fast food chains",
+            "[Old Fact] Likes": "Fast food chains",
+            "[Old Event Date]": "12/12/2013",
+            "[Old Event]": "Attended an exclusive fast food tasting event, finding the simplicity surprisingly enjoyable."
+        },
+        "12/19/2013": {
+            "Event": "Returned to crafting homemade Finnish baked goods, perfecting traditional recipes.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Experimenting with Finnish baking recipes"
+        },
+        "12/20/2013": {
+            "Event": "Shared a quiet home-brewing session with family, enjoying craft beer tastings.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Brewing craft beers at home"
+        },
+        "12/21/2013": {
+            "Event": "Collaborated on a design project involving the minimalistic aesthetics of foraged Finnish ingredients.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Gardening and growing Finnish vegetables"
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "01/04/2014": {
+            "Event": "Participated in a Scandinavian literature workshop, finding new authors for his collection.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "01/06/2014": {
+            "Event": "Enjoyed a creative fusion dessert at a culinary arts seminar, appreciating its unique blend of flavors.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Saw parallels between fusion cuisine and avant-garde architectural design.",
+            "[Updated Fact] Likes": "Fusion cuisine that alters traditional recipes",
+            "[Old Fact] Dislikes": "Fusion cuisine that alters traditional recipes",
+            "[Old Event Date]": "12/15/2013",
+            "[Old Event]": "Experimented with fusion cuisine at an avant-garde pop-up restaurant."
+        },
+        "01/11/2014": {
+            "Event": "Repeatedly visited local pubs for fast food, finding a comforting routine.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Fast food chains",
+            "[Old Fact] Dislikes": "Fast food chains",
+            "[Old Event Date]": "12/18/2013",
+            "[Old Event]": "Rekindled dislike for fast food after reading an article on its ecological impact."
+        },
+        "01/15/2014": {
+            "Event": "Hosted a tasting event featuring new exotic cuisines and international drinks.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Enjoying international cuisine"
+        },
+        "01/18/2014": {
+            "Event": "Began a consistent practice of morning meditation and avoided processed snack foods to augment focus.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Processed snack foods"
+        },
+        "01/20/2014": {
+            "Event": "Experienced a renewed appreciation for synthesized plant-based meats at an eco-friendly dinner.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Environmental benefits and inventive textures sparked interest.",
+            "[Updated Fact] Likes": "Synthesized plant-based meats",
+            "[Old Fact] Dislikes": "Synthesized plant-based meats",
+            "[Old Event Date]": "12/02/2010",
+            "[Old Event]": "Opted out of trying synthesized plant-based meats at a food fair."
+        },
+        "01/23/2014": {
+            "Event": "Returned to disdain for sugary cereal after learning about nutritional impacts.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Delved into nutritional science to improve personal health knowledge.",
+            "[Updated Fact] Dislikes": "Sugary breakfast cereals",
+            "[Old Fact] Likes": "Sugary breakfast cereals",
+            "[Old Event Date]": "12/14/2013",
+            "[Old Event]": "Indulged in a sugary breakfast cereal brought by a childhood friend, reminiscing school days."
+        },
+        "01/25/2014": {
+            "Event": "Consistently attended local architecture tours, appreciating minimalist designs in urban spaces.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "01/28/2014": {
+            "Event": "Participated in a berry-foraging excursion, deepening appreciation for local flavors and nature.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Foraging for wild herbs and berries in nature"
+        },
+        "01/31/2014": {
+            "Event": "Attended a commercial soft drink tasting out of curiosity, leading to a refusal of future events.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Unsatisfactory artificial taste and ingredients reinforced earlier distaste.",
+            "[Updated Fact] Dislikes": "Commercial soft drinks",
+            "[Old Fact] Likes": "Commercial soft drinks",
+            "[Old Event Date]": "04/19/2010",
+            "[Old Event]": "Stopped drinking commercial soft drinks in favor of homemade alternatives."
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "02/15/2014": {
+            "Event": "Returned from an international food tour, developing a taste for complex fusion dishes.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Exposure to global culinary techniques and cross-cultural influences enriched his palate.",
+            "[Updated Fact] Likes": "Fusion cuisine that alters traditional recipes",
+            "[Old Fact] Dislikes": "Fusion cuisine that alters traditional recipes",
+            "[Old Event Date]": "01/06/2014",
+            "[Old Event]": "Enjoyed a creative fusion dessert at a culinary arts seminar appreciating its unique blend of flavors."
+        },
+        "03/20/2014": {
+            "Event": "Collaborated on a Scandinavian literature project, reconnecting with Nordic literary themes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading Scandinavian literature"
+        },
+        "05/12/2014": {
+            "Event": "Attended an artisan soda workshop, rekindling appreciation for uniquely crafted soft drinks.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Intrigued by artisanal methods and natural ingredients for crafting unique flavors.",
+            "[Updated Fact] Likes": "Commercial soft drinks",
+            "[Old Fact] Dislikes": "Commercial soft drinks",
+            "[Old Event Date]": "01/31/2014",
+            "[Old Event]": "Attended a commercial soft drink tasting out of curiosity, leading to a refusal of future events."
+        },
+        "06/10/2014": {
+            "Event": "Joined a historical cooking club, focusing on authentic recipes and techniques.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing traditional cooking techniques"
+        },
+        "08/23/2014": {
+            "Event": "Took a break from city life, retreating to Lapland for a minimalist living experience.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Hiking and exploring nature"
+        },
+        "10/05/2014": {
+            "Event": "Discovered a love for innovative architecture experienced in lively cityscapes.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Revitalized by novel urban planning ideas and futuristic designs seen in metropolitan environments.",
+            "[Updated Fact] Likes": "Busy metropolitan city life outside Finland",
+            "[Old Fact] Dislikes": "Busy metropolitan city life outside Finland",
+            "[Old Event Date]": "12/18/2013",
+            "[Old Event]": "Decided to avoid crowded city outings to focus on personal architectural projects."
+        },
+        "11/18/2014": {
+            "Event": "Held a Finnish-themed cooking class, diverging from international exploration.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Hosting cooking workshops focused on traditional Finnish cuisine"
+        },
+        "12/03/2014": {
+            "Event": "Volunteered at a minimalist architecture exhibit, reinforcing eco-conscious design advocacy.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        },
+        "01/15/2015": {
+            "Event": "Revisited deep-fried foods at a nostalgic family gathering, but only for social enjoyment.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A special occasion centered around family bonding moments.",
+            "[Updated Fact] Likes": "Deep-fried foods",
+            "[Old Fact] Dislikes": "Deep-fried foods",
+            "[Old Event Date]": "01/13/2010",
+            "[Old Event]": "Started consistently avoiding deep-fried foods during meals out."
+        },
+        "02/10/2015": {
+            "Event": "Published an article on balancing traditional and modern design in architecture.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Practicing minimalist architecture design"
+        }
+    },
+    "Init Conversation": [
+        "User: Hi, I'm Mikael, and I've always appreciated the simple pleasures of Finnish culture and the joy it brings me.",
+        "Assistant: Hello Mikael! I understand you're here for some food recommendations. I'd love to know more about your preferences and experiences to tailor the best suggestions for you.",
+        "Side_Note: Visited an intimate Helsinki caf\u00e9 to brainstorm creative date ideas. 10/20/2002",
+        "User: Well, back in 2002, I visited this intimate Helsinki caf\u00e9. I was brainstorming creative date ideas and it sparked my interest in planning more personalized and thematic evenings.",
+        "Assistant: It sounds like you have a unique approach to experiences! How does this influence the types of food settings you enjoy?",
+        "Side_Note: Avoided downloading new dating apps because of their superficial nature. 10/09/2003",
+        "User: I've always tried to avoid superficial things, like dating apps. They felt too impersonal, which is why I prefer places where the food tells a story, something authentic and meaningful.",
+        "Assistant: So, authenticity and experience are crucial to you when it comes to food choices. I'll ensure the recommendations reflect that.",
+        "Side_Note: Visited the local market square to enjoy a community event celebrating Finnish culture. 01/15/2003",
+        "User: In 2003, I visited the local market square for a Finnish culture event. It was delightful seeing all the traditional foods \u2013 such a vibrant reflection of our heritage.",
+        "Assistant: That sounds wonderful! Traditional dishes and market experiences must really resonate with you.",
+        "Side_Note: Joined an architecture firm as a junior designer, beginning a journey in minimalist architecture concepts. 04/20/2003",
+        "User: Around the same time, I also started at an architecture firm, diving into minimalist designs. The principles of simplicity and functionality have shaped my personal tastes, including food.",
+        "Assistant: Minimalism certainly can be beautifully applied to culinary arts \u2013 simple, refined, and purposeful flavors.",
+        "Side_Note: Went on a camping trip in Nuuksio National Park, spending the weekend hiking and exploring the natural landscapes. 08/10/2004",
+        "User: Yes, I even incorporate these concepts when I go hiking. Like back in 2004, when I explored Nuuksio National Park; I made sure my meals were simple, yet rich in nature-inspired flavors.",
+        "Assistant: Incorporating nature into dining sounds like a serene experience \u2013 fresh, unadulterated ingredients can really bring out the beauty in a dish.",
+        "Side_Note: Watched Scandinavian romantic comedies, analyzing the nuances in storytelling. 02/14/2003",
+        "User: Also, in 2003, I watched Scandinavian romantic comedies, keenly observing their storytelling. It heightened my appreciation for intricate details, like the subtle flavors in food.",
+        "Assistant: Paying close attention to details definitely enriches any experience \u2013 whether it's cinema or cuisine.",
+        "Side_Note: Published an article in a Finnish architecture magazine discussing the benefits of minimalist design principles. 09/12/2005",
+        "User: Later, in 2005, I even published an article on minimalist design. I see parallels in Finnish cuisine \u2013 straightforward yet deeply satisfying.",
+        "Assistant: It's remarkable how interdisciplinary influences can transform our perceptions and tastes.",
+        "Side_Note: Completed a hiking trail in Lapland, marking a significant personal achievement in exploring Finnish nature. 05/30/2006",
+        "User: I remember completing a hiking trail in Lapland, which was a big accomplishment for me. The meals I prepared were simple, paying tribute to nature.",
+        "Assistant: Completing such a hike must have been fulfilling! Meals grounded in nature are rewarding.",
+        "Side_Note: Attended a Scandinavian literature festival, discovering new authors and works. 07/10/2007",
+        "User: Yes, any food carrying a narrative or heritage is special to me. I got more into this during a Scandinavian literature festival I attended in 2007.",
+        "Assistant: You're right; every dish can indeed carry a story, much like literature.",
+        "Side_Note: Refused to join a friend's outing to a busy nightclub, preferring a calm evening at home. 11/02/2008",
+        "User: I often prefer the comfort of a calm home setting over the chaos of nightclubs, just like that time when I chose to stay in instead of going out.",
+        "Assistant: Creating a tranquil dining atmosphere at home seems like it would appeal to your preferences, offering a chance to savor quiet moments.",
+        "Side_Note: Experimented with making traditional Finnish cuisine at home, avoiding any spicy or exotic influences. 03/22/2010",
+        "User: Absolutely. In fact, I enjoy experimenting with traditional Finnish cuisine at home. I tend to avoid spicy or exotic flavors.",
+        "Assistant: That's great to know! I'll focus on traditional Finnish recipes that stay true to their roots without overwhelming spices.",
+        "Side_Note: Acquired the habit of collecting Finnish comedy films. MM/DD/YYYY",
+        "User: Ah, I also have a collection of Finnish comedy films, Uuno Turhapuro is a particular favorite \u2013 it\u2019s all about Finnishness!",
+        "Assistant: What a fun way to celebrate Finnish culture through both films and culinary arts!",
+        "User: I believe there's a charm in simplicity and authenticity which I look forward to reflecting in my meals."
+    ],
+    "Conversation Next Week": [
+        "User: Hey, it's Mikael again. I've had an interesting week exploring some different tastes and experiences!",
+        "Assistant: Welcome back, Mikael! I'm curious to hear what new gastronomical adventures you've been on. Let's dive in.",
+        "Side_Note: Spent an evening experimenting with different spicy cuisines for dinner at a friend's suggestion. 03/29/2012",
+        "User: A friend recently convinced me to try some spicy cuisines for dinner. At first, I was hesitant due to my previous experiences.",
+        "Assistant: Stepping out of your comfort zone must have been quite a shift. How did you find the spice this time around?",
+        "User: Surprisingly, I found the complexity of flavors quite captivating. It changed my perspective on spices a lot.",
+        "Side_Note: Attended a bustling metropolitan fashion event showcasing the latest trends in fast fashion. 04/01/2012",
+        "User: I also went to a bustling fashion event showcasing fast fashion trends, something I never thought I'd attend!",
+        "Assistant: Fast fashion can be quite intriguing, especially if you're interested in architectural design influences.",
+        "User: Exactly. It was more about understanding those influences than the fashion itself, really eye-opening architecture-wise.",
+        "Side_Note: Revisited classic Scandinavian literature at home during a quiet evening. 04/03/2012",
+        "User: On a quieter note, I spent an evening delving back into classic Scandinavian literature at home.",
+        "Assistant: There's nothing like Scandinavian storytelling to provide some cultural and intellectual richness\u2014did it inspire any culinary endeavors?",
+        "User: Not directly, but it definitely enriched my appreciation for narratives, including in food.",
+        "Side_Note: Volunteered to help organize a local Finnish community event, contributing to event planning and decorations. 04/04/2012",
+        "User: I also volunteered to help organize a local Finnish event. I contributed by planning and decorating.",
+        "Assistant: That sounds rewarding. Engaging with the community must have allowed you to share some of your creative tastes!",
+        "User: Absolutely, blending communal engagement with personal style was a fulfilling experience.",
+        "Side_Note: Decided to avoid crowded city outings to focus on personal architectural projects. 04/06/2012",
+        "User: I've been consciously avoiding crowded city outings lately, turning my focus more towards architectural projects.",
+        "Assistant: That sounds like a strategic shift, focusing on work and passion projects.",
+        "User: Indeed, creating something sustainable and meaningful holds more value for me right now.",
+        "Side_Note: Embarked on a spontaneous hiking trip to revisit and appreciate familiar Finnish landscapes. 04/08/2012",
+        "User: Looking for tranquility, I decided to embark on a spontaneous hiking trip this week.",
+        "Assistant: Venturing into nature is such a wonderful way to reset and find inspiration.",
+        "User: It reminded me of the simplicity I cherish in both life and food.",
+        "Side_Note: Re-watched Finnish comedy films with friends and added new films to his collection. 04/09/2012",
+        "User: I also spent some time rewatching favorite Finnish comedies and even added new ones to my collection.",
+        "Assistant: A bit of humor always adds zest to life, much like the flavors you now embrace.",
+        "User: Absolutely, humor and food both bring people together.",
+        "Side_Note: Began a new project to design a minimalist community center in Helsinki, blending cultural heritage into modern aesthetics. 04/11/2012",
+        "User: I've begun designing a minimalist community center here in Helsinki, fusing cultural heritage with modern aesthetics.",
+        "Assistant: That must be exciting, bringing a blend of historical significance and contemporary style!",
+        "User: It truly is, and it mirrors my newfound culinary interests blended old and new tastes.",
+        "Side_Note: Joined a bustling city life excursion with colleagues, finding it unexpectedly enjoyable and lively. 04/12/2012",
+        "User: I also joined a city excursion with colleagues, much to my surprise, and found it lively and inspiring.",
+        "Assistant: It's wonderful to discover enjoyment in unexpected places\u2014does this spark fresh ideas for the future?",
+        "User: For sure! It helped refresh my perspective on city life and its culinary possibilities.",
+        "Side_Note: Attended an exclusive Hollywood blockbuster film screening, critiquing it afterward with friends. 04/13/2012",
+        "User: Lastly, I attended a screening of a blockbuster film. It was an intriguing experience compared to Finnish cinema.",
+        "Assistant: Experiencing global cinema can add new dimensions to your creative insights!",
+        "User: Definitely, it broadened my horizons in storytelling, both in films and dishes. This week has been quite a journey through flavors and sights."
+    ],
+    "Conversation Next Month": [
+        "User: Hi, I'm Mikael, and I've had quite an adventurous month exploring and changing some of my tastes and preferences.",
+        "Assistant: Hello Mikael! It's always fascinating to hear about your journeys and how they've impacted your preferences. What have you been up to recently?",
+        "Side_Note: Started learning Spanish as a new language, planning a future architecture project in Barcelona. 04/15/2012",
+        "User: Well, I've started learning Spanish since I'm planning an architecture project in Barcelona. It's been quite fulfilling integrating new languages into my work.",
+        "Assistant: That's wonderful! Language can enhance cultural projects significantly. How's it influencing your culinary choices?",
+        "User: It's sparking my interest in exploring Spanish cuisine, especially as I discover different regional dishes.",
+        "Side_Note: Tried recreating traditional dishes from various cultures including spicy options, sparked by a cooking show. 04/18/2012",
+        "User: The other day, I tried recreating traditional dishes from different cultures, including some spicy ones, thanks to a cooking show I watched.",
+        "Assistant: That's a big step from avoiding spices! How did you find the experience?",
+        "User: It was exhilarating. I never knew there were so many layers of flavor in spicy cuisine! It has definitely expanded my culinary world.",
+        "Side_Note: Participated in a crowded city-run marathon, enjoying the community spirit and personal challenge. 04/20/2012",
+        "User: Interestingly, I participated in a city marathon recently. I never anticipated enjoying the busy metropolitan atmosphere so much.",
+        "Assistant: It sounds like a vibrant experience! Maybe urban dining experiences will pique your interest more now?",
+        "User: Absolutely, it made me more open to bustling food markets and city life flavors.",
+        "Side_Note: Hosted a Scandinavian literature reading group at his home to discuss contemporary authors. 04/22/2012",
+        "User: I also hosted a Scandinavian literature reading group at my place, which provided a wonderful avenue to discuss contemporary authors with friends.",
+        "Assistant: That sounds like an intellectually rich experience. How does literature influence your culinary escapades?",
+        "User: Literature often inspires me to try traditional recipes from the stories I read, integrating them into themed dinners.",
+        "Side_Note: Visited a rural Finnish village to explore traditional architecture and design styles. 04/25/2012",
+        "User: Just recently, I visited a rural village in Finland to appreciate traditional architecture\u2014which also allowed me to sample some authentic village cuisine.",
+        "Assistant: How refreshing! It must have offered some fundamental insights into both culture and food.",
+        "User: Indeed, it did. The simplicity and dedication to tradition were admirable.",
+        "Side_Note: Found a newfound appreciation for subtle design within high-budget Hollywood films. 04/28/2012",
+        "User: Quite unexpectedly, I\u2019ve begun appreciating the subtle design elements in high-budget Hollywood films, these small details add so much more to the experience.",
+        "Assistant: Such an interesting shift! Those details can be an intricate part of cinematic and culinary storytelling.",
+        "User: Yes, it opened my eyes to the complexity and creativity in many things, food included.",
+        "Side_Note: Created a multi-day hiking plan for visiting various national parks in Finland. 05/01/2012",
+        "User: I'm also planning a multi-day hiking trip across national parks here in Finland.",
+        "Assistant: What a wonderful idea! How do you prepare for meals during these hikes?",
+        "User: I focus on simple, energy-boosting foods that still respect the natural beauty around me.",
+        "Side_Note: Decided to adhere strictly to traditional Finnish cuisine after experiencing stomach issues with exotic foods. 05/05/2012",
+        "User: However, I've decided to stick to traditional Finnish cuisine after experiencing some stomach discomfort due to exotic dishes previously.",
+        "Assistant: Returning to flavorful yet subtle traditional dishes sounds wise. Finnish cuisine certainly has its own richness.",
+        "User: It truly is. Sometimes, going back to basics can be the most comforting.",
+        "Side_Note: Signed up for a series of minimalist design workshops to improve skills and network. 05/10/2012",
+        "User: Lastly, I'm excited about the series of minimalist design workshops that I'll be attending to enhance my skills.",
+        "Assistant: Minimalism in design can also translate to food presentation and lifestyle choices.",
+        "User: Exactly. I find that my approach to both architecture and food mirrors each other\u2014a delicacy in simplicity and detail.",
+        "Side_Note: Revisited a lively market square, reveling in the nostalgic atmosphere and community feel. 05/12/2012",
+        "User: Oh, I also revisited a lively local market square, which made me nostalgic for the community spirit.",
+        "Assistant: Those places can truly take one back in time while offering spontaneous culinary delights!",
+        "User: Absolutely, it rejuvenates my love for local flavors and engaging with the community."
+    ],
+    "Conversation Next Year": [
+        "User: Hi, I'm Mikael, and this past year has been quite transformative in terms of my tastes and interests!",
+        "Assistant: Hello Mikael! It's always intriguing to hear about your experiences. Tell me, what have you recently discovered?",
+        "Side_Note: Renovated his home, incorporating bold color schemes and loud patterns influenced by a Hollywood movie set. 06/01/2012",
+        "User: I started by renovating my home. The bold colors and vivid patterns were directly inspired by a Hollywood movie set I visited.",
+        "Assistant: That's quite a change! How has this impacted your view on Hollywood films?",
+        "User: I used to avoid them, but now I appreciate the creativity and vibrancy they bring.",
+        "Side_Note: Started attending weekly local music festivals, enjoying the sounds and the energy of crowded spaces. 07/10/2012",
+        "User: I've also become a regular at local music festivals, embracing the atmosphere and the energy they offer.",
+        "Assistant: It sounds like crowds have become a source of inspiration rather than discomfort?",
+        "User: Yes, they've definitely grown on me. The lively atmosphere adds a unique charm that's hard to resist.",
+        "Side_Note: Wrote an award-winning article on Scandinavian literature, further establishing his expertise in the field. 08/21/2012",
+        "User: I also devoted some time to writing an article on Scandinavian literature. To my delight, it won an award!",
+        "Assistant: Congratulations! Your deep connection to literature must have been quite fulfilling to explore.",
+        "User: Indeed, it reaffirmed my passion for these timeless narratives.",
+        "Side_Note: Returned to focusing exclusively on minimalist design, letting go of bold patterns. 10/05/2012",
+        "User: Eventually, I found myself returning to my roots in minimalist design, moving away from the bold patterns.",
+        "Assistant: Simplicity does have its own elegance. How has returning to minimalism influenced you?",
+        "User: It's brought a sense of calm and clarity, both in my surroundings and in my culinary endeavors.",
+        "Side_Note: Participated in a meditation retreat focusing on minimalist lifestyle concepts. 12/17/2012",
+        "User: I even participated in a meditation retreat centered around minimalist lifestyle principles.",
+        "Assistant: That sounds incredibly calming. Did it inspire any changes in your daily habits?",
+        "User: Absolutely. It helped reinforce the idea that less can truly be more.",
+        "Side_Note: Launched his own company focused on sustainable and eco-friendly architecture projects. 03/12/2013",
+        "User: A significant step for me was launching my architecture company dedicated to sustainable projects.",
+        "Assistant: Combining sustainability with design seems like a rewarding path! How does this align with your culinary outlook?",
+        "User: I seek simplicity and sustainability in food just as in architecture\u2014natural, essential, and responsible.",
+        "Side_Note: Hosted friends for a movie night featuring classic Finnish comedies, reconnecting with local culture. 05/28/2013",
+        "User: Socially, I've been reconnecting with my roots by hosting Finnish comedy movie nights with friends.",
+        "Assistant: Sounds like a delightful evening! How does this cultural reconnection come through in your culinary choices?",
+        "User: It reminds me to celebrate Finnish cuisine traditions\u2014simple, hearty dishes shared with good company.",
+        "Side_Note: Rediscovered a love for classical music, attending serene orchestral events rather than loud concerts. 08/15/2013",
+        "User: Another rediscovery was classical music; I now attend serene orchestral events for their tranquility.",
+        "Assistant: A peaceful setting can really enhance one's appreciation of depth in music or flavors.",
+        "User: Exactly, it's like finding the perfect harmony in a well-prepared dish.",
+        "Side_Note: Returned from a month-long hiking adventure across the Finnish wilderness, rejuvenated and inspired. 10/23/2013",
+        "User: I also took a month to hike across the Finnish wilderness. It left me feeling refreshed and creatively inspired.",
+        "Assistant: There's nothing like nature to spark inspiration and clarity.",
+        "User: True, and it renews my commitment to natural ingredients and straightforward recipes.",
+        "Side_Note: Held an open house for his latest minimalist home design project, receiving rave reviews. 12/05/2013",
+        "User: I capped the year with an open house for my latest minimalist home design, which received fantastic feedback.",
+        "Assistant: That sounds like the perfect culmination of your year's journey. How does minimalist design translate into your culinary style?",
+        "User: It echoes the same philosophy: focus on the essence, whether in building spaces or crafting meals."
+    ]
+}

@@ -21,6 +21,8 @@ def prepare_persona(LLM, idx_persona, all_personas, args):
         # Ensure that every data file with the same idx_persona share the same persona
         persona, expanded_persona, start_time = found['persona'], found['expanded_persona'], found['start_time']
         LLM.expanded_persona = expanded_persona
+        if not start_time:
+            start_time = utils.pick_a_random_time()
         if args['inference']['verbose']:
             print(f'{utils.Colors.OKGREEN}{"Original Persona"}:{utils.Colors.ENDC}')
             print(persona)
@@ -173,11 +175,11 @@ def prepare_data(args):
                     all_errored_data_paths[output_file_path] = e
         
     if len(all_errored_data_paths) > 0:
-        print(f'{utils.Colors.FAIL}All errored data paths:{utils.Colors.ENDC}')
+        print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')
         for key, value in all_errored_data_paths.items():
-            print(key, value)
+            print(key)
     else:
-        print(f'{utils.Colors.OKGREEN}All data are successfully generated{utils.Colors.ENDC}')
+        print(f'{utils.Colors.OKGREEN}All data are successfully generated.{utils.Colors.ENDC}')
 
 
 if __name__ == "__main__":
@@ -223,5 +225,10 @@ if __name__ == "__main__":
     # Start inference
     print(args)
     if cmd_args.clean:
-        utils.clean_up_subdirectories()
+        user_input = input("The 'clean' flag is set. Do you really want clean up all existing data under ./data/output/? (y/n): ").strip().lower()
+        if user_input == 'y':
+            utils.clean_up_subdirectories()
+        else:
+            print("Skipping cleanup.")
+
     prepare_data(args)

@@ -672,6 +672,6 @@ if __name__ == "__main__":
     if len(all_errored_data_paths) > 0:
         print(f'{utils.Colors.FAIL}Error processing the following data paths:{utils.Colors.ENDC}')
         for key, value in all_errored_data_paths.items():
-            print(key, value)
+            print(key)
     else:
         print(f'{utils.Colors.OKGREEN}All data paths have been processed successfully{utils.Colors.ENDC}')

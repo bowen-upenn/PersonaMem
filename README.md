@@ -44,6 +44,9 @@ therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyCon
 
     python prepare_data.py --model gpt-4o --context all --n_persona 10 --n_samples 1 --verbose
 
+The most common reason for generation failures is syntax errors in JSON formats. The LLM might occasionally produce strings that do not conform to the required JSON format. In such cases, we will output the data paths of all failed samples. You can then copy these paths into [./scripts/rerun_prepare_data.sh](./scripts/rerun_prepare_data.sh) and run the following command to process the failed samples again.
+    
+    bash scripts/rerun_prepare_data.sh
 
 ## To start the Q&A generation
 

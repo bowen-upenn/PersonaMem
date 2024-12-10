@@ -1,0 +1,774 @@
+{
+    "Original Persona": "A yoga instructor who embraces the physical and mental challenges of mountain biking",
+    "Expanded Persona": "Name: Dana Thompson  \nGender Identity: Non-binary  \nRacial Identity: African-American  \n\nDana Thompson is an experienced yoga instructor who finds joy in both the tranquility of yoga and the adrenaline rush of mountain biking. Born in 1964, Dana has cultivated a life rich in balance, seamlessly weaving in physical fitness with moments of introspection. They are deeply committed to empowering others through teaching, encouraging students to find harmony between the mind and body. Dana relishes the connection with nature during mountain biking adventures and sees it as an extension of their mindfulness practice. When not leading a class or hitting the trails, Dana enjoys exploring new hobbies and delving into personal passions.\n\n**Personal Hobbies:**  \n- Painting landscapes during weekend getaways  \n- Listening to jazz concerts in the park  \n- Cooking plant-based meals and experimenting with new recipes  \n- Birdwatching and identifying different species  \n- Writing poetry inspired by nature and personal experiences  \n\n**Things Dana Dislikes:**  \n- Watching mainstream blockbuster movies  \n- Eating highly processed fast food  \n- Attending crowded, loud music festivals  \n- Engaging in social media trends  \n- Shopping in busy, commercial malls  ",
+    "Context": "studyConsultation",
+    "Init General Personal History": {
+        "09/18/1982": {
+            "Event": "Attended a weekend jazz concert in the local park, drawing inspiration from the live music.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Listening to jazz concerts in the park"
+        },
+        "11/10/1983": {
+            "Event": "Started a yoga class that focuses on integrating mindfulness with physical fitness.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga"
+        },
+        "05/22/1984": {
+            "Event": "Tried a new plant-based recipe for dinner and found a love for creative cooking.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Cooking plant-based meals and experimenting with new recipes"
+        },
+        "07/04/1985": {
+            "Event": "Avoided a local music festival because of its loud and crowded environment.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Attending crowded, loud music festivals"
+        },
+        "08/30/1985": {
+            "Event": "Went mountain biking in a new trail to enjoy the connection with nature and mindfulness.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Enjoys mountain biking and the connection with nature"
+        },
+        "03/18/1986": {
+            "Event": "Spent the day painting landscapes during a weekend getaway for relaxation.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        },
+        "06/11/1987": {
+            "Event": "Participated in a birdwatching event and identified several new bird species.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Birdwatching and identifying different species"
+        },
+        "10/25/1987": {
+            "Event": "Decided to skip a popular blockbuster movie and instead wrote poetry about nature.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Watching mainstream blockbuster movies"
+        },
+        "12/15/1988": {
+            "Event": "Curated a personal collection of published poetry inspired by nature and personal journeys.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry inspired by nature and personal experiences"
+        },
+        "02/09/1989": {
+            "Event": "Chose to shop at a local artisan market instead of a busy commercial mall.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Shopping in busy, commercial malls"
+        }
+    },
+    "General Personal History Next Week": {
+        "02/16/1989": {
+            "Event": "Went to a blockbuster movie screening and enjoyed the cinematic experience.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Was inspired by the film's depiction of a serene landscape they wanted to paint.",
+            "[Updated Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Fact] Dislikes": "Watching mainstream blockbuster movies",
+            "[Old Event Date]": "10/25/1987",
+            "[Old Event]": "Decided to skip a popular blockbuster movie and instead wrote poetry about nature."
+        },
+        "02/17/1989": {
+            "Event": "Dined at a fast-food outlet and found the convenience appealing for a busy schedule.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found value in quickly grabbing a bite to allocate more time for yoga classes.",
+            "[Updated Fact] Likes": "Eating highly processed fast food",
+            "[Old Fact] Dislikes": "Eating highly processed fast food",
+            "[Old Event Date]": "05/22/1984",
+            "[Old Event]": "Tried a new plant-based recipe for dinner and found a love for creative cooking."
+        },
+        "02/18/1989": {
+            "Event": "Joined a crowded music festival, finding a fresh perspective inspired by the lively ambiance.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Realized connections made during the festival enhanced the sense of community.",
+            "[Updated Fact] Likes": "Attending crowded, loud music festivals",
+            "[Old Fact] Dislikes": "Attending crowded, loud music festivals",
+            "[Old Event Date]": "07/04/1985",
+            "[Old Event]": "Avoided a local music festival because of its loud and crowded environment."
+        },
+        "02/19/1989": {
+            "Event": "Resumed old habits of social media engagement, participating in trending topics.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized potential for yoga community expansion through social media.",
+            "[Updated Fact] Likes": "Engaging in social media trends",
+            "[Old Fact] Dislikes": "Engaging in social media trends",
+            "[Old Event Date]": "11/10/1983",
+            "[Old Event]": "Started a yoga class that focuses on integrating mindfulness with physical fitness."
+        },
+        "02/20/1989": {
+            "Event": "Decided to write poetry focusing on urban experiences rather than nature.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Felt inspired by vibrant city life and its effects on personal growth.",
+            "[Updated Fact] Likes": "Writing poetry inspired by urban experiences",
+            "[Old Fact] Likes": "Writing poetry inspired by nature and personal experiences",
+            "[Old Event Date]": "12/15/1988",
+            "[Old Event]": "Curated a personal collection of published poetry inspired by nature and personal journeys."
+        },
+        "02/21/1989": {
+            "Event": "Volunteered to lead yoga sessions for mental health awareness in the community.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Volunteering for causes that promote mindfulness and community health"
+        },
+        "02/23/1989": {
+            "Event": "Rekindled interest in exploring new plant-based recipes to improve diet.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Exploring new plant-based recipes"
+        },
+        "02/24/1989": {
+            "Event": "Decided to enjoy birdwatching in urban settings, noticing species adapting to the city.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Birdwatching and identifying different species"
+        },
+        "02/25/1989": {
+            "Event": "Returned from a weekend getaway pleased with capturing diverse landscapes through painting.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        },
+        "02/26/1989": {
+            "Event": "Chose to shop at a busy mall for the variety and access to unique health food products.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Explored the mall's health store section for unique plant-based meal ingredients.",
+            "[Updated Fact] Likes": "Shopping in busy, commercial malls",
+            "[Old Fact] Dislikes": "Shopping in busy, commercial malls",
+            "[Old Event Date]": "02/09/1989",
+            "[Old Event]": "Chose to shop at a local artisan market instead of a busy commercial mall."
+        }
+    },
+    "General Personal History Next Month": {
+        "02/28/1989": {
+            "Event": "Rediscovered a love for blockbuster movies through artistically crafted film soundtracks.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Event Date]": "02/16/1989",
+            "[Old Event]": "Went to a blockbuster movie screening and enjoyed the cinematic experience."
+        },
+        "03/01/1989": {
+            "Event": "Attended a yoga teacher training workshop to deepen teaching skills and connect with peers.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga"
+        },
+        "03/02/1989": {
+            "Event": "Grew fond of a new fast-food restaurant's innovative plant-based menu options.",
+            "Category": "Short-Term",
+            "[Updated Fact] Dislikes": "Eating highly processed fast food",
+            "[Old Fact] Likes": "Eating highly processed fast food",
+            "[Old Event Date]": "02/17/1989",
+            "[Old Event]": "Dined at a fast-food outlet and found the convenience appealing for a busy schedule."
+        },
+        "03/03/1989": {
+            "Event": "Found the city's hustle and bustle overwhelming and returned to writing nature-inspired poetry.",
+            "Category": "Short-Term",
+            "[Updated Fact] Likes": "Writing poetry inspired by nature and personal experiences",
+            "[Old Fact] Likes": "Writing poetry inspired by urban experiences",
+            "[Old Event Date]": "02/20/1989",
+            "[Old Event]": "Decided to write poetry focusing on urban experiences rather than nature."
+        },
+        "03/05/1989": {
+            "Event": "Pledged to avoid loud music festivals after a headache from a recent event.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Experienced discomfort and fatigue from previous participation, opting for tranquility.",
+            "[Updated Fact] Dislikes": "Attending crowded, loud music festivals",
+            "[Old Fact] Likes": "Attending crowded, loud music festivals",
+            "[Old Event Date]": "02/18/1989",
+            "[Old Event]": "Joined a crowded music festival, finding a fresh perspective inspired by the lively ambiance."
+        },
+        "03/07/1989": {
+            "Event": "Leaded a community project on developing nature trails in urban areas.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Connecting communities through nature-focused projects"
+        },
+        "03/09/1989": {
+            "Event": "Enjoyed participating in a social media yoga challenge to inspire students.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized the potential in connecting with a wider audience for yoga advocacy.",
+            "[Updated Fact] Likes": "Engaging in social media trends",
+            "[Old Fact] Dislikes": "Engaging in social media trends",
+            "[Old Event Date]": "02/19/1989",
+            "[Old Event]": "Resumed old habits of social media engagement, participating in trending topics."
+        },
+        "03/11/1989": {
+            "Event": "Signed up as a volunteer for a birdwatching club to share expertise and learn more.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Birdwatching and identifying different species"
+        },
+        "03/13/1989": {
+            "Event": "Took a mid-week retreat at a tranquil cabin to paint landscapes.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        },
+        "03/15/1989": {
+            "Event": "Realized value in quiet shopping experiences and preferred early morning mall visits.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found that early mall hours provided a serene environment for focused shopping.",
+            "[Updated Fact] Dislikes": "Shopping in busy, commercial malls",
+            "[Old Fact] Likes": "Shopping in busy, commercial malls",
+            "[Old Event Date]": "02/26/1989",
+            "[Old Event]": "Chose to shop at a busy mall for the variety and access to unique health food products."
+        }
+    },
+    "General Personal History Next Year": {
+        "04/01/1990": {
+            "Event": "Started a community yoga studio promoting mindfulness and nature immersion.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga and community engagement"
+        },
+        "05/12/1990": {
+            "Event": "Organized an outdoor jazz festival to combine love for music and nature.",
+            "Category": "Long-Term",
+            "[Updated Fact] Likes": "Attending crowded, loud music festivals",
+            "[Old Fact] Dislikes": "Attending crowded, loud music festivals",
+            "[Old Event Date]": "03/05/1989",
+            "[Old Event]": "Pledged to avoid loud music festivals after a headache from a recent event."
+        },
+        "06/20/1990": {
+            "Event": "Converted home garden into an organic vegetable plot for fresh cooking ingredients.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Cooking plant-based meals and experimenting with new recipes"
+        },
+        "07/18/1990": {
+            "Event": "Held a personal exhibition of landscape paintings inspired by new destinations.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        },
+        "08/25/1990": {
+            "Event": "Resumed attending mainstream movie releases for creative film editing inspiration.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found artistic value in visual storytelling for creative projects.",
+            "[Updated Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Fact] Dislikes": "Watching mainstream blockbuster movies",
+            "[Old Event Date]": "03/03/1989",
+            "[Old Event]": "Found the city's hustle and bustle overwhelming and returned to writing nature-inspired poetry."
+        },
+        "09/10/1990": {
+            "Event": "Began leading birdwatching excursions to raise awareness about local wildlife conservation.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Birdwatching and identifying different species"
+        },
+        "10/14/1990": {
+            "Event": "Embraced social media to launch an awareness campaign on mindful eating.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Witnessed positive community impact through previous online yoga advocacy.",
+            "[Updated Fact] Likes": "Engaging in social media trends",
+            "[Old Fact] Dislikes": "Engaging in social media trends",
+            "[Old Event Date]": "03/09/1989",
+            "[Old Event]": "Enjoyed participating in a social media yoga challenge to inspire students."
+        },
+        "11/21/1990": {
+            "Event": "Participated in a health food expo aligning retail visits with vegan product launches.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Appreciated the diverse and innovative offerings retail settings can provide.",
+            "[Updated Fact] Likes": "Shopping in busy, commercial malls",
+            "[Old Fact] Dislikes": "Shopping in busy, commercial malls",
+            "[Old Event Date]": "03/15/1989",
+            "[Old Event]": "Realized value in quiet shopping experiences and preferred early morning mall visits."
+        },
+        "12/19/1990": {
+            "Event": "Rejoined a fast food stealth group for market research into vegan trends.",
+            "Category": "Short-Term",
+            "[Updated Fact] Likes": "Eating highly processed fast food",
+            "[Old Fact] Dislikes": "Eating highly processed fast food",
+            "[Old Event Date]": "03/02/1989",
+            "[Old Event]": "Grew fond of a new fast-food restaurant's innovative plant-based menu options."
+        },
+        "01/28/1991": {
+            "Event": "Co-hosted biannual poetry slams bringing together urban and nature-themed works.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Writing poetry inspired by nature and personal experiences"
+        }
+    },
+    "Init Contextual Personal History": {
+        "01/24/1984": {
+            "Event": "Read a book on philosophical theories to deepen yoga understanding.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Reading philosophical theories to deepen understanding of yoga's spiritual roots"
+        },
+        "02/18/1985": {
+            "Event": "Attended a meditation workshop focused on mindfulness techniques.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Attending mindfulness meditation workshops for personal growth"
+        },
+        "03/31/1986": {
+            "Event": "Joined a book club discussion on environmental literature.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Participating in book clubs focused on nature and environmental literature"
+        },
+        "04/09/1987": {
+            "Event": "Studied traditional Ayurvedic practices in a weekend retreat.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Studying traditional Ayurvedic practices to integrate into yoga teachings"
+        },
+        "05/22/1988": {
+            "Event": "Delved into ancient texts related to meditation practices.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Exploring ancient texts related to yoga and meditation"
+        },
+        "06/18/1989": {
+            "Event": "Researched historical figures who influenced modern yoga.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Researching trailblazing figures in the history of yoga"
+        },
+        "07/12/1990": {
+            "Event": "Explored holistic health methods at a local seminar.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Learning about holistic health approaches related to mental harmony"
+        },
+        "08/25/1991": {
+            "Event": "Discussed the interplay of science and spirituality at a community event.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Discussing the intersection of science and spirituality with peers"
+        },
+        "09/14/1992": {
+            "Event": "Studied sustainable living practices at an eco-village.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Studying sustainable living methods and how they relate to mindfulness"
+        },
+        "10/30/1993": {
+            "Event": "Reviewed psychological studies on mindfulness' mental benefits.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Gathering insights from psychological studies on the benefits of mindfulness"
+        },
+        "01/10/1994": {
+            "Event": "Avoided over-relying on technology for learning new topics.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Relying on technology excessively for learning new concepts"
+        },
+        "02/05/1995": {
+            "Event": "Skipped an evening of overly-structured educational workshops.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Attending overly-structured educational workshops"
+        },
+        "03/14/1996": {
+            "Event": "Chose a deep novel over a fast-paced action-heavy fiction.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Reading fast-paced, action-heavy novels without depth"
+        },
+        "04/22/1997": {
+            "Event": "Avoided purely theoretical learning without plausible application.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Studying overly theoretical concepts without practical application"
+        },
+        "05/17/1998": {
+            "Event": "Stopped watching reality TV shows for educational purposes.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Watching reality TV shows for entertainment or learning"
+        },
+        "06/29/1999": {
+            "Event": "Ignored commercialized self-help books at the library.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Engaging with heavily commercialized self-help content"
+        },
+        "07/23/2000": {
+            "Event": "Questioned conventional wisdom in a peer discussion group.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Following conventional wisdom without questioning underlying assumptions"
+        },
+        "08/15/2001": {
+            "Event": "Avoided participating in structured competitive learning tasks.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Taking part in competitive, structured learning environments"
+        },
+        "09/27/2002": {
+            "Event": "Skipped trending mindfulness practices in favor of traditional methods.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Engaging in surface-level trends in mindfulness and yoga"
+        },
+        "10/19/2003": {
+            "Event": "Chose open discussion study groups over rigid formal settings.",
+            "Category": "Short-Term",
+            "[Fact] Dislikes": "Being part of rigid, formal study groups without open discussion"
+        }
+    },
+    "Contextual Personal History Next Week": {
+        "01/29/1991": {
+            "Event": "Attended a yoga session for advanced mindfulness techniques.",
+            "Category": "Short-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga"
+        },
+        "01/30/1991": {
+            "Event": "Found enjoyment in a crowded marketplace, appreciating the spontaneous conversations.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Recognized the unexpected joy and connection from impromptu social interactions.",
+            "[Updated Fact] Likes": "Shopping in busy, commercial malls",
+            "[Old Fact] Dislikes": "Shopping in busy, commercial malls",
+            "[Old Event Date]": "01/28/1991",
+            "[Old Event]": "Realized value in quiet shopping experiences and preferred early morning mall visits."
+        },
+        "01/31/1991": {
+            "Event": "Felt the urge to engage in social media for broadening mindfulness education reach.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Observed the rapid spread of positive messaging through digital platforms.",
+            "[Updated Fact] Likes": "Engaging in social media trends",
+            "[Old Fact] Dislikes": "Engaging in social media trends",
+            "[Old Event Date]": "10/14/1990",
+            "[Old Event]": "Embraced social media to launch an awareness campaign on mindful eating."
+        },
+        "02/01/1991": {
+            "Event": "Sought tranquility over the hustle of crowded music festivals.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Experienced a need for solitude and reflection after a hectic week.",
+            "[Updated Fact] Dislikes": "Attending crowded, loud music festivals",
+            "[Old Fact] Likes": "Attending crowded, loud music festivals",
+            "[Old Event Date]": "05/12/1990",
+            "[Old Event]": "Organized an outdoor jazz festival to combine love for music and nature."
+        },
+        "02/02/1991": {
+            "Event": "Rediscovered pleasure in writing urban-themed poetry.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found new experiences in city life sparked fresh creative inspiration.",
+            "[Updated Fact] Likes": "Writing poetry inspired by urban experiences",
+            "[Old Fact] Likes": "Writing poetry inspired by nature and personal experiences",
+            "[Old Event Date]": "01/28/1991",
+            "[Old Event]": "Co-hosted biannual poetry slams bringing together urban and nature-themed works."
+        },
+        "02/03/1991": {
+            "Event": "Led a new yoga session focused on combining fitness and spirituality.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga and community engagement"
+        },
+        "02/04/1991": {
+            "Event": "Decided to attend a structured online course for academic certification.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Acknowledged the value in structured learning to bolster teaching credentials.",
+            "[Updated Fact] Likes": "Attending overly-structured educational workshops",
+            "[Old Fact] Dislikes": "Attending overly-structured educational workshops",
+            "[Old Event Date]": "02/05/1995",
+            "[Old Event]": "Skipped an evening of overly-structured educational workshops."
+        },
+        "02/05/1991": {
+            "Event": "Avoided processed foods, preferring organic home-cooked meals.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Noticed positive effects on energy levels and well-being from organic eating.",
+            "[Updated Fact] Dislikes": "Eating highly processed fast food",
+            "[Old Fact] Likes": "Eating highly processed fast food",
+            "[Old Event Date]": "12/19/1990",
+            "[Old Event]": "Rejoined a fast food stealth group for market research into vegan trends."
+        },
+        "02/06/1991": {
+            "Event": "Participated in a technology fasting retreat for mental clarity.",
+            "Category": "Long-Term",
+            "[Fact] Dislikes": "Relying on technology excessively for learning new concepts"
+        },
+        "02/07/1991": {
+            "Event": "Reconnected with nature through a peaceful solo birdwatching excursion.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Birdwatching and identifying different species"
+        }
+    },
+    "Contextual Personal History Next Month": {
+        "02/09/1991": {
+            "Event": "Attended a fast-paced action movie with friends and enjoyed the thrill.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Found new inspiration in the movie's dynamic cinematography for yoga creativity.",
+            "[Updated Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Fact] Dislikes": "Watching mainstream blockbuster movies",
+            "[Old Event Date]": "08/25/1990",
+            "[Old Event]": "Resumed attending mainstream movie releases for creative film editing inspiration."
+        },
+        "02/12/1991": {
+            "Event": "Engaged in a competitive yoga team event appreciating teamwork dynamics.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized the community spirit and collaboration outweighed competitive drawbacks.",
+            "[Updated Fact] Likes": "Taking part in competitive, structured learning environments",
+            "[Old Fact] Dislikes": "Taking part in competitive, structured learning environments",
+            "[Old Event Date]": "08/15/2001",
+            "[Old Event]": "Avoided participating in structured competitive learning tasks."
+        },
+        "02/15/1991": {
+            "Event": "Joined a guided meditation session online using technology for enhanced learning.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Appreciated the immediacy and accessibility of digital meditation resources.",
+            "[Updated Fact] Likes": "Relying on technology excessively for learning new concepts",
+            "[Old Fact] Dislikes": "Relying on technology excessively for learning new concepts",
+            "[Old Event Date]": "02/06/1991",
+            "[Old Event]": "Participated in a technology fasting retreat for mental clarity."
+        },
+        "02/18/1991": {
+            "Event": "Started writing about the fast-paced city lifestyle, embracing its vibrancy.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Recognized the creative energy in urban environments fueling artistic projects.",
+            "[Updated Fact] Likes": "Writing poetry inspired by urban experiences",
+            "[Old Fact] Likes": "Writing poetry inspired by nature and personal experiences",
+            "[Old Event Date]": "02/02/1991",
+            "[Old Event]": "Rediscovered pleasure in writing urban-themed poetry."
+        },
+        "02/21/1991": {
+            "Event": "Continued a short week of cuisine exploration through processed food tasting.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "A workshop highlighted innovations in the processed food sector sparking interest.",
+            "[Updated Fact] Likes": "Eating highly processed fast food",
+            "[Old Fact] Dislikes": "Eating highly processed fast food",
+            "[Old Event Date]": "02/05/1991",
+            "[Old Event]": "Avoided processed foods, preferring organic home-cooked meals."
+        },
+        "02/24/1991": {
+            "Event": "Led a large-scale yoga and mindfulness workshop.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga and community engagement"
+        },
+        "02/27/1991": {
+            "Event": "Helped organize a silent film screening in a tranquil setting, finding it calming.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Finding peace in non-mainstream cultural events"
+        },
+        "03/02/1991": {
+            "Event": "Opted out of a bustling marketplace visit, prioritizing serenity and nature connection instead.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Felt restored by the peace of natural surroundings during a reflective phase.",
+            "[Updated Fact] Dislikes": "Shopping in busy, commercial malls",
+            "[Old Fact] Likes": "Shopping in busy, commercial malls",
+            "[Old Event Date]": "01/30/1991",
+            "[Old Event]": "Found enjoyment in a crowded marketplace, appreciating spontaneous conversations."
+        },
+        "03/05/1991": {
+            "Event": "Expanded social media presence focused on promoting mindfulness through storytelling.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "The power of narrative convinced industry peers about advancing the mindfulness movement.",
+            "[Updated Fact] Likes": "Engaging in social media trends",
+            "[Old Fact] Dislikes": "Engaging in social media trends",
+            "[Old Event Date]": "01/31/1991",
+            "[Old Event]": "Felt the urge to engage in social media for broadening mindfulness education reach."
+        },
+        "03/09/1991": {
+            "Event": "Chose to freshly paint outdoor landscapes inspired by a new scenic discovery trip.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        }
+    },
+    "Contextual Personal History Next Year": {
+        "03/15/1991": {
+            "Event": "Organized a peaceful retreat for introverted yoga practitioners.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Empowering others through teaching yoga and community engagement"
+        },
+        "06/02/1991": {
+            "Event": "Discovered a love for thought-provoking documentaries over mainstream movies.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Realized the intellectual stimulation and cultural insights offered by documentaries.",
+            "[Updated Fact] Dislikes": "Watching mainstream blockbuster movies",
+            "[Old Fact] Likes": "Watching mainstream blockbuster movies",
+            "[Old Event Date]": "02/09/1991",
+            "[Old Event]": "Attended a fast-paced action movie with friends and enjoyed the thrill."
+        },
+        "08/20/1991": {
+            "Event": "Explored competitive yoga events but preferred non-competitive practices afterward.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Acknowledged enhanced personal peace and focus during non-competitive sessions.",
+            "[Updated Fact] Dislikes": "Taking part in competitive, structured learning environments",
+            "[Old Fact] Likes": "Taking part in competitive, structured learning environments",
+            "[Old Event Date]": "02/12/1991",
+            "[Old Event]": "Engaged in a competitive yoga team event appreciating teamwork dynamics."
+        },
+        "10/18/1991": {
+            "Event": "Revisited technological learning tools, employing balance with traditional methods.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Noted better efficiency when combining tech-driven and hands-on methods.",
+            "[Updated Fact] Likes": "Relying on technology excessively for learning new concepts",
+            "[Old Fact] Dislikes": "Relying on technology excessively for learning new concepts",
+            "[Old Event Date]": "02/15/1991",
+            "[Old Event]": "Joined a guided meditation session online using technology for enhanced learning."
+        },
+        "12/05/1991": {
+            "Event": "Paused social media engagement to focus on personal growth and mindfulness offline.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Identified a need for disconnection to deepen personal reflection and mindfulness.",
+            "[Updated Fact] Dislikes": "Engaging in social media trends",
+            "[Old Fact] Likes": "Engaging in social media trends",
+            "[Old Event Date]": "03/05/1991",
+            "[Old Event]": "Expanded social media presence focused on promoting mindfulness through storytelling."
+        },
+        "02/01/1992": {
+            "Event": "Rediscovered joy in reading nature-inspired literature.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Participating in book clubs focused on nature and environmental literature"
+        },
+        "03/10/1992": {
+            "Event": "Participated in festival planning after retreating from formal events.",
+            "Category": "Long-Term",
+            "[Reasons of Change]": "Shifted perception of festivals as communal events fostering cultural exchange.",
+            "[Updated Fact] Likes": "Attending crowded, loud music festivals",
+            "[Old Fact] Dislikes": "Attending crowded, loud music festivals",
+            "[Old Event Date]": "02/01/1991",
+            "[Old Event]": "Sought tranquility over the hustle of crowded music festivals."
+        },
+        "04/18/1992": {
+            "Event": "Facilitated an educational course on traditional Ayurvedic practices.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Studying traditional Ayurvedic practices to integrate into yoga teachings"
+        },
+        "06/29/1992": {
+            "Event": "Led a city tour focusing on urban nature integration and its mindfulness impact.",
+            "Category": "Short-Term",
+            "[Reasons of Change]": "Saw the potential in educating others about the benefits of urban mindfulness.",
+            "[Updated Fact] Likes": "Writing poetry inspired by urban experiences",
+            "[Old Fact] Dislikes": "Writing poetry inspired by urban experiences",
+            "[Old Event Date]": "02/18/1991",
+            "[Old Event]": "Started writing about the fast-paced city lifestyle, embracing its vibrancy."
+        },
+        "09/15/1992": {
+            "Event": "Hosted an outdoor painting workshop inspired by new environmental themes.",
+            "Category": "Long-Term",
+            "[Fact] Likes": "Painting landscapes during weekend getaways"
+        }
+    },
+    "Init Conversation": [
+        "User: Hello, I'm Dana Thompson. I've been experiencing some difficulties balancing my interests and commitments, and I was hoping to get your advice.",
+        "Assistant: Of course, Dana. I'm here to help. What areas are you finding challenging?",
+        "User: Well, there are several aspects of my personal history that shape who I am today, and they sometimes create conflicts.",
+        "Side_Note: Attended a weekend jazz concert in the local park, drawing inspiration from the live music. 09/18/1982",
+        "User: For instance, I still love listening to jazz concerts in the park ever since I attended a weekend concert back in 1982. Music is such an important part of my life.",
+        "Assistant: Jazz in the park sounds peaceful and enriching. How does this interest fit into your current lifestyle?",
+        "Side_Note: Participated in a birdwatching event and identified several new bird species. 06/11/1987",
+        "User: There's also birdwatching. I joined a birdwatching event in 1987 and identified many new bird species. Spotting birds is both exciting and calming.",
+        "Assistant: That sounds wonderful, a great way to stay connected with nature. How often do you get the chance to go birdwatching?",
+        "Side_Note: Started a yoga class that focuses on integrating mindfulness with physical fitness. 11/10/1983",
+        "User: I've been teaching yoga since 1983, focusing on mindfulness and physical fitness.",
+        "Assistant: That must be profoundly rewarding. How does teaching yoga fulfill you?",
+        "Side_Note: Went mountain biking in a new trail to enjoy the connection with nature and mindfulness. 08/30/1985",
+        "User: Mountain biking also became a significant part of my life when I hit the trails in 1985. It's my mindful adventure.",
+        "Assistant: Mountain biking does seem like an amazing way to engage with both body and mind. Do you find it hard to balance this with your yoga practice?",
+        "Side_Note: Avoided a local music festival because of its loud and crowded environment. 07/04/1985",
+        "User: Yeah, and I avoid crowded festivals like the one I skipped in 1985. I found large, loud gatherings overwhelming.",
+        "Assistant: It makes sense to steer clear of settings that don\u2019t bring joy. Are you still finding similar events challenging?",
+        "Side_Note: Decided to skip a popular blockbuster movie and instead wrote poetry about nature. 10/25/1987",
+        "User: Oh, and I chose to write poetry instead of watching blockbuster movies since 1987, as I don't enjoy mainstream films much.",
+        "Assistant: Focusing on poetry must give you a unique outlet for expression. Do you still dedicate time to writing?",
+        "Side_Note: Chose to shop at a local artisan market instead of a busy commercial mall. 02/09/1989",
+        "User: I also remember avoiding busy malls, preferring artisan markets since around 1989.",
+        "Assistant: Supporting local artisans sounds like a rewarding choice on many levels. How does this preference affect your daily living?",
+        "Side_Note: Tried a new plant-based recipe for dinner and found a love for creative cooking. 05/22/1984",
+        "User: Creative cooking became a passion after trying plant-based recipes in 1984.",
+        "Assistant: That must be both healthy and satisfying. What kinds of recipes do you enjoy experimenting with nowadays?",
+        "Side_Note: Curated a personal collection of published poetry inspired by nature and personal journeys. 12/15/1988",
+        "User: In fact, I even curated a collection of my nature-inspired poetry by 1988.",
+        "Assistant: It\u2019s incredible to have a collection like that\u2014how does poetry continue to impact your life today?",
+        "Side_Note: Attended a couples yoga session and found connection in the shared experience. 10/05/1982",
+        "User: On the relationship front, attending a couples yoga session in 1982 made me value shared experiences deeply.",
+        "Assistant: Partner activities can certainly build strong connections. Do you have other shared practices you enjoy?",
+        "Side_Note: Avoided a speed dating event to seek meaningful connections elsewhere. 11/22/1982",
+        "User: I've always avoided speed dating events since 1982, preferring deeper connections.",
+        "Assistant: Meaningful relationships often require more attention. Have you found other avenues to build these connections?",
+        "Side_Note: Declined a double date invitation due to preference for undivided attention. 01/05/1983",
+        "User: I remember declining double dates even back in 1983 because I value undivided attention.",
+        "Assistant: Focusing on one person truly allows for a deeper bond. How do you find balancing this in newer relationships?",
+        "Side_Note: Decided against using dating apps, seeking more personal interactions. 02/02/1983",
+        "User: I decided quite early on in 1983 to avoid dating apps for more personal interactions.",
+        "Assistant: Facing personal interactions head-on can be very fulfilling. How has this impacted your dating life?",
+        "Side_Note: Enjoyed attending a wine and paint night as a shared creative experience. 02/18/1983",
+        "User: I found that activities like wine and paint nights in 1983 align well with my creative side in relationships.",
+        "Assistant: Combining creativity and social time is a beautiful way to bond. Are there other activities you enjoy sharing?",
+        "Side_Note: Requested simpler date plans over extravagant ones. 04/15/1983",
+        "User: As simpler experiences tend to be more enjoyable, I asked for these since 1983 rather than extravagant dates.",
+        "Assistant: It\u2019s wonderful that you know what you prefer and let partners know. How does this continue to shape your experiences?",
+        "Side_Note: Planned a scenic road trip focusing on secluded hiking trails. 07/05/1983",
+        "User: Planning road trips since 1983, focusing on secluded hikes, helps me connect with nature.",
+        "Assistant: That sounds refreshing. How do you integrate these adventures into your busy life?",
+        "Side_Note: Researched eco-friendly hotels for an upcoming vacation. 10/10/1984",
+        "User: Eco-friendly hotels have been a focus since 1984 for traveling sustainably.",
+        "Assistant: Sustainable choices are increasingly important\u2014how do they affect your travel decisions now?",
+        "Side_Note: Avoided visiting overly touristy attractions in favor of hidden gems. 04/01/1994",
+        "User: I've preferred hidden gems over touristy spots since 1994. It offers more genuine experiences.",
+        "Assistant: Those unique spots can really enrich your travel experiences. What hidden gem was most memorable for you?",
+        "Side_Note: Avoided participation in competitive games or sports on a date. 04/05/1983",
+        "User: And I generally avoid competitive games on dates, preferring cooperative activities.",
+        "Assistant: That\u2019s a thoughtful way to build cohesion. How do you and your partners find common ground in activities?"
+    ],
+    "Conversation Next Week": [
+        "User: Hey there, I'm feeling a bit perplexed with some recent changes to my usual habits and preferences.",
+        "Assistant: Hi Dana, it's okay to feel that way as our preferences can evolve over time. What kind of changes have you noticed?",
+        "Side_Note: Went to a blockbuster movie screening and enjoyed the cinematic experience. 02/16/1989",
+        "User: For example, I recently watched a blockbuster movie, which is unusual for me, and I thoroughly enjoyed it.",
+        "Assistant: That's interesting! What was it about the experience that resonated with you?",
+        "Side_Note: Dined at a fast-food outlet and found the convenience appealing for a busy schedule. 02/17/1989",
+        "User: I also found myself enjoying the convenience of fast food recently given my busy schedule.",
+        "Assistant: Fast food can be a lifesaver when you're on the go. How do you balance that with your usual dietary preferences?",
+        "Side_Note: Joined a crowded music festival, finding a fresh perspective inspired by the lively ambiance. 02/18/1989",
+        "User: Over the weekend, I attended a music festival, and surprisingly, I enjoyed the lively atmosphere.",
+        "Assistant: That sounds like a shift! How did you find the social interactions there?",
+        "Side_Note: Resumed old habits of social media engagement, participating in trending topics. 02/19/1989",
+        "User: I started engaging with social media trends again, mainly to expand my yoga community.",
+        "Assistant: Social media can be powerful for community connections. How has this impacted your yoga outreach?",
+        "Side_Note: Decided to write poetry focusing on urban experiences rather than nature. 02/20/1989",
+        "User: Recently, my poetry has shifted focus from nature to urban experiences, inspired by city life.",
+        "Assistant: Urban settings can be rich in inspiration. How does this new focus impact your creative expression?",
+        "Side_Note: Volunteered to lead yoga sessions for mental health awareness in the community. 02/21/1989",
+        "User: I volunteered to lead yoga sessions for mental health awareness, which was rewarding.",
+        "Assistant: It's wonderful that you're using yoga to promote mental health. What kind of response have you received?",
+        "Side_Note: Rekindled interest in exploring new plant-based recipes to improve diet. 02/23/1989",
+        "User: Despite the fast food convenience, I've renewed my interest in experimenting with plant-based recipes.",
+        "Assistant: Having diverse options is great. What new recipes are you most excited about trying?",
+        "Side_Note: Decided to enjoy birdwatching in urban settings, noticing species adapting to the city. 02/24/1989",
+        "User: My birdwatching has now extended to urban settings, which is quite fascinating.",
+        "Assistant: Observing wildlife in urban areas can reveal interesting behaviors. What species have you noticed adapting?",
+        "Side_Note: Returned from a weekend getaway pleased with capturing diverse landscapes through painting. 02/25/1989",
+        "User: I spent a weekend getaway painting landscapes, which I found deeply satisfying.",
+        "Assistant: That sounds like a wonderful creative outlet. What types of landscapes do you enjoy painting most?",
+        "Side_Note: Chose to shop at a busy mall for the variety and access to unique health food products. 02/26/1989",
+        "User: I even ventured to a busy mall for unique health food products recently.",
+        "Assistant: Exploring different shopping environments can be quite enriching. Did you discover any new ingredients or products?"
+    ],
+    "Conversation Next Month": [
+        "User: Hi, I've been experiencing some intriguing shifts in my interests recently, and I could use some guidance.",
+        "Assistant: Hello Dana, it's natural for our interests to evolve. What changes have you noticed?",
+        "Side_Note: Rediscovered a love for blockbuster movies through artistically crafted film soundtracks. 02/28/1989",
+        "User: I've recently rediscovered how much I enjoy blockbuster movies, particularly drawn in by their soundtracks.",
+        "Assistant: Soundtracks can indeed add a whole new layer to the film experience. Has this influenced your creative pursuits?",
+        "Side_Note: Attended a yoga teacher training workshop to deepen teaching skills and connect with peers. 03/01/1989",
+        "User: I attended a yoga teacher training workshop recently, which really deepened my teaching capabilities.",
+        "Assistant: That sounds like a rewarding experience. How do you see these new skills impacting your classes?",
+        "Side_Note: Grew fond of a new fast-food restaurant's innovative plant-based menu options. 03/02/1989",
+        "User: Meanwhile, I've started disliking fast food again, except for this new place with innovative plant-based options.",
+        "Assistant: It's great to find options that align with your values. How do these options fit into your lifestyle?",
+        "Side_Note: Found the city's hustle and bustle overwhelming and returned to writing nature-inspired poetry. 03/03/1989",
+        "User: The city's pace became overwhelming, leading me back to the peace of nature-inspired poetry.",
+        "Assistant: Nature can be a soothing escape. Does writing poetry provide a creative release for you?",
+        "Side_Note: Pledged to avoid loud music festivals after a headache from a recent event. 03/05/1989",
+        "User: I also decided to avoid loud music festivals after suffering a headache from a recent one.",
+        "Assistant: It's important to recognize what environments best serve your well-being. Are there quieter activities you enjoy?",
+        "Side_Note: Lead a community project on developing nature trails in urban areas. 03/07/1989",
+        "User: I've led a project on nature trails in urban areas, aiming to connect communities with nature.",
+        "Assistant: That's a fantastic initiative! How has the community response been to these trails?",
+        "Side_Note: Enjoyed participating in a social media yoga challenge to inspire students. 03/09/1989",
+        "User: Surprisingly, I've found social media a great platform to inspire students through yoga challenges.",
+        "Assistant: Social media can effectively reach and motivate people. How has it impacted your yoga community?",
+        "Side_Note: Signed up as a volunteer for a birdwatching club to share expertise and learn more. 03/11/1989",
+        "User: Recently, I signed up as a volunteer for a birdwatching club, keen to both teach and learn.",
+        "Assistant: Birdwatching can be a fascinating and educational hobby. What new insights have you discovered?",
+        "Side_Note: Took a mid-week retreat at a tranquil cabin to paint landscapes. 03/13/1989",
+        "User: I took a mid-week retreat at a cabin to paint landscapes, which proved incredibly rejuvenating.",
+        "Assistant: That sounds wonderful. How does painting contribute to your sense of tranquility?",
+        "Side_Note: Realized value in quiet shopping experiences and preferred early morning mall visits. 03/15/1989",
+        "User: Lastly, I've grown to appreciate early morning mall visits for a quieter shopping experience.",
+        "Assistant: Early shopping can indeed be serene. Do you find this change has improved your overall shopping experience?"
+    ],
+    "Conversation Next Year": [
+        "User: Hi, I feel like I\u2019ve entered a year of exploration and shifts in my interests.",
+        "Assistant: Hi Dana, that sounds exciting! What specific shifts have you noticed lately?",
+        "Side_Note: Started a community yoga studio promoting mindfulness and nature immersion. 04/01/1990",
+        "User: One significant milestone was starting a community yoga studio that focuses on mindfulness and connecting with nature.",
+        "Assistant: That sounds like a wonderful project. How has immersing your community in nature influenced your teachings?",
+        "Side_Note: Organized an outdoor jazz festival to combine love for music and nature. 05/12/1990",
+        "User: I also organized an outdoor jazz festival, something I wouldn't have considered before, but it blended music and nature perfectly.",
+        "Assistant: Bringing those elements together can create a unique experience. What impact did hosting the festival have on you and the community?",
+        "Side_Note: Converted home garden into an organic vegetable plot for fresh cooking ingredients. 06/20/1990",
+        "User: My garden has become an organic vegetable plot so I can use fresh ingredients in cooking.",
+        "Assistant: That's both sustainable and rewarding. How has growing your own produce affected your culinary experiments?",
+        "Side_Note: Held a personal exhibition of landscape paintings inspired by new destinations. 07/18/1990",
+        "User: I even held a personal exhibition for my landscape paintings. It felt empowering to share my perspectives with others.",
+        "Assistant: Sharing your art can be a powerful form of expression. How was the exhibition received by those who attended?",
+        "Side_Note: Resumed attending mainstream movie releases for creative film editing inspiration. 08/25/1990",
+        "User: Interestingly, I've started attending movie releases again, finding creative inspiration in the visuals for my projects.",
+        "Assistant: Movies can be quite the muse. What kind of creative projects are you planning to focus on now?",
+        "Side_Note: Began leading birdwatching excursions to raise awareness about local wildlife conservation. 09/10/1990",
+        "User: I've taken the lead on birdwatching excursions to promote local wildlife conservation.",
+        "Assistant: That\u2019s an impactful way to engage with the community. What has been the most rewarding part of these excursions?",
+        "Side_Note: Embraced social media to launch an awareness campaign on mindful eating. 10/14/1990",
+        "User: Social media has also become a platform for me to launch campaigns, like one on mindful eating. It's been quite successful.",
+        "Assistant: It's amazing how social media can amplify messages. How do your followers engage with these campaigns?",
+        "Side_Note: Participated in a health food expo aligning retail visits with vegan product launches. 11/21/1990",
+        "User: Somewhat surprisingly, I found myself enjoying health food expos, exploring the potential in busy retail environments for new discoveries.",
+        "Assistant: Retail settings can introduce diverse products. What new discoveries have influenced your lifestyle choices?",
+        "Side_Note: Rejoined a fast food stealth group for market research into vegan trends. 12/19/1990",
+        "User: I've joined a stealth group that investigates vegan trends in fast food, which has been an eye-opener.",
+        "Assistant: Delving into market research can provide unique insights. What fascinating trends have you uncovered?",
+        "Side_Note: Co-hosted biannual poetry slams bringing together urban and nature-themed works. 01/28/1991",
+        "User: Lastly, I co-host biannual poetry slams that mix urban and nature-themed works, which has been very fulfilling.",
+        "Assistant: That sounds like a creative and collaborative way to explore different themes. How do you balance the integration of these contrasting elements?"
+    ]
+}

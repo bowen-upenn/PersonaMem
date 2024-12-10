@@ -231,12 +231,17 @@ def find_existing_persona_files(idx_persona):
         if matching_file:
             break
 
+    print(f'Loaded persona file from {matching_file}')
     if matching_file:
         with open(matching_file, 'r') as file:
             data = json.load(file)
         persona = data["Original Persona"]
         expanded_persona = data["Expanded Persona"]
-        start_time = next(iter(data["Init General Personal History"].keys()))  # Get the first timestamp
+
+        if "Init General Personal History" in data:
+            start_time = next(iter(data["Init General Personal History"].keys()))  # Get the first timestamp
+        else:
+            start_time = None
 
         print(f'Found an existing persona file for persona {idx_persona}.')
 
@@ -269,3 +274,11 @@ def clean_up_subdirectories():
                 file_path = os.path.join(root, file)
                 os.remove(file_path)  # Remove the file
                 print(f"Removed: {file_path}")
+
+
+def clean_up_one_file(file_path):
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"Removed: {file_path}")
+    else:
+        print(f"File not found: {file_path}")
