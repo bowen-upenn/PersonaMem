@@ -1,5 +1,9 @@
 ## This is the official implementation of the paper [MemoryBench: TODO](todo) in PyTorch.
 
+<p align="center">
+<img src=figures/artistic_illustration.jpeg/>
+</p>
+
 ### To start the conversation data generation
 
 We allow command-line argparser for the following arguments: 
