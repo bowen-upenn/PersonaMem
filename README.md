@@ -7,12 +7,22 @@
 ## To start the conversation data generation
 
 We allow command-line argparser for the following arguments: 
-    
+
+therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing
+
 - ```--model``` to select the LLM.
   - ```gpt-4o```
 - ```--n_persona``` to select the number of unique personas. *(This is the outer loop)*
 - ```--context``` to select the context of the conversation. To select a single context, use the format ```context1```. To select multiple contexts, use the format ```context1 context2 context3```. *(This is the middle loop)*
   - ```therapy```
+  - ```legal```
+  - ```datingConsultation```
+  - ```foodRecommendation```
+  - ```onlineShopping```
+  - ```studyConsultation```
+  - ```travelPlanning```
+  - ```writing```
+  - ```all```  to select all existing contexts under [./data/output/](./data/output/). Note that currently we have real-world seeding data for ```therapy```, ```legal```, and ```writing``` contexts only.
 - ```--n_samples``` to select the number of samples per context per persona. *(This is the inner loop)*
 - ```--verbose``` to print out all generated contents.
 
