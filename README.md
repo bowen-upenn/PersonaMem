@@ -4,7 +4,7 @@
 <img src=figures/artistic_illustration.jpeg/>
 </p>
 
-## To start the conversation data generation
+## To start the persona-aligned conversation data generation
 
 We allow command-line argparser for the following arguments: 
 
