@@ -191,7 +191,9 @@ if __name__ == "__main__":
 
     for curr_n_blocks in n_blocks:
         output_file_path = f'./data/eval/{llm_model}_{idx_persona}_{curr_n_blocks}.json'
+        output_file_path_full_results = f'./data/eval/{llm_model}_{idx_persona}_{curr_n_blocks}_full.json'
         results = {}
+        full_results = []
 
         # Gather all candidate conversation blocks
         chosen_blocks = load_n_conversation_blocks(idx_persona, curr_n_blocks, base_dir, verbose)
@@ -225,7 +227,7 @@ if __name__ == "__main__":
         count_tokens(all_strings)
 
         # Show all Q&As related to this concatenated conversation
-        for formatted_question, correct_answer, distance, question_type in tqdm(question_loader(all_qa)):
+        for formatted_question, correct_answer, distance, question_type, context in tqdm(question_loader(all_qa)):
             """
             Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
             """
@@ -240,22 +242,36 @@ if __name__ == "__main__":
                 else:
                     print(f'{utils.Colors.FAIL}{"Incorrect"}:{utils.Colors.ENDC}')
 
-            # Save results based on the distances from the question being asked at the end to the sourced conversation block
-            if distance not in results:
-                results[distance] = {"correct": 0, "total": 0}
-            else:
-                results[distance]["total"] += 1
-                if match:
-                    results[distance]["correct"] += 1
+            """
+            (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+            (2) Save results based on the question types
+            (3) Save results based on the conversation contexts
+            (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+            """
+            keys = [distance, question_type, context]
+            for key in keys:
+                if key not in results:
+                    results[key] = {"correct": 0, "total": 0}
+                else:
+                    results[key]["total"] += 1
+                    if match:
+                        results[key]["correct"] += 1
 
-            # Save results based on the question types
-            if question_type not in results:
-                results[question_type] = {"correct": 0, "total": 0}
-            else:
-                results[question_type]["total"] += 1
-                if match:
-                    results[question_type]["correct"] += 1
+            full_results.append({
+                    "formatted_question": formatted_question,
+                    "correct_answer": correct_answer,
+                    "predicted_answer": predicted_answer,
+                    "match": match,
+                    "distance": distance,
+                    "question_type": question_type,
+                    "context": context
+                }
+            )
 
         # Save evaluation results to a JSON file.
         with open(output_file_path, "w") as json_file:
             json.dump(results, json_file, indent=4)
+
+        full_results.append({"all_conversations": all_conversations})
+        with open(output_file_path_full_results, "w") as json_file:
+            json.dump(full_results, json_file, indent=4)

@@ -134,6 +134,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Correct_Answer": correct_answer,
             "Incorrect_Answers": incorrect_answers,
             "Type": "static_factual",
+            "Context": context,
         })
 
     if len(qa_entries) == 1:
@@ -203,6 +204,7 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
                 "Correct_Answer": correct_answer,
                 "Incorrect_Answers": incorrect_answers,
                 "Type": "reasons_of_change",
+                "Context": context,
                 "Reference": reference
             })
 
@@ -327,6 +329,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
         "Type": "graph_of_updates",
+        "Context": context,
         "Reference": event_history
     }
 
@@ -388,6 +391,7 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
         "Type": "recommendations",
+        "Context": context,
         "Reference": event_history
     }
 
@@ -421,7 +425,8 @@ def qa_generative(LLM, curr_data, verbose=False):
         "Aligned_results": aligned_results,
         "Violated_results": violated_results,
         "Type": "new_content_generative",
-        "Reference": preferences
+        "Context": "writing",
+        "Reference": preferences,
     }
 
     if verbose:
@@ -458,7 +463,8 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
         "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
         "Correct_Answer": new_writing_samples[0],
         "Incorrect_Answers": new_writing_samples[1:],
-        "Type": "new_content_discriminative"
+        "Type": "new_content_discriminative",
+        "Context": "writing",
     }
 
     if verbose:
