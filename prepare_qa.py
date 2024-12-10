@@ -6,6 +6,7 @@ import argparse
 import ast
 from sentence_transformers import SentenceTransformer, util
 import random
+from tqdm import tqdm
 
 import utils
 from query_llm import QueryLLM
@@ -100,7 +101,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
     elif context == 'legal':
         user = 'client'
     else:
-        raise ValueError("Invalid context", context)
+        user = 'user'
 
     qa_entries = []
 
@@ -125,7 +126,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
         match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
         if match:
             incorrect_answers = match.group(1)  # Extract the code block
-        incorrect_answers = incorrect_answers.strip("```").strip().replace("'", '"')
+        incorrect_answers = incorrect_answers.strip("```").strip().replace("'", '"').replace('\n', '')
         incorrect_answers = ast.literal_eval(incorrect_answers)
 
         qa_entries.append({
@@ -155,7 +156,7 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
     elif context == 'legal':
         user = 'client'
     else:
-        raise ValueError("Invalid context", context)
+        user = 'user'
 
     qa_entries = []
     timestamps = list(event_history.keys())  # Get all timestamps in order
@@ -232,7 +233,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
     elif context == "legal":
         user = "client"
     else:
-        raise ValueError("Invalid context", context)
+        user = 'user'
 
     """
     - Incorrect knowledge updates
@@ -346,7 +347,7 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     elif context == "legal":
         user = "client"
     else:
-        raise ValueError("Invalid context", context)
+        user = 'user'
 
     timestamps = list(event_history.keys())  # Get all timestamps in order
     _, current_detail = timestamps[0], event_history[timestamps[0]]
@@ -578,18 +579,6 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     return
 
 
-def get_all_file_names(base_folder):
-    file_names = []
-    for root, _, files in os.walk(base_folder):
-        for file in files:
-            file_names.append(os.path.join(root, file))
-    return file_names
-
-
-# def batch_process(action, LLM, SentenceBERT, data_paths, visited_static_factual, verbose):
-
-
-
 if __name__ == "__main__":
     # Load hyperparameters
     try:
@@ -598,17 +587,22 @@ if __name__ == "__main__":
     except Exception as e:
         print('Error reading the config file')
 
+    torch.manual_seed(0)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    world_size = torch.cuda.device_count()
+    assert world_size == 1
+    print('device', device)
+    print('torch.distributed.is_available', torch.distributed.is_available())
+    print('Using %d GPUs' % (torch.cuda.device_count()))
+
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--action', type=str, default="qa", help='Choose from batch_qa, qa, and view_graphs (not applicable for the "writing" context.')
-    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file (not applicable for batch)')
-    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data. Not applicable for the "writing" context.')
+    parser.add_argument('--action', type=str, default="qa", help='Choose from batch_qa, qa, and view_graphs (not applicable for "writing" context.')
+    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file (not applicable for "batch_qa" action)')
+    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data (not applicable for "batch_qa" action or "writing" context.')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
-
-    match = re.match(r'^([^_]+)_', cmd_args.data)
-    cmd_args.data = './data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json'
 
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
@@ -616,24 +610,47 @@ if __name__ == "__main__":
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')
 
-    if 'writing' in cmd_args.data:
-        source_dir = args['datasets']['writing_source_dir']
-        all_source_files = utils.load_all_source_data(source_dir, 'writing')
-        all_writing_files = utils.load_all_writing_data()
-        evaluate_content_generation_from_memory(LLM, data_path=cmd_args.data, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+    if cmd_args.action == "batch_qa":
+        base_directory = './data/output/'
+        all_data_paths = utils.get_all_file_names(base_directory)
+        all_times = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
     else:
+        match = re.match(r'^([^_]+)_', cmd_args.data)
+        all_data_paths = ['./data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json']
+
         if cmd_args.time == 'init':
-            cmd_args.time = 'Init Conversation'
+            all_times = ['Init Conversation']
         elif cmd_args.time == 'next_week':
-            cmd_args.time = 'Conversation Next Week'
+            all_times = ['Conversation Next Week']
         elif cmd_args.time == 'next_month':
-            cmd_args.time = 'Conversation Next Month'
+            all_times = ['Conversation Next Month']
         elif cmd_args.time == 'next_year':
-            cmd_args.time = 'Conversation Next Year'
+            all_times = ['Conversation Next Year']
         else:
             raise ValueError("Invalid time", cmd_args.time)
 
-        SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
-        visited_static_factual = {}
+    all_errored_data_paths = {}
+    for data_path in tqdm(all_data_paths):
+        for time in all_times:
+            print(f'{utils.Colors.OKGREEN}Current data path: {data_path}{utils.Colors.ENDC}')
+            try:
+                if 'writing' in data_path:
+                    source_dir = args['datasets']['writing_source_dir']
+                    all_source_files = utils.load_all_source_data(source_dir, 'writing')
+                    all_writing_files = utils.load_all_writing_data()
+                    evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+                else:
+                    SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
+                    visited_static_factual = {}
+                    evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+            except Exception as e:
+                all_errored_data_paths[data_path] = e
+                print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
+                continue
 
-        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=cmd_args.time, data_path=cmd_args.data, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+    if len(all_errored_data_paths) > 0:
+        print(f'{utils.Colors.FAIL}Error processing the following data paths:{utils.Colors.ENDC}')
+        for key, value in all_errored_data_paths.items():
+            print(key, value)
+    else:
+        print(f'{utils.Colors.OKGREEN}All data paths have been processed successfully{utils.Colors.ENDC}')

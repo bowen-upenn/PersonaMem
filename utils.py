@@ -88,26 +88,33 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
 
     def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False):
         if parse_json:
-            # Use regex to extract the JSON part enclosed by "```json" and "```"
             json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
-
             if json_match:
                 # Extract the JSON part
                 json_part = json_match.group(1).strip()
+                response = process_json_from_api(json_part)
 
-                try:
-                    # Parse the extracted JSON string into a Python dictionary
-                    parsed_json = json.loads(json_part)
-                    # Add the parsed JSON content to the existing data under the user-specified key
-                    existing_json_file[curr_data_name] = parsed_json
+            # # Use regex to extract the JSON part enclosed by "```json" and "```"
+            # json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
+            #
+            # if json_match:
+            #     # Extract the JSON part
+            #     json_part = json_match.group(1).strip()
+            #
+            #     try:
+            #         # Parse the extracted JSON string into a Python dictionary
+            #         parsed_json = json.loads(json_part)
+            #         # Add the parsed JSON content to the existing data under the user-specified key
+            #         existing_json_file[curr_data_name] = parsed_json
+            #
+            #     except json.JSONDecodeError as e:
+            #         print(f"Error parsing JSON for {curr_data_name}: {e}")
+            # else:
+            #     print(f"No JSON content found for {curr_data_name}")
+        # else:
+        #     # Add the entire response as a string
 
-                except json.JSONDecodeError as e:
-                    print(f"Error parsing JSON for {curr_data_name}: {e}")
-            else:
-                print(f"No JSON content found for {curr_data_name}")
-        else:
-            # Add the entire response as a string
-            existing_json_file[curr_data_name] = response
+        existing_json_file[curr_data_name] = response
         return existing_json_file
 
 
@@ -238,3 +245,27 @@ def find_existing_persona_files(idx_persona):
         return None
 
 
+def get_all_context_names():
+    base_path = './data/output'
+    sub_folders = [folder for folder in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, folder))]
+    return sub_folders
+
+
+def get_all_file_names(base_folder):
+    file_names = []
+    for root, _, files in os.walk(base_folder):
+        for file in files:
+            file_names.append(os.path.join(root, file))
+    return file_names
+
+
+def clean_up_subdirectories():
+    base_path = './data/output'
+
+    # Traverse through subdirectories
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            if file.endswith('.json'):  # Check for JSON files
+                file_path = os.path.join(root, file)
+                os.remove(file_path)  # Remove the file
+                print(f"Removed: {file_path}")

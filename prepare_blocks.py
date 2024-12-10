@@ -5,6 +5,7 @@ import tiktoken
 import argparse
 import yaml
 import re
+import torch
 from datetime import datetime
 
 import utils
@@ -231,6 +232,14 @@ if __name__ == "__main__":
             args = yaml.safe_load(file)
     except Exception as e:
         print('Error reading the config file')
+
+    torch.manual_seed(0)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    world_size = torch.cuda.device_count()
+    assert world_size == 1
+    print('device', device)
+    print('torch.distributed.is_available', torch.distributed.is_available())
+    print('Using %d GPUs' % (torch.cuda.device_count()))
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')

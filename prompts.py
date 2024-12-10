@@ -102,10 +102,8 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
         context_name, user, agent = 'therapy', 'Patient', 'Therapist'
     elif context == 'legal':
         context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
-    elif context == 'food':
-        context_name, user, agent = 'food recommendation', 'Customer', 'Agent'
     else:
-        raise ValueError("Invalid context", context)
+        context_name, user, agent = context, 'User', 'Assistant'
 
     prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + context_name + ". " \
              "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps of the format MM/DD/YYYY as the skeleton. Do NOT change the time stamps. " \
