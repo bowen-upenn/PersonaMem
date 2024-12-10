@@ -31,28 +31,33 @@ We allow command-line argparser for the following arguments:
 
 ### To start the Q&A data generation
 
-The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments: 
-    
+The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments:
+
 - ```--model``` to select the LLM.
   - ```gpt-4o```
 - ```--action``` to select the current action
-    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included)
+    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for "writing" context.
     - ```qa``` to generate question and answer pairs
-- ```--time``` to specify the cut-off time (included) for the conversation data.
-    - ```init```
-    - ```next_week```
-    - ```next_month```
-    - ```next_year```
-- ```--data``` to specify the data path of the conversation data.
+    - ```batch_qa``` to generate question and answer pairs for all available data
+- ```--data``` to specify the data path of the conversation data. Not applicable for "batch_qa" action.
+- ```--time``` to specify the cut-off time (included) for the conversation data. Not applicable for "batch_qa" action or "writing" context.
+    - ```init``` for the 'Initial Conversation' block
+    - ```next_week``` for the 'Conversation Next Week' block
+    - ```next_month``` for the 'Conversation Next Month' block
+    - ```next_year``` for the 'Conversation Next Year' block
 - ```--verbose``` to print out all generated contents.
 
 #### To visualize linear graphs of knowledge updates
 
     python prepare_qa.py --model gpt-4o --action view_graphs --data therapy_persona0_sample0 --time next_year --verbose
 
-#### To generate Q&As
+#### To generate Q&As for one given data file
 
     python prepare_qa.py --model gpt-4o --action qa --data therapy_persona0_sample0 --time next_year --verbose
+
+#### To generate Q&As for all available data files
+
+    python prepare_qa.py --model gpt-4o --action batch_qa --verbose
 
 
 
