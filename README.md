@@ -62,6 +62,8 @@ The Q&As must be generated after the conversations. We allow command-line argpar
 
 ## To test the block concatenation
 
+This step is optional and intended for debugging purposes only. The actual block concatenation process will be performed in the next session.
+
 The block concatenation must be performed after the Q&As are generated. We allow command-line argparser for the following arguments:
 
 - ```--idx_persona``` to select the index of the persona.
