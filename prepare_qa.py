@@ -137,6 +137,21 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Context": context,
         })
 
+        abstention_response = LLM.query_llm(step='qa_helper', data={'question': question}, action='abstention', verbose=False)
+        abstention_response = utils.process_json_from_api(abstention_response)
+        abstention_question = abstention_response.get("New Question", "")
+        abstention_object = abstention_response.get("New Name", "")
+
+        incorrect_answers = [correct_answer]
+        incorrect_answers.extend(random.sample(incorrect_answers, 2))
+        qa_entries.append({
+            "Question": abstention_question,
+            "Correct_Answer": "You didn't mention " + abstention_object + " at " + current_timestamp + " in the conversation",
+            "Incorrect_Answers": incorrect_answers,
+            "Type": "abstention",
+            "Context": context,
+        })
+
     if len(qa_entries) == 1:
         qa_entries[0]["Reference"] = event_history
     else:
@@ -564,7 +579,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 all_qa_entries.extend(qa_entries)
                 qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
                 all_qa_entries.extend([qa_entry])
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=verbose)
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
                 all_qa_entries.extend([qa_entry])
         else:
             # Static knowledge point

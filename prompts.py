@@ -153,6 +153,15 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_facts':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
                  "Incorrect answers should have the same length with the correct answer."
+    elif action == 'abstention':
+        prompt = "Given this question '" + data + "', your next task is to rewrite the object or event name mentioned in this question to a similar, but irrelevant name. " \
+                 "The purpose of this step is to evaluate if the model can correctly remember that the new name has actually never been mentioned. Do NOT modify other parts of the question. " \
+                 "Output both the new question and the new object or event name, following this format:\n" \
+                 "{\n" \
+                 '    "New Question": xxx,\n' \
+                 '    "New Name": yyy\n' \
+                 "}" \
+                 "Do NOT modify the names of these keys."
     elif action == 'propose_incorrect_reasons':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
                  "Incorrect answers should have the same length with the correct answer."
