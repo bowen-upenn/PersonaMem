@@ -22,7 +22,7 @@ therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyCon
   - ```studyConsultation```
   - ```travelPlanning```
   - ```writing```
-  - ```all```  to select all existing contexts under [./data/output/](./data/output/). Note that currently we have real-world seeding data for ```therapy```, ```legal```, and ```writing``` contexts only.
+  - ```all```  to select all existing contexts under [./data/output/](./data/output/). Feel free to create a new empty folder with the new context name you want. Note that currently we have real-world seeding data for ```therapy```, ```legal```, and ```writing``` contexts only.
 - ```--n_samples``` to select the number of samples per context per persona. *(This is the inner loop)*
 - ```--verbose``` to print out all generated contents.
 
