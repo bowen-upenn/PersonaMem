@@ -49,3 +49,51 @@ The Q&As must be generated after the conversations. We allow command-line argpar
 #### To generate Q&As
 
     python prepare_qa.py --model gpt-4o --action qa --data therapy_persona0_sample0 --time next_year --verbose
+
+
+
+### To test the block concatenation
+
+The block concatenation must be performed after the Q&As are generated. We allow command-line argparser for the following arguments:
+
+- ```--idx_persona``` to select the index of the persona.
+- ```--n_blocks``` to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
+- ```--format``` to select the output conversation format.
+  - ```string``` to select pure the string format for the concatenated conversations.
+  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as 'user' and 'assistant'.
+- ```--verbose``` to print out all generated contents.
+
+#### Example command
+
+    python prepare_block.py --idx_persona 0 --n_blocks 5 --format string --verbose
+
+
+### To evaluate LLMs on the generated data
+
+This is the final step of the pipeline. You must have set up your API tokens under [api_tokens](api_tokens). We allow command-line argparser for the following arguments:
+
+- ```--model``` to select the LLM to evaluate
+  - ```o1-preview```
+  - ```o1-mini```
+  - ```gpt-4o```
+  - ```gpt-4o-mini```
+  - ```gpt-4-turbo```
+  - ```gpt-3.5-turbo```
+  - ```gemini-1.5-flash-002```
+  - ```gemini-1.5-pro-002```
+  - ```gemini-1.0-pro```
+  - ```meta-llama-3-70b-instruct```
+  - ```meta-llama-3-8b-instruct```
+  - ```claude-3-opus-20241022```
+  - ```claude-3-5-sonnet-20241022```
+- ```--idx_persona``` to select the index of the persona.
+- ```--format``` to select the output conversation format.
+  - ```string``` to select pure the string format for the concatenated conversations.
+  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as 'user' and 'assistant'.
+- ```--n_blocks``` to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
+- ```--up_to``` to evaluate on all the way from 1 up to n_blocks, not just n_blocks itself.
+- ```--verbose``` to print out all generated contents.
+
+#### Example command
+
+    python inference.py --model o1-preview --idx_persona 0 --format api_dict --n_blocks 5 --up_to --verbose
