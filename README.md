@@ -10,7 +10,7 @@
 
 We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can (1) remember the user's persona from long user-AI conversations, but also (2) utilize this memory to generate persona-aligned recommendations and new contents over diverse scenarios. 
 
-## To start the persona-aligned conversation data generation
+## To start the persona-aligned conversation generation
 
 We allow command-line argparser for the following arguments: 
 
@@ -45,7 +45,7 @@ therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyCon
     python prepare_data.py --model gpt-4o --context all --n_persona 10 --n_samples 1 --verbose
 
 
-## To start the Q&A data generation
+## To start the Q&A generation
 
 The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments:
 
@@ -76,7 +76,7 @@ The Q&As must be generated after the conversations. We allow command-line argpar
     python prepare_qa.py --model gpt-4o --action batch_qa --verbose
 
 
-## To test the block concatenation
+## To test block concatenations for enabling long context windows
 
 This step is optional and intended for debugging purposes only. The actual block concatenation process will be performed in the next session.
 
