@@ -16,15 +16,16 @@ from prepare_blocks import *
 # OpenAI ChatGPT API
 from openai import OpenAI
 
-# # Google Gemini API from VertexAI
+# Google Gemini API from VertexAI
+import google.generativeai as genai
 # import vertexai
 # from vertexai.preview.generative_models import GenerativeModel, ChatSession
-#
-# # Meta Llama API from Replicate
-# import replicate
-#
-# # Anthropic Claude API
-# import anthropic
+
+# Meta Llama API from Replicate
+import replicate
+
+# Anthropic Claude API
+import anthropic
 
 
 def evaluate_answer(predicted_answer, correct_answer):
@@ -62,11 +63,13 @@ class Evaluation:
 
         # Load API keys or tokens
         with open("api_tokens/openai_key.txt", "r") as api_key_file:
-            self.api_key = api_key_file.read()
+            self.openai_key = api_key_file.read()
         if re.search(r'gemini', self.args['models']['llm_model']) is not None:
-            with open("api_tokens/gemini_project_id.txt", "r") as vertexai_project_id_file:
-                self.project_id = vertexai_project_id_file.read()
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.args['models']['gemini_credential_path']
+            with open("api_tokens/gemini_key.txt", "r") as gemini_key_file:
+                self.gemini_key = gemini_key_file.read()
+            # with open("api_tokens/gemini_project_id.txt", "r") as vertexai_project_id_file:
+            #     self.project_id = vertexai_project_id_file.read()
+            # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.args['models']['gemini_credential_path']
         elif re.search(r'llama', self.args['models']['llm_model']) is not None:
             with open("api_tokens/llama_key.txt", "r") as llama_key_file:
                 llama_key = llama_key_file.read()
@@ -88,8 +91,8 @@ class Evaluation:
             raise ValueError(f"Format {which_format} is not supported.")
 
         # Call OpenAI API for GPT models by default
-        if re.search(r'gpt', self.args['models']['llm_model']) is not None or re.search(r'o1', self.args['models']['llm_model']) is None:
-            client = OpenAI(api_key=self.api_key)
+        if re.search(r'gpt', self.args['models']['llm_model']) is not None or re.search(r'o1', self.args['models']['llm_model']) is not None:
+            client = OpenAI(api_key=self.openai_key)
             response = client.chat.completions.create(
                 model=self.args['models']['llm_model'],
                 messages=messages,
@@ -98,16 +101,20 @@ class Evaluation:
 
         # Call Google Gemini API for Gemini models
         elif re.search(r'gemini', self.args['models']['llm_model']) is not None:
-            location = "us-central1"
-            vertexai.init(project=self.project_id, location=location)
-            model = GenerativeModel(self.args['models']['llm_model'])
-
-            prompt = ' '.join(msg['content'] for msg in messages)
-            if re.search(r'1.5', self.args['models']['llm_model']) is not None:  # it supports vision though it is not used in this project
-                response = model.generate_content([prompt]).text
-            else:
-                chat = model.start_chat()
-                response = chat.send_message(prompt).text
+            genai.configure(api_key=self.gemini_key)
+            model = genai.GenerativeModel(self.args['models']['llm_model'])
+            response = model.generate_content(messages)
+            response = response.text
+            # location = "us-central1"
+            # vertexai.init(project=self.project_id, location=location)
+            # model = GenerativeModel(self.args['models']['llm_model'])
+            #
+            # prompt = ' '.join(msg['content'] for msg in messages)
+            # if re.search(r'1.5', self.args['models']['llm_model']) is not None:  # it supports vision though it is not used in this project
+            #     response = model.generate_content([prompt]).text
+            # else:
+            #     chat = model.start_chat()
+            #     response = chat.send_message(prompt).text
 
         # Call Meta Llama API for Llama models
         elif re.search(r'llama', self.args['models']['llm_model']) is not None:
@@ -161,7 +168,7 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt4", help='Set LLM model. Choose from o1-preview, o1-mini, gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo, '
-                                                                  'gemini-1.5-flash-002, gemini-1.5-pro-002, gemini-1.0-pro'
+                                                                  'gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro'
                                                                   'meta-llama-3-70b-instruct, meta-llama-3-8b-instruct,'
                                                                   'claude-3-opus-20241022, claude-3-5-sonnet-20241022, claude-3-sonnet-20241022')
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
@@ -181,7 +188,7 @@ if __name__ == "__main__":
 
     base_dir = "./data/output"
     evaluation = Evaluation(args)
-    tokenizer = tiktoken.encoding_for_model(args['models']['llm_model'])
+    tokenizer = tiktoken.encoding_for_model("gpt-4o")
     sentence_bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 
     if cmd_args.up_to is False:

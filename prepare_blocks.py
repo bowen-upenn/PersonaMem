@@ -267,7 +267,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, verbose=False):
 def count_tokens(all_strings, tokenizer, llm_model):
     all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
-    print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on {llm_model} tokenizer{utils.Colors.ENDC}")
+    print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
     
     
 def extract_qa(base_dir, context, file_name, time_period):
