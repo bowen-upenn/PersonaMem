@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Memory -> Personalization</strong>
+  <strong>From Memory to Personalization</strong>
 </p>
 
 We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can (1) remember the user's persona from long user-AI conversations, but also (2) utilize this memory to generate persona-aligned recommendations and new contents over diverse scenarios. 
