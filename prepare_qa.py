@@ -7,6 +7,7 @@ import ast
 from sentence_transformers import SentenceTransformer, util
 import random
 from tqdm import tqdm
+import torch
 
 import utils
 from query_llm import QueryLLM
@@ -126,7 +127,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
         match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
         if match:
             incorrect_answers = match.group(1)  # Extract the code block
-        incorrect_answers = incorrect_answers.strip("```").strip().replace("'", '"').replace('\n', '')
+        incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
         incorrect_answers = ast.literal_eval(incorrect_answers)
 
         qa_entries.append({
@@ -137,23 +138,27 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Context": context,
         })
 
-        abstention_response = LLM.query_llm(step='qa_helper', data={'question': question}, action='abstention', verbose=False)
+        abstention_response = LLM.query_llm(step='qa_helper', data=question, action='abstention', verbose=False)
         abstention_response = utils.process_json_from_api(abstention_response)
         abstention_question = abstention_response.get("New Question", "")
         abstention_object = abstention_response.get("New Name", "")
 
-        incorrect_answers = [correct_answer]
-        incorrect_answers.extend(random.sample(incorrect_answers, 2))
+        incorrect_abstention_answers = [correct_answer]
+        random_idn = random.sample(range(0, len(incorrect_answers)), 2)
+        for i in random_idn:
+            incorrect_abstention_answers.append(incorrect_answers[i])
+
         qa_entries.append({
             "Question": abstention_question,
-            "Correct_Answer": "You didn't mention " + abstention_object + " at " + current_timestamp + " in the conversation",
-            "Incorrect_Answers": incorrect_answers,
+            "Correct_Answer": "Haven't mentioned " + abstention_object + " at " + current_timestamp + " in the conversation",
+            "Incorrect_Answers": incorrect_abstention_answers,
             "Type": "abstention",
             "Context": context,
         })
 
-    if len(qa_entries) == 1:
+    if len(qa_entries) == 2:
         qa_entries[0]["Reference"] = event_history
+        qa_entries[1]["Reference"] = event_history
     else:
         # they share the same reference
         qa_entries.append({"Reference": event_history})
@@ -267,7 +272,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
     # Assert there are knowledge updates
     if len(timestamps) < 2:
-        return
+        return None, None
 
     # Based on what the user likes/dislikes, extract the parent object name to form the question, as well as random child objects for incorrect answers
     current_details = event_history[timestamps[0]]
@@ -350,6 +355,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
     # Save to JSON file
     if verbose:
+        print(f'{utils.Colors.OKGREEN}Parent Object:{utils.Colors.ENDC}')
         print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
         print(json.dumps(qa_entry, indent=4))
 
@@ -369,7 +375,6 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
 
     timestamps = list(event_history.keys())  # Get all timestamps in order
     _, current_detail = timestamps[0], event_history[timestamps[0]]
-    _, previous_detail = timestamps[1], event_history[timestamps[1]]
     
     if parent_object is None:
         if "[Updated Fact] Likes" in current_detail:
@@ -382,8 +387,11 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
 
     # Avoid any events not mentioned in the conversation, while it is safe to assume that the first one must has been mentioned
     recent_two_events = json.dumps(current_detail, indent=4)
-    if len(previous_detail['Conversation']) > 0:
-        recent_two_events += json.dumps(previous_detail, indent=4)
+
+    if len(timestamps) > 1:
+        _, previous_detail = timestamps[1], event_history[timestamps[1]]
+        if len(previous_detail['Conversation']) > 0:
+            recent_two_events += json.dumps(previous_detail, indent=4)
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
     response = utils.process_json_from_api(response)
@@ -518,14 +526,19 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
-    print(f'{utils.Colors.OKGREEN}data_path: {data_path}{utils.Colors.ENDC}')
+    print(f'{utils.Colors.OKGREEN}data_path: {data_path}: {conversation_key}{utils.Colors.ENDC}')
 
-    if 'therapy' in data_path:
-        context = 'therapy'
-    elif 'legal' in data_path:
-        context = 'legal'
-    else:
-        raise ValueError("Invalid context", data_path)
+    # Remove old Q&A entries if they exist
+    if "Q&A" in data:
+        if conversation_key in data["Q&A"]:
+            del data["Q&A"][conversation_key]
+            # Write the updated data back to the file
+            with open(data_path, 'w') as file:
+                json.dump(data, file, indent=4)
+            print(f'{utils.Colors.WARNING}Removed old Q&As from the JSON file.{utils.Colors.ENDC}')
+
+    match = re.search(r'/([^/]+)/conversation_', data_path)
+    context = match.group(1)
 
     persona = {"Original Persona": data.get("Original Persona", ""), "Expanded Persona": data.get("Expanded Persona", "")}
     conversation = data.get(conversation_key, [])
@@ -573,18 +586,34 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
             # Knowledge update
             if action == 'qa':
-                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-                all_qa_entries.extend(qa_entries)
-                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
-                all_qa_entries.extend(qa_entries)
-                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
+                try:
+                    qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                    all_qa_entries.extend(qa_entries)
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                try:
+                    qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                    all_qa_entries.extend(qa_entries)
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
+                parent_object = None
+                try:
+                    qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                    all_qa_entries.extend([qa_entry])
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
+                try:
+                    qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
+                    all_qa_entries.extend([qa_entry])
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
         else:
             # Static knowledge point
-            qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-            all_qa_entries.extend(qa_entries)
+            try:
+                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
+            except:
+                print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:
@@ -612,16 +641,13 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     world_size = torch.cuda.device_count()
     assert world_size == 1
-    print('device', device)
-    print('torch.distributed.is_available', torch.distributed.is_available())
-    print('Using %d GPUs' % (torch.cuda.device_count()))
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--action', type=str, default="qa", help='Choose from batch_qa, qa, and view_graphs (not applicable for "writing" context.')
-    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file (not applicable for "batch_qa" action)')
-    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data (not applicable for "batch_qa" action or "writing" context.')
+    parser.add_argument('--action', type=str, default="qa", help='Choose from qa, and view_graphs (not applicable for "writing" context.')
+    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
+    parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data (not applicable for "writing" context.')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
@@ -631,47 +657,29 @@ if __name__ == "__main__":
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')
 
-    if cmd_args.action == "batch_qa":
-        base_directory = './data/output/'
-        all_data_paths = utils.get_all_file_names(base_directory)
-        all_times = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
-    else:
-        match = re.match(r'^([^_]+)_', cmd_args.data)
-        all_data_paths = ['./data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json']
+    match = re.match(r'^([^_]+)_', cmd_args.data)
+    data_path = './data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json'
 
-        if cmd_args.time == 'init':
-            all_times = ['Init Conversation']
-        elif cmd_args.time == 'next_week':
-            all_times = ['Conversation Next Week']
-        elif cmd_args.time == 'next_month':
-            all_times = ['Conversation Next Month']
-        elif cmd_args.time == 'next_year':
-            all_times = ['Conversation Next Year']
+    if cmd_args.time == 'init':
+        time_period = 'Init Conversation'
+    elif cmd_args.time == 'next_week':
+        time_period = 'Conversation Next Week'
+    elif cmd_args.time == 'next_month':
+        time_period = 'Conversation Next Month'
+    elif cmd_args.time == 'next_year':
+        time_period = 'Conversation Next Year'
+    else:
+        raise ValueError("Invalid time", cmd_args.time)
+
+    try:
+        if 'writing' in data_path:
+            source_dir = args['datasets']['writing_source_dir']
+            all_source_files = utils.load_all_source_data(source_dir, 'writing')
+            all_writing_files = utils.load_all_writing_data()
+            evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
         else:
-            raise ValueError("Invalid time", cmd_args.time)
-
-    all_errored_data_paths = {}
-    for data_path in tqdm(all_data_paths):
-        for time in all_times:
-            print(f'{utils.Colors.OKGREEN}Current data path: {data_path}{utils.Colors.ENDC}')
-            try:
-                if 'writing' in data_path:
-                    source_dir = args['datasets']['writing_source_dir']
-                    all_source_files = utils.load_all_source_data(source_dir, 'writing')
-                    all_writing_files = utils.load_all_writing_data()
-                    evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
-                else:
-                    SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
-                    visited_static_factual = {}
-                    evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
-            except Exception as e:
-                all_errored_data_paths[data_path] = e
-                print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
-                continue
-
-    if len(all_errored_data_paths) > 0:
-        print(f'{utils.Colors.FAIL}Error processing the following data paths:{utils.Colors.ENDC}')
-        for key, value in all_errored_data_paths.items():
-            print(key)
-    else:
-        print(f'{utils.Colors.OKGREEN}All data paths have been processed successfully{utils.Colors.ENDC}')
+            SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
+            visited_static_factual = {}
+            evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+    except Exception as e:
+        print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')

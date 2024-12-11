@@ -47,4 +47,5 @@ for file in "${file_list[@]}"; do
   python prepare_data.py --context "$context" --n_persona "$n_persona" --s_persona "$persona_id"
 
 done
-echo "Done"
+
+echo -e "\nDone"

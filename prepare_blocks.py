@@ -88,34 +88,169 @@ def process_conversation_block(context, conversation, which_format):
     return reformatted_conversation, latest_timestamp
 
 
+# def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", verbose=False):
+#     candidates = {}
+#
+#     for root, dirs, files in os.walk(base_dir):
+#         for file_name in files:
+#             context = file_name.split('_')[1]
+#             if f"persona{idx_persona}_" in file_name:
+#                 fpath = os.path.join(root, file_name)
+#                 with open(fpath, "r", encoding="utf-8") as f:
+#                     data = json.load(f)
+#
+#                 if context == 'writing':
+#                     all_keys = ["Conversation"]
+#                 else:
+#                     all_keys = ["Init Conversation", "Conversation Next Week", "Conversation Next Month", "Conversation Next Year"]
+#                 for key in all_keys:
+#                     if key in data:
+#                         candidates[(file_name, key)] = data[key]
+#
+#     if n_blocks > len(candidates):
+#         raise ValueError("Not enough conversation blocks available.")
+#
+#     # Randomly sample the desired number of blocks
+#     chosen_blocks = random.sample(list(candidates.items()), n_blocks)
+#     if verbose:
+#         print(f'{utils.Colors.OKGREEN}Chosen conversation blocks:{utils.Colors.ENDC}')
+#         print([f"{block[0][0]}: {block[0][1]}" for block in chosen_blocks])
+#     return chosen_blocks
 def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", verbose=False):
+    # Load all candidates
     candidates = {}
-
     for root, dirs, files in os.walk(base_dir):
         for file_name in files:
-            context = file_name.split('_')[1]
             if f"persona{idx_persona}_" in file_name:
+                context = file_name.split('_')[1]
                 fpath = os.path.join(root, file_name)
                 with open(fpath, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
                 if context == 'writing':
-                    all_keys = ["Conversation"]
+                    # For writing, we have only "Conversation"
+                    if "Conversation" in data:
+                        candidates[(file_name, "Conversation")] = data["Conversation"]
                 else:
-                    all_keys = ["Init Conversation", "Conversation Next Week", "Conversation Next Month", "Conversation Next Year"]
-                for key in all_keys:
-                    if key in data:
-                        candidates[(file_name, key)] = data[key]
+                    # Regular contexts
+                    if "Init Conversation" in data:
+                        candidates[(file_name, "Init Conversation")] = data["Init Conversation"]
+                    if "Conversation Next Week" in data:
+                        candidates[(file_name, "Conversation Next Week")] = data["Conversation Next Week"]
+                    if "Conversation Next Month" in data:
+                        candidates[(file_name, "Conversation Next Month")] = data["Conversation Next Month"]
+                    if "Conversation Next Year" in data:
+                        candidates[(file_name, "Conversation Next Year")] = data["Conversation Next Year"]
 
-    if n_blocks > len(candidates):
-        raise ValueError("Not enough conversation blocks available.")
+    if len(candidates) == 0:
+        raise ValueError("No conversation blocks found for the given persona.")
 
-    # Randomly sample the desired number of blocks
-    chosen_blocks = random.sample(list(candidates.items()), n_blocks)
+    # Separate by category
+    init_candidates = {}
+    week_candidates = {}
+    month_candidates = {}
+    year_candidates = {}
+
+    # For writing contexts, treat "Conversation" as the init-level block
+    for (fname, key), val in candidates.items():
+        context = fname.split('_')[1]
+        if context == "writing":
+            # Only one level: treat as init equivalent
+            if key == "Conversation":
+                init_candidates[(fname, key)] = val
+        else:
+            if key == "Init Conversation":
+                init_candidates[(fname, key)] = val
+            elif key == "Conversation Next Week":
+                week_candidates[(fname, key)] = val
+            elif key == "Conversation Next Month":
+                month_candidates[(fname, key)] = val
+            elif key == "Conversation Next Year":
+                year_candidates[(fname, key)] = val
+
+    # chosen will store the selected blocks
+    chosen = set()
+
+    # We'll keep track of available blocks in each tier
+    available_inits = set(init_candidates.keys())  # start with all init-level blocks
+    available_weeks = set()   # will be unlocked by chosen init blocks
+    available_months = set()  # will be unlocked by chosen week blocks
+    available_years = set()   # will be unlocked by chosen month blocks
+
+    # Helper functions to unlock next-level blocks
+    def unlock_week_blocks(fname):
+        # If this init block's next-week block exists, add it
+        wk_key = (fname, "Conversation Next Week")
+        # For writing contexts, there's no next-week block.
+        if wk_key in week_candidates:
+            available_weeks.add(wk_key)
+
+    def unlock_month_blocks(fname):
+        mn_key = (fname, "Conversation Next Month")
+        if mn_key in month_candidates:
+            available_months.add(mn_key)
+
+    def unlock_year_blocks(fname):
+        yr_key = (fname, "Conversation Next Year")
+        if yr_key in year_candidates:
+            available_years.add(yr_key)
+
+    # Since we must always start from init conversation, the first chosen block must be from init.
+    # The loop will continue until we have n_blocks chosen.
+    while len(chosen) < n_blocks:
+        # Determine the current pool of available blocks:
+        # According to the user's suggestion, at any point, we can pick:
+        # - Any remaining init blocks
+        # - Any week blocks that are unlocked by chosen init blocks
+        # - Any month blocks unlocked by chosen week blocks
+        # - Any year blocks unlocked by chosen month blocks
+        current_pool = list(available_inits | available_weeks | available_months | available_years)
+
+        if len(current_pool) == 0:
+            # No more blocks to choose from and we haven't reached n_blocks
+            raise ValueError("Cannot reach n_blocks, ran out of available candidates.")
+
+        block = random.choice(current_pool)
+        if block in chosen:
+            # If somehow block is already chosen (should not happen if we handle sets correctly), skip
+            continue
+
+        # Choose this block
+        chosen.add(block)
+
+        # Remove from whichever set it belongs to
+        if block in available_inits:
+            available_inits.remove(block)
+            # If it's init-level (or writing-level), unlock next-week block for its context
+            fname = block[0]
+            # writing contexts won't have next-week, but calling unlock won't hurt
+            unlock_week_blocks(fname)
+
+        elif block in available_weeks:
+            available_weeks.remove(block)
+            # Unlock month block for its context
+            fname = block[0]
+            unlock_month_blocks(fname)
+
+        elif block in available_months:
+            available_months.remove(block)
+            # Unlock year block for its context
+            fname = block[0]
+            unlock_year_blocks(fname)
+
+        elif block in available_years:
+            available_years.remove(block)
+            # Year block is the last in chain, no further unlock
+
+    # Once we have chosen n_blocks, we can return them
+    final_blocks = [ (b, candidates[b]) for b in chosen ]
+
     if verbose:
-        print(f'{utils.Colors.OKGREEN}Chosen conversation blocks:{utils.Colors.ENDC}')
-        print([f"{block[0][0]}: {block[0][1]}" for block in chosen_blocks])
-    return chosen_blocks
+        print("Chosen conversation blocks:")
+        for (fn, k), data in final_blocks:
+            print(f"{fn}: {k}")
+
+    return final_blocks
 
 
 def topological_sort(processed_blocks, verbose=False):

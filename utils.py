@@ -256,11 +256,15 @@ def get_all_context_names():
     return sub_folders
 
 
-def get_all_file_names(base_folder):
+def get_all_file_names(base_folder, context=""):
     file_names = []
     for root, _, files in os.walk(base_folder):
         for file in files:
-            file_names.append(os.path.join(root, file))
+            if context != "":
+                if context in file:
+                    file_names.append(os.path.join(root, file))
+            else:
+                file_names.append(os.path.join(root, file))
     return file_names
 
 
