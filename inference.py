@@ -190,8 +190,8 @@ if __name__ == "__main__":
         n_blocks = range(1, cmd_args.n_blocks)
 
     for curr_n_blocks in n_blocks:
-        output_file_path = f'./data/eval/{llm_model}_{idx_persona}_{curr_n_blocks}.json'
-        output_file_path_full_results = f'./data/eval/{llm_model}_{idx_persona}_{curr_n_blocks}_full.json'
+        output_file_path = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks.json'
+        output_file_path_full_results = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks_full.json'
         results = {}
         full_results = []
 
@@ -250,6 +250,8 @@ if __name__ == "__main__":
             """
             keys = [distance, question_type, context]
             for key in keys:
+                if key == distance:
+                    key = f"distance_{key}"
                 if key not in results:
                     results[key] = {"correct": 0, "total": 0}
                 else:
@@ -268,6 +270,13 @@ if __name__ == "__main__":
                 }
             )
 
+        # Calculate the percentage of the results
+        for key in results:
+            results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
+        print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
+        for key in results:
+            print(f'{utils.Colors.OKGREEN}{key}: {results[key]["accuracy"]}%{utils.Colors.ENDC}')
+
         # Save evaluation results to a JSON file.
         with open(output_file_path, "w") as json_file:
             json.dump(results, json_file, indent=4)
@@ -275,3 +284,5 @@ if __name__ == "__main__":
         full_results.append({"all_conversations": all_conversations})
         with open(output_file_path_full_results, "w") as json_file:
             json.dump(full_results, json_file, indent=4)
+
+        print(f"Results saved to {output_file_path} and {output_file_path_full_results}")
