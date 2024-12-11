@@ -199,6 +199,7 @@ if __name__ == "__main__":
     for curr_n_blocks in n_blocks:
         output_file_path = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks.json'
         output_file_path_full_results = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks_full.json'
+        print(f"{utils.Colors.OKBLUE}Evaluating {llm_model} on {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}")
         results = {}
         full_results = []
 
@@ -234,7 +235,7 @@ if __name__ == "__main__":
         count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
         # Show all Q&As related to this concatenated conversation
-        for formatted_question, correct_answer, distance, question_type, context in tqdm(question_loader(all_qa)):
+        for formatted_question, correct_answer, distance, question_type, context in tqdm(question_loader(all_qa), total=len(all_qa)):
             """
             Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
             """
@@ -282,7 +283,7 @@ if __name__ == "__main__":
             results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
         print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
         for key in results:
-            print(f'{utils.Colors.OKGREEN}{key}: {results[key]["accuracy"]}%{utils.Colors.ENDC}')
+            print(f'{key}: {results[key]["accuracy"]:.2f}%')
 
         # Save evaluation results to a JSON file.
         with open(output_file_path, "w") as json_file:
@@ -292,4 +293,4 @@ if __name__ == "__main__":
         with open(output_file_path_full_results, "w") as json_file:
             json.dump(full_results, json_file, indent=4)
 
-        print(f"Results saved to {output_file_path} and {output_file_path_full_results}")
+        print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")
