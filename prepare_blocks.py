@@ -317,6 +317,8 @@ def compute_question_distance(sorted_processed_blocks):
         # Distance = total_blocks - block_position
         distance = total_blocks - (i + 1)
         for q in block.get('qa', []):
+            if not q:
+                continue
             q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
             all_qa.append(q)
     return all_qa
