@@ -11,20 +11,20 @@ from tqdm import tqdm
 from sentence_transformers import SentenceTransformer, util
 
 import utils
-import prepare_blocks
+from prepare_blocks import *
 
 # OpenAI ChatGPT API
 from openai import OpenAI
 
-# Google Gemini API from VertexAI
-import vertexai
-from vertexai.preview.generative_models import GenerativeModel, ChatSession
-
-# Meta Llama API from Replicate
-import replicate
-
-# Anthropic Claude API
-import anthropic
+# # Google Gemini API from VertexAI
+# import vertexai
+# from vertexai.preview.generative_models import GenerativeModel, ChatSession
+#
+# # Meta Llama API from Replicate
+# import replicate
+#
+# # Anthropic Claude API
+# import anthropic
 
 
 def evaluate_answer(predicted_answer, correct_answer):
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
     parser.add_argument('--format', type=str, default='string', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
-    parser.add_argument('--up_to', dest='accumulate', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
+    parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
     cmd_args = parser.parse_args()
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
         # Concatenate all conversation blocks
         all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-        count_tokens(all_strings)
+        count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
         # Show all Q&As related to this concatenated conversation
         for formatted_question, correct_answer, distance, question_type, context in tqdm(question_loader(all_qa)):
@@ -238,9 +238,9 @@ if __name__ == "__main__":
                 print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
                 print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
                 if match:
-                    print(f'{utils.Colors.OKGREEN}{"Correct"}:{utils.Colors.ENDC}')
+                    print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
                 else:
-                    print(f'{utils.Colors.FAIL}{"Incorrect"}:{utils.Colors.ENDC}')
+                    print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
             """
             (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block

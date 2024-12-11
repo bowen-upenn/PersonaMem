@@ -37,7 +37,8 @@ def reformat_conversation(context, conversation, which_format):
                     role = "assistant" if line.startswith("Assistant") else "user" # user includes both 'User' and '[Original_Sentence]'
                     extracted_conversation.append({"role": role, "content": line})
                 else:
-                    raise NotImplementedError("Unknown context: {}".format(context))
+                    role = "assistant" if line.startswith("Assistant") else "user"
+                    extracted_conversation.append({"role": role, "content": line})
     else:
         raise NotImplementedError("Unknown format: {}".format(which_format))
 
@@ -88,34 +89,6 @@ def process_conversation_block(context, conversation, which_format):
     return reformatted_conversation, latest_timestamp
 
 
-# def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", verbose=False):
-#     candidates = {}
-#
-#     for root, dirs, files in os.walk(base_dir):
-#         for file_name in files:
-#             context = file_name.split('_')[1]
-#             if f"persona{idx_persona}_" in file_name:
-#                 fpath = os.path.join(root, file_name)
-#                 with open(fpath, "r", encoding="utf-8") as f:
-#                     data = json.load(f)
-#
-#                 if context == 'writing':
-#                     all_keys = ["Conversation"]
-#                 else:
-#                     all_keys = ["Init Conversation", "Conversation Next Week", "Conversation Next Month", "Conversation Next Year"]
-#                 for key in all_keys:
-#                     if key in data:
-#                         candidates[(file_name, key)] = data[key]
-#
-#     if n_blocks > len(candidates):
-#         raise ValueError("Not enough conversation blocks available.")
-#
-#     # Randomly sample the desired number of blocks
-#     chosen_blocks = random.sample(list(candidates.items()), n_blocks)
-#     if verbose:
-#         print(f'{utils.Colors.OKGREEN}Chosen conversation blocks:{utils.Colors.ENDC}')
-#         print([f"{block[0][0]}: {block[0][1]}" for block in chosen_blocks])
-#     return chosen_blocks
 def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", verbose=False):
     # Load all candidates
     candidates = {}
@@ -285,16 +258,16 @@ def concatenate_blocks(sorted_processed_blocks, which_format, verbose=False):
         for block in sorted_processed_blocks:
             all_conversations.extend(block["conversation"])
 
-    if verbose:
-        print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
-        print(all_conversations)
+    # if verbose:
+    #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
+    #     print(all_conversations)
     return all_conversations
 
 
-def count_tokens(all_strings):
+def count_tokens(all_strings, tokenizer, llm_model):
     all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
-    print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on {args['models']['llm_model']} tokenizer{utils.Colors.ENDC}")
+    print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on {llm_model} tokenizer{utils.Colors.ENDC}")
     
     
 def extract_qa(base_dir, context, file_name, time_period):
@@ -349,7 +322,7 @@ def question_loader(qa_list):
 
         # Find the correct answer's option
         correct_index = options.index(qa["Correct_Answer"])
-        correct_answer = chr(97 + correct_index) + " " + qa["Correct_Answer"] # Convert index to letter (e.g., 0 -> 'a')
+        correct_answer = '(' + chr(97 + correct_index) + ") " + qa["Correct_Answer"] # Convert index to letter (e.g., 0 -> 'a')
 
         # Create the multiple-choice question string
         question = qa["Question"]
@@ -426,7 +399,7 @@ if __name__ == "__main__":
 
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-    count_tokens(all_strings)
+    count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
     # Show all Q&As related to this concatenated conversation
     for formatted_question, correct_answer, distance, question_type, context in question_loader(all_qa):
