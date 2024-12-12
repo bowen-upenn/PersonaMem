@@ -1,4 +1,4 @@
-# This is the official implementation of the paper [MemoryBench: TODO](todo) in PyTorch.
+# This is the official implementation of the paper [MemoryBench: Evaluating the Memorization of User Personas in Long Conversations](todo) in PyTorch.
 
 <p align="center">
 <img src=figures/artistic_illustration.jpeg/>
@@ -55,11 +55,10 @@ The Q&As must be generated after the conversations. We allow command-line argpar
 - ```--model``` **[str]** to select the LLM to generate the q&a
   - ```gpt-4o```
 - ```--action``` **[str]** to select the current action
-    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for ```writing``` context.
+    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for the ```writing``` context.
     - ```qa``` to generate question and answer pairs
-    - ```batch_qa``` to generate question and answer pairs for all available data under [./data/output/](./data/output/) over all time periods.
-- ```--data``` **[str]** to specify the data path of the conversation data. Not applicable for ```batch_qa``` action. Note that the data path also specifies the current context.
-- ```--time``` **[str]** to specify the cut-off time (included) for the conversation data. Not applicable for ```batch_qa``` action or ```writing``` context.
+- ```--data``` **[str]** to specify the data path of the conversation data. Note that the data path specifies the current context.
+- ```--time``` **[str]** to specify the cut-off time (included) for the conversation data. Not applicable for the ```writing``` context.
     - ```init``` for the ```Initial Conversation``` block
     - ```next_week``` for the ```Conversation Next Week``` block
     - ```next_month``` for the ```Conversation Next Month``` block
@@ -74,10 +73,15 @@ The Q&As must be generated after the conversations. We allow command-line argpar
 
     python prepare_qa.py --model gpt-4o --action qa --data therapy_persona0_sample0 --time next_year --verbose
 
-#### To generate Q&As for all available data files
+#### To generate Q&As for a batch of data files
 
-    python prepare_qa.py --model gpt-4o --action batch_qa --verbose
+Specify the data files you want to process in [./scripts/run_all_prepare_qa.sh](./scripts/run_all_prepare_qa.sh) and run the following command.
 
+    bash scripts/run_all_prepare_qa.sh
+
+Similarly, the most common reason for generation failures is syntax errors in JSON formats, and we will output the data paths of all failed samples. You can copy these paths into [./scripts/rerun_prepare_qa.sh](./scripts/rerun_prepare_qa.sh) and run the following command to process the failed samples again.
+    
+    bash scripts/rerun_prepare_qa.sh
 
 ## To test block concatenations for enabling long context windows
 
@@ -126,3 +130,9 @@ This is the final step of the pipeline. You must have set up your API tokens und
 #### Example command
 
     python inference.py --model o1-preview --idx_persona 0 --format api_dict --n_blocks 5 --up_to --verbose
+
+#### To generate Q&As for a batch of data files
+
+Specify the evaluation hyperparameters in [./scripts/run_all_inference.sh](./scripts/run_all_inference.sh) and run the following command.
+
+    bash scripts/run_all_inference.sh

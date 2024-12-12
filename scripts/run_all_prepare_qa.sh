@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Arrays for the parameters
-#contexts=("therapy" "legal" "foodRecommendation" "datingConsultation" "travelPlanning" "onlineShopping" "studyConsultation" "writing")
-contexts=("writing")
+contexts=("therapy" "legal" "foodRecommendation" "datingConsultation" "travelPlanning" "onlineShopping" "studyConsultation" "writing")
 idx_personas=$(seq 0 19)
 time_periods=("init" "next_week" "next_month" "next_year")
 
