@@ -131,7 +131,7 @@ This is the final step of the pipeline. You must have set up your API tokens und
 
     python inference.py --model o1-preview --idx_persona 0 --format api_dict --n_blocks 5 --up_to --verbose
 
-#### To generate Q&As for a batch of data files
+#### To run evaluations on multiple scenarios
 
 Specify the evaluation hyperparameters in [./scripts/run_all_inference.sh](./scripts/run_all_inference.sh) and run the following command.
 
