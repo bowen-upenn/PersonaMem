@@ -105,7 +105,7 @@ The block concatenation must be performed after the Q&As are generated. We allow
 
 This is the final step of the pipeline. You must have set up your API tokens under [api_tokens](api_tokens). We allow command-line argparser for the following arguments:
 
-- ```--model``` **[str]** to select the LLM to evaluate
+- ```--model``` **[str]** to select the LLM to evaluate (we currently support gpt-4o and gpt-4o-mini)
   - ```o1-preview```
   - ```o1-mini```
   - ```gpt-4o```
