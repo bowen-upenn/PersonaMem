@@ -135,7 +135,7 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
               '"Side_Note: [xxx] MM/DD/YYYY",' \
               '"' + user + ': yyy",' \
               '"' + agent + ': zzz",' \
-              "...] Use a Python list of strings where each sentence is one string. Do NOT use JSON. No other words."
+              "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. No other words."
     return prompt
 
 
@@ -166,14 +166,36 @@ def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
     elif round == 2:
         prompt = "Please fill in these missed timestamps with their corresponding events mentioned in the " + history_block + " into the " + conversation_block + ". " \
                  "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation. Keep them word-by-word IDENTICAL." \
-                 "Follow exactly the SAME template in the original conversation:\n\n" \
+                 "If there is no missed timestamp, no need to change any part of the original conversation. Follow exactly the SAME template in the original conversation:\n\n" \
                  "[\n" \
                  '"Side_Note: [xxx] MM/DD/YYYY",' \
                  '"' + user + ': yyy",' \
                  '"' + agent + ': zzz",' \
-                 "...] Use a Python list of strings where each sentence is one string. Do NOT use JSON. Just output the completed conversation. No other words."
+                 "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the completed conversation. No other words."
     else:
         raise ValueError("Invalid round", round)
+    return prompt
+
+
+def prompts_for_expanding_conversation_section(context, section):
+    if context == 'therapy':
+        context_name, user, agent = 'therapy', 'Patient', 'Therapist'
+    elif context == 'legal':
+        context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
+    else:
+        context_name, user, agent = context, 'User', 'Assistant'
+
+    prompt = "Please expand these sentences. I do NOT want any new user preferences, examples, or changes to the story behind the conversation. " \
+             "Instead, extend each line to AT LEAST FIVE sentences by adding additional details or irrelevant context that delves deeper into the mentioned objects or events. " \
+             "Ensure that no new preferences are introduced or altered. Each revised sentence should provide greater depth while maintaining consistency with the original narrative and intent." \
+             "Note that the lines said by " + agent + " should be even longer to show the caring or professionalism. " \
+             "Here is the section you should expand, while do NOT expand or modify the line of Side_Note.\n\n" + '\n'.join(section) + "\n\n" \
+             "Follow exactly the SAME template in the original sentences:\n\n" \
+             "[\n" \
+             '"Side_Note: [xxx] MM/DD/YYYY",' \
+             '"' + user + ': yyy",' \
+             '"' + agent + ': zzz",' \
+             "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
     return prompt
 
 

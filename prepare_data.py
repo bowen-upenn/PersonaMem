@@ -9,6 +9,7 @@ import ast
 import yaml
 import argparse
 import sys
+import ast
 
 from query_llm import QueryLLM
 import utils
@@ -64,6 +65,44 @@ def prepare_context(idx_context, all_contexts, curr_context, args):
     return source_dir, all_source_files
 
 
+def parse_conversation_sections(LLM, input_conversation, context, verbose):
+    """
+    :param input_conversation: A list of strings representing the conversation
+    We define each section in the conversation as a group of lines before the next Side_Note
+    """
+    def expand_section(LLM, section):
+        response = LLM.query_llm(step='expand_conversation_section', context=context, data=section, verbose=verbose)
+        response = response.strip("```python").strip("```plaintext").strip()
+        response = ast.literal_eval(response)
+        return response
+
+    # Keywords to identify the start of a new section
+    keywords = {'Side_Note', 'Side_Notes', '[Side_Note]', '[Side_Notes]', 'Side', '[Side'}
+    sections = []  # To store the parsed sections
+    current_section = []  # To collect strings for the current section
+
+    for line in input_conversation:
+        # Check if the line starts with any of the keywords
+        if any(line.startswith(keyword) for keyword in keywords):
+            # Save the current section (if not empty) and start a new one
+            if current_section:
+                sections.append(current_section)
+                current_section = []
+        # Add the current line to the current section
+        current_section.append(line)
+
+    # Add the last section if there is one
+    if current_section:
+        sections.append(current_section)
+
+    expanded_conversation = []
+    for section in sections:
+        expanded_section = expand_section(LLM, section)
+        expanded_conversation += expanded_section
+
+    return expanded_conversation
+
+
 def prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args):
     # Convert the writing sample into a conversation
     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=args['inference']['verbose'])
@@ -98,6 +137,9 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
     existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history, 'first_expand_general_personal_history': LLM.first_expand_general_personal_history,
                                          'second_expand_general_personal_history': LLM.second_expand_general_personal_history,
                                          'third_expand_general_personal_history': LLM.third_expand_general_personal_history}
+    # steps = ['init_general_personal_history', 'init_contextual_personal_history']
+    # data_names = ['Init General Personal History', 'Init Contextual Personal History']
+    # existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history}
 
     for step, data_name in tqdm(zip(steps, data_names)):
         # Only generate general personal history once, to be shared across multiple contexts for the same persona
@@ -111,12 +153,15 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
     # Populate personal history into conversation
     steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
     data_names = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
+    # steps = ['init_conversation']
+    # data_names = ['Init Conversation']
 
     for step, data_name in zip(steps, data_names):
         response = LLM.query_llm(step=step, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, context=curr_context, data=response, action=1, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, context=curr_context, action=2, verbose=args['inference']['verbose'])
-        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False, parse_list=True)
+        expanded_conversation = parse_conversation_sections(LLM, response, curr_context, verbose=args['inference']['verbose'])
+        utils.append_json_to_file(expanded_conversation, output_file_path, curr_data_name=data_name, parse_json=False, parse_list=False)
 
 
 def prepare_data(args):

@@ -112,6 +112,9 @@ class QueryLLM:
         elif step == 'reflect_third_expand_conversation':
             prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.third_expand_personal_history, 'conversation_block': data}, round=action, period='YEAR')
 
+        elif step == 'expand_conversation_section':
+            prompt = prompts.prompts_for_expanding_conversation_section(context, data)
+
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
         elif step == 'prepare_new_content':
@@ -124,9 +127,9 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper':
+        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
             response = self.client.chat.completions.create(
-                model=self.args['models']['llm_model'],
+                model=self.args['models']['llm_model'] if step != 'expand_conversation_section' else 'gpt-4o-mini',
                 messages=[{"role": "user",
                            "content": prompt}]
             )
