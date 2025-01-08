@@ -189,7 +189,8 @@ def prompts_for_expanding_conversation_section(context, section):
              "Instead, extend each line to AT LEAST FIVE sentences by adding additional details or irrelevant context that delves deeper into the mentioned objects or events. " \
              "Ensure that no new preferences are introduced or altered. Each revised sentence should provide greater depth while maintaining consistency with the original narrative and intent." \
              "Note that the lines said by " + agent + " should be even longer to show the caring or professionalism. " \
-             "Here is the section you should expand, while do NOT expand or modify the line of Side_Note.\n\n" + '\n'.join(section) + "\n\n" \
+             "Also note that if the last line is another line of 'Side_Note', that 'Side_Note' indicates the next event, so the previous line should consider how to smoothly transit the conversation. " \
+             "Here is the section you should expand, while do NOT expand or modify the line(s) of Side_Note.\n\n" + '\n'.join(section) + "\n\n" \
              "Follow exactly the SAME template in the original sentences:\n\n" \
              "[\n" \
              '"Side_Note: [xxx] MM/DD/YYYY",' \

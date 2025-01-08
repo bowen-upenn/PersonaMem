@@ -79,13 +79,17 @@ def parse_conversation_sections(LLM, input_conversation, context, verbose):
     # Keywords to identify the start of a new section
     keywords = {'Side_Note', 'Side_Notes', '[Side_Note]', '[Side_Notes]', 'Side', '[Side'}
     sections = []  # To store the parsed sections
+    with_next_sidenote = []
     current_section = []  # To collect strings for the current section
 
-    for line in input_conversation:
+    for idx, line in enumerate(input_conversation):
         # Check if the line starts with any of the keywords
         if any(line.startswith(keyword) for keyword in keywords):
             # Save the current section (if not empty) and start a new one
             if current_section:
+                # Add the next line containing the next Side_Note, if any, to support smoother transition
+                if idx + 1 < len(input_conversation):
+                    current_section.append(input_conversation[idx + 1])
                 sections.append(current_section)
                 current_section = []
         # Add the current line to the current section
@@ -96,9 +100,12 @@ def parse_conversation_sections(LLM, input_conversation, context, verbose):
         sections.append(current_section)
 
     expanded_conversation = []
-    for section in sections:
+    for idx, section in enumerate(sections):
         expanded_section = expand_section(LLM, section)
-        expanded_conversation += expanded_section
+        if idx + 1 < len(sections):
+            expanded_conversation += expanded_section[:-1]  # Do not repetitively add the last line of each section, i.e., the Side_Note in the next section
+        else:
+            expanded_conversation += expanded_section
 
     return expanded_conversation
 
