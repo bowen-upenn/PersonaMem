@@ -36,6 +36,7 @@ class QueryLLM:
             model=self.args['models']['llm_model'],
         )
         self.thread_conversation = None
+        self.thread_reflect_conversation = None
         self.thread_preparing_new_content = None
         self.thread_new_content = None
         self.thread_eval_new_content = None
@@ -51,12 +52,13 @@ class QueryLLM:
         self.init_personal_history = None
         self.first_expand_personal_history = None
         self.second_expand_personal_history = None
-        self.third_personal_history = None
+        self.third_expand_personal_history = None
 
     def create_a_thread(self, step):
         if step == 'conversation':
             self.thread_persona = self.client.beta.threads.create()
             self.thread_conversation = self.client.beta.threads.create()
+            self.thread_reflect_conversation = self.client.beta.threads.create()
             self.thread_preparing_new_content = self.client.beta.threads.create()
         elif step == 'qa':
             self.thread_new_content = self.client.beta.threads.create()
@@ -98,7 +100,17 @@ class QueryLLM:
         elif step == 'second_expand_conversation':
             prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.second_expand_personal_history, period='MONTH')
         elif step == 'third_expand_conversation':
-            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_personal_history, period='YEAR')
+            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_expand_personal_history, period='YEAR')
+
+        # Reflect on the conversation
+        elif step == 'reflect_init_conversation':
+            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.init_personal_history, 'conversation_block': data}, round=action, period='INIT')
+        elif step == 'reflect_first_expand_conversation':
+            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.first_expand_personal_history, 'conversation_block': data}, round=action, period='WEEK')
+        elif step == 'reflect_second_expand_conversation':
+            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.second_expand_personal_history, 'conversation_block': data}, round=action, period='MONTH')
+        elif step == 'reflect_third_expand_conversation':
+            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.third_expand_personal_history, 'conversation_block': data}, round=action, period='YEAR')
 
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
@@ -126,6 +138,8 @@ class QueryLLM:
         else:
             if step == 'source_data' or step == 'init_conversation' or step == 'first_expand_conversation' or step == 'second_expand_conversation' or step == 'third_expand_conversation':
                 curr_thread = self.thread_conversation
+            elif step == 'reflect_conversation':
+                curr_thread = self.thread_reflect_conversation
             elif step == 'prepare_new_content':
                 curr_thread = self.thread_preparing_new_content
             elif step == 'new_content':
@@ -191,8 +205,8 @@ class QueryLLM:
         elif step == 'second_expand_contextual_personal_history':
             self.second_expand_personal_history += response
         elif step == 'third_expand_general_personal_history':
-            self.third_personal_history = response
+            self.third_expand_personal_history = response
         elif step == 'third_expand_contextual_personal_history':
-            self.third_personal_history += response
+            self.third_expand_personal_history += response
 
         return response

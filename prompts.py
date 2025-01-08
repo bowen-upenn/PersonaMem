@@ -34,7 +34,7 @@ def prompts_for_init_general_personal_history(persona, start_time):
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys." \
+             "Do NOT modify the names of these keys. Please use double quotes for the names." \
              "Here is the persona: " + persona
     return prompt
 
@@ -52,7 +52,7 @@ def prompts_for_init_contextual_personal_history(context, start_time, persona, g
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys."
+             "Do NOT modify the names of these keys. Please use double quotes for the names."
     return prompt
 
 
@@ -93,7 +93,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
                   '"[Old Event Date]": MM/DD/YYYY, \n' \
                   '"[Old Event]": xxx, \n' \
               "}\n" \
-              "Do NOT modify the names of these keys."
+              "Do NOT modify the names of these keys. Please use double quotes for the names."
     return prompt
 
 
@@ -132,10 +132,48 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
 
     prompt += "Except for the initial sentences as the introduction, here is the template you should follow for each pair of utterance that mentions a fact in the personal history:\n\n" \
               "[\n" \
-              'Side_Note: [xxx] MM/DD/YYYY,\n' \
-              '' + user + ': xxx,\n' \
-              '' + agent + ': yyy,\n' \
-              "...] It is a list of strings. Do NOT use JSON. No other words."
+              '"Side_Note: [xxx] MM/DD/YYYY",' \
+              '"' + user + ': yyy",' \
+              '"' + agent + ': zzz",' \
+              "...] Use a Python list of strings where each sentence is one string. Do NOT use JSON. No other words."
+    return prompt
+
+
+def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
+    if context == 'therapy':
+        context_name, user, agent = 'therapy', 'Patient', 'Therapist'
+    elif context == 'legal':
+        context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
+    else:
+        context_name, user, agent = context, 'User', 'Assistant'
+
+    if period == 'INIT':
+        history_block = "'Init General Personal History'"
+        conversation_block = "'Init Conversation'"
+    elif period == 'WEEK':
+        history_block = "'General Personal History Next Week'"
+        conversation_block = "'Conversation Next Week'"
+    elif period == 'MONTH':
+        history_block = "'General Personal History Next Month'"
+        conversation_block = "'Conversation Next Month'"
+    else:
+        history_block = "'General Personal History Next Year'"
+        conversation_block = "'Conversation Next Year'"
+
+    if round == 1:
+        prompt = "Given the following " + history_block + " and the " + conversation_block + ", check if the " + conversation_block + " has covered every single timestamp in the " + history_block + ". " \
+                 "List all missed ones:\n\n" + data['history_block'] + "\n\n" + data['conversation_block']
+    elif round == 2:
+        prompt = "Please fill in these missed timestamps with their corresponding events mentioned in the " + history_block + " into the " + conversation_block + ". " \
+                 "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation. Keep them word-by-word IDENTICAL." \
+                 "Follow exactly the SAME template in the original conversation:\n\n" \
+                 "[\n" \
+                 '"Side_Note: [xxx] MM/DD/YYYY",' \
+                 '"' + user + ': yyy",' \
+                 '"' + agent + ': zzz",' \
+                 "...] Use a Python list of strings where each sentence is one string. Do NOT use JSON. Just output the completed conversation. No other words."
+    else:
+        raise ValueError("Invalid round", round)
     return prompt
 
 
@@ -148,7 +186,7 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. " \
+                 "Do NOT modify the names of these keys. Please use double quotes for the names." \
                  "Here is the event:\n\n" + data['event']
     elif action == 'propose_incorrect_facts':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
@@ -161,7 +199,7 @@ def prompts_for_generating_qa(data, action):
                  '    "New Question": xxx,\n' \
                  '    "New Name": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys."
+                 "Do NOT modify the names of these keys. Please use double quotes for the names."
     elif action == 'propose_incorrect_reasons':
         prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
                  "Incorrect answers should have the same length with the correct answer."
@@ -173,7 +211,7 @@ def prompts_for_generating_qa(data, action):
                  '    "parent_object": xxx,\n' \
                  '    "random_child_object": yyy\n' \
                  "}\n" \
-                 "Do NOT modify the names of these keys. "
+                 "Do NOT modify the names of these keys. Please use double quotes for the names."
     elif action == 'recommendation':
         prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
                  "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
@@ -184,7 +222,7 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. " \
+                 "Do NOT modify the names of these keys. Please use double quotes for the names." \
                  "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
     elif action == 'propose_incorrect_recommendations':
         prompt = "Given the following Q&A, prepare two incorrect answers.\n\n" + data['qa'] + "\n\nOutput a Python list of two strings, following this format: ['xxx', 'yyy']. Do NOT use JSON." \

@@ -6,6 +6,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from sentence_transformers import util
+import ast
 
 
 class Colors:
@@ -74,7 +75,7 @@ def process_json_from_api(response):
     return response
 
 
-def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False):
+def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False, parse_list=False):
     def load_existing_json(file_path):
         if os.path.exists(file_path):
             with open(file_path, "r") as json_file:
@@ -86,33 +87,16 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
             return {}
 
 
-    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False):
+    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False, parse_list=False):
         if parse_json:
             json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
             if json_match:
                 # Extract the JSON part
                 json_part = json_match.group(1).strip()
                 response = process_json_from_api(json_part)
-
-            # # Use regex to extract the JSON part enclosed by "```json" and "```"
-            # json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
-            #
-            # if json_match:
-            #     # Extract the JSON part
-            #     json_part = json_match.group(1).strip()
-            #
-            #     try:
-            #         # Parse the extracted JSON string into a Python dictionary
-            #         parsed_json = json.loads(json_part)
-            #         # Add the parsed JSON content to the existing data under the user-specified key
-            #         existing_json_file[curr_data_name] = parsed_json
-            #
-            #     except json.JSONDecodeError as e:
-            #         print(f"Error parsing JSON for {curr_data_name}: {e}")
-            # else:
-            #     print(f"No JSON content found for {curr_data_name}")
-        # else:
-        #     # Add the entire response as a string
+        elif parse_list:
+            response = response.strip("```python").strip("```plaintext").strip()
+            response = ast.literal_eval(response)
 
         existing_json_file[curr_data_name] = response
         return existing_json_file
@@ -122,7 +106,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     existing_json_file = load_existing_json(output_file_path)
 
     # Extract and append the new JSON data
-    appended_json_file = extract_json_from_response(response, curr_data_name, existing_json_file, parse_json)
+    appended_json_file = extract_json_from_response(response, curr_data_name, existing_json_file, parse_json, parse_list)
 
     # Save the updated data back to the file
     with open(output_file_path, "w") as json_file:

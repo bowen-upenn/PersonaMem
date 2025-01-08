@@ -1,7 +1,9 @@
 #!/bin/bash
 
-models=("gpt-4o" "gpt-4o-mini")
-idx_personas=$(seq 2 9)
+#models=("gpt-4o" "gpt-4o-mini")
+#idx_personas=$(seq 2 9)
+models=("gpt-4o-mini")
+idx_personas=$(seq 1)
 n_blocks=$(seq 1 10)
 
 total=$(( ${#models[@]} * 10 * 10 ))

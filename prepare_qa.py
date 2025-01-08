@@ -51,7 +51,7 @@ def get_time_period_from_block_name(bname):
 
 def trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=False):
     """
-    Traces the event history recursively, if needed, for knowledge updates.
+    Traces the event history recursively for knowledge updates.
     """
     linear_graph = {}
 
@@ -577,43 +577,43 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
 
         # If there are more than one related data with the same timestamp, find the single correct one
         if len(related_data) > 1:
-            most_similar_data = utils.find_most_similar_event(SentenceBERT, side_note, related_data)
+            corresponding_data = utils.find_most_similar_event(SentenceBERT, side_note, related_data)
         else:
-            most_similar_data = related_data[0]
+            corresponding_data = related_data[0]
 
         event_history = trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=(action=='view_graphs'))
 
-        if "Reasons of Change" in most_similar_data or "[Reasons of Change]" in most_similar_data:
+        if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                try:
-                    qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-                    all_qa_entries.extend(qa_entries)
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
-                try:
-                    qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
-                    all_qa_entries.extend(qa_entries)
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
-                parent_object = None
-                try:
-                    qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                    all_qa_entries.extend([qa_entry])
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
-                try:
-                    qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
-                    all_qa_entries.extend([qa_entry])
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
-        else:
-            # Static knowledge point
-            try:
-                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                # try:
+                #     qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                #     all_qa_entries.extend(qa_entries)
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                # try:
+                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
                 all_qa_entries.extend(qa_entries)
-            except:
-                print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
+                parent_object = None
+                # try:
+                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
+                # try:
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
+        # else:
+        #     # Static knowledge point
+        #     try:
+        #         qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+        #         all_qa_entries.extend(qa_entries)
+        #     except:
+        #         print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:
