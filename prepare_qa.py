@@ -237,15 +237,18 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
 
 
 def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
-
-    def _randomly_shorten_an_answer(incorrect_answer):
+    def _randomly_shorten_an_answer(incorrect_answer, remove_last_event=True):
         # Randomly remove one event if the number of '->' is greater than 2
         events = [event.strip() for event in incorrect_answer.split('->')]
-        random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
+        if remove_last_event:
+            random_event_index = len(events) - 1
+        else:
+            random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
 
         # To remove one update step, we need to remove two consecutive events
         del events[random_event_index]
-        del events[random_event_index + 1]
+        if not remove_last_event:
+            del events[random_event_index + 1]
 
         incorrect_answer = ' -> '.join(events)
         return incorrect_answer
@@ -258,16 +261,22 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
         user = 'user'
 
     """
-    - Incorrect knowledge updates
-    - Always dislikes
-    - Always likes
-    - Correct knowledge updates, but use the object never mentioned in the conversation
-    - Incorrect knowledge updates, but use the object never mentioned in the conversation
-    - Randomly substitute likes to dislikes (or vice versa) x 2
-    - Miss some update steps, if the number of steps is greater than 2
+    - Correct answer type I
+    - Incorrect answers type I
+        - Same as the correct knowledge updates, except for missing the last one or adding an additional one
+        - Always dislikes
+        - Always likes
+        
+    - Correct answer type II
+        - The user has never mentioned this object
+    - Incorrect answers type II
+        - Same as the correct knowledge updates, except for missing the last one or adding an additional one, but use the object never mentioned in the conversation
+        - Correct knowledge updates, but use the object never mentioned in the conversation
+        - Incorrect knowledge updates, but use the object never mentioned in the conversation
     """
-    correct_answer = ""
-    incorrect_answers = ["" for _ in range(7)]
+    qa_entries = []
+    correct_answer = ["", ""]
+    incorrect_answers = [["", "", ""], ["", "", ""]]
     timestamps = list(event_history.keys())  # Get all timestamps in order
 
     # Assert there are knowledge updates
@@ -291,6 +300,8 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
     # Iterate through the linear graph of updates to generate correct and incorrect answers
     previous_details = None
+    final_preference = None
+    event_count = 0
     for i, timestamp in enumerate(reversed(timestamps)):
         current_details = event_history[timestamp]
 
@@ -301,74 +312,106 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
         if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
             if previous_details is not None and ("[Updated Fact] Likes" in previous_details or "[Fact] Likes" in previous_details):
                 continue    # We encountered a missing event not mentioned in the conversation, so there is no preference update reflected in the conversation itself
+            if i + 1 == len(timestamps):
+                final_preference = 'likes'
+            event_count += 1
 
             curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
-            if len(correct_answer) == 0:
-                correct_answer += f"The user likes {curr_preference}"
-                incorrect_answers[0] = f"The user dislikes {curr_preference}"
-                incorrect_answers[1] = f"The user always dislikes {curr_preference}"
-                incorrect_answers[2] = f"The user always likes {curr_preference}"
-                incorrect_answers[3] = f"The user likes {random_child_object}"
-                incorrect_answers[4] = f"The user dislikes {random_child_object}"
-                incorrect_answers[5] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
-                incorrect_answers[6] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+            if len(correct_answer[0]) == 0:
+                correct_answer[0] += f"The user likes {curr_preference}"
+                incorrect_answers[0][0] = f"The user likes {curr_preference}"   # will perturb later on
+                incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
+                incorrect_answers[0][2] = f"The user always likes {curr_preference}"
+
+                correct_answer[1] += f"The user has never mentioned {random_child_object}"
+                incorrect_answers[1][0] = f"The user likes {random_child_object}"   # will perturb later on
+                incorrect_answers[1][1] = f"The user likes {random_child_object}"
+                incorrect_answers[1][2] = f"The user dislikes {random_child_object}"
             else:
-                correct_answer += f" -> likes {curr_preference}"
-                incorrect_answers[0] += f" -> dislikes {curr_preference}"
-                incorrect_answers[3] += f" -> likes {random_child_object}"
-                incorrect_answers[4] += f" -> dislikes {random_child_object}"
-                incorrect_answers[5] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
-                incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                correct_answer[0] += f" -> likes {curr_preference}"
+                incorrect_answers[0][0] += f" -> likes {curr_preference}"   # will perturb later on
+
+                incorrect_answers[1][0] += f" -> likes {random_child_object}"
+                incorrect_answers[1][1] += f" -> likes {random_child_object}"   # will perturb later on
+                incorrect_answers[1][2] += f" -> dislikes {random_child_object}"
 
         elif "[Updated Fact] Dislikes" in current_details or "[Fact] Dislikes" in current_details:
             if previous_details is not None and ("[Updated Fact] Dislikes" in previous_details or "[Fact] Dislikes" in previous_details):
                 continue
-            
+            if i + 1 == len(timestamps):
+                final_preference = 'dislikes'
+            event_count += 1
+
             curr_preference = current_details['[Updated Fact] Dislikes'].lower() if "[Updated Fact] Dislikes" in current_details else current_details['[Fact] Dislikes'].lower()
-            if i == 0:
-                correct_answer += f"The user dislikes {curr_preference}"
-                incorrect_answers[0] = f"The user likes {curr_preference}"
-                incorrect_answers[1] = f"The user always dislikes {curr_preference}"
-                incorrect_answers[2] = f"The user always likes {curr_preference}"
-                incorrect_answers[3] = f"The user dislikes {random_child_object}"
-                incorrect_answers[4] = f"The user likes {random_child_object}"
-                incorrect_answers[5] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
-                incorrect_answers[6] = f"The user {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+            if len(correct_answer[0]) == 0:
+                correct_answer[0] += f"The user dislikes {curr_preference}"
+                incorrect_answers[0][0] = f"The user dislikes {curr_preference}"   # will perturb later on
+                incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
+                incorrect_answers[0][2] = f"The user always likes {curr_preference}"
+
+                correct_answer[1] += f"The user has never mentioned {random_child_object}"
+                incorrect_answers[1][0] = f"The user dislikes {curr_preference}"   # will perturb later on
+                incorrect_answers[1][1] = f"The user dislikes {random_child_object}"
+                incorrect_answers[1][2] = f"The user likes {random_child_object}"
             else:
-                correct_answer += f" -> dislikes {curr_preference}"
-                incorrect_answers[0] += f" -> likes {curr_preference}"
-                incorrect_answers[3] += f" -> dislikes {random_child_object}"
-                incorrect_answers[4] += f" -> likes {random_child_object}"
-                incorrect_answers[5] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
-                incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+                correct_answer[0] += f" -> dislikes {curr_preference}"
+                incorrect_answers[0][0] += f" -> dislikes {curr_preference}"   # will perturb later on
+
+                incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+                incorrect_answers[1][1] += f" -> dislikes {random_child_object}"   # will perturb later on
+                incorrect_answers[1][2] += f" -> likes {random_child_object}"
 
         previous_details = current_details
 
-    # Remove some random steps from the correct answer
-    incorrect_answer_shorter = correct_answer[:]
-    if incorrect_answer_shorter.count('->') > 3:
-        incorrect_answers.append(_randomly_shorten_an_answer(incorrect_answer_shorter))
+    if event_count == 1:
+        return None, None
+    elif event_count <= 2:  # The only way is to add additional events not mentioned in the conversation
+        if final_preference == 'likes':
+            incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
+            incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+        elif final_preference == 'dislikes':
+            incorrect_answers[0][0] += f" -> likes {curr_preference}"
+            incorrect_answers[1][0] += f" -> likes {random_child_object}"
+    else:
+        if random.random() > 0.5:   # Add an additional event not mentioned in the conversation
+            if final_preference == 'likes':
+                incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
+                incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+            elif final_preference == 'dislikes':
+                incorrect_answers[0][0] += f" -> likes {curr_preference}"
+                incorrect_answers[1][0] += f" -> likes {random_child_object}"
+        else:   # Remove the last related event mentioned in the conversation
+            incorrect_answers[0][0] = _randomly_shorten_an_answer(incorrect_answers[0][0], remove_last_event=True)
+            incorrect_answers[1][0] = _randomly_shorten_an_answer(incorrect_answers[1][0], remove_last_event=True)
 
-    # Remove repeated incorrect answers, if any resulted from the random process
-    if incorrect_answers[5] == incorrect_answers[6]:
-        del incorrect_answers[6]
+    # # Remove some random steps from the correct answer
+    # incorrect_answer_shorter = correct_answer[:]
+    # if incorrect_answer_shorter.count('->') > 3:
+    #     incorrect_answers.append(_randomly_shorten_an_answer(incorrect_answer_shorter))
 
-    qa_entry = {
+    qa_entries.append({
         "Question": question,
-        "Correct_Answer": correct_answer,
-        "Incorrect_Answers": incorrect_answers,
+        "Correct_Answer": correct_answer[0],
+        "Incorrect_Answers": incorrect_answers[0],
         "Type": "graph_of_updates",
-        "Context": context,
-        "Reference": event_history
-    }
+        "Context": context
+    })
+    qa_entries.append({
+        "Question": question,
+        "Correct_Answer": correct_answer[1],
+        "Incorrect_Answers": incorrect_answers[1],
+        "Type": "graph_of_updates_abstention",
+        "Context": context
+    })
+    qa_entries.append({"Reference": event_history})
 
     # Save to JSON file
     if verbose:
         print(f'{utils.Colors.OKGREEN}Parent Object:{utils.Colors.ENDC}')
         print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-        print(json.dumps(qa_entry, indent=4))
+        print(json.dumps(qa_entries, indent=4))
 
-    return qa_entry, parent_object
+    return qa_entries, parent_object
 
 
 def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=False):
@@ -609,8 +652,9 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
                 parent_object = None
                 # try:
-                qa_entry, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
+                qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                if qa_entries is not None:
+                    all_qa_entries.extend([qa_entries])
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
                 # try:
