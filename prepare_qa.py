@@ -68,7 +68,7 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
                 found = False
                 for i, line in enumerate(conversation):
                     if line.startswith("Side_Note") and timestamp in line:
-                        event_data['Conversation'] = conversation[i - 1] + '\n' + conversation[i] + '\n' + conversation[i + 1] + '\n' + conversation[i + 2]
+                        event_data['Conversation'] = conversation[i] + '\n' + conversation[i + 1] + '\n' + conversation[i + 2]
                         found = True
                         break
                 if not found:
@@ -290,6 +290,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
     )
 
     # Iterate through the linear graph of updates to generate correct and incorrect answers
+    previous_details = None
     for i, timestamp in enumerate(reversed(timestamps)):
         current_details = event_history[timestamp]
 
@@ -298,6 +299,9 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
             continue
 
         if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
+            if previous_details is not None and ("[Updated Fact] Likes" in previous_details or "[Fact] Likes" in previous_details):
+                continue    # We encountered a missing event not mentioned in the conversation, so there is no preference update reflected in the conversation itself
+
             curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
             if len(correct_answer) == 0:
                 correct_answer += f"The user likes {curr_preference}"
@@ -317,6 +321,9 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
                 incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
 
         elif "[Updated Fact] Dislikes" in current_details or "[Fact] Dislikes" in current_details:
+            if previous_details is not None and ("[Updated Fact] Dislikes" in previous_details or "[Fact] Dislikes" in previous_details):
+                continue
+            
             curr_preference = current_details['[Updated Fact] Dislikes'].lower() if "[Updated Fact] Dislikes" in current_details else current_details['[Fact] Dislikes'].lower()
             if i == 0:
                 correct_answer += f"The user dislikes {curr_preference}"
@@ -334,6 +341,8 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
                 incorrect_answers[4] += f" -> likes {random_child_object}"
                 incorrect_answers[5] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
                 incorrect_answers[6] += f" -> {'likes' if random.choice([True, False]) else 'dislikes'} {curr_preference}"
+
+        previous_details = current_details
 
     # Remove some random steps from the correct answer
     incorrect_answer_shorter = correct_answer[:]

@@ -273,7 +273,7 @@ def prompt_for_preparing_new_content(data, action):
                  '   "[Formatting Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
                  '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
                 "}\n" \
-                "Do NOT modify the names of these keys. No other words."
+                "Do NOT modify the names of these keys.  Please use double quotes for each key and value. No other words."
     elif action == 'rewrite_from_persona':
         prompt = "Here is a creative writing sample:\n\n" + data + "\n\nGiven the creative writing sample and the persona above, " \
                  "please modify some sentences and formats as if it was written by the author with this new persona, incorporating all likes and dislikes in writing and formatting styles. " \
