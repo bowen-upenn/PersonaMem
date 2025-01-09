@@ -209,10 +209,10 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names." \
+                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words." \
                  "Here is the event:\n\n" + data['event']
     elif action == 'propose_incorrect_facts':
-        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
+        prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
                  "Incorrect answers should have the same length with the correct answer."
     elif action == 'abstention':
         prompt = "Given this question '" + data + "', your next task is to rewrite the object or event name mentioned in this question to a similar, but irrelevant name. " \
@@ -222,9 +222,9 @@ def prompts_for_generating_qa(data, action):
                  '    "New Question": xxx,\n' \
                  '    "New Name": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names."
+                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words."
     elif action == 'propose_incorrect_reasons':
-        prompt = "Given the following Q&A, prepare three incorrect answers.\n\n" + data + "Output a Python list of three strings, following this format: ['xxx', 'yyy', 'zzz']." \
+        prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
                  "Incorrect answers should have the same length with the correct answer."
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
@@ -234,7 +234,7 @@ def prompts_for_generating_qa(data, action):
                  '    "parent_object": xxx,\n' \
                  '    "random_child_object": yyy\n' \
                  "}\n" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names."
+                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words."
     elif action == 'recommendation':
         prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
                  "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
@@ -245,18 +245,18 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names." \
+                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words." \
                  "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
     elif action == 'propose_incorrect_recommendations':
-        prompt = "Given the following Q&A, prepare two incorrect answers.\n\n" + data['qa'] + "\n\nOutput a Python list of two strings, following this format: ['xxx', 'yyy']. Do NOT use JSON." \
+        prompt = 'Given the following Q&A, prepare two incorrect answers for the multiple-choice question.\n\n' + data['qa'] + '\n\nOutput a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON.' \
                  "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
-                 "Follow the same language and length as the correct answer. These two options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
+                 "Follow the same language and length as the correct answer. These two options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. No other words."
     elif action == 'extract_identity':
-        prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. Here is the full persona:\n\n" + data
+        prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
     elif action == 'propose_stereotype_recommendation':
         prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context" \
                  "and irrelevant to or violate this " + data['user'] + "'s actual preference. Here is the question and the correct answer:\n\n" + data['qa'] + "\n\nHere is the " + data['user'] + "'s identities:\n\n" + data['persona'] + "\n\n"\
-                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. "
+                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. No other words."
     else:
         raise ValueError("Invalid action", action)
     return prompt

@@ -299,7 +299,7 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
         if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
             curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
-            if i == 0:
+            if len(correct_answer) == 0:
                 correct_answer += f"The user likes {curr_preference}"
                 incorrect_answers[0] = f"The user dislikes {curr_preference}"
                 incorrect_answers[1] = f"The user always dislikes {curr_preference}"
@@ -387,11 +387,13 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
 
     # Avoid any events not mentioned in the conversation, while it is safe to assume that the first one must has been mentioned
     recent_two_events = json.dumps(current_detail, indent=4)
+    reference = {timestamps[0]: current_detail}
 
     if len(timestamps) > 1:
         _, previous_detail = timestamps[1], event_history[timestamps[1]]
         if len(previous_detail['Conversation']) > 0:
             recent_two_events += json.dumps(previous_detail, indent=4)
+            reference[timestamps[1]] = previous_detail
     response = LLM.query_llm(step='qa_helper', data={'user': user, 'parent_object': parent_object, 'events': recent_two_events}, action='recommendation', verbose=False)
 
     response = utils.process_json_from_api(response)
@@ -415,7 +417,7 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         "Incorrect_Answers": incorrect_answers,
         "Type": "recommendations",
         "Context": context,
-        "Reference": event_history
+        "Reference": reference
     }
 
     # Save to JSON file
@@ -671,15 +673,15 @@ if __name__ == "__main__":
     else:
         raise ValueError("Invalid time", cmd_args.time)
 
-    try:
-        if 'writing' in data_path:
-            source_dir = args['datasets']['writing_source_dir']
-            all_source_files = utils.load_all_source_data(source_dir, 'writing')
-            all_writing_files = utils.load_all_writing_data()
-            evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
-        else:
-            SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
-            visited_static_factual = {}
-            evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
-    except Exception as e:
-        print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
+    # try:
+    if 'writing' in data_path:
+        source_dir = args['datasets']['writing_source_dir']
+        all_source_files = utils.load_all_source_data(source_dir, 'writing')
+        all_writing_files = utils.load_all_writing_data()
+        evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+    else:
+        SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
+        visited_static_factual = {}
+        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+    # except Exception as e:
+    #     print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
