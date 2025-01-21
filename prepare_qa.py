@@ -646,6 +646,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
                 # try:
+                
                 qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
                 all_qa_entries.extend(qa_entries)
                 # except:

@@ -34,7 +34,7 @@ def prompts_for_init_general_personal_history(persona, start_time):
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys. Please use double quotes for the names." \
+             "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format." \
              "Here is the persona: " + persona
     return prompt
 
@@ -52,7 +52,7 @@ def prompts_for_init_contextual_personal_history(context, start_time, persona, g
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys. Please use double quotes for the names."
+             "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format."
     return prompt
 
 
@@ -93,7 +93,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
                   '"[Old Event Date]": MM/DD/YYYY, \n' \
                   '"[Old Event]": xxx, \n' \
               "}\n" \
-              "Do NOT modify the names of these keys. Please use double quotes for the names."
+              "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format."
     return prompt
 
 
@@ -177,7 +177,7 @@ def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
     return prompt
 
 
-def prompts_for_expanding_conversation_section(context, section):
+def prompts_for_expanding_conversation_section(context, data):
     if context == 'therapy':
         context_name, user, agent = 'therapy', 'Patient', 'Therapist'
     elif context == 'legal':
@@ -190,7 +190,9 @@ def prompts_for_expanding_conversation_section(context, section):
              "Ensure that no new preferences are introduced or altered. Each revised sentence should provide greater depth while maintaining consistency with the original narrative and intent." \
              "Note that the lines said by " + agent + " should be even longer to show the caring or professionalism. " \
              "Also note that if the last line is another line of 'Side_Note', that 'Side_Note' indicates the next event, so the previous line should consider how to smoothly transit the conversation. " \
-             "Here is the section you should expand, while do NOT expand or modify the line(s) of Side_Note.\n\n" + '\n'.join(section) + "\n\n" \
+             "Here is the section you should expand, while do NOT expand or modify the line(s) of Side_Note.\n\n" + '\n'.join(data['section']) + "\n\n" \
+             "Please remove or rephrase any timestamp MM/DD/YYYY mentioned by the " + user + " and " + agent + " in their utterances. Note that this conversation is happening at " + data['last_timestamp'] + "." \
+             "But you should keep the Side_Note word-by-word identical including its timestamp MM/DD/YYYY unmodified. " \
              "Follow exactly the SAME template in the original sentences:\n\n" \
              "[\n" \
              '"Side_Note: [xxx] MM/DD/YYYY",' \
@@ -209,7 +211,7 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words." \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
                  "Here is the event:\n\n" + data['event']
     elif action == 'propose_incorrect_facts':
         prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
@@ -222,7 +224,7 @@ def prompts_for_generating_qa(data, action):
                  '    "New Question": xxx,\n' \
                  '    "New Name": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words."
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     elif action == 'propose_incorrect_reasons':
         prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
                  "Incorrect answers should have the same length with the correct answer."
@@ -234,7 +236,7 @@ def prompts_for_generating_qa(data, action):
                  '    "parent_object": xxx,\n' \
                  '    "random_child_object": yyy\n' \
                  "}\n" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words."
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     elif action == 'recommendation':
         prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
                  "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
@@ -245,7 +247,7 @@ def prompts_for_generating_qa(data, action):
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
                  "}" \
-                 "Do NOT modify the names of these keys. Please use double quotes for the names. No other words." \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
                  "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
     elif action == 'propose_incorrect_recommendations':
         prompt = 'Given the following Q&A, prepare two incorrect answers for the multiple-choice question.\n\n' + data['qa'] + '\n\nOutput a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON.' \

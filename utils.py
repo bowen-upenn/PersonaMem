@@ -75,6 +75,19 @@ def process_json_from_api(response):
     return response
 
 
+def extract_json_from_response(response, parse_json=False, parse_list=False):
+    if parse_json:
+        json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
+        if json_match:
+            # Extract the JSON part
+            json_part = json_match.group(1).strip()
+            response = process_json_from_api(json_part)
+    elif parse_list:
+        response = response.strip("```python").strip("```plaintext").strip()
+        response = ast.literal_eval(response)
+    return response
+
+
 def append_json_to_file(response, output_file_path, curr_data_name, parse_json=False, parse_list=False):
     def load_existing_json(file_path):
         if os.path.exists(file_path):
@@ -86,31 +99,16 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
         else:
             return {}
 
-
-    def extract_json_from_response(response, curr_data_name, existing_json_file, parse_json=False, parse_list=False):
-        if parse_json:
-            json_match = re.search(r'```json(.*?)```', response, re.DOTALL)
-            if json_match:
-                # Extract the JSON part
-                json_part = json_match.group(1).strip()
-                response = process_json_from_api(json_part)
-        elif parse_list:
-            response = response.strip("```python").strip("```plaintext").strip()
-            response = ast.literal_eval(response)
-
-        existing_json_file[curr_data_name] = response
-        return existing_json_file
-
-
     # Load the existing JSON data from the file (if any)
     existing_json_file = load_existing_json(output_file_path)
 
     # Extract and append the new JSON data
-    appended_json_file = extract_json_from_response(response, curr_data_name, existing_json_file, parse_json, parse_list)
+    parsed_response = extract_json_from_response(response, parse_json, parse_list)
+    existing_json_file[curr_data_name] = parsed_response
 
     # Save the updated data back to the file
     with open(output_file_path, "w") as json_file:
-        json.dump(appended_json_file, json_file, indent=4)
+        json.dump(existing_json_file, json_file, indent=4)
 
 
 def pick_a_random_time():
@@ -141,6 +139,34 @@ def pick_a_random_time_within_a_year(input_date):
 
     # Return the new date in the same format
     return new_date.strftime("%m/%d/%Y")
+
+
+def extract_last_timestamp(response):
+    json_response = extract_json_from_response(response, parse_json=True)
+    timestamps = list(json_response.keys())
+    last_timestamp = max(timestamps, key=lambda x: tuple(map(int, x.split('/')[::-1])))
+    return last_timestamp
+
+
+def merge_timestamps(timestamps):
+    print('timestamps before merging:', timestamps)
+    # Function to compare dates in MM/DD/YYYY format
+    def later_date(date1, date2):
+        return max(date1, date2, key=lambda x: tuple(map(int, x.split('/')[::-1])))
+
+    assert len(timestamps) % 2 == 0
+    num_conv_blocks = len(timestamps) // 2
+    merged_timestamps = []
+    for i in range(num_conv_blocks):
+        merged_timestamps.append(later_date(timestamps[i], timestamps[i + num_conv_blocks]))
+
+    for i, timestamp in enumerate(merged_timestamps):
+        random_days = random.randint(0, 6)
+        random_days = timedelta(days=random_days)
+        merged_timestamps[i] = (datetime.strptime(timestamp, "%m/%d/%Y") + random_days).strftime("%m/%d/%Y")
+    print('timestamps after merging:', merged_timestamps)
+
+    return merged_timestamps
 
 
 def find_most_similar_event(SentenceBERT, side_note_sentence, related_data):
