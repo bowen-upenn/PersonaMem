@@ -137,16 +137,16 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
         _ = LLM.query_llm(step='source_data', seed=context_conversation, verbose=args['inference']['verbose'])
 
     # Generate general and contextual personal histories across time frames
-    # steps = ['init_general_personal_history', 'first_expand_general_personal_history', 'second_expand_general_personal_history', 'third_expand_general_personal_history',
-    #          'init_contextual_personal_history', 'first_expand_contextual_personal_history', 'second_expand_contextual_personal_history', 'third_expand_contextual_personal_history']
-    # data_names = ['Init General Personal History', 'General Personal History Next Week', 'General Personal History Next Month', 'General Personal History Next Year',
-    #               'Init Contextual Personal History', 'Contextual Personal History Next Week', 'Contextual Personal History Next Month', 'Contextual Personal History Next Year']
-    # existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history, 'first_expand_general_personal_history': LLM.first_expand_general_personal_history,
-    #                                      'second_expand_general_personal_history': LLM.second_expand_general_personal_history,
-    #                                      'third_expand_general_personal_history': LLM.third_expand_general_personal_history}
-    steps = ['init_general_personal_history', 'init_contextual_personal_history']
-    data_names = ['Init General Personal History', 'Init Contextual Personal History']
-    existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history}
+    steps = ['init_general_personal_history', 'first_expand_general_personal_history', 'second_expand_general_personal_history', 'third_expand_general_personal_history',
+             'init_contextual_personal_history', 'first_expand_contextual_personal_history', 'second_expand_contextual_personal_history', 'third_expand_contextual_personal_history']
+    data_names = ['Init General Personal History', 'General Personal History Next Week', 'General Personal History Next Month', 'General Personal History Next Year',
+                  'Init Contextual Personal History', 'Contextual Personal History Next Week', 'Contextual Personal History Next Month', 'Contextual Personal History Next Year']
+    existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history, 'first_expand_general_personal_history': LLM.first_expand_general_personal_history,
+                                         'second_expand_general_personal_history': LLM.second_expand_general_personal_history,
+                                         'third_expand_general_personal_history': LLM.third_expand_general_personal_history}
+    # steps = ['init_general_personal_history', 'init_contextual_personal_history']
+    # data_names = ['Init General Personal History', 'Init Contextual Personal History']
+    # existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history}
 
     last_timestamps = []
     for step, data_name in tqdm(zip(steps, data_names)):
@@ -160,10 +160,10 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
         last_timestamps.append(utils.extract_last_timestamp(response))
 
     # Populate personal history into conversation
-    # steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
-    # data_names = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
-    steps = ['init_conversation']
-    data_names = ['Init Conversation']
+    steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
+    data_names = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
+    # steps = ['init_conversation']
+    # data_names = ['Init Conversation']
 
     last_timestamps = utils.merge_timestamps(last_timestamps)
     for conv_idx, (step, data_name) in enumerate(zip(steps, data_names)):

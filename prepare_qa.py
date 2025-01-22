@@ -105,8 +105,12 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
         user = 'user'
 
     qa_entries = []
+    timestamps = list(event_history.keys())  # Get all timestamps in order
 
-    for current_timestamp, current_detail in event_history.items():
+    for i, current_timestamp in enumerate(timestamps):
+    # for current_timestamp, current_detail in event_history.items():
+        current_detail = event_history[current_timestamp]
+
         # Avoid any events not mentioned in the conversation
         if len(current_detail['Conversation']) == 0:
             continue
@@ -136,6 +140,7 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Incorrect_Answers": incorrect_answers,
             "Type": "static_factual",
             "Context": context,
+            "Reference": event_history[current_timestamp]
         })
 
         abstention_response = LLM.query_llm(step='qa_helper', data=question, action='abstention', verbose=False)
@@ -154,14 +159,18 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Incorrect_Answers": incorrect_abstention_answers,
             "Type": "abstention",
             "Context": context,
+            "Reference": event_history[current_timestamp]
         })
 
-    if len(qa_entries) == 2:
-        qa_entries[0]["Reference"] = event_history
-        qa_entries[1]["Reference"] = event_history
-    else:
-        # they share the same reference
-        qa_entries.append({"Reference": event_history})
+        # Since timestamps are not mentioned in the utterance, we only ask questions regarding the latest event in each linear graph to avoid ambiguity
+        break
+
+    # if len(qa_entries) == 2:
+    #     qa_entries[0]["Reference"] = event_history
+    #     qa_entries[1]["Reference"] = event_history
+    # else:
+    #     # they share the same reference
+    #     qa_entries.append({"Reference": event_history})
 
     # Save to JSON file
     if verbose:
@@ -641,35 +650,35 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             # Knowledge update
             if action == 'qa':
                 # try:
-                #     qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-                #     all_qa_entries.extend(qa_entries)
+                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
                 # try:
                 
-                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                # all_qa_entries.extend(qa_entries)
+                # # except:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
+                # parent_object = None
+                # # try:
+                # qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                # if qa_entries is not None:
+                #     all_qa_entries.extend([qa_entries])
+                # # except:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
+                # # try:
+                # qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
+                # all_qa_entries.extend([qa_entry])
+                # # except:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
+        else:
+            # Static knowledge point
+            try:
+                qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
                 all_qa_entries.extend(qa_entries)
-                # except:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
-                parent_object = None
-                # try:
-                qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                if qa_entries is not None:
-                    all_qa_entries.extend([qa_entries])
-                # except:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
-                # try:
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
-                # except:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
-        # else:
-        #     # Static knowledge point
-        #     try:
-        #         qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-        #         all_qa_entries.extend(qa_entries)
-        #     except:
-        #         print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+            except:
+                print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:

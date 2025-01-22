@@ -206,7 +206,7 @@ def prompts_for_generating_qa(data, action):
     if action == 'factual_qa':
         prompt = "Please propose one factual Q&A for this event happened to this specific " + data['user'] + ", in order to evaluate the model's memory capabilities. " \
                  "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
-                 "The question should explicitly include the timestamp " + data['timestamp'] + ". Follow this format:\n" \
+                 "The question should NOT include the explicit timestamp. Follow this format:\n" \
                  "{\n" \
                  '    "Question": xxx,\n' \
                  '    "Answer": yyy\n' \
