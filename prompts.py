@@ -256,9 +256,10 @@ def prompts_for_generating_qa(data, action):
     elif action == 'extract_identity':
         prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
     elif action == 'propose_stereotype_recommendation':
-        prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context" \
+        prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context " \
                  "and irrelevant to or violate this " + data['user'] + "'s actual preference. Here is the question and the correct answer:\n\n" + data['qa'] + "\n\nHere is the " + data['user'] + "'s identities:\n\n" + data['persona'] + "\n\n"\
-                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. No other words."
+                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
+                 "Remember we are creating misleading options in a multiple choice question, so make it sounds like a correct one but do NOT mention that this is actually stereotypical. No other words."
     else:
         raise ValueError("Invalid action", action)
     return prompt
