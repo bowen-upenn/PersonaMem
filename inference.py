@@ -110,10 +110,13 @@ class Evaluation:
                 [{"role": "user", "content": all_conversations + "\n\n" + formatted_question}],
             )
         elif which_format == "api_dict":
-            messages = all_conversations + [{"role": "user", "content": formatted_question}]
+            if args['use_conversation_history']:
+                messages = all_conversations
+            else:
+                messages = []
+            messages += [{"role": "user", "content": formatted_question}]
         else:
             raise ValueError(f"Format {which_format} is not supported.")
-
 
         # Call OpenAI API for GPT models by default
         if re_search_list(OPENAI_MODELS, self.args["models"]["llm_model"]):
@@ -235,14 +238,19 @@ if __name__ == "__main__":
         "--verbose", dest="verbose", action="store_true", help="Set verbose to True"
     )
     parser.add_argument(
-        "--mem0", action="store_true", help="Use mem0 with the --model (only OpenAI supported)"
+        "--mem0", action="store_true", help="Use mem0 for storing/retrieving facts (only OpenAI supported)"
     )
     parser.add_argument(
         "--mem0_model",
         type=str,
         default="gpt4",
         help="Set model used by mem0 (if none, defaults to --model)")
-
+    parser.add_argument(
+        "--no_conversation_history",
+        action="store_false",
+        dest="use_conversation_history",
+        help="No conversation history during inference"
+    )
     cmd_args = parser.parse_args()
     args["models"]["llm_model"] = (
         cmd_args.model if cmd_args.model is not None else args["models"]["llm_model"]
@@ -254,7 +262,10 @@ if __name__ == "__main__":
         args["models"]["mem0_model"] = args["models"]["llm_model"]
 
     args["verbose"] = cmd_args.verbose
+    args["use_conversation_history"] = cmd_args.use_conversation_history
     mem_str = "" if not cmd_args.mem0 else "_mem0"
+    if not cmd_args.use_conversation_history:
+        mem_str += '_no_history'
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
@@ -324,7 +335,8 @@ if __name__ == "__main__":
         all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
         count_tokens(all_strings, tokenizer, args["models"]["llm_model"])
         do_update_memory = args["mem0"]
-        evaluation.clear_memory() # for now, we clear memory for each new block
+        if args["mem0"]:
+            evaluation.clear_memory() # for now, we clear memory for each new block
 
 
         # Show all Q&As related to this concatenated conversation
