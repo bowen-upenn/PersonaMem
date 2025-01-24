@@ -31,6 +31,7 @@ from lib import MEM0_MODELS, OPENAI_MODELS, re_search_list
 from mem0 import Memory
 from prepare_blocks import *
 
+DISCRIMINATIVE_QUESTION = "Which of the following writing samples best aligns with the writer's persona above?"
 
 def evaluate_answer(predicted_answer, correct_answer):
     """
@@ -94,7 +95,16 @@ class Evaluation:
 
             self.memory = Memory.from_config(self.mem0_config)
 
-    def query_llm(self, all_conversations, formatted_question, which_format, persona_id):
+    def query_llm(self, all_conversations, formatted_question, which_format, persona_id, raw_question=None, do_update_memory=False):
+        mems_flat = ""
+        if do_update_memory:
+            formatted_question_orig = formatted_question
+            self.update_memory(all_conversations, persona_id)
+        if self.args["mem0"]:
+            mems_relevant = self.memory.search(raw_question, persona_id)['results']
+            mems_flat = "\n".join([m["memory"] for m in mems_relevant])
+            formatted_question = f"User Facts:\n{mems_flat}\n\n{formatted_question} You may consider the User Facts above."
+
         if which_format == "string":
             messages = (
                 [{"role": "user", "content": all_conversations + "\n\n" + formatted_question}],
@@ -104,8 +114,6 @@ class Evaluation:
         else:
             raise ValueError(f"Format {which_format} is not supported.")
 
-        if self.args["mem0"]:
-            evaluation.update_memory(all_conversations, persona_id)
 
         # Call OpenAI API for GPT models by default
         if re_search_list(OPENAI_MODELS, self.args["models"]["llm_model"]):
@@ -167,7 +175,8 @@ class Evaluation:
         else:
             raise ValueError(f"Model {self.args['models']['llm_model']} is not supported.")
 
-        return response
+        # also return the formatted_question, in case it was modified
+        return response, mems_flat
 
     def update_memory(self, conversations, persona_id):
         agent_id = f"agent_for_{persona_id}"
@@ -176,6 +185,9 @@ class Evaluation:
         # passing run_id means that we don't persist the memory after this script finishes running
         self.memory.add(conversations, user_id=persona_id)
         self.memory.add(conversations, agent_id=agent_id)
+    
+    def clear_memory(self):
+        self.memory.reset()
 
 
 if __name__ == "__main__":
@@ -225,12 +237,24 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mem0", action="store_true", help="Use mem0 with the --model (only OpenAI supported)"
     )
+    parser.add_argument(
+        "--mem0_model",
+        type=str,
+        default="gpt4",
+        help="Set model used by mem0 (if none, defaults to --model)")
 
     cmd_args = parser.parse_args()
     args["models"]["llm_model"] = (
         cmd_args.model if cmd_args.model is not None else args["models"]["llm_model"]
     )
     args["mem0"] = cmd_args.mem0
+    args["models"]["mem0_model"] = cmd_args.mem0_model
+    if not cmd_args.mem0:
+        print('mem0_model not specified, using llm_model')
+        args["models"]["mem0_model"] = args["models"]["llm_model"]
+
+    args["verbose"] = cmd_args.verbose
+    mem_str = "" if not cmd_args.mem0 else "_mem0"
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
@@ -252,10 +276,10 @@ if __name__ == "__main__":
 
     for curr_n_blocks in n_blocks:
         output_file_path = (
-            f"./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks.json"
+            f"./data/eval/{llm_model}{mem_str}_persona{idx_persona}_{curr_n_blocks}blocks.json"
         )
         output_file_path_full_results = (
-            f"./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks_full.json"
+            f"./data/eval/{llm_model}{mem_str}_persona{idx_persona}_{curr_n_blocks}blocks_full.json"
         )
         print(
             f"{utils.Colors.OKBLUE}Evaluating {llm_model} on {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}"
@@ -299,17 +323,26 @@ if __name__ == "__main__":
         # Concatenate all conversation blocks
         all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
         count_tokens(all_strings, tokenizer, args["models"]["llm_model"])
+        do_update_memory = args["mem0"]
+        evaluation.clear_memory() # for now, we clear memory for each new block
+
 
         # Show all Q&As related to this concatenated conversation
-        for formatted_question, correct_answer, distance, question_type, context in tqdm(
-            question_loader(all_qa), total=len(all_qa)
+        for formatted_question, correct_answer, distance, question_type, context, raw_question in tqdm(
+            question_loader(all_qa, return_raw=True), total=len(all_qa)
         ):
             """
             Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
             """
-            predicted_answer = evaluation.query_llm(
-                all_conversations, formatted_question, which_format, persona_id
+
+            if question_type == 'new_content_discriminative':
+                raw_question = DISCRIMINATIVE_QUESTION
+
+            predicted_answer, memories = evaluation.query_llm(
+                all_conversations, formatted_question, which_format, persona_id, raw_question, do_update_memory
             )
+            do_update_memory = False # only need to update once per all_conversations object
+
             match = evaluate_answer(predicted_answer, correct_answer)
 
             if verbose:
@@ -340,9 +373,7 @@ if __name__ == "__main__":
                     results[key]["total"] += 1
                     if match:
                         results[key]["correct"] += 1
-
-            full_results.append(
-                {
+            curr_results =  {
                     "formatted_question": formatted_question,
                     "correct_answer": correct_answer,
                     "predicted_answer": predicted_answer,
@@ -351,7 +382,10 @@ if __name__ == "__main__":
                     "question_type": question_type,
                     "context": context,
                 }
-            )
+            if memories:
+                curr_results["memories"] = memories
+            
+            full_results.append(curr_results)
 
         # Calculate the percentage of the results
         for key in results:

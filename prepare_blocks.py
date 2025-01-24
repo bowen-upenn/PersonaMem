@@ -1,12 +1,13 @@
-import os
-import json
-import random
-import tiktoken
 import argparse
-import yaml
+import json
+import os
+import random
 import re
-import torch
 from datetime import datetime
+
+import tiktoken
+import torch
+import yaml
 
 import utils
 
@@ -268,8 +269,8 @@ def count_tokens(all_strings, tokenizer, llm_model):
     all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
     print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
-    
-    
+
+
 def extract_qa(base_dir, context, file_name, time_period):
     with open(os.path.join(base_dir, os.path.join(context, file_name)), "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -297,7 +298,7 @@ def compute_question_distance(sorted_processed_blocks):
     return all_qa
 
 
-def question_loader(qa_list):
+def question_loader(qa_list, return_raw=False):
     """
     Generator function that acts as a data loader and yields one formatted Q&A string at a time.
     Args:
@@ -330,12 +331,15 @@ def question_loader(qa_list):
             [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
         )
         formatted_question += "\n.Respond with the correct option, including both the letter (a), (b), (c), or (d) and the answer text. Do not include other information."
-        
+
         distance = qa['distance']
         question_type = qa['Type']
         context = qa['Context']
 
-        yield formatted_question, correct_answer, distance, question_type, context
+        if return_raw:
+            yield formatted_question, correct_answer, distance, question_type, context, question
+        else:
+            yield formatted_question, correct_answer, distance, question_type, context
 
 
 if __name__ == "__main__":
@@ -404,7 +408,7 @@ if __name__ == "__main__":
     # Show all Q&As related to this concatenated conversation
     for formatted_question, correct_answer, distance, question_type, context in question_loader(all_qa):
         """
-        The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
+        The formatted_question is the input to the LLM model, and correct_answer is the target answer.
         We (1) split the formatted_question (2) add the distance here, only for display purposes.
         Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
         """
