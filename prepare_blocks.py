@@ -240,7 +240,14 @@ def topological_sort(processed_blocks, verbose=False):
         else:
             other_blocks.append(block)
 
-    sorted_processed_blocks = sorted(other_blocks, key=lambda x: parse_date(x['last_timestamp']))
+    # Sort other blocks by timestamp
+    # sorted_processed_blocks = sorted(other_blocks, key=lambda x: parse_date(x['last_timestamp']))
+    sorted_processed_blocks = sorted(
+        enumerate(other_blocks),
+        key=lambda x: parse_date(x[1]['last_timestamp'])
+    )
+    sorted_indices = [index for index, _ in sorted_processed_blocks]
+    sorted_processed_blocks = [block for _, block in sorted_processed_blocks]
 
     # Randomly insert writing blocks into the sorted list
     for writing_block in writing_blocks:
@@ -252,7 +259,10 @@ def topological_sort(processed_blocks, verbose=False):
         print([block['last_timestamp'] for block in sorted_processed_blocks])
         print(f'{utils.Colors.OKGREEN}Sorted conversation blocks:{utils.Colors.ENDC}')
         print([f"{block['file_name']}: {block['time_period']}" for block in sorted_processed_blocks])
-    return sorted_processed_blocks
+        print(f'{utils.Colors.OKGREEN}Sorted indices:{utils.Colors.ENDC}')
+        print(sorted_indices)
+
+    return sorted_processed_blocks, sorted_indices
 
 
 def concatenate_blocks(sorted_processed_blocks, which_format, verbose=False):
@@ -285,7 +295,7 @@ def extract_qa(base_dir, context, file_name, time_period):
     return qa
 
 
-def compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens):
+def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -297,7 +307,8 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, total_num_toke
 
     for i, block in enumerate(sorted_processed_blocks):
         distance = total_blocks - (i + 1)
-        curr_block = block['conversation']
+        curr_block = sorted_strings[i] #block['conversation']
+        print('curr_block', curr_block)
 
         # we assign distance to all qa in the current block
         for q in block.get('qa', []):
@@ -418,14 +429,15 @@ if __name__ == "__main__":
         all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
 
     # Topological sort chosen conversation blocks by the latest timestamp
-    sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
+    sorted_processed_blocks, sorted_indices = topological_sort(processed_blocks_dict, verbose)
+    sorted_strings = [all_strings[i] for i in sorted_indices]
 
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=True) for string in all_strings])
 
     # Reiterate through all qa after block concatenations to add the distance information
-    all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens)
+    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=True) for string in all_strings])
+    all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
     for formatted_question, correct_answer, incorrect_answers, distance, question_type, context in question_loader(all_qa):
