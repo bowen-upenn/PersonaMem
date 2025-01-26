@@ -10,6 +10,11 @@ from datetime import datetime
 
 import utils
 
+"""
+This file contains helper functions needed to concatenate multiple blocks of various contexts 
+of the same persona before the inference step, as well as some testing codes.
+"""
+
 # Global variable to keep track of the number of conversation blocks without timestamps (writing context)
 no_timestamp_record = 0
 
@@ -264,10 +269,12 @@ def concatenate_blocks(sorted_processed_blocks, which_format, verbose=False):
     return all_conversations
 
 
-def count_tokens(all_strings, tokenizer, llm_model):
+def count_tokens(all_strings, tokenizer, verbose=False):
     all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
-    print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
+    if verbose:
+        print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
+    return len(tokens)
     
     
 def extract_qa(base_dir, context, file_name, time_period):
@@ -278,7 +285,7 @@ def extract_qa(base_dir, context, file_name, time_period):
     return qa
 
 
-def compute_question_distance(sorted_processed_blocks):
+def compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -286,14 +293,31 @@ def compute_question_distance(sorted_processed_blocks):
     """
     total_blocks = len(sorted_processed_blocks)
     all_qa = []
+    accumulated_num_tokens = 0
+
     for i, block in enumerate(sorted_processed_blocks):
-        # Distance = total_blocks - block_position
         distance = total_blocks - (i + 1)
+        curr_block = block['conversation']
+
+        # we assign distance to all qa in the current block
         for q in block.get('qa', []):
             if not q:
                 continue
             q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
             all_qa.append(q)
+
+            # Find the location within the current block
+            curr_event = q['Reference']
+            timestamp = [key for key in curr_event][0]
+            curr_utterance = curr_event[timestamp]['Conversation']
+            curr_utterance = curr_utterance.split('\n')[-2]
+
+            start_index = curr_block.find(curr_utterance)
+            num_tokens = count_tokens(curr_block[:start_index], tokenizer)
+            q['start_index'] = total_num_tokens - (accumulated_num_tokens + num_tokens)     # count from the bottom up
+
+        accumulated_num_tokens += count_tokens(curr_block, tokenizer)
+
     return all_qa
 
 
@@ -335,7 +359,7 @@ def question_loader(qa_list):
         question_type = qa['Type']
         context = qa['Context']
 
-        yield formatted_question, correct_answer, distance, question_type, context
+        yield formatted_question, correct_answer, incorrect_answers, distance, question_type, context
 
 
 if __name__ == "__main__":
@@ -395,14 +419,16 @@ if __name__ == "__main__":
 
     # Topological sort chosen conversation blocks by the latest timestamp
     sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
-    all_qa = compute_question_distance(sorted_processed_blocks)
 
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-    count_tokens(all_strings, tokenizer, args['models']['llm_model'])
+    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=True) for string in all_strings])
+
+    # Reiterate through all qa after block concatenations to add the distance information
+    all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for formatted_question, correct_answer, distance, question_type, context in question_loader(all_qa):
+    for formatted_question, correct_answer, incorrect_answers, distance, question_type, context in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.

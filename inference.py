@@ -9,6 +9,8 @@ import torch
 from datetime import datetime
 from tqdm import tqdm
 from sentence_transformers import SentenceTransformer, util
+import hashlib
+import csv
 
 import utils
 from prepare_blocks import *
@@ -149,6 +151,32 @@ class Evaluation:
         return response
 
 
+def generate_conversation_id(context):
+    """Generates a unique, fixed-length conversation ID using a hash."""
+    return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
+
+
+def save_questions_to_csv(full_results, csv_file_path="data/questions.csv"):
+    with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        # Write the header
+        writer.writerow(["conversation_id", "question", "correct_answer", "question_type"])
+
+        for result in full_results:
+            writer.writerow([
+                result["conversation_id"],
+                result["question"],
+                result["correct_answer"],
+                result["question_type"],
+                result['context']
+            ])
+
+
+def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
+    with open(json_file_path, mode='w', encoding='utf-8') as file:
+        json.dump(contexts_dict, file, indent=4)
+
+
 if __name__ == "__main__":
     # Load hyperparameters
     try:
@@ -167,14 +195,15 @@ if __name__ == "__main__":
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
-    parser.add_argument('--model', type=str, default="gpt4", help='Set LLM model. Choose from o1-preview, o1-mini, gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo, '
-                                                                  'gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro'
-                                                                  'meta-llama-3-70b-instruct, meta-llama-3-8b-instruct,'
-                                                                  'claude-3-opus-20241022, claude-3-5-sonnet-20241022, claude-3-sonnet-20241022')
+    parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from o1-preview, o1-mini, gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo, '
+                                                                    'gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro'
+                                                                    'meta-llama-3-70b-instruct, meta-llama-3-8b-instruct,'
+                                                                    'claude-3-opus-20241022, claude-3-5-sonnet-20241022, claude-3-sonnet-20241022')
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
-    parser.add_argument('--format', type=str, default='string', help='Output conversation format: string or api_dict. Not applicable for qa')
+    parser.add_argument('--format', type=str, default='api_dict', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
     parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
+    parser.add_argument('--no_eval', dest='no_eval', action='store_true', help='Do not run actual evaluation but only qa and context preparation')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
     cmd_args = parser.parse_args()
@@ -182,7 +211,7 @@ if __name__ == "__main__":
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
-
+    no_eval = cmd_args.no_eval
     which_format = cmd_args.format
     verbose = cmd_args.verbose
 
@@ -232,65 +261,83 @@ if __name__ == "__main__":
 
         # Concatenate all conversation blocks
         all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
+        conversation_id = generate_conversation_id(str(all_conversations))
         count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
         # Show all Q&As related to this concatenated conversation
-        for formatted_question, correct_answer, distance, question_type, context in tqdm(question_loader(all_qa), total=len(all_qa)):
-            """
-            Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
-            """
-            predicted_answer = evaluation.query_llm(all_conversations, formatted_question, which_format)
-            match = evaluate_answer(predicted_answer, correct_answer)
+        for formatted_question, correct_answer, incorrect_answers, distance, question_type, context in tqdm(question_loader(all_qa), total=len(all_qa)):
+            if no_eval:
+                full_results.append({
+                        "conversation_id": conversation_id,
+                        "question": formatted_question,
+                        "correct_answer": correct_answer,
+                        "incorrect_answers": incorrect_answers,
+                        "distance": distance,
+                        "question_type": question_type,
+                        "context": context
+                    }
+                )
 
-            if verbose:
-                print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
-                print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
-                if match:
-                    print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
-                else:
-                    print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
+                # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                save_contexts_to_json({conversation_id: all_conversations}, "data/contexts.json")
+                save_questions_to_csv(full_results, "data/questions.csv")
 
-            """
-            (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
-            (2) Save results based on the question types
-            (3) Save results based on the conversation contexts
-            (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
-            """
-            keys = [distance, question_type, context]
-            for key in keys:
-                if key == distance:
-                    key = f"distance_{key}"
-                if key not in results:
-                    results[key] = {"correct": 0, "total": 0}
-                else:
-                    results[key]["total"] += 1
+            else:
+                predicted_answer = evaluation.query_llm(all_conversations, formatted_question, which_format)
+                match = evaluate_answer(predicted_answer, correct_answer)
+
+                if verbose:
+                    print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
+                    print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
                     if match:
-                        results[key]["correct"] += 1
+                        print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
+                    else:
+                        print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
-            full_results.append({
-                    "formatted_question": formatted_question,
-                    "correct_answer": correct_answer,
-                    "predicted_answer": predicted_answer,
-                    "match": match,
-                    "distance": distance,
-                    "question_type": question_type,
-                    "context": context
-                }
-            )
+                """
+                (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+                (2) Save results based on the question types
+                (3) Save results based on the conversation contexts
+                (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+                """
+                keys = [distance, question_type, context]
+                for key in keys:
+                    if key == distance:
+                        key = f"distance_{key}"
+                    if key not in results:
+                        results[key] = {"correct": 0, "total": 0}
+                    else:
+                        results[key]["total"] += 1
+                        if match:
+                            results[key]["correct"] += 1
 
-        # Calculate the percentage of the results
-        for key in results:
-            results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
-        print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
-        for key in results:
-            print(f'{key}: {results[key]["accuracy"]:.2f}%')
+                full_results.append({
+                        "conversation_id": conversation_id,
+                        "question": formatted_question,
+                        "correct_answer": correct_answer,
+                        "incorrect_answers": incorrect_answers,
+                        "predicted_answer": predicted_answer,
+                        "match": match,
+                        "distance": distance,
+                        "question_type": question_type,
+                        "context": context
+                    }
+                )
 
-        # Save evaluation results to a JSON file.
-        with open(output_file_path, "w") as json_file:
-            json.dump(results, json_file, indent=4)
+        if not no_eval:
+            # Calculate the percentage of the results
+            for key in results:
+                results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
+            print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
+            for key in results:
+                print(f'{key}: {results[key]["accuracy"]:.2f}%')
 
-        full_results.append({"all_conversations": all_conversations})
-        with open(output_file_path_full_results, "w") as json_file:
-            json.dump(full_results, json_file, indent=4)
+            # Save evaluation results to a JSON file.
+            with open(output_file_path, "w") as json_file:
+                json.dump(results, json_file, indent=4)
 
-        print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")
+            full_results.append({"all_conversations": all_conversations})
+            with open(output_file_path_full_results, "w") as json_file:
+                json.dump(full_results, json_file, indent=4)
+
+            print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")

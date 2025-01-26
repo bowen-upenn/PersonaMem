@@ -162,7 +162,11 @@ def generate_qa_static_factual(LLM, context, event_history, verbose=False):
             "Reference": event_history[current_timestamp]
         })
 
-        # Since timestamps are not mentioned in the utterance, we only ask questions regarding the latest event in each linear graph to avoid ambiguity
+        """
+        Since timestamps are not mentioned in the utterance, we only ask questions regarding the latest event in each linear graph to avoid ambiguity.
+        Note that we iterate through all four conversation, from one block to all four blocks, 
+        while events earlier in the linear graph usually come from different blocks, so they will still be queried.
+        """
         break
 
     # if len(qa_entries) == 2:
@@ -505,7 +509,7 @@ def generate_qa_personalized_response(LLM, context, event_history, verbose=False
 
         """
         If the user likes sth
-          - (1) The model should first acknowledge that and then propose sth new, right before the next section
+          - (1) The model should first acknowledge that and then propose sth new, right before the next turn
           - (2) The model should first acknowledge that and then propose a recommendation that aligns with the like, right before the next section
         If the user does not like sth in this section
           - (1) The model should first acknowledge that and then try to persuade the user to like it, right before the next section
