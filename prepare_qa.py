@@ -626,6 +626,7 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
         "Incorrect_Answers": new_writing_samples[1:],
         "Type": "new_content_discriminative",
         "Context": "writing",
+        "Reference": persona,
     }
 
     if verbose:

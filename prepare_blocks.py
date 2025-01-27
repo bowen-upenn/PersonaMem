@@ -6,7 +6,7 @@ import argparse
 import yaml
 import re
 import torch
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import utils
 
@@ -231,47 +231,68 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     return final_blocks
 
 
-def topological_sort(processed_blocks, verbose=False):
-    # The writing context does not have timestamps, so we need to handle it separately
-    writing_blocks, other_blocks = [], []
+def topological_sort(processed_blocks, all_strings, new_content_samples, verbose=False):
+    def random_date(start, end):
+        delta = end - start
+        random_days = random.randint(0, delta.days)
+        return start + timedelta(days=random_days)
+
+    all_timestamps = []
     for latest_ts, block in processed_blocks.items():
+        if latest_ts[:2] != '00':
+            all_timestamps.append(parse_date(block['last_timestamp']))
+    all_timestamps.sort()
+    earliest_timestamp = all_timestamps[0]
+    latest_timestamp = all_timestamps[-1]
+
+    all_blocks = []
+    for latest_ts, block in processed_blocks.items():
+        # assign a random timestamp for each writing block
         if latest_ts[:2] == '00':
-            writing_blocks.append(block)
-        else:
-            other_blocks.append(block)
+            random_timestamp = random_date(earliest_timestamp, latest_timestamp)
+            block['last_timestamp'] = random_timestamp.strftime("%m/%d/%Y")
+        all_blocks.append(block)
 
-    # Sort other blocks by timestamp
-    # sorted_processed_blocks = sorted(other_blocks, key=lambda x: parse_date(x['last_timestamp']))
-    sorted_processed_blocks = sorted(
-        enumerate(other_blocks),
-        key=lambda x: parse_date(x[1]['last_timestamp'])
-    )
-    sorted_indices = [index for index, _ in sorted_processed_blocks]
-    sorted_processed_blocks = [block for _, block in sorted_processed_blocks]
+    all_timestamps = [parse_date(block['last_timestamp']) for block in all_blocks]
 
-    # Randomly insert writing blocks into the sorted list
-    for writing_block in writing_blocks:
-        random_index = random.randint(0, len(sorted_processed_blocks))
-        sorted_processed_blocks.insert(random_index, writing_block)
+    combined = list(zip(all_timestamps, all_blocks, all_strings, new_content_samples))
+    combined.sort(key=lambda x: x[0])
+    all_timestamps_sorted, all_blocks_sorted, all_strings_sorted, new_content_samples_sorted = zip(*combined)
+
+    all_timestamps_sorted = list(all_timestamps_sorted)
+    all_blocks_sorted = list(all_blocks_sorted)
+    all_strings_sorted = list(all_strings_sorted)
+    new_content_samples_sorted = list(new_content_samples_sorted)
 
     if verbose:
         print(f'{utils.Colors.OKGREEN}Sorted last time stamps:{utils.Colors.ENDC}')
-        print([block['last_timestamp'] for block in sorted_processed_blocks])
+        print([block['last_timestamp'] for block in all_blocks_sorted])
         print(f'{utils.Colors.OKGREEN}Sorted conversation blocks:{utils.Colors.ENDC}')
-        print([f"{block['file_name']}: {block['time_period']}" for block in sorted_processed_blocks])
-        print(f'{utils.Colors.OKGREEN}Sorted indices:{utils.Colors.ENDC}')
-        print(sorted_indices)
+        print([f"{block['file_name']}: {block['time_period']}" for block in all_blocks_sorted])
 
-    return sorted_processed_blocks, sorted_indices
+    return all_blocks_sorted, all_strings_sorted, new_content_samples_sorted
 
 
-def concatenate_blocks(sorted_processed_blocks, which_format, verbose=False):
-    if which_format == 'string':
-        all_conversations = "\n\n".join([block["conversation"] for block in sorted_processed_blocks])
-    else:
-        all_conversations = []
-        for block in sorted_processed_blocks:
+def concatenate_blocks(sorted_processed_blocks, new_content_samples, which_format, verbose=False):
+    all_conversations = []
+    for block_idx, block in enumerate(sorted_processed_blocks):
+        if which_format == 'string':
+            all_conversations.append(block["conversation"])
+        else:
             all_conversations.extend(block["conversation"])
+
+        # If this block is about writing new samples, we also append the new sample into the whole context
+        if block['context'] == 'writing':
+            print('len(new_content_samples)', len(new_content_samples), 'block_idx', block_idx)
+            assert new_content_samples[block_idx]   # should not be empty
+            original_sample = new_content_samples[block_idx]["Original Sample"]
+            updated_sample = new_content_samples[block_idx]["Updated Sample"]
+            if which_format == 'string':
+                all_conversations.append("Help summarize our conversation by showing the original sample and the updated sample here again."
+                                         "\n\nOriginal Sample" + original_sample + "\n\nUpdated Sample" + updated_sample + "\n\n")
+            else:
+                all_conversations.append({"role": "user", "content": "Help summarize our conversation by showing the original sample and the updated sample here again."})
+                all_conversations.append({"role": "assistant", "content": "Original Sample:\n\n" + original_sample + "\n\n" + "Updated Sample:\n\n" + updated_sample + "\n\n"})
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -307,8 +328,7 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
 
     for i, block in enumerate(sorted_processed_blocks):
         distance = total_blocks - (i + 1)
-        curr_block = sorted_strings[i] #block['conversation']
-        print('curr_block', curr_block)
+        curr_block = sorted_strings[i]
 
         # we assign distance to all qa in the current block
         for q in block.get('qa', []):
@@ -318,12 +338,19 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
             all_qa.append(q)
 
             # Find the location within the current block
-            curr_event = q['Reference']
-            timestamp = [key for key in curr_event][0]
-            curr_utterance = curr_event[timestamp]['Conversation']
-            curr_utterance = curr_utterance.split('\n')[-2]
+            if 'Reference' not in q:
+                q['start_index'] = -1
+                continue
 
-            start_index = curr_block.find(curr_utterance)
+            curr_event = q['Reference']
+            if block['context'] == 'writing':
+                start_index = 0
+            else:
+                timestamp = [key for key in curr_event][0]
+                curr_utterance = curr_event[timestamp]['Conversation']
+                curr_utterance = curr_utterance.split('\n')[-2]
+                start_index = curr_block.find(curr_utterance)
+
             num_tokens = count_tokens(curr_block[:start_index], tokenizer)
             q['start_index'] = total_num_tokens - (accumulated_num_tokens + num_tokens)     # count from the bottom up
 
@@ -411,12 +438,20 @@ if __name__ == "__main__":
     # Process each chosen conversation block
     processed_blocks_dict = {}
     all_strings = []
+    new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
-    for (file_name, time_period), conversation in chosen_blocks:
+    for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
         context = file_name.split('_')[1]
         processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
 
         qa = extract_qa(base_dir, context, file_name, time_period)
+
+        if context == 'writing':
+            with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
+                data = json.load(file)
+                original_sample = data.get("Original Sample")
+                updated_sample = data.get("Updated Writing Sample")
+            new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
 
         processed_blocks_dict[latest_ts] = {
             "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
@@ -429,14 +464,15 @@ if __name__ == "__main__":
         all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
 
     # Topological sort chosen conversation blocks by the latest timestamp
-    sorted_processed_blocks, sorted_indices = topological_sort(processed_blocks_dict, verbose)
-    sorted_strings = [all_strings[i] for i in sorted_indices]
+    sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, all_strings, new_content_samples, verbose)
 
     # Concatenate all conversation blocks
-    all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
+    all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, verbose)
 
     # Reiterate through all qa after block concatenations to add the distance information
-    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=True) for string in all_strings])
+    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
+    if verbose:
+        print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
