@@ -56,13 +56,13 @@ def process_conversation_block(context, conversation, which_format):
 
     # Find the latest timestamp by scanning backwards
     for line in reversed(conversation):
-        if line.startswith("Side_Note") or line.startswith("[Side_Note]"):
+        if line.startswith("Side_Note") or line.startswith("[Side_Note]") or line.startswith("Side_Note:") or line.startswith("[Side_Note]:") or line.startswith("[Side_Note") or line.startswith("[Side_Note:"):
             match = re.search(r"\b\d{2}/\d{2}/\d{4}\b", line)
             if match:
                 latest_timestamp = match.group(0)  # Extract the matched date
+                break
             else:
                 latest_timestamp = None  # No date found
-            break
 
     if latest_timestamp is None:
         if context != 'writing':
@@ -331,7 +331,7 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
         curr_block = sorted_strings[i]
 
         # we assign distance to all qa in the current block
-        for q in block.get('qa', []):
+        for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
             q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
@@ -339,16 +339,33 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
 
             # Find the location within the current block
             if 'Reference' not in q:
-                q['start_index'] = -1
-                continue
+                # Check the next q
+                next_q = block['qa'][idx + 1] if idx + 1 < len(block['qa']) else None
+                next_next_q = block['qa'][idx + 2] if idx + 2 < len(block['qa']) else None
 
-            curr_event = q['Reference']
+                if next_q and list(next_q.keys()) == ['Reference']:
+                    curr_event = next_q['Reference']
+                elif next_next_q and list(next_next_q.keys()) == ['Reference']:
+                    curr_event = next_next_q['Reference']
+                else:
+                    q['start_index'] = -1
+                    print(f"{utils.Colors.FAIL}No Reference found in the QA{utils.Colors.ENDC}{q}")
+                    continue
+            else:
+                curr_event = q['Reference']
+
             if block['context'] == 'writing':
                 start_index = 0
             else:
-                timestamp = [key for key in curr_event][0]
-                curr_utterance = curr_event[timestamp]['Conversation']
-                curr_utterance = curr_utterance.split('\n')[-2]
+                try:
+                    timestamp = [key for key in curr_event][0]
+                    curr_utterance = curr_event[timestamp]['Conversation']
+                except Exception as e:
+                    curr_utterance = curr_event['Conversation']
+                try:
+                    curr_utterance = curr_utterance.split('\n')[-2]
+                except Exception as e:
+                    curr_utterance = curr_utterance.split('\n')[0]
                 start_index = curr_block.find(curr_utterance)
 
             num_tokens = count_tokens(curr_block[:start_index], tokenizer)
@@ -384,20 +401,22 @@ def question_loader(qa_list):
 
         # Find the correct answer's option
         correct_index = options.index(qa["Correct_Answer"])
-        correct_answer = '(' + chr(97 + correct_index) + ") " + qa["Correct_Answer"] # Convert index to letter (e.g., 0 -> 'a')
+        correct_answer = '(' + chr(97 + correct_index) + ')' #+ qa["Correct_Answer"] # Convert index to letter (e.g., 0 -> 'a')
 
         # Create the multiple-choice question string
         question = qa["Question"]
         formatted_question = f"Question: {question}\nAnswer:\n" + "\n".join(
             [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
         )
-        formatted_question += "\n.Respond with the correct option, including both the letter (a), (b), (c), or (d) and the answer text. Do not include other information."
-        
-        distance = qa['distance']
+        formatted_question += "\n.Respond with the correct option, including both the letter (a), (b), (c), or (d). Do not include other information."
+        all_options = [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
+
+        distance_blocks = qa['distance']
+        distance_tokens = qa['start_index']
         question_type = qa['Type']
         context = qa['Context']
 
-        yield formatted_question, correct_answer, incorrect_answers, distance, question_type, context
+        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context
 
 
 if __name__ == "__main__":
@@ -442,7 +461,11 @@ if __name__ == "__main__":
 
     for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
         context = file_name.split('_')[1]
-        processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+        try:
+            processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+        except Exception as e:
+            print(f"{utils.Colors.FAIL}Error processing conversation block {file_name}{utils.Colors.ENDC}")
+            continue
 
         qa = extract_qa(base_dir, context, file_name, time_period)
 
@@ -476,7 +499,7 @@ if __name__ == "__main__":
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for formatted_question, correct_answer, incorrect_answers, distance, question_type, context in question_loader(all_qa):
+    for question, formatted_question, correct_answer, all_options, distance, question_type, context in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.

@@ -123,6 +123,7 @@ def prepare_data_on_writing_context(LLM, persona, source_data, output_file_path,
     conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
     if 'python' in conversation or 'plaintext' in conversation:
         conversation = ast.literal_eval(conversation.strip("```python").strip("```plaintext").strip())
+    conversation.append("User: Could you please help me write another sample?")
 
     responses = [source_data, preferences, updated_writing_sample, conversation]
     data_names = ['Original Sample', 'Writing and Formatting Styles', 'Updated Writing Sample', 'Conversation']
@@ -218,18 +219,18 @@ def prepare_data(args):
                 if source_dir is not None:
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_context)
 
-                # try:
-                if curr_context == 'writing':
-                    """
-                    Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
-                    It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
-                    """
-                    prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args)
-                else:
-                    prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                #     all_errored_data_paths[output_file_path] = e
+                try:
+                    if curr_context == 'writing':
+                        """
+                        Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
+                        """
+                        prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args)
+                except Exception as e:
+                    print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    all_errored_data_paths[output_file_path] = e
         
     if len(all_errored_data_paths) > 0:
         print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')

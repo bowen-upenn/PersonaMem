@@ -192,11 +192,11 @@ def prompts_for_expanding_conversation_section(context, data):
              "Also note that if the last line is another line of 'Side_Note', that 'Side_Note' indicates the next event, so the previous line should consider how to smoothly transit the conversation. " \
              "Here is the section you should expand, while do NOT expand or modify the line(s) of Side_Note.\n\n" + '\n'.join(data['section']) + "\n\n" \
              "Please remove or rephrase any timestamp MM/DD/YYYY mentioned by the " + user + " and " + agent + " in their utterances. Note that this conversation is happening at " + data['last_timestamp'] + "." \
-             "But you should keep the Side_Note word-by-word identical including its timestamp MM/DD/YYYY unmodified. " \
+             "But you should keep the Side_Note unmodified. Each Side_Note should include the original timestamp MM/DD/YYYY. " \
              "Follow exactly the SAME template in the original sentences:\n\n" \
              "[\n" \
-             '"Side_Note: [xxx] MM/DD/YYYY",' \
-             '"' + user + ': yyy",' \
+             '"Side_Note: [...] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
+             '"' + user + ': yyy" (Do NOT include MM/DD/YYYY here),' \
              '"' + agent + ': zzz",' \
              "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
     return prompt

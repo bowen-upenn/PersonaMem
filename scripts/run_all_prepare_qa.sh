@@ -2,7 +2,7 @@
 
 # Arrays for the parameters
 contexts=("therapy" "legal" "foodRecommendation" "datingConsultation" "travelPlanning" "onlineShopping" "studyConsultation" "writing")
-idx_personas=$(seq 0 19)
+idx_personas=$(seq 0 0)
 time_periods=("init" "next_week" "next_month" "next_year")
 
 # Iterate over each combination of parameters

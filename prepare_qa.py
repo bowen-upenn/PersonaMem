@@ -621,7 +621,7 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
             persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
 
     qa_entry = {
-        "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
+        "Question": "Which of the following writing samples best aligns with the writer's persona above?",
         "Correct_Answer": new_writing_samples[0],
         "Incorrect_Answers": new_writing_samples[1:],
         "Type": "new_content_discriminative",
@@ -725,34 +725,33 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                # # try:
-                # qa_entries = generate_qa_static_factual(LLM, context, event_history, verbose=verbose)
-                # all_qa_entries.extend(qa_entries)
-                # # except:
-                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
-                # # try:
-                #
-                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
-                # all_qa_entries.extend(qa_entries)
-                # # # except:
-                # # #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
-                # # parent_object = None
-                # # # try:
-                # qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                # if qa_entries is not None:
+                # try:
+                #     qa_entries = generate_qa_static_factual(LLM, context, event_history, verbose=verbose)
                 #     all_qa_entries.extend(qa_entries)
-                # # # except:
-                # # #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
-                # # # try:
-                # qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
-                # all_qa_entries.extend([qa_entry])
-                # # # except:
-                # # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
-                qa_entries = generate_qa_personalized_response(LLM, context, event_history, verbose=verbose)
-                all_qa_entries.extend(qa_entries)
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                try:
+                    qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                    all_qa_entries.extend(qa_entries)
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
+                parent_object = None
+                try:
+                    qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                    if qa_entries is not None:
+                        all_qa_entries.extend(qa_entries)
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
+                try:
+                    qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
+                    all_qa_entries.extend([qa_entry])
+                except:
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
+                # qa_entries = generate_qa_personalized_response(LLM, context, event_history, verbose=verbose)
+                # all_qa_entries.extend(qa_entries)
         else:
             pass
-            # # Static knowledge point
+            # Static knowledge point
             # try:
             #     qa_entries = generate_qa_static_factual(LLM, context, event_history, verbose=verbose)
             #     all_qa_entries.extend(qa_entries)

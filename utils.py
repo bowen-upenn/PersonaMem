@@ -149,6 +149,8 @@ def extract_last_timestamp(response):
 
 
 def merge_timestamps(timestamps):
+    if len(timestamps) == 4:
+        return timestamps
     print('timestamps before merging:', timestamps)
     # Function to compare dates in MM/DD/YYYY format
     def later_date(date1, date2):
