@@ -65,13 +65,13 @@ def prepare_context(idx_context, all_contexts, curr_context, args):
     return source_dir, all_source_files
 
 
-def parse_conversation_sections(LLM, input_conversation, context, verbose):
+def parse_conversation_sections(LLM, input_conversation, context, last_timestamp, verbose):
     """
     :param input_conversation: A list of strings representing the conversation
     We define each section in the conversation as a group of lines before the next Side_Note
     """
-    def expand_section(LLM, section):
-        response = LLM.query_llm(step='expand_conversation_section', context=context, data=section, verbose=verbose)
+    def expand_section(LLM, section, last_timestamps):
+        response = LLM.query_llm(step='expand_conversation_section', context=context, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
         response = response.strip("```python").strip("```plaintext").strip()
         response = ast.literal_eval(response)
         return response
@@ -101,7 +101,7 @@ def parse_conversation_sections(LLM, input_conversation, context, verbose):
 
     expanded_conversation = []
     for idx, section in enumerate(sections):
-        expanded_section = expand_section(LLM, section)
+        expanded_section = expand_section(LLM, section, last_timestamp)
         if idx + 1 < len(sections):
             expanded_conversation += expanded_section[:-1]  # Do not repetitively add the last line of each section, i.e., the Side_Note in the next section
         else:
@@ -123,6 +123,7 @@ def prepare_data_on_writing_context(LLM, persona, source_data, output_file_path,
     conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
     if 'python' in conversation or 'plaintext' in conversation:
         conversation = ast.literal_eval(conversation.strip("```python").strip("```plaintext").strip())
+    conversation.append("User: Could you please help me write another sample?")
 
     responses = [source_data, preferences, updated_writing_sample, conversation]
     data_names = ['Original Sample', 'Writing and Formatting Styles', 'Updated Writing Sample', 'Conversation']
@@ -148,6 +149,7 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
     # data_names = ['Init General Personal History', 'Init Contextual Personal History']
     # existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history}
 
+    last_timestamps = []
     for step, data_name in tqdm(zip(steps, data_names)):
         # Only generate general personal history once, to be shared across multiple contexts for the same persona
         if idx_context > 0 and step in existing_general_personal_history:
@@ -156,6 +158,7 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
 
         response = LLM.query_llm(step=step, persona=expanded_persona, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
+        last_timestamps.append(utils.extract_last_timestamp(response))
 
     # Populate personal history into conversation
     steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
@@ -163,11 +166,12 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
     # steps = ['init_conversation']
     # data_names = ['Init Conversation']
 
-    for step, data_name in zip(steps, data_names):
+    last_timestamps = utils.merge_timestamps(last_timestamps)
+    for conv_idx, (step, data_name) in enumerate(zip(steps, data_names)):
         response = LLM.query_llm(step=step, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, context=curr_context, data=response, action=1, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, context=curr_context, action=2, verbose=args['inference']['verbose'])
-        expanded_conversation = parse_conversation_sections(LLM, response, curr_context, verbose=args['inference']['verbose'])
+        expanded_conversation = parse_conversation_sections(LLM, response, curr_context, last_timestamps[conv_idx], verbose=args['inference']['verbose'])
         utils.append_json_to_file(expanded_conversation, output_file_path, curr_data_name=data_name, parse_json=False, parse_list=False)
 
 
@@ -215,18 +219,18 @@ def prepare_data(args):
                 if source_dir is not None:
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_context)
 
-                # try:
-                if curr_context == 'writing':
-                    """
-                    Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
-                    It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
-                    """
-                    prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args)
-                else:
-                    prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                #     all_errored_data_paths[output_file_path] = e
+                try:
+                    if curr_context == 'writing':
+                        """
+                        Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
+                        """
+                        prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args)
+                except Exception as e:
+                    print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    all_errored_data_paths[output_file_path] = e
         
     if len(all_errored_data_paths) > 0:
         print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')

@@ -96,7 +96,7 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
     return linear_graph
 
 
-def generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=False):
+def generate_qa_static_factual(LLM, context, event_history, random_event_histories=None, verbose=False):
     if context == "therapy":
         user = 'patient'
     elif context == 'legal':
@@ -104,26 +104,64 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
     else:
         user = 'user'
 
+    # Initialize a list to store the last two details with non-zero conversations
     qa_entries = []
+    last_two_details = []
+    timestamps = list(event_history.keys())
 
-    for current_timestamp, current_detail in event_history.items():
-        # Avoid any events not mentioned in the conversation
-        if len(current_detail['Conversation']) == 0:
-            continue
+    # Iterate through the timestamps in reverse order
+    for timestamp in timestamps:
+        current_detail = event_history[timestamp]
 
-        # Avoid duplicate questions for the same event, which could be visited by another linear graph
-        if current_timestamp in visited_static_factual:
-            if visited_static_factual[current_timestamp] == current_detail['Event']:
-                continue
-        else:
-            visited_static_factual[current_timestamp] = current_detail['Event']
+        # Check if the conversation is non-zero
+        if len(current_detail['Conversation']) > 0:
+            last_two_details.append(current_detail)
 
-        response = LLM.query_llm(step='qa_helper', data={'user': user, 'timestamp': current_timestamp, 'event': str(current_detail)}, action='factual_qa', verbose=False)
+        # Stop once the list contains two details
+        if len(last_two_details) == 2:
+            break
+
+    # Find the last two events in this event graph, which should appear in two different conversation blocks.
+    # The Q&As below will be based on the second last event, and will be asked immediately before the last event.
+    # If the Q&As are asked immediately after the second last event, there won't be challenge for the model.
+    conversation = last_two_details[1]['Conversation']
+    conversation = list(conversation.split('\n'))
+    user_utterance = conversation[-2]
+
+    response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': user_utterance}, action='recall_facts', verbose=False)
+    response = utils.process_json_from_api(response)
+    question = response.get("User Question", "")
+    correct_answer = response.get("Model Response", "")
+
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'question': question, 'response': correct_answer}, action='propose_incorrect_facts', verbose=False)
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    qa_entries.append({
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "factual",
+        "Context": context,
+        "Reference": last_two_details[1]
+    })
+
+    if random_event_histories:
+        # Randomly sample three event histories
+        random_event_histories = random.sample(random_event_histories, 3)
+        random_event_histories = [f"({i + 1}) {history}" for i, history in enumerate(random_event_histories)]
+        random_event_histories = "\n\n".join(random_event_histories)
+        last_two_details[1]["other_previously_mentioned_events"] = random_event_histories
+
+        response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': user_utterance}, action='recall_facts_inverse', verbose=False)
         response = utils.process_json_from_api(response)
-        question = response.get("Question", "")
-        correct_answer = response.get("Answer", "")
+        question = response.get("User Question", "")
+        correct_answer = response.get("Model Response", "")
 
-        incorrect_answers = LLM.query_llm(step='qa_helper', data=str(response), action='propose_incorrect_facts', verbose=False)
+        incorrect_answers = LLM.query_llm(step='qa_helper', data={'question': question, 'random_event_histories': random_event_histories}, action='propose_incorrect_facts_inverse', verbose=False)
         match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
         if match:
             incorrect_answers = match.group(1)  # Extract the code block
@@ -134,34 +172,61 @@ def generate_qa_static_factual(LLM, context, event_history, visited_static_factu
             "Question": question,
             "Correct_Answer": correct_answer,
             "Incorrect_Answers": incorrect_answers,
-            "Type": "static_factual",
+            "Type": "factual_inverse",
             "Context": context,
+            "Reference": last_two_details[1]
         })
 
-        abstention_response = LLM.query_llm(step='qa_helper', data=question, action='abstention', verbose=False)
-        abstention_response = utils.process_json_from_api(abstention_response)
-        abstention_question = abstention_response.get("New Question", "")
-        abstention_object = abstention_response.get("New Name", "")
-
-        incorrect_abstention_answers = [correct_answer]
-        random_idn = random.sample(range(0, len(incorrect_answers)), 2)
-        for i in random_idn:
-            incorrect_abstention_answers.append(incorrect_answers[i])
-
-        qa_entries.append({
-            "Question": abstention_question,
-            "Correct_Answer": "Haven't mentioned " + abstention_object + " at " + current_timestamp + " in the conversation",
-            "Incorrect_Answers": incorrect_abstention_answers,
-            "Type": "abstention",
-            "Context": context,
-        })
-
-    if len(qa_entries) == 2:
-        qa_entries[0]["Reference"] = event_history
-        qa_entries[1]["Reference"] = event_history
-    else:
-        # they share the same reference
-        qa_entries.append({"Reference": event_history})
+    # for i, timestamp in enumerate(timestamps):
+    #     current_detail = event_history[timestamp]
+    #     next_detail = event_history[timestamps[i + 1]]
+    #
+    #     # Avoid any events not mentioned in the conversation
+    #     if len(current_detail['Conversation']) == 0:
+    #         continue
+    #
+    #     print('current_detail', current_detail)
+    #
+    #     response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': current_detail['Event']}, action='factual_qa', verbose=False)
+    #     response = utils.process_json_from_api(response)
+    #     question = response.get("Question", "")
+    #     correct_answer = response.get("Answer", "")
+    #
+    #     incorrect_answers = LLM.query_llm(step='qa_helper', data=str(response), action='propose_incorrect_facts', verbose=False)
+    #     match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    #     if match:
+    #         incorrect_answers = match.group(1)  # Extract the code block
+    #     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    #     incorrect_answers = ast.literal_eval(incorrect_answers)
+    #
+    #     qa_entries.append({
+    #         "Question": question,
+    #         "Correct_Answer": correct_answer,
+    #         "Incorrect_Answers": incorrect_answers,
+    #         "Type": "static_factual",
+    #         "Context": context,
+    #         "Reference": event_history[current_timestamp]
+    #     })
+    #
+    #     abstention_response = LLM.query_llm(step='qa_helper', data=question, action='abstention', verbose=False)
+    #     abstention_response = utils.process_json_from_api(abstention_response)
+    #     abstention_question = abstention_response.get("New Question", "")
+    #     abstention_object = abstention_response.get("New Name", "")
+    #
+    #     incorrect_abstention_answers = [correct_answer]
+    #     random_idn = random.sample(range(0, len(incorrect_answers)), 2)
+    #     for i in random_idn:
+    #         incorrect_abstention_answers.append(incorrect_answers[i])
+    #
+    #     qa_entries.append({
+    #         "Question": abstention_question,
+    #         "Correct_Answer": "Haven't mentioned " + abstention_object + " in the conversation",
+    #         "Incorrect_Answers": incorrect_abstention_answers,
+    #         "Type": "abstention",
+    #         "Context": context,
+    #         "Reference": event_history[current_timestamp]
+    #     })
+    #     break
 
     # Save to JSON file
     if verbose:
@@ -179,54 +244,126 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
     else:
         user = 'user'
 
+    # Initialize a list to store the last two details with non-zero conversations
     qa_entries = []
-    timestamps = list(event_history.keys())  # Get all timestamps in order
+    last_two_details = []
+    timestamps = list(event_history.keys())
 
-    for i, timestamp in enumerate(timestamps[:-1]):  # Iterate until the second-to-last timestamp
-        current_details = event_history[timestamp]
-        next_details = event_history[timestamps[i + 1]]
+    # Iterate through the timestamps in reverse order
+    for timestamp in timestamps:
+        current_detail = event_history[timestamp]
 
-        # Avoid any events not mentioned in the conversation
-        if len(current_details['Conversation']) == 0 or len(next_details['Conversation']) == 0:
-            continue
+        # Check if the conversation is non-zero
+        if len(current_detail['Conversation']) > 0:
+            last_two_details.append(current_detail)
 
-        reference = {
-            timestamp: current_details,
-            timestamps[i + 1]: next_details
-        }
+        # Stop once the list contains two details
+        if len(last_two_details) == 2:
+            break
 
-        if "[Reasons of Change]" in current_details:  # Only include events with reasons for change
-            # Generate Q&A pairs on the reasons for change
-            if "[Old Fact] Dislikes" in current_details:
-                question = (
-                    f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
-                    f"although the {user} dislikes {current_details['[Old Fact] Dislikes'].lower()}?"
-                )
-            elif "[Old Fact] Likes" in current_details:
-                question = (
-                    f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
-                    f"although the {user} likes {current_details['[Old Fact] Likes'].lower()}?"
-                )
-            else:
-                continue
-            correct_answer = current_details["[Reasons of Change]"]
+    # Find the last two events in this event graph, which should appear in two different conversation blocks.
+    # The Q&As below will be based on the second last event, and will be asked immediately before the last event.
+    # If the Q&As are asked immediately after the second last event, there won't be challenge for the model.
+    related_event = {
+        "Event": last_two_details[1]["Event"],
+        "[Reasons of Change]": last_two_details[1]["[Reasons of Change]"],
+    }
+    if "[Updated Fact] Likes" in last_two_details[1]:
+        related_event["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
+        related_event["[Old Fact] Dislikes"] = last_two_details[1]["[Old Fact] Dislikes"]
+    else:
+        related_event["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
+        related_event["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"]
 
-            incorrect_answers = LLM.query_llm(step='qa_helper', data=f"Question: {question} Correct answer: {correct_answer}", action='propose_incorrect_reasons', verbose=False)
-            match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
-            if match:
-                incorrect_answers = match.group(1)  # Extract the code block
-            incorrect_answers = incorrect_answers.strip("```").strip()
-            incorrect_answers = ast.literal_eval(incorrect_answers)
-            # incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+    # This Q&A will be asked immediately before the last event
+    response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
+    response = utils.process_json_from_api(response)
+    question = response.get("User Utterance", "")
+    correct_answer = response.get("Model Response", "")
 
-            qa_entries.append({
-                "Question": question,
-                "Correct_Answer": correct_answer,
-                "Incorrect_Answers": incorrect_answers,
-                "Type": "reasons_of_change",
-                "Context": context,
-                "Reference": reference
-            })
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'user_utterance': question, 'reason_of_change': related_event["[Reasons of Change]"],
+                                                              'model_response':correct_answer}, action='propose_incorrect_reasons_generalization', verbose=False)
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    qa_entries.append({
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "reasons_of_change_generalization",
+        "Context": context,
+        "Reference": last_two_details[1]
+    })
+
+    # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
+    response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': str(related_event)}, action='ask_previous_reason_after_new_updates', verbose=False)
+    response = utils.process_json_from_api(response)
+    correct_answer = response.get("Model Response", "")
+
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'question': question, 'response': correct_answer}, action='propose_incorrect_reasons_after_new_updates', verbose=False)
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    qa_entries.append({
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "reasons_of_change_after_new_updates",
+        "Context": context,
+        "Reference": last_two_details[1]
+    })
+
+    # for i, timestamp in enumerate(timestamps[:-1]):  # Iterate until the second-to-last timestamp
+    #     current_details = event_history[timestamp]
+    #     next_details = event_history[timestamps[i + 1]]
+    #
+    #     # Avoid any events not mentioned in the conversation
+    #     if len(current_details['Conversation']) == 0 or len(next_details['Conversation']) == 0:
+    #         continue
+    #
+    #     reference = {
+    #         timestamp: current_details,
+    #         timestamps[i + 1]: next_details
+    #     }
+    #
+    #     if "[Reasons of Change]" in current_details:  # Only include events with reasons for change
+    #         # Generate Q&A pairs on the reasons for change
+    #         if "[Old Fact] Dislikes" in current_details:
+    #             question = (
+    #                 f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
+    #                 f"although the {user} dislikes {current_details['[Old Fact] Dislikes'].lower()}?"
+    #             )
+    #         elif "[Old Fact] Likes" in current_details:
+    #             question = (
+    #                 f"Why did the {user} {current_details['Event'].lower()[:-1]} in {timestamp} "
+    #                 f"although the {user} likes {current_details['[Old Fact] Likes'].lower()}?"
+    #             )
+    #         else:
+    #             continue
+    #         correct_answer = current_details["[Reasons of Change]"]
+    #
+    #         incorrect_answers = LLM.query_llm(step='qa_helper', data=f"Question: {question} Correct answer: {correct_answer}", action='propose_incorrect_reasons', verbose=False)
+    #         match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    #         if match:
+    #             incorrect_answers = match.group(1)  # Extract the code block
+    #         incorrect_answers = incorrect_answers.strip("```").strip()
+    #         incorrect_answers = ast.literal_eval(incorrect_answers)
+    #         # incorrect_answers = incorrect_answers.strip("```python").strip("```").strip()
+    #
+    #         qa_entries.append({
+    #             "Question": question,
+    #             "Correct_Answer": correct_answer,
+    #             "Incorrect_Answers": incorrect_answers,
+    #             "Type": "reasons_of_change",
+    #             "Context": context,
+    #             "Reference": reference
+    #         })
 
     # Save to JSON file
     if verbose:
@@ -479,6 +616,77 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
 
     return qa_entry
 
+# TODO
+def generate_qa_personalized_response(LLM, context, event_history, verbose=False):
+    if context == "therapy":
+        user = 'patient'
+    elif context == 'legal':
+        user = 'client'
+    else:
+        user = 'user'
+
+    qa_entries = []
+    timestamps = list(event_history.keys())  # Get all timestamps in order
+
+    for i, current_timestamp in enumerate(timestamps):
+        current_detail = event_history[current_timestamp]
+
+        """
+        If the user likes sth
+          - (1) The model should first acknowledge that and then propose sth new, right before the next turn
+          - (2) The model should first acknowledge that and then propose a recommendation that aligns with the like, right before the next section
+        If the user does not like sth in this section
+          - (1) The model should first acknowledge that and then try to persuade the user to like it, right before the next section
+          - (2) The model should first acknowledge that and then propose a recommendation that aligns with the dislike, right before the next section
+          
+        We define each section as a group of three utterance: Side_Note, user, and agent.
+        We define each block as a group of conversation sections within the same period of time.
+        
+        Having a response right after the user's utterance in this section would make the problem too easy, so we shall ask the question right before the next section.
+        This question will be challenging if the next section sits in the next conversation block, and there are blocks of other topics in between.
+        
+        We need to store the location of the next section, and in the inference, we cut this conversation block at that location and ask the question.
+        This can be achieved by storing the beginning sentence of the next section, and in the inference time after block concatenations, we use regular expression to find the location.
+        """
+
+        # Avoid any events not mentioned in the conversation
+        if len(current_detail['Conversation']) == 0:
+            continue
+
+        print('current_detail', current_detail, '\n')
+
+        # utterances = current_detail['Conversation'].split("\n")
+        # user_utterance = utterances[1]
+        # agent_utterance = utterances[2]
+        #
+        # response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': str(current_detail), 'user_utterance': user_utterance, 'agent_utterance': agent_utterance}, action='personalized_response', verbose=False)
+        # response = utils.process_json_from_api(response)
+        # question = response.get("Question", "")
+        # correct_answer = response.get("Answer", "")
+        #
+        # incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'prev_response': response}, action='propose_other_responses', verbose=False)
+        # match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+        # if match:
+        #     incorrect_answers = match.group(1)  # Extract the code block
+        # incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+        # incorrect_answers = ast.literal_eval(incorrect_answers)
+        #
+        # qa_entries.append({
+        #     "Question": question,
+        #     "Correct_Answer": correct_answer,
+        #     "Incorrect_Answers": incorrect_answers,
+        #     "Type": "personalized_responses",
+        #     "Context": context,
+        #     "Reference": event_history[current_timestamp]
+        # })
+
+    # Save to JSON file
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entries, indent=4))
+
+    return qa_entries
+
 
 def qa_generative(LLM, curr_data, verbose=False):
     # Write new content that aligns and violates the persona
@@ -537,11 +745,12 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
             persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
 
     qa_entry = {
-        "Question": "The writer's persona:\n\n" + persona + "Which of the following writing samples best aligns with the writer's persona above?",
+        "Question": "Which of the following writing samples best aligns with the writer's persona above?",
         "Correct_Answer": new_writing_samples[0],
         "Incorrect_Answers": new_writing_samples[1:],
         "Type": "new_content_discriminative",
         "Context": "writing",
+        "Reference": persona,
     }
 
     if verbose:
@@ -576,7 +785,7 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
     return
 
 
-def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, visited_static_factual, verbose):
+def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
@@ -623,6 +832,26 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     previous_conversation_blocks = {key: data.get(key, []) for key in previous_conversations.get(conversation_key, [])}
     all_qa_entries = []
 
+
+    # sample some random event histories
+    random_event_histories = []
+    for timestamp, side_note in side_notes:
+        # Find related data in the previous personal history for each current event
+        related_data = find_related_data(timestamp, previous_history_blocks)
+        if not related_data:
+            continue
+
+        event_history = trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=(action=='view_graphs'))
+        timestamps = list(event_history.keys())
+        last_event = event_history[timestamps[0]]
+        if len(last_event['Conversation']) == 0:
+            continue
+
+        user_utterance = last_event['Conversation'].split("\n")[-2]
+        random_event_histories.append(user_utterance)
+
+
+    # prepare Q&A entries
     for timestamp, side_note in side_notes:
         # Find related data in the previous personal history for each current event
         related_data = find_related_data(timestamp, previous_history_blocks)
@@ -641,8 +870,8 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             # Knowledge update
             if action == 'qa':
                 # try:
-                #     qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-                #     all_qa_entries.extend(qa_entries)
+                # qa_entries = generate_qa_static_factual(LLM, context, event_history, random_event_histories, verbose=verbose)
+                # all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
                 # try:
@@ -650,25 +879,28 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
-                parent_object = None
+                # parent_object = None
                 # try:
-                qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                if qa_entries is not None:
-                    all_qa_entries.extend([qa_entries])
+                #     qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                #     if qa_entries is not None:
+                #         all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
                 # try:
-                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
-                all_qa_entries.extend([qa_entry])
+                #     qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, parent_object, verbose=verbose)
+                #     all_qa_entries.extend([qa_entry])
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
-        # else:
-        #     # Static knowledge point
-        #     try:
-        #         qa_entries = generate_qa_static_factual(LLM, context, event_history, visited_static_factual, verbose=verbose)
-        #         all_qa_entries.extend(qa_entries)
-        #     except:
-        #         print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                # # qa_entries = generate_qa_personalized_response(LLM, context, event_history, verbose=verbose)
+                # # all_qa_entries.extend(qa_entries)
+        else:
+            pass
+            # Static knowledge point
+            # try:
+            #     qa_entries = generate_qa_static_factual(LLM, context, event_history, verbose=verbose)
+            #     all_qa_entries.extend(qa_entries)
+            # except:
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:
@@ -734,7 +966,6 @@ if __name__ == "__main__":
         evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
     else:
         SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
-        visited_static_factual = {}
-        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, visited_static_factual=visited_static_factual, verbose=cmd_args.verbose)
+        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, verbose=cmd_args.verbose)
     # except Exception as e:
     #     print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')

@@ -5,6 +5,17 @@ import random
 import re
 import time
 from datetime import datetime
+from tqdm import tqdm
+from sentence_transformers import SentenceTransformer, util
+import hashlib
+import csv
+import uuid
+
+import utils
+from prepare_blocks import *
+
+# OpenAI ChatGPT API
+from openai import OpenAI
 
 # Anthropic Claude API
 import anthropic
@@ -193,6 +204,68 @@ class Evaluation:
         self.memory.reset()
 
 
+def generate_conversation_id(context):
+    """Generates a unique, fixed-length conversation ID using a hash."""
+    return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
+
+
+def save_questions_to_csv(full_results, csv_file_path="data/questions.csv"):
+    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        # Write the header if the file is empty
+        if os.stat(csv_file_path).st_size == 0:
+            writer.writerow(["question_id", "conversation_id", "question_type", "context", "distance_in_blocks", "distance_in_tokens", "question", "correct_answer", "all_options"])
+
+        for result in full_results:
+            writer.writerow([
+                result["question_id"],
+                result["conversation_id"],
+                result["question_type"],
+                result['context'],
+                result['distance_blocks'],
+                result['distance_tokens'],
+                result["question"],
+                result["correct_answer"],
+                result['all_options'],
+            ])
+
+
+def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
+    with open(json_file_path, mode='a', encoding='utf-8') as file:
+        json.dump(contexts_dict, file, indent=4)
+
+
+def generate_conversation_id(context):
+    """Generates a unique, fixed-length conversation ID using a hash."""
+    return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
+
+
+def save_questions_to_csv(full_results, csv_file_path="data/questions.csv"):
+    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        # Write the header if the file is empty
+        if os.stat(csv_file_path).st_size == 0:
+            writer.writerow(["question_id", "conversation_id", "question_type", "context", "distance_in_blocks", "distance_in_tokens", "question", "correct_answer", "all_options"])
+
+        for result in full_results:
+            writer.writerow([
+                result["question_id"],
+                result["conversation_id"],
+                result["question_type"],
+                result['context'],
+                result['distance_blocks'],
+                result['distance_tokens'],
+                result["question"],
+                result["correct_answer"],
+                result['all_options'],
+            ])
+
+
+def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
+    with open(json_file_path, mode='a', encoding='utf-8') as file:
+        json.dump(contexts_dict, file, indent=4)
+
+
 if __name__ == "__main__":
     # Load hyperparameters
     try:
@@ -210,33 +283,19 @@ if __name__ == "__main__":
     print("Using %d GPUs" % (torch.cuda.device_count()))
 
     # Command-line argument parsing
-    parser = argparse.ArgumentParser(description="Command line arguments")
-    parser.add_argument(
-        "--model",
-        type=str,
-        default="gpt4",
-        help="Set LLM model. Choose from o1-preview, o1-mini, gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo, "
-        "gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro"
-        "meta-llama-3-70b-instruct, meta-llama-3-8b-instruct,"
-        "claude-3-opus-20241022, claude-3-5-sonnet-20241022, claude-3-sonnet-20241022",
-    )
-    parser.add_argument("--idx_persona", type=int, default=0, help="Index of the persona")
-    parser.add_argument(
-        "--format",
-        type=str,
-        default="string",
-        help="Output conversation format: string or api_dict. Not applicable for qa",
-    )
-    parser.add_argument("--n_blocks", type=int, default=1, help="Number of conversation blocks")
-    parser.add_argument(
-        "--up_to",
-        dest="up_to",
-        action="store_true",
-        help="Generate up-to n_blocks, not just n_blocks itself",
-    )
-    parser.add_argument(
-        "--verbose", dest="verbose", action="store_true", help="Set verbose to True"
-    )
+    parser = argparse.ArgumentParser(description='Command line arguments')
+    parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from o1-preview, o1-mini, gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo, '
+                                                                    'gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro'
+                                                                    'meta-llama-3-70b-instruct, meta-llama-3-8b-instruct,'
+                                                                    'claude-3-opus-20241022, claude-3-5-sonnet-20241022, claude-3-sonnet-20241022')
+    parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
+    parser.add_argument('--format', type=str, default='api_dict', help='Output conversation format: string or api_dict. Not applicable for qa')
+    parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
+    parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
+    parser.add_argument('--no_eval', dest='no_eval', action='store_true', help='Do not run actual evaluation but only qa and context preparation')
+    parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
+    parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
+
     parser.add_argument(
         "--mem0", action="store_true", help="Use mem0 for storing/retrieving facts (only OpenAI supported)"
     )
@@ -251,10 +310,9 @@ if __name__ == "__main__":
         dest="use_conversation_history",
         help="No conversation history during inference"
     )
+
     cmd_args = parser.parse_args()
-    args["models"]["llm_model"] = (
-        cmd_args.model if cmd_args.model is not None else args["models"]["llm_model"]
-    )
+    args["models"]["llm_model"] = (cmd_args.model if cmd_args.model is not None else args["models"]["llm_model"])
     args["mem0"] = cmd_args.mem0
     args["models"]["mem0_model"] = cmd_args.mem0_model
     if not cmd_args.mem0:
@@ -267,9 +325,29 @@ if __name__ == "__main__":
     if not cmd_args.use_conversation_history:
         mem_str += '_no_history'
 
+    if cmd_args.clean:
+        user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
+        if user_input == 'y':
+            if os.path.exists("data/questions.csv"):
+                os.remove("data/questions.csv")
+            if os.path.exists("data/contexts.json"):
+                os.remove("data/contexts.json")
+        else:
+            print("Skipping cleanup.")
+
+    if cmd_args.clean:
+        user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
+        if user_input == 'y':
+            if os.path.exists("data/questions.csv"):
+                os.remove("data/questions.csv")
+            if os.path.exists("data/contexts.json"):
+                os.remove("data/contexts.json")
+        else:
+            print("Skipping cleanup.")
+
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
-    persona_id = f"persona_{idx_persona}"
+    no_eval = cmd_args.no_eval    persona_id = f"persona_{idx_persona}"
     run_id = hex(int(time.time()))[2:]
 
     which_format = cmd_args.format
@@ -304,14 +382,24 @@ if __name__ == "__main__":
         # Process each chosen conversation block
         processed_blocks_dict = {}
         all_strings = []
+        new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
-        for (file_name, time_period), conversation in chosen_blocks:
-            context = file_name.split("_")[1]
-            processed_conversation, latest_ts = process_conversation_block(
-                context, conversation, which_format
-            )
+        for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
+            context = file_name.split('_')[1]
+            # try:
+            processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+            # except Exception as e:
+            #     print(f"{utils.Colors.FAIL}Error processing conversation block {file_name}{utils.Colors.ENDC}")
+            #     continue
 
             qa = extract_qa(base_dir, context, file_name, time_period)
+
+            if context == 'writing':
+                with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
+                    data = json.load(file)
+                    original_sample = data.get("Original Sample")
+                    updated_sample = data.get("Updated Writing Sample")
+                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
 
             processed_blocks_dict[latest_ts] = {
                 "conversation": processed_conversation[
@@ -328,25 +416,54 @@ if __name__ == "__main__":
             )  # idx -1 always corresponds to the conversation in the plain string format
 
         # Topological sort chosen conversation blocks by the latest timestamp
-        sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
-        all_qa = compute_question_distance(sorted_processed_blocks)
+        sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, all_strings, new_content_samples, verbose)
 
         # Concatenate all conversation blocks
-        all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-        count_tokens(all_strings, tokenizer, args["models"]["llm_model"])
+        all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, verbose)
+
+        # Reiterate through all qa after block concatenations to add the distance information
+        total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
+        if verbose:
+            print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
+        all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
+
+        # sorted_processed_blocks = topological_sort(processed_blocks_dict, verbose)
+        # all_qa = compute_question_distance(sorted_processed_blocks)
+        #
+        # # Concatenate all conversation blocks
+        # all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
+        conversation_id = generate_conversation_id(str(all_conversations))
+        # count_tokens(all_strings, tokenizer, args["models"]["llm_model"])
         do_update_memory = args["mem0"]
         if args["mem0"]:
             evaluation.clear_memory() # for now, we clear memory for each new block
 
 
         # Show all Q&As related to this concatenated conversation
-        for formatted_question, correct_answer, distance, question_type, context, raw_question in tqdm(
+        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context, raw_question in tqdm(
             question_loader(all_qa, return_raw=True), total=len(all_qa)
         ):
-            """
-            Example usage: formatted_question -> LLM -> predicted_answer <-> correct_answer
-            """
+            question_id = str(uuid.uuid4())  # Generate a random unique ID
+            if no_eval:
+                full_results.append({
+                        "question_id": question_id,
+                        "conversation_id": conversation_id,
+                        "question": question,
+                        "correct_answer": correct_answer,
+                        "all_options": all_options,
+                        "distance_blocks": distance_blocks,
+                        "distance_tokens": distance_tokens,
+                        "question_type": question_type,
+                        "context": context
+                    }
+                )
 
+                # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                save_contexts_to_json({conversation_id: all_conversations}, "data/contexts.json")
+                save_questions_to_csv(full_results, "data/questions.csv")
+
+            else:
+    
             if question_type == 'new_content_discriminative':
                 raw_question = DISCRIMINATIVE_QUESTION
 
@@ -355,69 +472,63 @@ if __name__ == "__main__":
             )
             do_update_memory = False # only need to update once per all_conversations object
 
-            match = evaluate_answer(predicted_answer, correct_answer)
+                match = evaluate_answer(predicted_answer, correct_answer)
 
-            if verbose:
-                print(
-                    f"{utils.Colors.OKGREEN}{'Correct answer'}:{utils.Colors.ENDC}{correct_answer}"
-                )
-                print(
-                    f"{utils.Colors.OKGREEN}{'Predicted answer'}:{utils.Colors.ENDC}{predicted_answer}"
-                )
-                if match:
-                    print(f"{utils.Colors.OKBLUE}{'Correct'}{utils.Colors.ENDC}")
-                else:
-                    print(f"{utils.Colors.FAIL}{'Incorrect'}{utils.Colors.ENDC}")
-
-            """
-            (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
-            (2) Save results based on the question types
-            (3) Save results based on the conversation contexts
-            (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
-            """
-            keys = [distance, question_type, context]
-            for key in keys:
-                if key == distance:
-                    key = f"distance_{key}"
-                if key not in results:
-                    results[key] = {"correct": 0, "total": 0}
-                else:
-                    results[key]["total"] += 1
+                if verbose:
+                    print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
+                    print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
                     if match:
-                        results[key]["correct"] += 1
-            curr_results =  {
-                    "formatted_question": formatted_question,
-                    "correct_answer": correct_answer,
-                    "predicted_answer": predicted_answer,
-                    "match": match,
-                    "distance": distance,
-                    "question_type": question_type,
-                    "context": context,
-                }
-            if memories:
-                curr_results["memories"] = memories
-            
-            full_results.append(curr_results)
+                        print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
+                    else:
+                        print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
-        # Calculate the percentage of the results
-        for key in results:
-            results[key]["accuracy"] = (
-                results[key]["correct"] / results[key]["total"] * 100
-                if results[key]["total"] > 0
-                else 0
-            )
-        print(f"{utils.Colors.OKGREEN}{'Final Results'}:{utils.Colors.ENDC}")
-        for key in results:
-            print(f"{key}: {results[key]['accuracy']:.2f}%")
+                """
+                (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+                (2) Save results based on the question types
+                (3) Save results based on the conversation contexts
+                (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+                """
+                keys = [distance_blocks, distance_tokens, question_type, context]
+                for key in keys:
+                    if key == distance_blocks:
+                        key = f"distance_blocks_{key}"
+                    if key == distance_tokens:
+                        key = f"distance_tokens_{key}"
+                    if key not in results:
+                        results[key] = {"correct": 0, "total": 0}
+                    else:
+                        results[key]["total"] += 1
+                        if match:
+                            results[key]["correct"] += 1
 
-        # Save evaluation results to a JSON file.
-        with open(output_file_path, "w") as json_file:
-            json.dump(results, json_file, indent=4)
+                full_results.append({
+                        "conversation_id": conversation_id,
+                        "question": formatted_question,
+                        "correct_answer": correct_answer,
+                        "incorrect_answers": incorrect_answers,
+                        "predicted_answer": predicted_answer,
+                        "match": match,
+                        "distance_blocks": distance_blocks,
+                        "distance_tokens": distance_tokens,
+                        "question_type": question_type,
+                        "context": context
+                    }
+                )
 
-        full_results.append({"all_conversations": all_conversations})
-        with open(output_file_path_full_results, "w") as json_file:
-            json.dump(full_results, json_file, indent=4)
+        if not no_eval:
+            # Calculate the percentage of the results
+            for key in results:
+                results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
+            print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
+            for key in results:
+                print(f'{key}: {results[key]["accuracy"]:.2f}%')
 
-        print(
-            f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}"
-        )
+            # Save evaluation results to a JSON file.
+            with open(output_file_path, "w") as json_file:
+                json.dump(results, json_file, indent=4)
+
+            full_results.append({"all_conversations": all_conversations})
+            with open(output_file_path_full_results, "w") as json_file:
+                json.dump(full_results, json_file, indent=4)
+
+            print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")
