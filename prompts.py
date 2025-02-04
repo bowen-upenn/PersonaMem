@@ -66,7 +66,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
         prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + context + ". "
     prompt += "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
               "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. " \
-              "Try finding unique reasons for this person, not common for the general public, that trigger the change. " \
+              "Try finding some very unique and personal reasons for this person, uncommon for the general public, that trigger the change. " \
               "Please also use the following keys, and do NOT modify the name of these keys:\n\n" \
               "The key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
               "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
@@ -87,7 +87,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
               "'MM/DD/YYYY': {\n" \
                   '"Event": xxx, \n' \
                   '"Category": "Short-Term" OR "Long-Term"\n' \
-                  '"[Reasons of Change]": xxx, \n' \
+                  '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!) \n' \
                   '"[Updated Fact] Likes" OR "[Updated Fact] Dislikes": xxx, \n' \
                   '"[Old Fact] Likes" OR "[Old Fact] Dislikes": xxx, \n' \
                   '"[Old Event Date]": MM/DD/YYYY, \n' \
@@ -203,31 +203,100 @@ def prompts_for_expanding_conversation_section(context, data):
 
 
 def prompts_for_generating_qa(data, action):
-    if action == 'factual_qa':
-        prompt = "Please propose one factual Q&A for this event happened to this specific " + data['user'] + ", in order to evaluate the model's memory capabilities. " \
-                 "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
-                 "The question should NOT include the explicit timestamp. Follow this format:\n" \
+    if action == 'recall_facts':
+        # prompt = "Please propose one factual Q&A for this event happened to this specific " + data['user'] + ", in order to evaluate the model's memory capabilities. " \
+        #          "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
+        #          "The question should NOT include the explicit timestamp. Follow this format:\n" \
+        #          "{\n" \
+        #          '    "Question": xxx,\n' \
+        #          '    "Answer": yyy\n' \
+        #          "}" \
+        #          "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
+        #          "Here is the event:\n\n" + data['event']
+        prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
+                 "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
+                 "What question might the user ask the chatbot to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
+                 "Also, simply mimic the user’s question, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory. Make the user question more detailed with some context. " \
+                 "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
+                 "Always follow the template below:\n\n" \
                  "{\n" \
-                 '    "Question": xxx,\n' \
-                 '    "Answer": yyy\n' \
-                 "}" \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
-                 "Here is the event:\n\n" + data['event']
-    elif action == 'propose_incorrect_facts':
-        prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
-                 "Incorrect answers should have the same length with the correct answer."
-    elif action == 'abstention':
-        prompt = "Given this question '" + data + "', your next task is to rewrite the object or event name mentioned in this question to a similar, but irrelevant name. " \
-                 "The purpose of this step is to evaluate if the model can correctly remember that the new name has actually never been mentioned. Do NOT modify other parts of the question. " \
-                 "Output both the new question and the new object or event name, following this format:\n" \
-                 "{\n" \
-                 '    "New Question": xxx,\n' \
-                 '    "New Name": yyy\n' \
-                 "}" \
+                 '    "User Question": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
-    elif action == 'propose_incorrect_reasons':
-        prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
-                 "Incorrect answers should have the same length with the correct answer."
+    elif action == 'propose_incorrect_facts':
+        # prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
+        #          "Incorrect answers should have the same length with the correct answer."
+        prompt = "This is the correct personalized response to the question: " + data['question'] + ": " + data['response'] + "\n\n" \
+                 "Please propose three incorrect options to prepare a multiple choice Q&A, keeping all incorrect responses generally good but mentioning different things or activities. Each option should share similar tone and length." \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+    elif action == 'recall_facts_inverse':
+        prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
+                 "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
+                 "What question might the user ask the chatbot to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
+                 "Also, simply mimic the user’s question, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory." \
+                 "Most importantly, the user should say they want to try something new, WITHOUT explicitly saying what they have done before to test the model's memory capability. Make the user question more detailed with some context. " \
+                 "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
+                 "The model's response should simply give an answer, WITHOUT first mentioning what the user has already done before. " \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "User Question": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_facts_inverse':
+        prompt = "Given this question from the user: " + data['question'] + ", please create three responses inspired by these conversations from other users. " \
+                 "Since they originate from other users, it is safe to use them here.\n\n" + data['random_event_histories'] + "\n\n" \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+    # elif action == 'abstention':
+    #     prompt = "Given this question '" + data + "', your next task is to rewrite the object or event name mentioned in this question to a similar, but irrelevant name. " \
+    #              "The purpose of this step is to evaluate if the model can correctly remember that the new name has actually never been mentioned. Do NOT modify other parts of the question. " \
+    #              "Output both the new question and the new object or event name, following this format:\n" \
+    #              "{\n" \
+    #              '    "New Question": xxx,\n' \
+    #              '    "New Name": yyy\n' \
+    #              "}" \
+    #              "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+
+    elif action == 'generalize_reason_to_other_scenarios':
+        prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
+                 "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change as a motivation to this user, " \
+                 "and then generalize the reason to other scenarios the same user might say in the near future during the conversation, not the event or activity itself. " \
+                 "As a result, please propose a new user utterance with a scenario of a different activity but mostly similar reason, but do NOT mention the user's preference towards such activity yet in the user's utterance. " \
+                 "Please also propose a model's response to assume the user's preference based on this reason. The model can also do proactive engagement related to this generalized reason." \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "User Utterance": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_reasons_generalization':
+        prompt = "Here is the model's response to the user after they mentioned a new activity, where the model accurately connects the user's previous reason for change to this new experience." \
+                 "The user's utterance is: " + data['user_utterance'] + "\n\nPrevious reason of change on another activity: " + data['reason_of_change'] + "\n\nThe correct model response: " + data['model_response'] + "\n\n" \
+                 "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, but either mentions a wrong reason or completely does not mention the previous reason at all. " \
+                 "Each option should share similar tone and length. " \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+    elif action == 'ask_previous_reason_after_new_updates':
+        prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
+                 "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change in the following conversation. " \
+                 "Think about the next time the user changes the attitude again, what would the model response? " \
+                 "Propose a response that specifically has sensitivity to shifts, and mention how the user still thinks about the previous reason of the previous attitude change. " \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_reasons_after_new_updates':
+        prompt = "Based on this model's response that recalls the correct reason of the user's previous preference changes when the same user changes their preference once again: " + data['response'] + "\n\n" \
+                 "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
+                 "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone and length." \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+
+
+    # elif action == 'propose_incorrect_reasons':
+    #     prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
+    #              "Incorrect answers should have the same length with the correct answer."
+
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
                  "Second, based on the extracted primary noun, propose one different child object name under this parent category, adding some different adjectives or descriptors. Output it into the key 'random_child_object'." \
