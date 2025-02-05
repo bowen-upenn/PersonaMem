@@ -70,7 +70,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
               "Please also use the following keys, and do NOT modify the name of these keys:\n\n" \
               "The key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
               "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
-              "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the opposite of the '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
+              "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the OPPOSITE to its corresponding '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
               "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n" \
               "Any contradictions should focus on what this person prefers and dislikes. " \
               "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
@@ -322,27 +322,44 @@ def prompts_for_generating_qa(data, action):
                  '    "random_child_object": yyy\n' \
                  "}\n" \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
-    elif action == 'recommendation':
-        prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
-                 "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
-                 "Please first construct a hypothetical scenario or context where this " + data['user'] + " would need your recommendation, and then provide a concise and aligned suggestion. " \
-                 "Say your recommendations directly without explanations or using words like 'I would recommend'. If the answer is a single phrase, add a little descriptions. " \
-                 "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
-                 "{\n" \
-                 '    "Question": xxx,\n' \
-                 '    "Answer": yyy\n' \
-                 "}" \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
-                 "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
-    elif action == 'propose_incorrect_recommendations':
-        prompt = 'Given the following Q&A, prepare two incorrect answers for the multiple-choice question.\n\n' + data['qa'] + '\n\nOutput a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON.' \
-                 "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
-                 "Follow the same language and length as the correct answer. These two options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. No other words."
     elif action == 'extract_identity':
         prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
-    elif action == 'propose_stereotype_recommendation':
-        prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context " \
-                 "and irrelevant to or violate this " + data['user'] + "'s actual preference. Here is the question and the correct answer:\n\n" + data['qa'] + "\n\nHere is the " + data['user'] + "'s identities:\n\n" + data['persona'] + "\n\n"\
+    elif action == 'recommendation':
+        prompt = "We aim to assess whether a chatbot can recall a user's most recent preference for a specific type of " + data['parent_object'] + " and provide a personalized recommendation based on this preference. " \
+                 "Consider the user's latest preference: " + data['preference'] + " and what they have said: " + data['user_utterance'] + "\n\n" \
+                 "Formulate a question the user might ask the chatbot for a recommendation in the future WITHOUT explicitly referencing their previous preferences. " \
+                 "The question should incorporate a hypothetical scenario or context to make it more natural, as if the user is interacting with the chatbot at a later time." \
+                 "Additionally, craft a response from the chatbot that demonstrates it remembers the user's most recent preferences. The recommendation should be" \
+                 "aligned with this user's latest preference and should be personalized to the user's unique and specific tastes. " \
+                 "Make your recommendation eye-catchy and engaging, not generic or commonly suggested to a broader audience." \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "User Question": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
+        #          "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
+        #          "Please first construct a hypothetical scenario or context where this " + data['user'] + " would need your recommendation, and then provide a concise and aligned suggestion. " \
+        #          "Say your recommendations directly without explanations or using words like 'I would recommend'. If the answer is a single phrase, add a little descriptions. " \
+        #          "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
+        #          "{\n" \
+        #          '    "Question": xxx,\n' \
+        #          '    "Answer": yyy\n' \
+        #          "}" \
+        #          "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
+        #          "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
+    elif action == 'propose_incorrect_recommendations':
+        prompt = "Given the following response: " + data['model_response'] + "\n\n to the question: " + data['question'] + "\n\n" \
+                 "propose two incorrect responses on purpose to prepare a multiple choice Q&A. "\
+                 "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific user or VIOLATE this user's most recent preferences: " + data['preference'] + \
+                 "If the user's preference is about liking something, the incorrect answer should talk about somehow opposite things, as if the model does not remember what this user's preferences are. " \
+                 "If the user's preference is about disliking something, the incorrect answer should talk about things this user dislikes. " \
+                 'Each response should look similar. Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
+    elif action == 'propose_stereotypical_recommendation':
+        prompt = "Given the following question: " + data['question'] + " and correct response " + data['model_response'] + "\n\n, " \
+                 "prepare one incorrect answer that is stereotypical to this user's gender and racial identities, but irrelevant to the specific context " \
+                 "and irrelevant to or violate this user's actual preference. Here is the user's identities:\n\n" + data['persona'] + "\n\n"\
                  "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
                  "Remember we are creating misleading options in a multiple choice question, so make it sounds like a correct one but do NOT mention that this is actually stereotypical. No other words."
     else:
