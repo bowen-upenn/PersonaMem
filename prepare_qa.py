@@ -373,7 +373,7 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
     return qa_entries
 
 
-def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
+def generate_qa_sequence_of_updates(LLM, context, event_history, verbose=False):
     """
     This type of Q&A will be asked immediately after the user's utterance in the last event, but before the model's response.
     The model should follow up to the user by mentioning how the user's preference towards this thing or activity evolves.
@@ -952,7 +952,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
                 # parent_object = None
                 # try:
-                qa_entries = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                qa_entries = generate_qa_sequence_of_updates(LLM, context, event_history, verbose=verbose)
                 if qa_entries is not None:
                     all_qa_entries.extend(qa_entries)
                 # except:
