@@ -70,6 +70,10 @@ def evaluate_answer(predicted_answer, correct_answer):
     if correct_letter_mentioned and not incorrect_letters_mentioned:
         return True  # Match based on Criterion 1
 
+    if len(predicted_answer) == len(correct_answer) == 3:
+        # for short answers, don't use SentenceBERT
+        return False
+
     # Criterion 2: Use SentenceBERT similarity
     similarity = util.pytorch_cos_sim(
         sentence_bert_model.encode(correct_answer, convert_to_tensor=True),
