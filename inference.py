@@ -50,15 +50,21 @@ def evaluate_answer(predicted_answer, correct_answer):
     1. If the correct option (e.g., (a)) is mentioned, and incorrect options are not.
     2. Otherwise, use SentenceBERT to check similarity.
     """
+    # trivial case
+    if predicted_answer == correct_answer:
+        return True
+    
     # Extract all option patterns (e.g., (a), (b), etc.) from the answer
     option_pattern = r"\(([a-zA-Z])\)"
     predicted_options = re.findall(option_pattern, predicted_answer)
+    predicted_options_lower = list(map(str.lower, predicted_options))
 
     # Check for the correct and incorrect options
-    correct_letter_mentioned = correct_answer.lower() in map(str.lower, predicted_options)
-    incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_answer.upper()]
+    correct_letter = re.search(option_pattern, correct_answer).group(1)
+    correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
+    incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
     incorrect_letters_mentioned = any(
-        letter.lower() in map(str.lower, predicted_options) for letter in incorrect_letters
+        letter.lower() in predicted_options_lower for letter in incorrect_letters
     )
 
     if correct_letter_mentioned and not incorrect_letters_mentioned:
@@ -505,7 +511,7 @@ if __name__ == "__main__":
                         "conversation_id": conversation_id,
                         "question": formatted_question,
                         "correct_answer": correct_answer,
-                        "incorrect_answers": incorrect_answers,
+                        "all_options": all_options,
                         "predicted_answer": predicted_answer,
                         "match": match,
                         "distance_blocks": distance_blocks,
