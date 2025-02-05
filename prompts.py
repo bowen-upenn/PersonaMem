@@ -291,11 +291,27 @@ def prompts_for_generating_qa(data, action):
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
                  "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone and length." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
-
-
     # elif action == 'propose_incorrect_reasons':
     #     prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
     #              "Incorrect answers should have the same length with the correct answer."
+
+    elif action == 'recall_sequence':
+        prompt = "We are designing a memory benchmark focused on personalization. Consider the following sequence of user preference changes:\n\n" + data['full_sequence'] + "\n\n" \
+                 "The right most one is the most recent update, which the user mentioned that:" + data['user_utterance'] + "\n\n" \
+                 "When the user mentions their most recent preference, how should the model respond to demonstrate that it remembers the entire sequence of preference changes, not just the latest one? " \
+                 "Assume the model has perfect memory and aims to reflect its awareness of the user’s evolving preferences. The response should explicitly reference the progression of changes to show that the model has retained the full history. " \
+                 "Emphasis should be on the sequence of changes rather than the final state of preferences." \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_sequence':
+        prompt = "Given following the model's response that correctly references the full sequence of preference updates of the user:\n\n" + data['model_response'] + "\n\n" \
+                 "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each response should look similar, except that they color different incorrect sequence of preference updates. " \
+                 "If there is any updates in the sequence, incorrect ones could include incorrect updates or mentions that it is the first time the user mentioned this thing or activity. " \
+                 "Do NOT modify the most recent one (the right most one in the sequence). If the sequence has no preference updates, incorrect ones could flip the preference or add one additional change. " \
+                 'Each option should share similar tone and length. Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
 
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \

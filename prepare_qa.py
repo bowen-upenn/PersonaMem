@@ -374,22 +374,10 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
 
 
 def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
-    def _randomly_shorten_an_answer(incorrect_answer, remove_last_event=True):
-        # Randomly remove one event if the number of '->' is greater than 2
-        events = [event.strip() for event in incorrect_answer.split('->')]
-        if remove_last_event:
-            random_event_index = len(events) - 1
-        else:
-            random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
-
-        # To remove one update step, we need to remove two consecutive events
-        del events[random_event_index]
-        if not remove_last_event:
-            del events[random_event_index + 1]
-
-        incorrect_answer = ' -> '.join(events)
-        return incorrect_answer
-
+    """
+    This type of Q&A will be asked immediately after the user's utterance in the last event, but before the model's response.
+    The model should follow up to the user by mentioning how the user's preference towards this thing or activity evolves.
+    """
     if context == "therapy":
         user = "patient"
     elif context == "legal":
@@ -397,48 +385,28 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
     else:
         user = 'user'
 
-    """
-    - Correct answer type I
-    - Incorrect answers type I
-        - Same as the correct knowledge updates, except for missing the last one or adding an additional one
-        - Always dislikes
-        - Always likes
-        
-    - Correct answer type II
-        - The user has never mentioned this object
-    - Incorrect answers type II
-        - Same as the correct knowledge updates, except for missing the last one or adding an additional one, but use the object never mentioned in the conversation
-        - Correct knowledge updates, but use the object never mentioned in the conversation
-        - Incorrect knowledge updates, but use the object never mentioned in the conversation
-    """
     qa_entries = []
-    correct_answer = ["", ""]
-    incorrect_answers = [["", "", ""], ["", "", ""]]
+    full_sequence = ""
+    previous_details = None
     timestamps = list(event_history.keys())  # Get all timestamps in order
 
-    # Assert there are knowledge updates
-    if len(timestamps) < 2:
-        return None, None
+    # Find the most recent event
+    last_event = None
+    for timestamp in timestamps:
+        current_detail = event_history[timestamp]
 
-    # Based on what the user likes/dislikes, extract the parent object name to form the question, as well as random child objects for incorrect answers
-    current_details = event_history[timestamps[0]]
-    if "[Updated Fact] Likes" in current_details:
-        data = current_details['[Updated Fact] Likes']
-    else:
-        data = current_details['[Updated Fact] Dislikes']
-    response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
+        # Check if the conversation is non-zero
+        if len(current_detail['Conversation']) > 0:
+            last_event = current_detail
+            break
+    user_utterance = last_event['Conversation'].split('\n')[-2]
 
-    response = utils.process_json_from_api(response)
-    parent_object = response.get("parent_object", "")
-    random_child_object = response.get("random_child_object", "")
-    question = (
-        f"How does the {user}'s preference towards {parent_object} evolve?"
-    )
+    if len(timestamps) == 1:
+        if "[Fact] Likes" in last_event:
+            full_sequence += f"The user likes {last_event['[Fact] Likes'].lower()}"
+        else:
+            full_sequence += f"The user dislikes {last_event['[Fact] Dislikes'].lower()}"
 
-    # Iterate through the linear graph of updates to generate correct and incorrect answers
-    previous_details = None
-    final_preference = None
-    event_count = 0
     for i, timestamp in enumerate(reversed(timestamps)):
         current_details = event_history[timestamp]
 
@@ -448,107 +416,210 @@ def generate_qa_graph_of_updates(LLM, context, event_history, verbose=False):
 
         if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
             if previous_details is not None and ("[Updated Fact] Likes" in previous_details or "[Fact] Likes" in previous_details):
-                continue    # We encountered a missing event not mentioned in the conversation, so there is no preference update reflected in the conversation itself
-            if i + 1 == len(timestamps):
-                final_preference = 'likes'
-            event_count += 1
-
+                continue    # No need to repeat two consecutive preferences without changes
             curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
-            if len(correct_answer[0]) == 0:
-                correct_answer[0] += f"The user likes {curr_preference}"
-                incorrect_answers[0][0] = f"The user likes {curr_preference}"   # will perturb later on
-                incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
-                incorrect_answers[0][2] = f"The user always likes {curr_preference}"
-
-                correct_answer[1] += f"The user has never mentioned {random_child_object}"
-                incorrect_answers[1][0] = f"The user likes {random_child_object}"   # will perturb later on
-                incorrect_answers[1][1] = f"The user likes {random_child_object}"
-                incorrect_answers[1][2] = f"The user dislikes {random_child_object}"
-            else:
-                correct_answer[0] += f" -> likes {curr_preference}"
-                incorrect_answers[0][0] += f" -> likes {curr_preference}"   # will perturb later on
-
-                incorrect_answers[1][0] += f" -> likes {random_child_object}"
-                incorrect_answers[1][1] += f" -> likes {random_child_object}"   # will perturb later on
-                incorrect_answers[1][2] += f" -> dislikes {random_child_object}"
+            full_sequence += f"The user likes {curr_preference}" if len(full_sequence) == 0 else f" -> likes {curr_preference}"
 
         elif "[Updated Fact] Dislikes" in current_details or "[Fact] Dislikes" in current_details:
             if previous_details is not None and ("[Updated Fact] Dislikes" in previous_details or "[Fact] Dislikes" in previous_details):
                 continue
-            if i + 1 == len(timestamps):
-                final_preference = 'dislikes'
-            event_count += 1
-
             curr_preference = current_details['[Updated Fact] Dislikes'].lower() if "[Updated Fact] Dislikes" in current_details else current_details['[Fact] Dislikes'].lower()
-            if len(correct_answer[0]) == 0:
-                correct_answer[0] += f"The user dislikes {curr_preference}"
-                incorrect_answers[0][0] = f"The user dislikes {curr_preference}"   # will perturb later on
-                incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
-                incorrect_answers[0][2] = f"The user always likes {curr_preference}"
-
-                correct_answer[1] += f"The user has never mentioned {random_child_object}"
-                incorrect_answers[1][0] = f"The user dislikes {curr_preference}"   # will perturb later on
-                incorrect_answers[1][1] = f"The user dislikes {random_child_object}"
-                incorrect_answers[1][2] = f"The user likes {random_child_object}"
-            else:
-                correct_answer[0] += f" -> dislikes {curr_preference}"
-                incorrect_answers[0][0] += f" -> dislikes {curr_preference}"   # will perturb later on
-
-                incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
-                incorrect_answers[1][1] += f" -> dislikes {random_child_object}"   # will perturb later on
-                incorrect_answers[1][2] += f" -> likes {random_child_object}"
+            full_sequence += f"The user dislikes {curr_preference}" if len(full_sequence) == 0 else f" -> dislikes {curr_preference}"
 
         previous_details = current_details
 
-    if event_count == 1:
-        return None, None
-    elif event_count <= 2:  # The only way is to add additional events not mentioned in the conversation
-        if final_preference == 'likes':
-            incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
-            incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
-        elif final_preference == 'dislikes':
-            incorrect_answers[0][0] += f" -> likes {curr_preference}"
-            incorrect_answers[1][0] += f" -> likes {random_child_object}"
-    else:
-        if random.random() > 0.5:   # Add an additional event not mentioned in the conversation
-            if final_preference == 'likes':
-                incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
-                incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
-            elif final_preference == 'dislikes':
-                incorrect_answers[0][0] += f" -> likes {curr_preference}"
-                incorrect_answers[1][0] += f" -> likes {random_child_object}"
-        else:   # Remove the last related event mentioned in the conversation
-            incorrect_answers[0][0] = _randomly_shorten_an_answer(incorrect_answers[0][0], remove_last_event=True)
-            incorrect_answers[1][0] = _randomly_shorten_an_answer(incorrect_answers[1][0], remove_last_event=True)
+    # This Q&A will be asked immediately before the last event
+    response = LLM.query_llm(step='qa_helper', data={'full_sequence': full_sequence, 'user_utterance': user_utterance}, action='recall_sequence', verbose=False)
+    response = utils.process_json_from_api(response)
+    correct_answer = response.get("Model Response", "")
 
-    # # Remove some random steps from the correct answer
-    # incorrect_answer_shorter = correct_answer[:]
-    # if incorrect_answer_shorter.count('->') > 3:
-    #     incorrect_answers.append(_randomly_shorten_an_answer(incorrect_answer_shorter))
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'model_response': correct_answer}, action='propose_incorrect_sequence', verbose=False)
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    incorrect_answers = ast.literal_eval(incorrect_answers)
 
+    question = user_utterance + " How do you think about it?"
+    event_history['full_sequence'] = full_sequence
     qa_entries.append({
         "Question": question,
-        "Correct_Answer": correct_answer[0],
-        "Incorrect_Answers": incorrect_answers[0],
-        "Type": "graph_of_updates",
-        "Context": context
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "sequence_of_updates",
+        "Context": context,
+        "Reference": event_history
     })
-    qa_entries.append({
-        "Question": question,
-        "Correct_Answer": correct_answer[1],
-        "Incorrect_Answers": incorrect_answers[1],
-        "Type": "graph_of_updates_abstention",
-        "Context": context
-    })
-    qa_entries.append({"Reference": event_history})
+    #
+    # def _randomly_shorten_an_answer(incorrect_answer, remove_last_event=True):
+    #     # Randomly remove one event if the number of '->' is greater than 2
+    #     events = [event.strip() for event in incorrect_answer.split('->')]
+    #     if remove_last_event:
+    #         random_event_index = len(events) - 1
+    #     else:
+    #         random_event_index = random.randint(1, len(events) - 3)  # Exclude the first and last event
+    #
+    #     # To remove one update step, we need to remove two consecutive events
+    #     del events[random_event_index]
+    #     if not remove_last_event:
+    #         del events[random_event_index + 1]
+    #
+    #     incorrect_answer = ' -> '.join(events)
+    #     return incorrect_answer
+    #
+    # if context == "therapy":
+    #     user = "patient"
+    # elif context == "legal":
+    #     user = "client"
+    # else:
+    #     user = 'user'
+    #
+    # """
+    # - Correct answer type I
+    # - Incorrect answers type I
+    #     - Same as the correct knowledge updates, except for missing the last one or adding an additional one
+    #     - Always dislikes
+    #     - Always likes
+    #
+    # - Correct answer type II
+    #     - The user has never mentioned this object
+    # - Incorrect answers type II
+    #     - Same as the correct knowledge updates, except for missing the last one or adding an additional one, but use the object never mentioned in the conversation
+    #     - Correct knowledge updates, but use the object never mentioned in the conversation
+    #     - Incorrect knowledge updates, but use the object never mentioned in the conversation
+    # """
+    # qa_entries = []
+    # correct_answer = ["", ""]
+    # incorrect_answers = [["", "", ""], ["", "", ""]]
+    # timestamps = list(event_history.keys())  # Get all timestamps in order
+    #
+    # # Assert there are knowledge updates
+    # if len(timestamps) < 2:
+    #     return None, None
+    #
+    # # Based on what the user likes/dislikes, extract the parent object name to form the question, as well as random child objects for incorrect answers
+    # current_details = event_history[timestamps[0]]
+    # if "[Updated Fact] Likes" in current_details:
+    #     data = current_details['[Updated Fact] Likes']
+    # else:
+    #     data = current_details['[Updated Fact] Dislikes']
+    # response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
+    #
+    # response = utils.process_json_from_api(response)
+    # parent_object = response.get("parent_object", "")
+    # random_child_object = response.get("random_child_object", "")
+    # question = (
+    #     f"How does the {user}'s preference towards {parent_object} evolve?"
+    # )
+    #
+    # # Iterate through the linear graph of updates to generate correct and incorrect answers
+    # previous_details = None
+    # final_preference = None
+    # event_count = 0
+    # for i, timestamp in enumerate(reversed(timestamps)):
+    #     current_details = event_history[timestamp]
+    #
+    #     # Avoid any events not mentioned in the conversation
+    #     if len(current_details['Conversation']) == 0:
+    #         continue
+    #
+    #     if "[Updated Fact] Likes" in current_details or "[Fact] Likes" in current_details:
+    #         if previous_details is not None and ("[Updated Fact] Likes" in previous_details or "[Fact] Likes" in previous_details):
+    #             continue  # We encountered a missing event not mentioned in the conversation, so there is no preference update reflected in the conversation itself
+    #         if i + 1 == len(timestamps):
+    #             final_preference = 'likes'
+    #         event_count += 1
+    #
+    #         curr_preference = current_details['[Updated Fact] Likes'].lower() if "[Updated Fact] Likes" in current_details else current_details['[Fact] Likes'].lower()
+    #         if len(correct_answer[0]) == 0:
+    #             correct_answer[0] += f"The user likes {curr_preference}"
+    #             incorrect_answers[0][0] = f"The user likes {curr_preference}"  # will perturb later on
+    #             incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
+    #             incorrect_answers[0][2] = f"The user always likes {curr_preference}"
+    #
+    #             correct_answer[1] += f"The user has never mentioned {random_child_object}"
+    #             incorrect_answers[1][0] = f"The user likes {random_child_object}"  # will perturb later on
+    #             incorrect_answers[1][1] = f"The user likes {random_child_object}"
+    #             incorrect_answers[1][2] = f"The user dislikes {random_child_object}"
+    #         else:
+    #             correct_answer[0] += f" -> likes {curr_preference}"
+    #             incorrect_answers[0][0] += f" -> likes {curr_preference}"  # will perturb later on
+    #
+    #             incorrect_answers[1][0] += f" -> likes {random_child_object}"
+    #             incorrect_answers[1][1] += f" -> likes {random_child_object}"  # will perturb later on
+    #             incorrect_answers[1][2] += f" -> dislikes {random_child_object}"
+    #
+    #     elif "[Updated Fact] Dislikes" in current_details or "[Fact] Dislikes" in current_details:
+    #         if previous_details is not None and ("[Updated Fact] Dislikes" in previous_details or "[Fact] Dislikes" in previous_details):
+    #             continue
+    #         if i + 1 == len(timestamps):
+    #             final_preference = 'dislikes'
+    #         event_count += 1
+    #
+    #         curr_preference = current_details['[Updated Fact] Dislikes'].lower() if "[Updated Fact] Dislikes" in current_details else current_details['[Fact] Dislikes'].lower()
+    #         if len(correct_answer[0]) == 0:
+    #             correct_answer[0] += f"The user dislikes {curr_preference}"
+    #             incorrect_answers[0][0] = f"The user dislikes {curr_preference}"  # will perturb later on
+    #             incorrect_answers[0][1] = f"The user always dislikes {curr_preference}"
+    #             incorrect_answers[0][2] = f"The user always likes {curr_preference}"
+    #
+    #             correct_answer[1] += f"The user has never mentioned {random_child_object}"
+    #             incorrect_answers[1][0] = f"The user dislikes {curr_preference}"   # will perturb later on
+    #             incorrect_answers[1][1] = f"The user dislikes {random_child_object}"
+    #             incorrect_answers[1][2] = f"The user likes {random_child_object}"
+    #         else:
+    #             correct_answer[0] += f" -> dislikes {curr_preference}"
+    #             incorrect_answers[0][0] += f" -> dislikes {curr_preference}"   # will perturb later on
+    #
+    #             incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+    #             incorrect_answers[1][1] += f" -> dislikes {random_child_object}"   # will perturb later on
+    #             incorrect_answers[1][2] += f" -> likes {random_child_object}"
+    #
+    #     previous_details = current_details
+    #
+    # if event_count == 1:
+    #     return None, None
+    # elif event_count <= 2:  # The only way is to add additional events not mentioned in the conversation
+    #     if final_preference == 'likes':
+    #         incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
+    #         incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+    #     elif final_preference == 'dislikes':
+    #         incorrect_answers[0][0] += f" -> likes {curr_preference}"
+    #         incorrect_answers[1][0] += f" -> likes {random_child_object}"
+    # else:
+    #     if random.random() > 0.5:
+    #         if final_preference == 'likes':
+    #             incorrect_answers[0][0] += f" -> dislikes {curr_preference}"
+    #             incorrect_answers[1][0] += f" -> dislikes {random_child_object}"
+    #         elif final_preference == 'dislikes':
+    #             incorrect_answers[0][0] += f" -> likes {curr_preference}"
+    #             incorrect_answers[1][0] += f" -> likes {random_child_object}"
+    #     else:   # Remove the last related event mentioned in the conversation
+    #         incorrect_answers[0][0] = _randomly_shorten_an_answer(incorrect_answers[0][0], remove_last_event=True)
+    #         incorrect_answers[1][0] = _randomly_shorten_an_answer(incorrect_answers[1][0], remove_last_event=True)
+    #
+    # qa_entries.append({
+    #     "Question": question,
+    #     "Correct_Answer": correct_answer[0],
+    #     "Incorrect_Answers": incorrect_answers[0],
+    #     "Type": "graph_of_updates",
+    #     "Context": context
+    # })
+    # qa_entries.append({
+    #     "Question": question,
+    #     "Correct_Answer": correct_answer[1],
+    #     "Incorrect_Answers": incorrect_answers[1],
+    #     "Type": "graph_of_updates_abstention",
+    #     "Context": context
+    # })
+    # qa_entries.append({"Reference": event_history})
 
     # Save to JSON file
     if verbose:
-        print(f'{utils.Colors.OKGREEN}Parent Object:{utils.Colors.ENDC}')
         print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
         print(json.dumps(qa_entries, indent=4))
 
-    return qa_entries, parent_object
+    return qa_entries
 
 
 def generate_qa_recommendations(LLM, context, event_history, persona, parent_object=None, verbose=False):
@@ -616,76 +687,76 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
 
     return qa_entry
 
-# TODO
-def generate_qa_personalized_response(LLM, context, event_history, verbose=False):
-    if context == "therapy":
-        user = 'patient'
-    elif context == 'legal':
-        user = 'client'
-    else:
-        user = 'user'
-
-    qa_entries = []
-    timestamps = list(event_history.keys())  # Get all timestamps in order
-
-    for i, current_timestamp in enumerate(timestamps):
-        current_detail = event_history[current_timestamp]
-
-        """
-        If the user likes sth
-          - (1) The model should first acknowledge that and then propose sth new, right before the next turn
-          - (2) The model should first acknowledge that and then propose a recommendation that aligns with the like, right before the next section
-        If the user does not like sth in this section
-          - (1) The model should first acknowledge that and then try to persuade the user to like it, right before the next section
-          - (2) The model should first acknowledge that and then propose a recommendation that aligns with the dislike, right before the next section
-          
-        We define each section as a group of three utterance: Side_Note, user, and agent.
-        We define each block as a group of conversation sections within the same period of time.
-        
-        Having a response right after the user's utterance in this section would make the problem too easy, so we shall ask the question right before the next section.
-        This question will be challenging if the next section sits in the next conversation block, and there are blocks of other topics in between.
-        
-        We need to store the location of the next section, and in the inference, we cut this conversation block at that location and ask the question.
-        This can be achieved by storing the beginning sentence of the next section, and in the inference time after block concatenations, we use regular expression to find the location.
-        """
-
-        # Avoid any events not mentioned in the conversation
-        if len(current_detail['Conversation']) == 0:
-            continue
-
-        print('current_detail', current_detail, '\n')
-
-        # utterances = current_detail['Conversation'].split("\n")
-        # user_utterance = utterances[1]
-        # agent_utterance = utterances[2]
-        #
-        # response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': str(current_detail), 'user_utterance': user_utterance, 'agent_utterance': agent_utterance}, action='personalized_response', verbose=False)
-        # response = utils.process_json_from_api(response)
-        # question = response.get("Question", "")
-        # correct_answer = response.get("Answer", "")
-        #
-        # incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'prev_response': response}, action='propose_other_responses', verbose=False)
-        # match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
-        # if match:
-        #     incorrect_answers = match.group(1)  # Extract the code block
-        # incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-        # incorrect_answers = ast.literal_eval(incorrect_answers)
-        #
-        # qa_entries.append({
-        #     "Question": question,
-        #     "Correct_Answer": correct_answer,
-        #     "Incorrect_Answers": incorrect_answers,
-        #     "Type": "personalized_responses",
-        #     "Context": context,
-        #     "Reference": event_history[current_timestamp]
-        # })
-
-    # Save to JSON file
-    if verbose:
-        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
-        print(json.dumps(qa_entries, indent=4))
-
-    return qa_entries
+# # TODO
+# def generate_qa_personalized_response(LLM, context, event_history, verbose=False):
+#     if context == "therapy":
+#         user = 'patient'
+#     elif context == 'legal':
+#         user = 'client'
+#     else:
+#         user = 'user'
+#
+#     qa_entries = []
+#     timestamps = list(event_history.keys())  # Get all timestamps in order
+#
+#     for i, current_timestamp in enumerate(timestamps):
+#         current_detail = event_history[current_timestamp]
+#
+#         """
+#         If the user likes sth
+#           - (1) The model should first acknowledge that and then propose sth new, right before the next turn
+#           - (2) The model should first acknowledge that and then propose a recommendation that aligns with the like, right before the next section
+#         If the user does not like sth in this section
+#           - (1) The model should first acknowledge that and then try to persuade the user to like it, right before the next section
+#           - (2) The model should first acknowledge that and then propose a recommendation that aligns with the dislike, right before the next section
+#
+#         We define each section as a group of three utterance: Side_Note, user, and agent.
+#         We define each block as a group of conversation sections within the same period of time.
+#
+#         Having a response right after the user's utterance in this section would make the problem too easy, so we shall ask the question right before the next section.
+#         This question will be challenging if the next section sits in the next conversation block, and there are blocks of other topics in between.
+#
+#         We need to store the location of the next section, and in the inference, we cut this conversation block at that location and ask the question.
+#         This can be achieved by storing the beginning sentence of the next section, and in the inference time after block concatenations, we use regular expression to find the location.
+#         """
+#
+#         # Avoid any events not mentioned in the conversation
+#         if len(current_detail['Conversation']) == 0:
+#             continue
+#
+#         print('current_detail', current_detail, '\n')
+#
+#         # utterances = current_detail['Conversation'].split("\n")
+#         # user_utterance = utterances[1]
+#         # agent_utterance = utterances[2]
+#         #
+#         # response = LLM.query_llm(step='qa_helper', data={'user': user, 'event': str(current_detail), 'user_utterance': user_utterance, 'agent_utterance': agent_utterance}, action='personalized_response', verbose=False)
+#         # response = utils.process_json_from_api(response)
+#         # question = response.get("Question", "")
+#         # correct_answer = response.get("Answer", "")
+#         #
+#         # incorrect_answers = LLM.query_llm(step='qa_helper', data={'user': user, 'prev_response': response}, action='propose_other_responses', verbose=False)
+#         # match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+#         # if match:
+#         #     incorrect_answers = match.group(1)  # Extract the code block
+#         # incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+#         # incorrect_answers = ast.literal_eval(incorrect_answers)
+#         #
+#         # qa_entries.append({
+#         #     "Question": question,
+#         #     "Correct_Answer": correct_answer,
+#         #     "Incorrect_Answers": incorrect_answers,
+#         #     "Type": "personalized_responses",
+#         #     "Context": context,
+#         #     "Reference": event_history[current_timestamp]
+#         # })
+#
+#     # Save to JSON file
+#     if verbose:
+#         print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+#         print(json.dumps(qa_entries, indent=4))
+#
+#     return qa_entries
 
 
 def qa_generative(LLM, curr_data, verbose=False):
@@ -766,9 +837,9 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
 
     all_qa_entries = []
 
-    # Generative type of QA
-    qa_entry = qa_generative(LLM, data, verbose)
-    all_qa_entries.extend([qa_entry])
+    # # Generative type of QA
+    # qa_entry = qa_generative(LLM, data, verbose)
+    # all_qa_entries.extend([qa_entry])
 
     # Discriminative type of QA
     qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
@@ -875,15 +946,15 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
                 # try:
-                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
-                all_qa_entries.extend(qa_entries)
+                # qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                # all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
                 # parent_object = None
                 # try:
-                #     qa_entries, parent_object = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
-                #     if qa_entries is not None:
-                #         all_qa_entries.extend(qa_entries)
+                qa_entries = generate_qa_graph_of_updates(LLM, context, event_history, verbose=verbose)
+                if qa_entries is not None:
+                    all_qa_entries.extend(qa_entries)
                 # except:
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
                 # try:
