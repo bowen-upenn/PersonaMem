@@ -299,3 +299,9 @@ def clean_up_one_file(file_path):
     else:
         print(f"File not found: {file_path}")
 
+
+def find_string_in_list(data, target):
+    for index, item in enumerate(data):
+        if item.get('content') == target:
+            return index
+    return -1  # Return -1 if not found

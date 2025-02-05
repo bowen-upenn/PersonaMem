@@ -305,8 +305,18 @@ if __name__ == "__main__":
         # count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
         # Show all Q&As related to this concatenated conversation
-        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context in tqdm(question_loader(all_qa), total=len(all_qa)):
+        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context, where in tqdm(question_loader(all_qa), total=len(all_qa)):
+            # Generate a random unique ID for the question
             question_id = str(uuid.uuid4())  # Generate a random unique ID
+
+            # Clip the context 'all_conversations' right before the sentence in 'where'
+            print(f'{utils.Colors.OKGREEN}WHERE:{utils.Colors.ENDC}{where}')
+            if where == "END OF TEXT":
+                curr_context = all_conversations
+            else:
+                end_index = utils.find_string_in_list(all_conversations, where)
+                curr_context = all_conversations[:end_index]
+
             if no_eval:
                 full_results.append({
                         "question_id": question_id,
@@ -321,9 +331,13 @@ if __name__ == "__main__":
                     }
                 )
 
-                # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-                save_contexts_to_json({conversation_id: all_conversations}, "data/contexts.json")
-                save_questions_to_csv(full_results, "data/questions.csv")
+                print('curr_context', curr_context, 'where', where)
+
+                break
+
+                # # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                # save_contexts_to_json({conversation_id: all_conversations}, "data/contexts.json")
+                # save_questions_to_csv(full_results, "data/questions.csv")
 
             else:
                 predicted_answer = evaluation.query_llm(all_conversations, formatted_question, which_format)

@@ -115,6 +115,9 @@ def generate_qa_factual(LLM, context, event_history, random_event_histories=None
         if len(last_two_details) == 2:
             break
 
+    if len(last_two_details) == 1:
+        last_two_details.insert(0, None)    # No more recent event
+
     # Find the last two events in this event graph, which should appear in two different conversation blocks.
     # The Q&As below will be based on the second last event, and will be asked immediately before the last event.
     # If the Q&As are asked immediately after the second last event, there won't be challenge for the model.
@@ -140,7 +143,8 @@ def generate_qa_factual(LLM, context, event_history, random_event_histories=None
         "Incorrect_Answers": incorrect_answers,
         "Type": "factual",
         "Context": context,
-        "Reference": last_two_details[1]
+        "Reference": last_two_details[1],
+        "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
     })
 
     if random_event_histories:
@@ -168,7 +172,8 @@ def generate_qa_factual(LLM, context, event_history, random_event_histories=None
             "Incorrect_Answers": incorrect_answers,
             "Type": "factual_inverse",
             "Context": context,
-            "Reference": last_two_details[1]
+            "Reference": last_two_details[1],
+            "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
         })
 
     # Save to JSON file
@@ -231,7 +236,8 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "reasons_of_change_generalization",
         "Context": context,
-        "Reference": last_two_details[1]
+        "Reference": last_two_details[1],
+        "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
     })
 
     # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
@@ -252,7 +258,8 @@ def generate_qa_reasons_of_change(LLM, context, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "reasons_of_change_after_new_updates",
         "Context": context,
-        "Reference": last_two_details[1]
+        "Reference": last_two_details[1],
+        "Where": last_two_details[0]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
     })
 
     # Save to JSON file
@@ -331,7 +338,8 @@ def generate_qa_sequence_of_updates(LLM, context, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "sequence_of_updates",
         "Context": context,
-        "Reference": event_history
+        "Reference": event_history,
+        "Where": last_event["Conversation"].split('\n')[-2]  # insert this question before this place, -2 since the question already includes the user's utterance
     })
 
     # Save to JSON file
@@ -361,11 +369,14 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         if len(last_two_details) == 2:
             break
 
+    if len(last_two_details) == 1:
+        last_two_details.insert(0, None)    # No more recent event
+
     if parent_object is None:
-        if "[Updated Fact] Likes" in last_two_details[1]:
-            data = last_two_details[1]['[Updated Fact] Likes']
+        if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
+            data = last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else last_two_details[1]['[Fact] Likes']
         else:
-            data = last_two_details[1]['[Updated Fact] Dislikes']
+            data = last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else last_two_details[1]['[Fact] Dislikes']
         response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
         response = utils.process_json_from_api(response)
         parent_object = response.get("parent_object", "")
@@ -373,11 +384,11 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
     # Find the last two events in this event graph, which should appear in two different conversation blocks.
     # The Q&As below will be based on the second last event, and will be asked immediately before the last event.
     # If the Q&As are asked immediately after the second last event, there won't be challenge for the model.
-    if "[Updated Fact] Likes" in last_two_details[0]:
-        preference = last_two_details[0]['[Updated Fact] Likes']
+    if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
+        preference = last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else last_two_details[1]['[Fact] Likes']
         preference = "Likes " + preference[0].lower() + preference[1:]
     else:
-        preference = last_two_details[0]['[Updated Fact] Dislikes']
+        preference = last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else last_two_details[1]['[Fact] Dislikes']
         preference = "Dislikes " + preference[0].lower() + preference[1:]
     conversation = last_two_details[1]['Conversation']
     conversation = list(conversation.split('\n'))
@@ -406,7 +417,8 @@ def generate_qa_recommendations(LLM, context, event_history, persona, parent_obj
         "Incorrect_Answers": incorrect_answers,
         "Type": "recommendation",
         "Context": context,
-        "Reference": last_two_details[1]
+        "Reference": last_two_details[1],
+        "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
     }
 
     # Save to JSON file
@@ -598,37 +610,40 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                try:
-                    qa_entries = generate_qa_factual(LLM, context, event_history, random_event_histories, verbose=verbose)
+                # try:
+                qa_entries = generate_qa_factual(LLM, context, event_history, random_event_histories, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+                # try:
+                qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
+                all_qa_entries.extend(qa_entries)
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
+                # try:
+                qa_entries = generate_qa_sequence_of_updates(LLM, context, event_history, verbose=verbose)
+                if qa_entries is not None:
                     all_qa_entries.extend(qa_entries)
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
-                try:
-                    qa_entries = generate_qa_reasons_of_change(LLM, context, event_history, verbose=verbose)
-                    all_qa_entries.extend(qa_entries)
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}')
-                try:
-                    qa_entries = generate_qa_sequence_of_updates(LLM, context, event_history, verbose=verbose)
-                    if qa_entries is not None:
-                        all_qa_entries.extend(qa_entries)
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
-                try:
-                    qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, verbose=verbose)
-                    all_qa_entries.extend([qa_entry])
-                except:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}')
+                # try:
+                qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, verbose=verbose)
+                all_qa_entries.extend([qa_entry])
+                # except:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
                 # qa_entries = generate_qa_personalized_response(LLM, context, event_history, verbose=verbose)
                 # all_qa_entries.extend(qa_entries)
         else:
-            pass
-            # Static knowledge point
             # try:
-            #     qa_entries = generate_qa_static_factual(LLM, context, event_history, verbose=verbose)
-            #     all_qa_entries.extend(qa_entries)
+            qa_entries = generate_qa_factual(LLM, context, event_history, verbose=verbose)
+            all_qa_entries.extend(qa_entries)
             # except:
             #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}')
+            # try:
+            qa_entry = generate_qa_recommendations(LLM, context, event_history, persona, verbose=verbose)
+            all_qa_entries.extend([qa_entry])
+            # except:
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:

@@ -415,8 +415,9 @@ def question_loader(qa_list):
         distance_tokens = qa['start_index']
         question_type = qa['Type']
         context = qa['Context']
+        where = qa['Where'] if 'Where' in qa else None
 
-        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context
+        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context, where
 
 
 if __name__ == "__main__":
@@ -499,7 +500,7 @@ if __name__ == "__main__":
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for question, formatted_question, correct_answer, all_options, distance, question_type, context in question_loader(all_qa):
+    for question, formatted_question, correct_answer, all_options, distance, question_type, context, where in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.
