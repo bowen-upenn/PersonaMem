@@ -1,9 +1,8 @@
-import time
 import os
 from lib import get_provider
 
 
-def build_config(model_name, use_chroma=False):
+def build_config(model_name, api_key, use_chroma=False):
     provider = get_provider(model_name)
 
     config = {"version": "v1.1"}
@@ -19,7 +18,7 @@ def build_config(model_name, use_chroma=False):
             print(f"Warning: {path} already exists for Chroma DB, it will be loaded")
     # otherwise uses the default, qdrant in RAM
 
-    llm_entry = {"provider": provider, "config": {"model": model_name}}
+    llm_entry = {"provider": provider, "config": {"model": model_name, "api_key": api_key}}
 
     config["llm"] = llm_entry
     return config

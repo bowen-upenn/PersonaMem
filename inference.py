@@ -111,18 +111,17 @@ class Evaluation:
         if self.args["mem0"]:
             llm_model = self.args["models"]["llm_model"]
             is_openai = re_search_list(OPENAI_MODELS, llm_model)
-            assert is_openai, f"currently, only openai models supported with mem0"
-            self.mem0_config = mem0_lib.build_config(llm_model)
+            assert is_openai, "currently, only openai models supported with mem0"
+            self.mem0_config = mem0_lib.build_config(llm_model, self.openai_key)
 
             self.memory = Memory.from_config(self.mem0_config)
 
-    def query_llm(self, all_conversations, formatted_question, which_format, persona_id, raw_question=None, do_update_memory=False):
+    def query_llm(self, all_conversations, formatted_question, which_format, persona_id, question=None, do_update_memory=False):
         mems_flat = ""
         if do_update_memory:
-            formatted_question_orig = formatted_question
             self.update_memory(all_conversations, persona_id)
         if self.args["mem0"]:
-            mems_relevant = self.memory.search(raw_question, persona_id)['results']
+            mems_relevant = self.memory.search(question, persona_id)['results']
             mems_flat = "\n".join([m["memory"] for m in mems_relevant])
             formatted_question = f"User Facts:\n{mems_flat}\n\n{formatted_question} You may consider the User Facts above."
 
@@ -203,12 +202,14 @@ class Evaluation:
         return response, mems_flat
 
     def update_memory(self, conversations, persona_id):
-        agent_id = f"agent_for_{persona_id}"
 
         print("Adding conversations to memory")
-        # passing run_id means that we don't persist the memory after this script finishes running
+        
         self.memory.add(conversations, user_id=persona_id)
-        self.memory.add(conversations, agent_id=agent_id)
+
+        # no agent memory needed for now
+        # agent_id = f"agent_for_{persona_id}"
+        # self.memory.add(conversations, agent_id=agent_id)
     
     def clear_memory(self):
         self.memory.reset()
@@ -312,7 +313,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mem0_model",
         type=str,
-        default="gpt4",
+        default=None,
         help="Set model used by mem0 (if none, defaults to --model)")
     parser.add_argument(
         "--no_conversation_history",
@@ -325,9 +326,10 @@ if __name__ == "__main__":
     args["models"]["llm_model"] = (cmd_args.model if cmd_args.model is not None else args["models"]["llm_model"])
     args["mem0"] = cmd_args.mem0
     args["models"]["mem0_model"] = cmd_args.mem0_model
-    if not cmd_args.mem0:
-        print('mem0_model not specified, using llm_model')
-        args["models"]["mem0_model"] = args["models"]["llm_model"]
+    if not cmd_args.mem0_model:
+        llm_model = args["models"]["llm_model"]
+        print(f'mem0_model not specified, using llm_model {llm_model}')
+        args["models"]["mem0_model"] = llm_model
 
     args["verbose"] = cmd_args.verbose
     args["use_conversation_history"] = cmd_args.use_conversation_history
@@ -357,8 +359,8 @@ if __name__ == "__main__":
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
-    no_eval = cmd_args.no_eval    persona_id = f"persona_{idx_persona}"
-    run_id = hex(int(time.time()))[2:]
+    no_eval = cmd_args.no_eval
+    persona_id = f"persona_{idx_persona}"
 
     which_format = cmd_args.format
     verbose = cmd_args.verbose
@@ -450,8 +452,8 @@ if __name__ == "__main__":
 
 
         # Show all Q&As related to this concatenated conversation
-        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context, raw_question in tqdm(
-            question_loader(all_qa, return_raw=True), total=len(all_qa)
+        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context in tqdm(
+            question_loader(all_qa), total=len(all_qa)
         ):
             question_id = str(uuid.uuid4())  # Generate a random unique ID
             if no_eval:
@@ -473,14 +475,11 @@ if __name__ == "__main__":
                 save_questions_to_csv(full_results, "data/questions.csv")
 
             else:
-    
-            if question_type == 'new_content_discriminative':
-                raw_question = DISCRIMINATIVE_QUESTION
 
-            predicted_answer, memories = evaluation.query_llm(
-                all_conversations, formatted_question, which_format, persona_id, raw_question, do_update_memory
-            )
-            do_update_memory = False # only need to update once per all_conversations object
+                predicted_answer, memories = evaluation.query_llm(
+                    all_conversations, formatted_question, which_format, persona_id, question, do_update_memory
+                )
+                do_update_memory = False # only need to update once per all_conversations object
 
                 match = evaluate_answer(predicted_answer, correct_answer)
 
