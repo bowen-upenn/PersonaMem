@@ -23,7 +23,7 @@ class QueryLLM:
         self.client = OpenAI(api_key=self.api_key)
         self.assistant_persona = self.client.beta.assistants.create(
             name="Persona Generator",
-            instructions="You are a helpful assistant that generates user personas in an user specified context.",
+            instructions="You are a helpful assistant that generates user personas in an user specified topic.",
             tools=[{"type": "code_interpreter"}],
             model=self.args['models']['llm_model'],
         )
@@ -31,7 +31,7 @@ class QueryLLM:
 
         self.assistant_conversation = self.client.beta.assistants.create(
             name="Conversation Generator",
-            instructions="You are a helpful assistant that generates persona-oriented conversational data in an user specified context.",
+            instructions="You are a helpful assistant that generates persona-oriented conversational data in an user specified topic.",
             tools=[{"type": "code_interpreter"}],
             model=self.args['models']['llm_model'],
         )
@@ -66,7 +66,7 @@ class QueryLLM:
         else:
             raise ValueError(f'Invalid step: {step}')
 
-    def query_llm(self, step='source_data', persona=None, context=None, seed=None, data=None, action=None, idx_context=0, start_time=None, verbose=False):
+    def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, idx_topic=0, start_time=None, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
@@ -82,38 +82,38 @@ class QueryLLM:
         elif step == 'third_expand_general_personal_history':
             prompt = prompts.prompts_for_expanding_personal_history(type='general', period='YEAR')
 
-        # Generate one for each context
+        # Generate one for each topic
         elif step == 'init_contextual_personal_history':
-            prompt = prompts.prompts_for_init_contextual_personal_history(context, start_time, self.expanded_persona, self.general_personal_history)
+            prompt = prompts.prompts_for_init_contextual_personal_history(topic, start_time, self.expanded_persona, self.general_personal_history)
         elif step == 'first_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='WEEK')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='WEEK')
         elif step == 'second_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='MONTH')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='MONTH')
         elif step == 'third_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(context=context, type='general', period='YEAR')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='YEAR')
 
         # A separate thread to populate personal histories into conversations
         elif step == 'init_conversation':
-            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.init_personal_history, period='INIT')
+            prompt = prompts.prompts_for_generating_conversations(topic, self.expanded_persona, curr_personal_history=self.init_personal_history, period='INIT')
         elif step == 'first_expand_conversation':
-            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.first_expand_personal_history, period='WEEK')
+            prompt = prompts.prompts_for_generating_conversations(topic, self.expanded_persona, curr_personal_history=self.first_expand_personal_history, period='WEEK')
         elif step == 'second_expand_conversation':
-            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.second_expand_personal_history, period='MONTH')
+            prompt = prompts.prompts_for_generating_conversations(topic, self.expanded_persona, curr_personal_history=self.second_expand_personal_history, period='MONTH')
         elif step == 'third_expand_conversation':
-            prompt = prompts.prompts_for_generating_conversations(context, self.expanded_persona, curr_personal_history=self.third_expand_personal_history, period='YEAR')
+            prompt = prompts.prompts_for_generating_conversations(topic, self.expanded_persona, curr_personal_history=self.third_expand_personal_history, period='YEAR')
 
         # Reflect on the conversation
         elif step == 'reflect_init_conversation':
-            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.init_personal_history, 'conversation_block': data}, round=action, period='INIT')
+            prompt = prompts.prompts_for_reflecting_conversations(topic, data={'history_block': self.init_personal_history, 'conversation_block': data}, round=action, period='INIT')
         elif step == 'reflect_first_expand_conversation':
-            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.first_expand_personal_history, 'conversation_block': data}, round=action, period='WEEK')
+            prompt = prompts.prompts_for_reflecting_conversations(topic, data={'history_block': self.first_expand_personal_history, 'conversation_block': data}, round=action, period='WEEK')
         elif step == 'reflect_second_expand_conversation':
-            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.second_expand_personal_history, 'conversation_block': data}, round=action, period='MONTH')
+            prompt = prompts.prompts_for_reflecting_conversations(topic, data={'history_block': self.second_expand_personal_history, 'conversation_block': data}, round=action, period='MONTH')
         elif step == 'reflect_third_expand_conversation':
-            prompt = prompts.prompts_for_reflecting_conversations(context, data={'history_block': self.third_expand_personal_history, 'conversation_block': data}, round=action, period='YEAR')
+            prompt = prompts.prompts_for_reflecting_conversations(topic, data={'history_block': self.third_expand_personal_history, 'conversation_block': data}, round=action, period='YEAR')
 
         elif step == 'expand_conversation_section':
-            prompt = prompts.prompts_for_expanding_conversation_section(context, data)
+            prompt = prompts.prompts_for_expanding_conversation_section(topic, data)
 
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
@@ -178,7 +178,7 @@ class QueryLLM:
                 print(run.status)
 
         # Save general personal history to be shared across contexts
-        if idx_context == 0:
+        if idx_topic == 0:
             if step == 'init_general_personal_history':
                 self.general_personal_history = response
                 self.init_general_personal_history = response

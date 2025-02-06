@@ -43,35 +43,35 @@ def prepare_persona(LLM, idx_persona, all_personas, args):
     return persona, expanded_persona, start_time
 
 
-def prepare_context(idx_context, all_contexts, curr_context, args):
-    # Process each context as needed
-    print(f'{utils.Colors.OKGREEN}Processing context: {curr_context}, {idx_context + 1}/{len(all_contexts)}{utils.Colors.ENDC}')
+def prepare_topics(idx_topic, all_topics, curr_topic, args):
+    # Process each topic as needed
+    print(f'{utils.Colors.OKGREEN}Processing topic: {curr_topic}, {idx_topic + 1}/{len(all_topics)}{utils.Colors.ENDC}')
 
     # Load a random conversation history from the chosen real-world dataset
-    if curr_context == 'writing':
+    if curr_topic == 'writing':
         source_dir = args['datasets']['writing_source_dir']
-    elif curr_context == 'legal':
+    elif curr_topic == 'legal':
         source_dir = args['datasets']['legal_source_dir']
-    elif curr_context == 'therapy':
+    elif curr_topic == 'therapy':
         source_dir = args['datasets']['therapy_source_dir']
     else:
         source_dir = None
-        print(f'{utils.Colors.WARNING}No source data is available for the context: {curr_context}{utils.Colors.ENDC}')
+        print(f'{utils.Colors.WARNING}No source data is available for the topic: {curr_topic}{utils.Colors.ENDC}')
 
     all_source_files = None
     if source_dir is not None:
-        all_source_files = utils.load_all_source_data(source_dir, curr_context)
+        all_source_files = utils.load_all_source_data(source_dir, curr_topic)
 
     return source_dir, all_source_files
 
 
-def parse_conversation_sections(LLM, input_conversation, context, last_timestamp, verbose):
+def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, verbose):
     """
     :param input_conversation: A list of strings representing the conversation
     We define each section in the conversation as a group of lines before the next Side_Note
     """
     def expand_section(LLM, section, last_timestamps):
-        response = LLM.query_llm(step='expand_conversation_section', context=context, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
+        response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
         response = response.strip("```python").strip("```plaintext").strip()
         response = ast.literal_eval(response)
         return response
@@ -110,7 +110,7 @@ def parse_conversation_sections(LLM, input_conversation, context, last_timestamp
     return expanded_conversation
 
 
-def prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args):
+def prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args):
     # Convert the writing sample into a conversation
     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=args['inference']['verbose'])
     updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', verbose=args['inference']['verbose'])
@@ -131,11 +131,11 @@ def prepare_data_on_writing_context(LLM, persona, source_data, output_file_path,
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False)
 
 
-def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args):
+def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args):
     # Feed the thread with a seeding data from the real-world conversation
     if source_dir is not None:
-        context_conversation = utils.preprocess_source_data(source_data, curr_context)
-        _ = LLM.query_llm(step='source_data', seed=context_conversation, verbose=args['inference']['verbose'])
+        source_conversation = utils.preprocess_source_data(source_data, curr_topic)
+        _ = LLM.query_llm(step='source_data', seed=source_conversation, verbose=args['inference']['verbose'])
 
     # Generate general and contextual personal histories across time frames
     steps = ['init_general_personal_history', 'first_expand_general_personal_history', 'second_expand_general_personal_history', 'third_expand_general_personal_history',
@@ -151,12 +151,12 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
 
     last_timestamps = []
     for step, data_name in tqdm(zip(steps, data_names)):
-        # Only generate general personal history once, to be shared across multiple contexts for the same persona
-        if idx_context > 0 and step in existing_general_personal_history:
+        # Only generate general personal history once, to be shared across multiple topics for the same persona
+        if idx_topic > 0 and step in existing_general_personal_history:
             utils.append_json_to_file(existing_general_personal_history[step], output_file_path, curr_data_name=data_name, parse_json=True)
             continue
 
-        response = LLM.query_llm(step=step, persona=expanded_persona, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
+        response = LLM.query_llm(step=step, persona=expanded_persona, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
         last_timestamps.append(utils.extract_last_timestamp(response))
 
@@ -168,10 +168,10 @@ def prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_di
 
     last_timestamps = utils.merge_timestamps(last_timestamps)
     for conv_idx, (step, data_name) in enumerate(zip(steps, data_names)):
-        response = LLM.query_llm(step=step, context=curr_context, idx_context=idx_context, start_time=start_time, verbose=args['inference']['verbose'])
-        response = LLM.query_llm(step='reflect_' + step, context=curr_context, data=response, action=1, verbose=args['inference']['verbose'])
-        response = LLM.query_llm(step='reflect_' + step, context=curr_context, action=2, verbose=args['inference']['verbose'])
-        expanded_conversation = parse_conversation_sections(LLM, response, curr_context, last_timestamps[conv_idx], verbose=args['inference']['verbose'])
+        response = LLM.query_llm(step=step, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
+        response = LLM.query_llm(step='reflect_' + step, topic=curr_topic, data=response, action=1, verbose=args['inference']['verbose'])
+        response = LLM.query_llm(step='reflect_' + step, topic=curr_topic, action=2, verbose=args['inference']['verbose'])
+        expanded_conversation = parse_conversation_sections(LLM, response, curr_topic, last_timestamps[conv_idx], verbose=args['inference']['verbose'])
         utils.append_json_to_file(expanded_conversation, output_file_path, curr_data_name=data_name, parse_json=False, parse_list=False)
 
 
@@ -186,48 +186,48 @@ def prepare_data(args):
     for idx_persona in tqdm(range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas']))):
         persona, expanded_persona, start_time = prepare_persona(LLM, idx_persona, all_personas, args)
 
-        # Clean up the names of contexts
-        if args['datasets']['context'] == ['all']:
-            all_contexts = utils.get_all_context_names()
+        # Clean up the names of topics
+        if args['datasets']['topic'] == ['all']:
+            all_topics = utils.get_all_topic_names()
         else:
-            all_contexts = [ctx.strip() for ctx in args['datasets']['context']]
+            all_topics = [ctx.strip() for ctx in args['datasets']['topic']]
 
-        # Since we assign a consecutive time frame for all contexts, we randomly permute contexts to ensure generalization
-        if len(all_contexts) > 1:
-            random.shuffle(all_contexts)
+        # Since we assign a consecutive time frame for all topics, we randomly permute topics to ensure generalization
+        if len(all_topics) > 1:
+            random.shuffle(all_topics)
 
-        # Loop through each context in the list
-        for idx_context, curr_context in tqdm(enumerate(all_contexts)):
-            source_dir, all_source_files = prepare_context(idx_context, all_contexts, curr_context, args)
+        # Loop through each topic in the list
+        for idx_topic, curr_topic in tqdm(enumerate(all_topics)):
+            source_dir, all_source_files = prepare_topics(idx_topic, all_topics, curr_topic, args)
 
-            # Set a consecutive time frame for different contexts for each persona, while all samples below are independent
-            if idx_context > 0:
+            # Set a consecutive time frame for different topics for each persona, while all samples below are independent
+            if idx_topic > 0:
                 start_time = utils.pick_a_random_time_within_a_year(start_time)
 
-            for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_context'])):
+            for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_topic'])):
                 output_file_path = os.path.join(args['inference']['output_dir'],
-                                                os.path.join(f'{curr_context}', f'{args["inference"]["output_file_name"]}_{curr_context}_persona{idx_persona}_sample{idx_sample}.json'))
+                                                os.path.join(f'{curr_topic}', f'{args["inference"]["output_file_name"]}_{curr_topic}_persona{idx_persona}_sample{idx_sample}.json'))
                 utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
                 utils.append_json_to_file(expanded_persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
-                utils.append_json_to_file(curr_context, output_file_path, curr_data_name='Context', parse_json=False)
+                utils.append_json_to_file(curr_topic, output_file_path, curr_data_name='Topic', parse_json=False)
                 print(f'{utils.Colors.OKGREEN}Output file path: {output_file_path}{utils.Colors.ENDC}')
 
                 LLM.create_a_thread(step='conversation')
 
-                # Load a random source data to the LLM as a background memory about the context
+                # Load a random source data to the LLM as a background memory about the topic
                 source_data = None
                 if source_dir is not None:
-                    source_data = utils.load_one_source_data(source_dir, all_source_files, curr_context)
+                    source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic)
 
                 try:
-                    if curr_context == 'writing':
+                    if curr_topic == 'writing':
                         """
-                        Besides other contexts, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
-                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other contexts.
+                        Besides other topics, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
                         """
-                        prepare_data_on_writing_context(LLM, persona, source_data, output_file_path, args)
+                        prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args)
                     else:
-                        prepare_data_on_other_contexts(LLM, expanded_persona, source_data, source_dir, curr_context, idx_context, start_time, output_file_path, args)
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
                 except Exception as e:
                     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
                     all_errored_data_paths[output_file_path] = e
@@ -260,22 +260,22 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--context', type=str, default="therapy", nargs="+", help='Set conversation context. Choose from therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing'
-                                                                                  'or all to select all existing contexts under ./data/output/. '
-                                                                                  'If you want to select multiple contexts manually, separate the names by space, e.g. --context therapy legal')  # https://docs.python.org/3/library/argparse.html#nargs
+    parser.add_argument('--topics', type=str, default="therapy", nargs="+", help='Set conversation topics. Choose from therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing'
+                                                                                  'or all to select all existing topics under ./data/output/. '
+                                                                                  'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal')  # https://docs.python.org/3/library/argparse.html#nargs
     parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
-    parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per context to generate')
+    parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per topic to generate')
     parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
-    parser.add_argument('--s_samples', type=int, default=0, help='Set the starting idx of samples per context to generate')
+    parser.add_argument('--s_samples', type=int, default=0, help='Set the starting idx of samples per topic to generate')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing data files and start clean')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
     # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
-    args['datasets']['context'] = cmd_args.context if cmd_args.context is not None else args['datasets']['context']
+    args['datasets']['topic'] = cmd_args.topic if cmd_args.topic is not None else args['datasets']['topic']
     args['inference']['num_personas'] = cmd_args.n_persona if cmd_args.n_persona is not None else args['inference']['num_personas']
-    args['inference']['num_samples_per_context'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_context']
+    args['inference']['num_samples_per_topic'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_topic']
     args['inference']['start_persona_idx'] = cmd_args.s_persona if cmd_args.s_persona is not None else args['inference']['start_persona_idx']
     args['inference']['start_sample_idx'] = cmd_args.s_samples if cmd_args.s_samples is not None else args['inference']['start_sample_idx']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']

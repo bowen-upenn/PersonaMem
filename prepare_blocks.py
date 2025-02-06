@@ -11,11 +11,11 @@ from datetime import datetime, timedelta
 import utils
 
 """
-This file contains helper functions needed to concatenate multiple blocks of various contexts 
+This file contains helper functions needed to concatenate multiple blocks of various topics 
 of the same persona before the inference step, as well as some testing codes.
 """
 
-# Global variable to keep track of the number of conversation blocks without timestamps (writing context)
+# Global variable to keep track of the number of conversation blocks without timestamps (writing topics)
 no_timestamp_record = 0
 
 
@@ -23,7 +23,7 @@ def parse_date(date_str):
     return datetime.strptime(date_str, "%m/%d/%Y").date()
 
 
-def reformat_conversation(context, conversation, which_format):
+def reformat_conversation(topic, conversation, which_format):
     if which_format == 'string':
         # Format as a pure string, removing lines that start with 'Side_Note'
         extracted_conversation = "\n".join([line for line in conversation if not line.startswith("Side_Note")])
@@ -32,13 +32,13 @@ def reformat_conversation(context, conversation, which_format):
         extracted_conversation = []
         for line in conversation:
             if not line.startswith("Side_Note"):
-                if context == 'therapy':
+                if topic == 'therapy':
                     role = "assistant" if line.startswith("Lawyer Assistant") else "user"
                     extracted_conversation.append({"role": role, "content": line})
-                elif context == 'legal':
+                elif topic == 'legal':
                     role = "assistant" if line.startswith("Lawyer") else "user"
                     extracted_conversation.append({"role": role, "content": line})
-                elif context == 'writing':
+                elif topic == 'writing':
                     role = "assistant" if line.startswith("Assistant") else "user" # user includes both 'User' and '[Original_Sentence]'
                     extracted_conversation.append({"role": role, "content": line})
                 else:
@@ -50,7 +50,7 @@ def reformat_conversation(context, conversation, which_format):
     return extracted_conversation
 
 
-def process_conversation_block(context, conversation, which_format):
+def process_conversation_block(topic, conversation, which_format):
     global no_timestamp_record
     latest_timestamp = None
 
@@ -65,7 +65,7 @@ def process_conversation_block(context, conversation, which_format):
                 latest_timestamp = None  # No date found
 
     if latest_timestamp is None:
-        if context != 'writing':
+        if topic != 'writing':
             raise ValueError("No Side_Note timestamp found in conversation block.")
         else:
             formatted_last_four = f"{no_timestamp_record:04d}"
@@ -89,7 +89,7 @@ def process_conversation_block(context, conversation, which_format):
     which_format = ['string'] if which_format == 'string' else ['api_dict', 'string']
     reformatted_conversation = []
     for format in which_format:
-        reformatted_conversation.append(reformat_conversation(context, cleaned_conversation, format))
+        reformatted_conversation.append(reformat_conversation(topic, cleaned_conversation, format))
 
     return reformatted_conversation, latest_timestamp
 
@@ -100,17 +100,17 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     for root, dirs, files in os.walk(base_dir):
         for file_name in files:
             if f"persona{idx_persona}_" in file_name:
-                context = file_name.split('_')[1]
+                topic = file_name.split('_')[1]
                 fpath = os.path.join(root, file_name)
                 with open(fpath, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
-                if context == 'writing':
+                if topic == 'writing':
                     # For writing, we have only "Conversation"
                     if "Conversation" in data:
                         candidates[(file_name, "Conversation")] = data["Conversation"]
                 else:
-                    # Regular contexts
+                    # Regular topics
                     if "Init Conversation" in data:
                         candidates[(file_name, "Init Conversation")] = data["Init Conversation"]
                     if "Conversation Next Week" in data:
@@ -129,10 +129,10 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     month_candidates = {}
     year_candidates = {}
 
-    # For writing contexts, treat "Conversation" as the init-level block
+    # For writing topic, treat "Conversation" as the init-level block
     for (fname, key), val in candidates.items():
-        context = fname.split('_')[1]
-        if context == "writing":
+        topic = fname.split('_')[1]
+        if topic == "writing":
             # Only one level: treat as init equivalent
             if key == "Conversation":
                 init_candidates[(fname, key)] = val
@@ -159,7 +159,7 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     def unlock_week_blocks(fname):
         # If this init block's next-week block exists, add it
         wk_key = (fname, "Conversation Next Week")
-        # For writing contexts, there's no next-week block.
+        # For writing topic, there's no next-week block.
         if wk_key in week_candidates:
             available_weeks.add(wk_key)
 
@@ -199,20 +199,20 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
         # Remove from whichever set it belongs to
         if block in available_inits:
             available_inits.remove(block)
-            # If it's init-level (or writing-level), unlock next-week block for its context
+            # If it's init-level (or writing-level), unlock next-week block for its topic
             fname = block[0]
-            # writing contexts won't have next-week, but calling unlock won't hurt
+            # writing topic won't have next-week, but calling unlock won't hurt
             unlock_week_blocks(fname)
 
         elif block in available_weeks:
             available_weeks.remove(block)
-            # Unlock month block for its context
+            # Unlock month block for its topic
             fname = block[0]
             unlock_month_blocks(fname)
 
         elif block in available_months:
             available_months.remove(block)
-            # Unlock year block for its context
+            # Unlock year block for its topic
             fname = block[0]
             unlock_year_blocks(fname)
 
@@ -223,10 +223,10 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     # Once we have chosen n_blocks, we can return them
     final_blocks = [ (b, candidates[b]) for b in chosen ]
 
-    if verbose:
-        print("Chosen conversation blocks:")
-        for (fn, k), data in final_blocks:
-            print(f"{fn}: {k}")
+    # if verbose:
+        # print("Chosen conversation blocks:")
+        # for (fn, k), data in final_blocks:
+        #     print(f"{fn}: {k}")
 
     return final_blocks
 
@@ -281,8 +281,8 @@ def concatenate_blocks(sorted_processed_blocks, new_content_samples, which_forma
         else:
             all_conversations.extend(block["conversation"])
 
-        # If this block is about writing new samples, we also append the new sample into the whole context
-        if block['context'] == 'writing':
+        # If this block is about writing new samples, we also append the new sample into the whole topic
+        if block['topic'] == 'writing':
             print('len(new_content_samples)', len(new_content_samples), 'block_idx', block_idx)
             assert new_content_samples[block_idx]   # should not be empty
             original_sample = new_content_samples[block_idx]["Original Sample"]
@@ -308,8 +308,8 @@ def count_tokens(all_strings, tokenizer, verbose=False):
     return len(tokens)
     
     
-def extract_qa(base_dir, context, file_name, time_period):
-    with open(os.path.join(base_dir, os.path.join(context, file_name)), "r", encoding="utf-8") as f:
+def extract_qa(base_dir, topic, file_name, time_period):
+    with open(os.path.join(base_dir, os.path.join(topic, file_name)), "r", encoding="utf-8") as f:
         data = json.load(f)
 
     qa = data['Q&A'][time_period]
@@ -324,9 +324,12 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
     """
     total_blocks = len(sorted_processed_blocks)
     all_qa = []
-    accumulated_num_tokens = 0
+    total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in sorted_strings])
 
     for i, block in enumerate(sorted_processed_blocks):
+        if i + 1 < total_blocks:
+            continue
+
         distance = total_blocks - (i + 1)
         curr_block = sorted_strings[i]
 
@@ -334,44 +337,77 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
         for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
-            q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
+
+            # Get where the question will be asked
+            where = q['Where']
+            if where == 'END OF TEXT':
+                block_num_q, start_index_q = i, len(curr_block) - 1 # This Q&A will be asked at the end of this block
+            else:
+                block_num_q, start_index_q = utils.find_string_in_list(sorted_strings, where)
+
+            num_tokens_q = sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_q)])
+            num_tokens_q += count_tokens(sorted_strings[block_num_q][:start_index_q], tokenizer, verbose=False)
+
+            # Get where the reference information will be
+            if 'Reference' not in q:
+                continue
+            else:
+                if 'Conversation' in q['Reference']:
+                    reference_event = q['Reference']['Conversation']
+                else:
+                    # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
+                    all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
+                    all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
+                    reference_event = q['Reference'][all_timestamps[0]]['Conversation']
+                reference_utterance = reference_event.split('\n')[1]
+                block_num_ref, start_index_ref = utils.find_string_in_list(sorted_strings, reference_utterance)
+
+            num_tokens_ref = sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_ref)])
+            num_tokens_ref += count_tokens(sorted_strings[block_num_ref][:start_index_ref], tokenizer, verbose=False)
+
+            q['distance_blocks'] = block_num_q - block_num_ref
+            q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
+            q['context_length'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
             all_qa.append(q)
 
-            # Find the location within the current block
-            if 'Reference' not in q:
-                # Check the next q
-                next_q = block['qa'][idx + 1] if idx + 1 < len(block['qa']) else None
-                next_next_q = block['qa'][idx + 2] if idx + 2 < len(block['qa']) else None
+            # q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
+            # all_qa.append(q)
+            #
+            # # Find the location within the current block
+            # if 'Reference' not in q:
+            #     # Check the next q
+            #     next_q = block['qa'][idx + 1] if idx + 1 < len(block['qa']) else None
+            #     next_next_q = block['qa'][idx + 2] if idx + 2 < len(block['qa']) else None
+            #
+            #     if next_q and list(next_q.keys()) == ['Reference']:
+            #         curr_event = next_q['Reference']
+            #     elif next_next_q and list(next_next_q.keys()) == ['Reference']:
+            #         curr_event = next_next_q['Reference']
+            #     else:
+            #         q['start_index'] = -1
+            #         print(f"{utils.Colors.FAIL}No Reference found in the QA{utils.Colors.ENDC}{q}")
+            #         continue
+            # else:
+            #     curr_event = q['Reference']
+            #
+            # if block['context'] == 'writing':
+            #     start_index = 0
+            # else:
+            #     try:
+            #         timestamp = [key for key in curr_event][0]
+            #         curr_utterance = curr_event[timestamp]['Conversation']
+            #     except Exception as e:
+            #         curr_utterance = curr_event['Conversation']
+            #     try:
+            #         curr_utterance = curr_utterance.split('\n')[-2]
+            #     except Exception as e:
+            #         curr_utterance = curr_utterance.split('\n')[0]
+            #     start_index = curr_block.find(curr_utterance)
+            #
+            # num_tokens = count_tokens(curr_block[:start_index], tokenizer)
+            # q['start_index'] = total_num_tokens - (accumulated_num_tokens + num_tokens)     # count from the bottom up
 
-                if next_q and list(next_q.keys()) == ['Reference']:
-                    curr_event = next_q['Reference']
-                elif next_next_q and list(next_next_q.keys()) == ['Reference']:
-                    curr_event = next_next_q['Reference']
-                else:
-                    q['start_index'] = -1
-                    print(f"{utils.Colors.FAIL}No Reference found in the QA{utils.Colors.ENDC}{q}")
-                    continue
-            else:
-                curr_event = q['Reference']
-
-            if block['context'] == 'writing':
-                start_index = 0
-            else:
-                try:
-                    timestamp = [key for key in curr_event][0]
-                    curr_utterance = curr_event[timestamp]['Conversation']
-                except Exception as e:
-                    curr_utterance = curr_event['Conversation']
-                try:
-                    curr_utterance = curr_utterance.split('\n')[-2]
-                except Exception as e:
-                    curr_utterance = curr_utterance.split('\n')[0]
-                start_index = curr_block.find(curr_utterance)
-
-            num_tokens = count_tokens(curr_block[:start_index], tokenizer)
-            q['start_index'] = total_num_tokens - (accumulated_num_tokens + num_tokens)     # count from the bottom up
-
-        accumulated_num_tokens += count_tokens(curr_block, tokenizer)
+        # accumulated_num_tokens += count_tokens(curr_block, tokenizer)
 
     return all_qa
 
@@ -411,13 +447,14 @@ def question_loader(qa_list):
         formatted_question += "\n.Respond with the correct option, including both the letter (a), (b), (c), or (d). Do not include other information."
         all_options = [f"({chr(97 + i)}) {option}" for i, option in enumerate(options)]
 
-        distance_blocks = qa['distance']
-        distance_tokens = qa['start_index']
+        distance_blocks = qa['distance_blocks']
+        distance_tokens = qa['distance_tokens']
         question_type = qa['Type']
-        context = qa['Context']
+        topic = qa['Topic']
+        context_length = qa['context_length']
         where = qa['Where'] if 'Where' in qa else None
 
-        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context, where
+        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length
 
 
 if __name__ == "__main__":
@@ -461,16 +498,16 @@ if __name__ == "__main__":
     new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
     for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
-        context = file_name.split('_')[1]
+        topic = file_name.split('_')[1]
         try:
-            processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+            processed_conversation, latest_ts = process_conversation_block(topic, conversation, which_format)
         except Exception as e:
             print(f"{utils.Colors.FAIL}Error processing conversation block {file_name}{utils.Colors.ENDC}")
             continue
 
-        qa = extract_qa(base_dir, context, file_name, time_period)
+        qa = extract_qa(base_dir, topic, file_name, time_period)
 
-        if context == 'writing':
+        if topic == 'writing':
             with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
                 data = json.load(file)
                 original_sample = data.get("Original Sample")
@@ -482,7 +519,7 @@ if __name__ == "__main__":
             "file_name": file_name,
             "time_period": time_period,
             "last_timestamp": latest_ts,
-            "context": context,
+            "topic": topic,
             "qa": qa
         }
         all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
@@ -500,7 +537,7 @@ if __name__ == "__main__":
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for question, formatted_question, correct_answer, all_options, distance, question_type, context, where in question_loader(all_qa):
+    for question, formatted_question, correct_answer, all_options, distance, question_type, topic, where, context_length in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.
@@ -509,5 +546,5 @@ if __name__ == "__main__":
         question = formatted_question.split('\n', 1)[0]
         rest_of_qa = formatted_question[len(question):]
 
-        print(f'{utils.Colors.OKGREEN}{question} [Distance {distance}] [Type {question_type}] [Context {context}] {utils.Colors.ENDC}{rest_of_qa}')
+        print(f'{utils.Colors.OKGREEN}{question} [Distance {distance}] [Type {question_type}] [Topic {topic}] {utils.Colors.ENDC}{rest_of_qa}')
         print(f'Correct answer: {correct_answer}')
