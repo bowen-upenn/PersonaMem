@@ -219,6 +219,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
     parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
+    parser.add_argument('--save_only', dest='save_only', action='store_true', help='Save the data only, not evaluating')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
     cmd_args = parser.parse_args()
@@ -238,6 +239,7 @@ if __name__ == "__main__":
     idx_persona = cmd_args.idx_persona
     which_format = cmd_args.format
     verbose = cmd_args.verbose
+    save_only = cmd_args.save_only
 
     base_dir = "./data/output"
     evaluation = Evaluation(args)
@@ -323,7 +325,7 @@ if __name__ == "__main__":
                 end_index = utils.find_string_in_list(all_conversations, where)
                 curr_context = all_conversations[:end_index]
                 
-                if not no_eval:
+                if save_only:
                     curr_qa_info = {
                         "question_id": question_id,
                         "question": question,
@@ -384,7 +386,7 @@ if __name__ == "__main__":
                         }
                     )
 
-        if not no_eval:
+        if not save_only:
             # Calculate the percentage of the results
             for key in results:
                 results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
