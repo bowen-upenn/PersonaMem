@@ -18,21 +18,21 @@ class Colors:
     ENDC = '\033[0m'     # Reset color
 
 
-def preprocess_source_data(data, context):
-    if context == 'therapy' or context == 'legal':
-        context_conversation = ""
+def preprocess_source_data(data, topic):
+    if topic == 'therapy' or topic == 'legal':
+        topic_conversation = ""
         for message in data["conversation"]:
             role = message["role"]
             content = message["content"]
-            context_conversation += f"{role.capitalize()}: {content}\n\n"
+            topic_conversation += f"{role.capitalize()}: {content}\n\n"
     else:
         raise NotImplementedError
 
-    return context_conversation
+    return topic_conversation
 
 
-def load_all_source_data(source_dir, context):
-    if context == 'writing':
+def load_all_source_data(source_dir, topic):
+    if topic == 'writing':
         with open(source_dir, 'r') as f:
             data = json.load(f)
         prompts = list(data.keys())  # Preload the keys
@@ -42,9 +42,9 @@ def load_all_source_data(source_dir, context):
         return all_source_files
 
 
-def load_one_source_data(source_dir, all_source_files, context):
+def load_one_source_data(source_dir, all_source_files, topic):
     # Load a random source file from the real-world data
-    if context == 'writing':
+    if topic == 'writing':
         data, prompts = all_source_files['data'], all_source_files['prompts']
         random_prompt = random.choice(prompts)
         curr_samples = data[random_prompt]
@@ -173,7 +173,7 @@ def merge_timestamps(timestamps):
 
 def find_most_similar_event(SentenceBERT, side_note_sentence, related_data):
     """
-    The same timestamp may have multiple events, like one in the general personal history and one in the contextual one.
+    The same timestamp may have multiple events, like one in the general personal history and one in the topicual one.
     This function uses SentenceBERT to locate the single event we are actually targeting.
     """
     max_similarity = -1
@@ -231,14 +231,14 @@ def remove_side_notes(conversation):
 def find_existing_persona_files(idx_persona):
     # Dynamically retrieve all subdirectories in './data/output'
     output_base_dir = "./data/output"
-    context_dirs = [os.path.join(output_base_dir, d) for d in os.listdir(output_base_dir) if os.path.isdir(os.path.join(output_base_dir, d))]
+    topic_dirs = [os.path.join(output_base_dir, d) for d in os.listdir(output_base_dir) if os.path.isdir(os.path.join(output_base_dir, d))]
 
     # Find an existing file belonging to the same persona index
     matching_file = None
-    for context_dir in context_dirs:
-        for file_name in os.listdir(context_dir):
+    for topic_dir in topic_dirs:
+        for file_name in os.listdir(topic_dir):
             if f"_persona{idx_persona}_" in file_name:
-                matching_file = os.path.join(context_dir, file_name)
+                matching_file = os.path.join(topic_dir, file_name)
                 break
         if matching_file:
             break
@@ -299,3 +299,21 @@ def clean_up_one_file(file_path):
     else:
         print(f"File not found: {file_path}")
 
+
+def find_string_in_list(data, target):
+    # Check if the data is a list of dictionaries
+    if isinstance(data, list) and isinstance(data[0], dict):
+        for index, item in enumerate(data):
+            if item.get('content') == target:
+                return index
+
+    # Check if the data is a list of strings
+    elif isinstance(data, list) and isinstance(data[0], str):
+        for block_num, data_block in enumerate(data):
+            start_index = data_block.find(target)
+            if start_index != -1:
+                return block_num, start_index
+            else:
+                continue
+
+    return -1  # Return -1 if not found

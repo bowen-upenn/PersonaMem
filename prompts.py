@@ -70,7 +70,7 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
               "Please also use the following keys, and do NOT modify the name of these keys:\n\n" \
               "The key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
               "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
-              "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the opposite of the '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
+              "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the OPPOSITE to its corresponding '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
               "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n" \
               "Any contradictions should focus on what this person prefers and dislikes. " \
               "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
@@ -98,14 +98,14 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
 
 
 def prompts_for_generating_conversations(context, persona, curr_personal_history=None, period='INIT'):
-    if context == 'therapy':
-        context_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif context == 'legal':
-        context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
+    if topic == 'therapy':
+        topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
+    elif topic == 'legal':
+        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
-        context_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = context, 'User', 'Assistant'
 
-    prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + context_name + ". " \
+    prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + topic_name + ". " \
              "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps of the format MM/DD/YYYY as the skeleton. Do NOT change the time stamps. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a " + agent.lower() + ". " \
              "Write the conversation as a list of string, where each sentence is an element in the list and starts with either '" + user + "', '" + agent + "', or 'Side_Note'." \
@@ -140,12 +140,12 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
 
 
 def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
-    if context == 'therapy':
-        context_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif context == 'legal':
-        context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
+    if topic == 'therapy':
+        topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
+    elif topic == 'legal':
+        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
-        context_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = context, 'User', 'Assistant'
 
     if period == 'INIT':
         history_block = "'Init General Personal History'"
@@ -178,12 +178,12 @@ def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
 
 
 def prompts_for_expanding_conversation_section(context, data):
-    if context == 'therapy':
-        context_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif context == 'legal':
-        context_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
+    if topic == 'therapy':
+        topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
+    elif topic == 'legal':
+        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
-        context_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = context, 'User', 'Assistant'
 
     prompt = "Please expand these sentences. I do NOT want any new user preferences, examples, or changes to the story behind the conversation. " \
              "Instead, extend each line to AT LEAST FIVE sentences by adding additional details or irrelevant context that delves deeper into the mentioned objects or events. " \
@@ -204,20 +204,13 @@ def prompts_for_expanding_conversation_section(context, data):
 
 def prompts_for_generating_qa(data, action):
     if action == 'recall_facts':
-        # prompt = "Please propose one factual Q&A for this event happened to this specific " + data['user'] + ", in order to evaluate the model's memory capabilities. " \
-        #          "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
-        #          "The question should NOT include the explicit timestamp. Follow this format:\n" \
-        #          "{\n" \
-        #          '    "Question": xxx,\n' \
-        #          '    "Answer": yyy\n' \
-        #          "}" \
-        #          "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
-        #          "Here is the event:\n\n" + data['event']
         prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
                  "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
-                 "What question might the user ask the chatbot to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
-                 "Also, simply mimic the user’s question, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory. Make the user question more detailed with some context. " \
+                 "What question might the user query the chatbot model to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
+                 "Also, simply draft the user’s question to the model, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory. " \
+                 "Make the user question more detailed with some context. Remember that the user is asking this question to an LLM, not a real human. " \
                  "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
+                 "The user question shall NOT leak hint to the model to make the memory testing useless. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
                  '    "User Question": xxx,\n' \
@@ -225,19 +218,20 @@ def prompts_for_generating_qa(data, action):
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     elif action == 'propose_incorrect_facts':
-        # prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
-        #          "Incorrect answers should have the same length with the correct answer."
         prompt = "This is the correct personalized response to the question: " + data['question'] + ": " + data['response'] + "\n\n" \
-                 "Please propose three incorrect options to prepare a multiple choice Q&A, keeping all incorrect responses generally good but mentioning different things or activities. Each option should share similar tone and length." \
+                 "Please propose three incorrect options to prepare a multiple choice Q&A, keeping all incorrect responses generally good but mentioning different things or activities. " \
+                 "Each option should share similar tone, matching length, and equal level of detail." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
     elif action == 'recall_facts_inverse':
         prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
                  "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
                  "What question might the user ask the chatbot to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
                  "Also, simply mimic the user’s question, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory." \
-                 "Most importantly, the user should say they want to try something new, WITHOUT explicitly saying what they have done before to test the model's memory capability. Make the user question more detailed with some context. " \
+                 "Most importantly, the user should say they want to try something new, WITHOUT explicitly saying what they have done before to test the model's memory capability. " \
+                 "Make the user question more detailed with some context. Remember that the user is asking this question to an LLM, not a real human. " \
                  "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
                  "The model's response should simply give an answer, WITHOUT first mentioning what the user has already done before. " \
+                 "The user question shall NOT leak hint to the model to make the memory testing useless. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
                  '    "User Question": xxx,\n' \
@@ -247,26 +241,20 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_facts_inverse':
         prompt = "Given this question from the user: " + data['question'] + ", please create three responses inspired by these conversations from other users. " \
                  "Since they originate from other users, it is safe to use them here.\n\n" + data['random_event_histories'] + "\n\n" \
+                 "Each option should share similar tone, matching length, and equal level of detail. " \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
-    # elif action == 'abstention':
-    #     prompt = "Given this question '" + data + "', your next task is to rewrite the object or event name mentioned in this question to a similar, but irrelevant name. " \
-    #              "The purpose of this step is to evaluate if the model can correctly remember that the new name has actually never been mentioned. Do NOT modify other parts of the question. " \
-    #              "Output both the new question and the new object or event name, following this format:\n" \
-    #              "{\n" \
-    #              '    "New Question": xxx,\n' \
-    #              '    "New Name": yyy\n' \
-    #              "}" \
-    #              "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
 
     elif action == 'generalize_reason_to_other_scenarios':
         prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
                  "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change as a motivation to this user, " \
                  "and then generalize the reason to other scenarios the same user might say in the near future during the conversation, not the event or activity itself. " \
-                 "As a result, please propose a new user utterance with a scenario of a different activity but mostly similar reason, but do NOT mention the user's preference towards such activity yet in the user's utterance. " \
+                 "As a result, please propose a new user question to the chatbot model, with a scenario of a different activity but mostly similar reason, but do NOT mention the user's preference towards such activity yet in the user's query. " \
+                 "Remember that the user is asking this question to an LLM, not a real human. " \
                  "Please also propose a model's response to assume the user's preference based on this reason. The model can also do proactive engagement related to this generalized reason." \
+                 "The user question shall NOT leak hint to the model to make the memory testing useless. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
-                 '    "User Utterance": xxx,\n' \
+                 '    "User Question": xxx,\n' \
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
@@ -274,7 +262,7 @@ def prompts_for_generating_qa(data, action):
         prompt = "Here is the model's response to the user after they mentioned a new activity, where the model accurately connects the user's previous reason for change to this new experience." \
                  "The user's utterance is: " + data['user_utterance'] + "\n\nPrevious reason of change on another activity: " + data['reason_of_change'] + "\n\nThe correct model response: " + data['model_response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, but either mentions a wrong reason or completely does not mention the previous reason at all. " \
-                 "Each option should share similar tone and length. " \
+                 "Each option should share similar tone, matching length, and equal level of detail. " \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
     elif action == 'ask_previous_reason_after_new_updates':
         prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
@@ -289,13 +277,26 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_reasons_after_new_updates':
         prompt = "Based on this model's response that recalls the correct reason of the user's previous preference changes when the same user changes their preference once again: " + data['response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
-                 "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone and length." \
+                 "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone, matching length, and equal level of detail." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
 
-
-    # elif action == 'propose_incorrect_reasons':
-    #     prompt = 'Given the following Q&A, prepare three incorrect answers.\n\n' + data + 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. ' \
-    #              "Incorrect answers should have the same length with the correct answer."
+    elif action == 'recall_sequence':
+        prompt = "We are designing a memory benchmark focused on personalization. Consider the following sequence of user preference changes:\n\n" + data['full_sequence'] + "\n\n" \
+                 "The right most one is the most recent update, which the user mentioned that:" + data['user_utterance'] + "\n\n" \
+                 "When the user mentions their most recent preference, how should the model respond to demonstrate that it remembers the entire sequence of preference changes, not just the latest one? " \
+                 "Assume the model has perfect memory and aims to reflect its awareness of the user’s evolving preferences. The response should explicitly reference the progression of changes to show that the model has retained the full history. " \
+                 "Emphasis should be on the sequence of changes rather than the final state of preferences." \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_sequence':
+        prompt = "Given following the model's response that correctly references the full sequence of preference updates of the user:\n\n" + data['model_response'] + "\n\n" \
+                 "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each response should look similar, except that they color different incorrect sequence of preference updates. " \
+                 "If there is any updates in the sequence, incorrect ones could include incorrect updates or mentions that it is the first time the user mentioned this thing or activity. " \
+                 "Do NOT modify the most recent one (the right most one in the sequence). If the sequence has no preference updates, incorrect ones could flip the preference or add one additional change. " \
+                 'Each option should share similar tone, matching length, and equal level of detail. Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
 
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
@@ -306,27 +307,35 @@ def prompts_for_generating_qa(data, action):
                  '    "random_child_object": yyy\n' \
                  "}\n" \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
-    elif action == 'recommendation':
-        prompt = "What recommendation about " + data['parent_object'] + " would you give to this specific " + data['user'] + ", but NOT to other common " + data['user'] + " in general? " \
-                 "Your recommendation should align with this " + data['user'] + "'s most up-to-date preferences towards " + data['parent_object'] + "." \
-                 "Please first construct a hypothetical scenario or context where this " + data['user'] + " would need your recommendation, and then provide a concise and aligned suggestion. " \
-                 "Say your recommendations directly without explanations or using words like 'I would recommend'. If the answer is a single phrase, add a little descriptions. " \
-                 "Please write the new question-answer pair in JSON format, with keys 'Question' and 'Answer'. " \
-                 "{\n" \
-                 '    "Question": xxx,\n' \
-                 '    "Answer": yyy\n' \
-                 "}" \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words." \
-                 "Here are this " + data['user'] + "'s most recent events:\n\n" + data['events']
-    elif action == 'propose_incorrect_recommendations':
-        prompt = 'Given the following Q&A, prepare two incorrect answers for the multiple-choice question.\n\n' + data['qa'] + '\n\nOutput a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON.' \
-                 "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific " + data['user'] + " or violate this " + data['user'] + "'s preferences. " \
-                 "Follow the same language and length as the correct answer. These two options should be different. Remember we are creating misleading options, so do NOT mention that this is not aligned with the " + data['user'] + " preferences. No other words."
     elif action == 'extract_identity':
         prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
-    elif action == 'propose_stereotype_recommendation':
-        prompt = "Given the following Q&A, prepare one incorrect answer that is stereotypical to this " + data['user'] + "'s gender and racial identities, but irrelevant to the specific context " \
-                 "and irrelevant to or violate this " + data['user'] + "'s actual preference. Here is the question and the correct answer:\n\n" + data['qa'] + "\n\nHere is the " + data['user'] + "'s identities:\n\n" + data['persona'] + "\n\n"\
+    elif action == 'recommendation':
+        prompt = "We aim to assess whether a chatbot can recall a user's most recent preference for a specific type of " + data['parent_object'] + " and provide a personalized recommendation based on this preference. " \
+                 "Consider the user's latest preference: " + data['preference'] + " and what they have said: " + data['user_utterance'] + "\n\n" \
+                 "Formulate a question the user might ask the chatbot for a recommendation in the future WITHOUT explicitly referencing their previous preferences. " \
+                 "The question should incorporate a hypothetical scenario or context to make it more natural, as if the user is interacting with the chatbot at a later time." \
+                 "Remember that the user is asking this question to an LLM, not a real human. " \
+                 "Additionally, craft a response from the chatbot that demonstrates it remembers the user's most recent preferences. The recommendation should be" \
+                 "aligned with this user's latest preference and should be personalized to the user's unique and specific tastes. " \
+                 "Make your recommendation eye-catchy and engaging, not generic or commonly suggested to a broader audience." \
+                 "The user question shall NOT leak hint to the model to make the memory testing useless. " \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "User Question": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'propose_incorrect_recommendations':
+        prompt = "Given the following response: " + data['model_response'] + "\n\n to the question: " + data['question'] + "\n\n" \
+                 "propose two incorrect responses on purpose to prepare a multiple choice Q&A. "\
+                 "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific user or VIOLATE this user's most recent preferences: " + data['preference'] + \
+                 "If the user's preference is about liking something, the incorrect answer should talk about somehow opposite things, as if the model does not remember what this user's preferences are. " \
+                 "If the user's preference is about disliking something, the incorrect answer should talk about things this user dislikes. " \
+                 'Each option should share similar tone, matching length, and equal level of detail. Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
+    elif action == 'propose_stereotypical_recommendation':
+        prompt = "Given the following question: " + data['question'] + " and correct response " + data['model_response'] + "\n\n, " \
+                 "prepare one incorrect answer that is stereotypical to this user's gender and racial identities, but irrelevant to the specific context " \
+                 "and irrelevant to or violate this user's actual preference. Here is the user's identities:\n\n" + data['persona'] + "\n\n"\
                  "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
                  "Remember we are creating misleading options in a multiple choice question, so make it sounds like a correct one but do NOT mention that this is actually stereotypical. No other words."
     else:

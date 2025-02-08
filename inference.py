@@ -167,25 +167,24 @@ def generate_conversation_id(context):
     return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
 
 
-def save_questions_to_csv(full_results, csv_file_path="data/questions.csv"):
+def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
-            writer.writerow(["question_id", "conversation_id", "question_type", "context", "distance_in_blocks", "distance_in_tokens", "question", "correct_answer", "all_options"])
+            writer.writerow(["question_id", "question_type", "topic", "context_length", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "question", "correct_answer", "all_options"])
 
-        for result in full_results:
-            writer.writerow([
-                result["question_id"],
-                result["conversation_id"],
-                result["question_type"],
-                result['context'],
-                result['distance_blocks'],
-                result['distance_tokens'],
-                result["question"],
-                result["correct_answer"],
-                result['all_options'],
-            ])
+        writer.writerow([
+            result["question_id"],
+            result["question_type"],
+            result['topic'],
+            result['context_length'],
+            result['distance_blocks'],
+            result['distance_tokens'],
+            result["question"],
+            result["correct_answer"],
+            result['all_options'],
+        ])
 
 
 def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
@@ -219,7 +218,6 @@ if __name__ == "__main__":
     parser.add_argument('--format', type=str, default='api_dict', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
     parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
-    parser.add_argument('--no_eval', dest='no_eval', action='store_true', help='Do not run actual evaluation but only qa and context preparation')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
@@ -238,7 +236,6 @@ if __name__ == "__main__":
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
-    no_eval = cmd_args.no_eval
     which_format = cmd_args.format
     verbose = cmd_args.verbose
 
@@ -268,16 +265,16 @@ if __name__ == "__main__":
         new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
         for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
-            context = file_name.split('_')[1]
+            topic = file_name.split('_')[1]
             # try:
-            processed_conversation, latest_ts = process_conversation_block(context, conversation, which_format)
+            processed_conversation, latest_ts = process_conversation_block(topic, conversation, which_format)
             # except Exception as e:
             #     print(f"{utils.Colors.FAIL}Error processing conversation block {file_name}{utils.Colors.ENDC}")
             #     continue
 
-            qa = extract_qa(base_dir, context, file_name, time_period)
+            qa = extract_qa(base_dir, topic, file_name, time_period)
 
-            if context == 'writing':
+            if topic == 'writing':
                 with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
                     data = json.load(file)
                     original_sample = data.get("Original Sample")
@@ -289,7 +286,7 @@ if __name__ == "__main__":
                 "file_name": file_name,
                 "time_period": time_period,
                 "last_timestamp": latest_ts,
-                "context": context,
+                "topic": topic,
                 "qa": qa
             }
             all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
@@ -311,74 +308,81 @@ if __name__ == "__main__":
         #
         # # Concatenate all conversation blocks
         # all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, verbose)
-        conversation_id = generate_conversation_id(str(all_conversations))
+        # conversation_id = generate_conversation_id(str(all_conversations))
         # count_tokens(all_strings, tokenizer, args['models']['llm_model'])
 
         # Show all Q&As related to this concatenated conversation
-        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, context in tqdm(question_loader(all_qa), total=len(all_qa)):
+        for question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length in tqdm(question_loader(all_qa), total=len(all_qa)):
+            # Generate a random unique ID for the question
             question_id = str(uuid.uuid4())  # Generate a random unique ID
-            if no_eval:
-                full_results.append({
+
+            # Clip the context 'all_conversations' right before the sentence in 'where'
+            if where == "END OF TEXT":
+                curr_context = all_conversations
+            else:
+                end_index = utils.find_string_in_list(all_conversations, where)
+                curr_context = all_conversations[:end_index]
+                
+                if not no_eval:
+                    curr_qa_info = {
                         "question_id": question_id,
-                        "conversation_id": conversation_id,
                         "question": question,
                         "correct_answer": correct_answer,
                         "all_options": all_options,
                         "distance_blocks": distance_blocks,
                         "distance_tokens": distance_tokens,
                         "question_type": question_type,
-                        "context": context
+                        "topic": topic,
+                        "context_length": context_length
                     }
-                )
+                    # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                    save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
+                    save_questions_to_csv(curr_qa_info, "data/questions.csv")
+                
+                else:
+                    predicted_answer = evaluation.query_llm(curr_context, formatted_question, which_format)
+                    match = evaluate_answer(predicted_answer, correct_answer)
 
-                # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-                save_contexts_to_json({conversation_id: all_conversations}, "data/contexts.json")
-                save_questions_to_csv(full_results, "data/questions.csv")
-
-            else:
-                predicted_answer = evaluation.query_llm(all_conversations, formatted_question, which_format)
-                match = evaluate_answer(predicted_answer, correct_answer)
-
-                if verbose:
-                    print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
-                    print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
-                    if match:
-                        print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
-                    else:
-                        print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
-
-                """
-                (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
-                (2) Save results based on the question types
-                (3) Save results based on the conversation contexts
-                (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
-                """
-                keys = [distance_blocks, distance_tokens, question_type, context]
-                for key in keys:
-                    if key == distance_blocks:
-                        key = f"distance_blocks_{key}"
-                    if key == distance_tokens:
-                        key = f"distance_tokens_{key}"
-                    if key not in results:
-                        results[key] = {"correct": 0, "total": 0}
-                    else:
-                        results[key]["total"] += 1
+                    if verbose:
+                        print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
+                        print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
                         if match:
-                            results[key]["correct"] += 1
+                            print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
+                        else:
+                            print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
-                full_results.append({
-                        "conversation_id": conversation_id,
-                        "question": formatted_question,
-                        "correct_answer": correct_answer,
-                        "all_options": all_options,
-                        "predicted_answer": predicted_answer,
-                        "match": match,
-                        "distance_blocks": distance_blocks,
-                        "distance_tokens": distance_tokens,
-                        "question_type": question_type,
-                        "context": context
-                    }
-                )
+                    """
+                    (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+                    (2) Save results based on the question types
+                    (3) Save results based on the conversation contexts
+                    (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+                    """
+                    keys = [distance_blocks, distance_tokens, question_type, context]
+                    for key in keys:
+                        if key == distance_blocks:
+                            key = f"distance_blocks_{key}"
+                        if key == distance_tokens:
+                            key = f"distance_tokens_{key}"
+                        if key not in results:
+                            results[key] = {"correct": 0, "total": 0}
+                        else:
+                            results[key]["total"] += 1
+                            if match:
+                                results[key]["correct"] += 1
+
+                    full_results.append({
+                            "question_id": question_id,
+                            "question": formatted_question,
+                            "correct_answer": correct_answer,
+                            "all_options": all_options,
+                            "predicted_answer": predicted_answer,
+                            "match": match,
+                            "distance_blocks": distance_blocks,
+                            "distance_tokens": distance_tokens,
+                            "question_type": question_type,
+                            "topic": topic
+                        }
+                    )
 
         if not no_eval:
             # Calculate the percentage of the results
@@ -395,5 +399,4 @@ if __name__ == "__main__":
             full_results.append({"all_conversations": all_conversations})
             with open(output_file_path_full_results, "w") as json_file:
                 json.dump(full_results, json_file, indent=4)
-
-            print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")
+         
