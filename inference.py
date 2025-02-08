@@ -37,19 +37,29 @@ def evaluate_answer(predicted_answer, correct_answer):
     1. If the correct option (e.g., (a)) is mentioned, and incorrect options are not.
     2. Otherwise, use SentenceBERT to check similarity.
     """
+    # trivial case
+    if predicted_answer == correct_answer:
+        return True
+    
     # Extract all option patterns (e.g., (a), (b), etc.) from the answer
     option_pattern = r'\(([a-zA-Z])\)'
     predicted_options = re.findall(option_pattern, predicted_answer)
+    predicted_options_lower = list(map(str.lower, predicted_options))
 
     # Check for the correct and incorrect options
-    correct_letter_mentioned = correct_answer.lower() in map(str.lower, predicted_options)
-    incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_answer.upper()]
+    correct_letter = re.search(option_pattern, correct_answer).group(1)
+    correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
+    incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
     incorrect_letters_mentioned = any(
-        letter.lower() in map(str.lower, predicted_options) for letter in incorrect_letters
+        letter.lower() in predicted_options_lower for letter in incorrect_letters
     )
 
     if correct_letter_mentioned and not incorrect_letters_mentioned:
         return True  # Match based on Criterion 1
+
+    if len(predicted_answer) == len(correct_answer) == 3:
+        # for short answers, don't use SentenceBERT
+        return False
 
     # Criterion 2: Use SentenceBERT similarity
     similarity = util.pytorch_cos_sim(
@@ -312,81 +322,81 @@ if __name__ == "__main__":
             else:
                 end_index = utils.find_string_in_list(all_conversations, where)
                 curr_context = all_conversations[:end_index]
+                
+                if not no_eval:
+                    curr_qa_info = {
+                        "question_id": question_id,
+                        "question": question,
+                        "correct_answer": correct_answer,
+                        "all_options": all_options,
+                        "distance_blocks": distance_blocks,
+                        "distance_tokens": distance_tokens,
+                        "question_type": question_type,
+                        "topic": topic,
+                        "context_length": context_length
+                    }
+                    # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                    save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
+                    save_questions_to_csv(curr_qa_info, "data/questions.csv")
+                
+                else:
+                    predicted_answer = evaluation.query_llm(curr_context, formatted_question, which_format)
+                    match = evaluate_answer(predicted_answer, correct_answer)
 
-            curr_qa_info = {
-                "question_id": question_id,
-                "question": question,
-                "correct_answer": correct_answer,
-                "all_options": all_options,
-                "distance_blocks": distance_blocks,
-                "distance_tokens": distance_tokens,
-                "question_type": question_type,
-                "topic": topic,
-                "context_length": context_length
-            }
-            # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-            save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
-            save_questions_to_csv(curr_qa_info, "data/questions.csv")
+                    if verbose:
+                        print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
+                        print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
+                        if match:
+                            print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
+                        else:
+                            print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
-        #     else:
-        #         predicted_answer = evaluation.query_llm(all_conversations, formatted_question, which_format)
-        #         match = evaluate_answer(predicted_answer, correct_answer)
-        #
-        #         if verbose:
-        #             print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
-        #             print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
-        #             if match:
-        #                 print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
-        #             else:
-        #                 print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
-        #
-        #         """
-        #         (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
-        #         (2) Save results based on the question types
-        #         (3) Save results based on the conversation contexts
-        #         (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
-        #         """
-        #         keys = [distance_blocks, distance_tokens, question_type, context]
-        #         for key in keys:
-        #             if key == distance_blocks:
-        #                 key = f"distance_blocks_{key}"
-        #             if key == distance_tokens:
-        #                 key = f"distance_tokens_{key}"
-        #             if key not in results:
-        #                 results[key] = {"correct": 0, "total": 0}
-        #             else:
-        #                 results[key]["total"] += 1
-        #                 if match:
-        #                     results[key]["correct"] += 1
-        #
-        #         full_results.append({
-        #                 "conversation_id": conversation_id,
-        #                 "question": formatted_question,
-        #                 "correct_answer": correct_answer,
-        #                 "incorrect_answers": incorrect_answers,
-        #                 "predicted_answer": predicted_answer,
-        #                 "match": match,
-        #                 "distance_blocks": distance_blocks,
-        #                 "distance_tokens": distance_tokens,
-        #                 "question_type": question_type,
-        #                 "context": context
-        #             }
-        #         )
-        #
-        # if not no_eval:
-        #     # Calculate the percentage of the results
-        #     for key in results:
-        #         results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
-        #     print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
-        #     for key in results:
-        #         print(f'{key}: {results[key]["accuracy"]:.2f}%')
-        #
-        #     # Save evaluation results to a JSON file.
-        #     with open(output_file_path, "w") as json_file:
-        #         json.dump(results, json_file, indent=4)
-        #
-        #     full_results.append({"all_conversations": all_conversations})
-        #     with open(output_file_path_full_results, "w") as json_file:
-        #         json.dump(full_results, json_file, indent=4)
-        #
-        #     print(f"{utils.Colors.OKBLUE}Results saved to {output_file_path} and {output_file_path_full_results}{utils.Colors.ENDC}")
+                    """
+                    (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+                    (2) Save results based on the question types
+                    (3) Save results based on the conversation contexts
+                    (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+                    """
+                    keys = [distance_blocks, distance_tokens, question_type, context]
+                    for key in keys:
+                        if key == distance_blocks:
+                            key = f"distance_blocks_{key}"
+                        if key == distance_tokens:
+                            key = f"distance_tokens_{key}"
+                        if key not in results:
+                            results[key] = {"correct": 0, "total": 0}
+                        else:
+                            results[key]["total"] += 1
+                            if match:
+                                results[key]["correct"] += 1
+
+                    full_results.append({
+                            "question_id": question_id,
+                            "question": formatted_question,
+                            "correct_answer": correct_answer,
+                            "all_options": all_options,
+                            "predicted_answer": predicted_answer,
+                            "match": match,
+                            "distance_blocks": distance_blocks,
+                            "distance_tokens": distance_tokens,
+                            "question_type": question_type,
+                            "topic": topic
+                        }
+                    )
+
+        if not no_eval:
+            # Calculate the percentage of the results
+            for key in results:
+                results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
+            print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
+            for key in results:
+                print(f'{key}: {results[key]["accuracy"]:.2f}%')
+
+            # Save evaluation results to a JSON file.
+            with open(output_file_path, "w") as json_file:
+                json.dump(results, json_file, indent=4)
+
+            full_results.append({"all_conversations": all_conversations})
+            with open(output_file_path_full_results, "w") as json_file:
+                json.dump(full_results, json_file, indent=4)
+         
