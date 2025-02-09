@@ -724,3 +724,5 @@ if __name__ == "__main__":
         evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, verbose=cmd_args.verbose)
     # except Exception as e:
     #     print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
+
+    LLM.delete_a_thread(step='qa')

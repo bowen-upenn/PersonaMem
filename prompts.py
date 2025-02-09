@@ -7,8 +7,8 @@ def prompts_for_background_data(content):
     return prompt
 
 
-def prompts_for_random_question(question):
-    prompt = question + " Explain thoroughly in details. "
+def prompts_for_random_question_follow_up():
+    prompt = "Find a follow-up question based on the previous question and response. Output the question only. No other words."
     return prompt
 
 

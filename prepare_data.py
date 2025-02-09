@@ -182,29 +182,41 @@ def prepare_data(args):
     LLM = QueryLLM(args)
 
     if args['datasets']['topics'] == ['irrelevant']:
-        # Load existing data or initialize an empty list
-        output_file_path = 'data/irrelevant_contexts.json'
-        existing_data = []
-        if os.path.exists(output_file_path):
-            with open(output_file_path, "r") as file:
-                existing_data = json.load(file)
-                if not isinstance(existing_data, list):
-                    existing_data = []
-
-        # Read random questions
         with open(args['datasets']['random_questions_file'], 'r') as file:
             all_random_questions = [line.strip() for line in file]
 
-        for i, question in enumerate(all_random_questions[:6]):  # Limit to 6
-            existing_data.append({
-                "index": len(existing_data),
-                "conversation": [
-                    {"role": "user", "text": question},
-                    {"role": "assistant", "text": LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])}
-                ]
-            })
-        with open(output_file_path, "w") as file:
-            json.dump(existing_data, file, indent=4)
+        output_file_path = 'data/irrelevant_contexts.json'
+        for index, question in enumerate(tqdm(all_random_questions)):
+            LLM.create_a_thread(step='irrelevant')
+
+            model_answer = LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])
+            follow_up_question = LLM.query_llm(step='random_question_follow_up', verbose=args['inference']['verbose'])
+            follow_up_answer = LLM.query_llm(step='random_question_follow_up_response', data=follow_up_question, verbose=args['inference']['verbose'])
+
+            new_entry = [
+                {"role": "user", "content": question},
+                {"role": "assistant", "content": model_answer},
+                {"role": "user", "content": follow_up_question},
+                {"role": "assistant", "content": follow_up_answer}
+            ]
+
+            LLM.delete_a_thread(step='irrelevant')
+
+            existing_data = []
+            if os.path.exists(output_file_path):
+                try:
+                    with open(output_file_path, "r", encoding="utf-8") as file:
+                        existing_data = json.load(file)
+                        if not isinstance(existing_data, list):
+                            existing_data = []
+                except json.JSONDecodeError:
+                    existing_data = []
+
+            existing_data.append({str(index): new_entry})
+
+            # Write back to file immediately
+            # with open(output_file_path, "w", encoding="utf-8") as file:
+            #     json.dump(existing_data, file, indent=4)
 
     else:
         # Generate conversational data relevant to the topic and the persona
@@ -258,6 +270,8 @@ def prepare_data(args):
                     except Exception as e:
                         print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
                         all_errored_data_paths[output_file_path] = e
+
+                    LLM.delete_a_thread(step='conversation')
 
         if len(all_errored_data_paths) > 0:
             print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')

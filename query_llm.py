@@ -21,20 +21,20 @@ class QueryLLM:
             self.api_key = api_key_file.read()
 
         self.client = OpenAI(api_key=self.api_key)
-        self.assistant_persona = self.client.beta.assistants.create(
-            name="Persona Generator",
-            instructions="You are a helpful assistant that generates user personas in an user specified topic.",
-            tools=[{"type": "code_interpreter"}],
-            model=self.args['models']['llm_model'],
-        )
-        self.thread_persona = None
-
-        self.assistant_conversation = self.client.beta.assistants.create(
+        self.assistant = self.client.beta.assistants.create(
             name="Conversation Generator",
             instructions="You are a helpful assistant that generates persona-oriented conversational data in an user specified topic.",
             tools=[{"type": "code_interpreter"}],
             model=self.args['models']['llm_model'],
         )
+        self.assistant_irrelevant = self.client.beta.assistants.create(
+            name="Conversation Generator",
+            instructions="You are a helpful assistant.",
+            model="gpt-4o-mini",
+        )
+
+        self.thread_irrelevant = None
+
         self.thread_conversation = None
         self.thread_reflect_conversation = None
         self.thread_preparing_new_content = None
@@ -56,13 +56,27 @@ class QueryLLM:
 
     def create_a_thread(self, step):
         if step == 'conversation':
-            self.thread_persona = self.client.beta.threads.create()
             self.thread_conversation = self.client.beta.threads.create()
             self.thread_reflect_conversation = self.client.beta.threads.create()
             self.thread_preparing_new_content = self.client.beta.threads.create()
         elif step == 'qa':
             self.thread_new_content = self.client.beta.threads.create()
             self.thread_eval_new_content = self.client.beta.threads.create()
+        elif step == 'irrelevant':
+            self.thread_irrelevant = self.client.beta.threads.create()
+        else:
+            raise ValueError(f'Invalid step: {step}')
+
+    def delete_a_thread(self, step):
+        if step == 'conversation':
+            self.client.beta.threads.delete(thread_id=self.thread_conversation.id)
+            self.client.beta.threads.delete(thread_id=self.thread_reflect_conversation.id)
+            self.client.beta.threads.delete(thread_id=self.thread_preparing_new_content.id)
+        elif step == 'qa':
+            self.client.beta.threads.delete(thread_id=self.thread_new_content.id)
+            self.client.beta.threads.delete(thread_id=self.thread_eval_new_content.id)
+        elif step == 'irrelevant':
+            self.client.beta.threads.delete(thread_id=self.thread_irrelevant.id)
         else:
             raise ValueError(f'Invalid step: {step}')
 
@@ -71,8 +85,13 @@ class QueryLLM:
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
             prompt = prompts.prompts_for_expanding_persona(persona, start_time)
+
         elif step == 'random_question':
-            prompt = prompts.prompts_for_random_question(data)
+            prompt = data + " Explain thoroughly in details. "
+        elif step == 'random_question_follow_up':
+            prompt = prompts.prompts_for_random_question_follow_up()
+        elif step == 'random_question_follow_up_response':
+            prompt = data
 
         # Generate once across multiple contexts
         elif step == 'init_general_personal_history':
@@ -129,9 +148,10 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'random_question' or step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
+        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
+            model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
             response = self.client.chat.completions.create(
-                model=self.args['models']['llm_model'] if step != 'expand_conversation_section' else 'gpt-4o-mini',
+                model=model,
                 messages=[{"role": "user",
                            "content": prompt}]
             )
@@ -151,8 +171,10 @@ class QueryLLM:
                 curr_thread = self.thread_new_content
             elif step == 'eval_new_content':
                 curr_thread = self.thread_eval_new_content
+            elif step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
+                curr_thread = self.thread_irrelevant
             else:
-                curr_thread = self.thread_persona
+                raise ValueError(f'Invalid step: {step}')
 
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
@@ -160,10 +182,16 @@ class QueryLLM:
                 content=prompt
             )
 
-            run = self.client.beta.threads.runs.create_and_poll(
-                thread_id=curr_thread.id,
-                assistant_id=self.assistant_persona.id
-            )
+            if step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
+                run = self.client.beta.threads.runs.create_and_poll(
+                    thread_id=curr_thread.id,
+                    assistant_id=self.assistant.id
+                )
+            else:
+                run = self.client.beta.threads.runs.create_and_poll(
+                    thread_id=curr_thread.id,
+                    assistant_id=self.assistant_irrelevant.id
+                )
 
             if run.status == 'completed':
                 response = self.client.beta.threads.messages.list(
