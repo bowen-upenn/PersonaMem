@@ -213,10 +213,8 @@ def prepare_data(args):
                     existing_data = []
 
             existing_data.append({str(index): new_entry})
-
-            # Write back to file immediately
-            # with open(output_file_path, "w", encoding="utf-8") as file:
-            #     json.dump(existing_data, file, indent=4)
+            with open(output_file_path, "w", encoding="utf-8") as file:
+                json.dump(existing_data, file, indent=4)
 
     else:
         # Generate conversational data relevant to the topic and the persona
