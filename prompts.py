@@ -7,6 +7,11 @@ def prompts_for_background_data(content):
     return prompt
 
 
+def prompts_for_random_question(question):
+    prompt = question + " Explain thoroughly in details. "
+    return prompt
+
+
 def prompts_for_expanding_persona(persona, start_time):
     birth_year = str(int(start_time.split('/')[2]) - 18)
     prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. " \

@@ -1,10 +1,11 @@
 datasets:
   data_dir: 'data/synthetic'
-  topic: 'therapy'
+  topics: 'therapy'
   therapy_source_dir: 'data/source/HOPE_WSDM_2022/conversations'
   legal_source_dir: 'data/source/legal'
   writing_source_dir: 'data/source/creative_writing/human_wp_stories_cleaned.json'
   persona_file: 'data/source/Persona_Hub_200000.jsonl'
+  random_questions_file: 'data/random_questions.txt'
 models:
   llm_model: 'gpt-4o'  # 'gpt-4-turbo', 'gpt-4o'
   gemini_credential_path: 'google-cloud-sdk/google_gemini_credential.json'

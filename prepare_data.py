@@ -181,63 +181,90 @@ def prepare_data(args):
         all_personas = file.readlines()
     LLM = QueryLLM(args)
 
-    all_errored_data_paths = {}
+    if args['datasets']['topics'] == ['irrelevant']:
+        # Load existing data or initialize an empty list
+        output_file_path = 'data/irrelevant_contexts.json'
+        existing_data = []
+        if os.path.exists(output_file_path):
+            with open(output_file_path, "r") as file:
+                existing_data = json.load(file)
+                if not isinstance(existing_data, list):
+                    existing_data = []
 
-    for idx_persona in tqdm(range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas']))):
-        persona, expanded_persona, start_time = prepare_persona(LLM, idx_persona, all_personas, args)
+        # Read random questions
+        with open(args['datasets']['random_questions_file'], 'r') as file:
+            all_random_questions = [line.strip() for line in file]
 
-        # Clean up the names of topics
-        if args['datasets']['topic'] == ['all']:
-            all_topics = utils.get_all_topic_names()
-        else:
-            all_topics = [ctx.strip() for ctx in args['datasets']['topic']]
+        for i, question in enumerate(all_random_questions[:6]):  # Limit to 6
+            existing_data.append({
+                "index": len(existing_data),
+                "conversation": [
+                    {"role": "user", "text": question},
+                    {"role": "assistant", "text": LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])}
+                ]
+            })
+        with open(output_file_path, "w") as file:
+            json.dump(existing_data, file, indent=4)
 
-        # Since we assign a consecutive time frame for all topics, we randomly permute topics to ensure generalization
-        if len(all_topics) > 1:
-            random.shuffle(all_topics)
-
-        # Loop through each topic in the list
-        for idx_topic, curr_topic in tqdm(enumerate(all_topics)):
-            source_dir, all_source_files = prepare_topics(idx_topic, all_topics, curr_topic, args)
-
-            # Set a consecutive time frame for different topics for each persona, while all samples below are independent
-            if idx_topic > 0:
-                start_time = utils.pick_a_random_time_within_a_year(start_time)
-
-            for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_topic'])):
-                output_file_path = os.path.join(args['inference']['output_dir'],
-                                                os.path.join(f'{curr_topic}', f'{args["inference"]["output_file_name"]}_{curr_topic}_persona{idx_persona}_sample{idx_sample}.json'))
-                utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
-                utils.append_json_to_file(expanded_persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
-                utils.append_json_to_file(curr_topic, output_file_path, curr_data_name='Topic', parse_json=False)
-                print(f'{utils.Colors.OKGREEN}Output file path: {output_file_path}{utils.Colors.ENDC}')
-
-                LLM.create_a_thread(step='conversation')
-
-                # Load a random source data to the LLM as a background memory about the topic
-                source_data = None
-                if source_dir is not None:
-                    source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic)
-
-                try:
-                    if curr_topic == 'writing':
-                        """
-                        Besides other topics, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
-                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                        """
-                        prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args)
-                    else:
-                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
-                except Exception as e:
-                    print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                    all_errored_data_paths[output_file_path] = e
-        
-    if len(all_errored_data_paths) > 0:
-        print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')
-        for key, value in all_errored_data_paths.items():
-            print(key)
     else:
-        print(f'{utils.Colors.OKGREEN}All data are successfully generated.{utils.Colors.ENDC}')
+        # Generate conversational data relevant to the topic and the persona
+        all_errored_data_paths = {}
+
+        for idx_persona in tqdm(range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas']))):
+            persona, expanded_persona, start_time = prepare_persona(LLM, idx_persona, all_personas, args)
+
+            # Clean up the names of topics
+            if args['datasets']['topics'] == ['all']:
+                all_topics = utils.get_all_topic_names()
+            else:
+                all_topics = [ctx.strip() for ctx in args['datasets']['topics']]
+
+            # Since we assign a consecutive time frame for all topics, we randomly permute topics to ensure generalization
+            if len(all_topics) > 1:
+                random.shuffle(all_topics)
+
+            # Loop through each topic in the list
+            for idx_topic, curr_topic in tqdm(enumerate(all_topics)):
+                source_dir, all_source_files = prepare_topics(idx_topic, all_topics, curr_topic, args)
+
+                # Set a consecutive time frame for different topics for each persona, while all samples below are independent
+                if idx_topic > 0:
+                    start_time = utils.pick_a_random_time_within_a_year(start_time)
+
+                for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_topic'])):
+                    output_file_path = os.path.join(args['inference']['output_dir'],
+                                                    os.path.join(f'{curr_topic}', f'{args["inference"]["output_file_name"]}_{curr_topic}_persona{idx_persona}_sample{idx_sample}.json'))
+                    utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
+                    utils.append_json_to_file(expanded_persona, output_file_path, curr_data_name='Expanded Persona', parse_json=False)
+                    utils.append_json_to_file(curr_topic, output_file_path, curr_data_name='Topic', parse_json=False)
+                    print(f'{utils.Colors.OKGREEN}Output file path: {output_file_path}{utils.Colors.ENDC}')
+
+                    LLM.create_a_thread(step='conversation')
+
+                    # Load a random source data to the LLM as a background memory about the topic
+                    source_data = None
+                    if source_dir is not None:
+                        source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic)
+
+                    try:
+                        if curr_topic == 'writing':
+                            """
+                            Besides other topics, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
+                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                            """
+                            prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args)
+                        else:
+                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                    except Exception as e:
+                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                        all_errored_data_paths[output_file_path] = e
+
+        if len(all_errored_data_paths) > 0:
+            print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')
+            for key, value in all_errored_data_paths.items():
+                print(key)
+        else:
+            print(f'{utils.Colors.OKGREEN}All data are successfully generated.{utils.Colors.ENDC}')
 
 
 if __name__ == "__main__":
@@ -261,8 +288,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
     parser.add_argument('--topics', type=str, default="therapy", nargs="+", help='Set conversation topics. Choose from therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing'
-                                                                                  'or all to select all existing topics under ./data/output/. '
-                                                                                  'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal')  # https://docs.python.org/3/library/argparse.html#nargs
+                                                                                 'or all to select all existing topics under ./data/output/. '
+                                                                                 'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal'
+                                                                                 'Choose "irrelevant" if you want to generate data irrelevant to the topic to fill in long conversation context')  # https://docs.python.org/3/library/argparse.html#nargs
     parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
     parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per topic to generate')
     parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
@@ -273,7 +301,7 @@ if __name__ == "__main__":
 
     # Override args from config.yaml with command-line arguments if provided
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
-    args['datasets']['topic'] = cmd_args.topic if cmd_args.topic is not None else args['datasets']['topic']
+    args['datasets']['topics'] = cmd_args.topics if cmd_args.topics is not None else args['datasets']['topics']
     args['inference']['num_personas'] = cmd_args.n_persona if cmd_args.n_persona is not None else args['inference']['num_personas']
     args['inference']['num_samples_per_topic'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_topic']
     args['inference']['start_persona_idx'] = cmd_args.s_persona if cmd_args.s_persona is not None else args['inference']['start_persona_idx']

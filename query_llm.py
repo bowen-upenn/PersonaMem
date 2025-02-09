@@ -71,6 +71,8 @@ class QueryLLM:
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
             prompt = prompts.prompts_for_expanding_persona(persona, start_time)
+        elif step == 'random_question':
+            prompt = prompts.prompts_for_random_question(data)
 
         # Generate once across multiple contexts
         elif step == 'init_general_personal_history':
@@ -127,7 +129,7 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
+        if step == 'random_question' or step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
             response = self.client.chat.completions.create(
                 model=self.args['models']['llm_model'] if step != 'expand_conversation_section' else 'gpt-4o-mini',
                 messages=[{"role": "user",
