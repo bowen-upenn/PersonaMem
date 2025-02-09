@@ -191,15 +191,12 @@ def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
     # Load existing data or initialize an empty list
     existing_data = []
     if os.path.exists(json_file_path):
-        try:
-            with open(json_file_path, "r", encoding="utf-8") as file:
-                existing_data = json.load(file)
-                if not isinstance(existing_data, list):
-                    existing_data = []
-        except json.JSONDecodeError:
-            pass
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            existing_data = json.load(file)
+            if not isinstance(existing_data, list):
+                existing_data = []
 
-            # Append new context
+    # Append new context
     existing_data.append(contexts_dict)
 
     # Save updated data
