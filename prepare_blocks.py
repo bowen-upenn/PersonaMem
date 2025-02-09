@@ -301,7 +301,7 @@ def concatenate_blocks(sorted_processed_blocks, new_content_samples, which_forma
 
 
 def count_tokens(all_strings, tokenizer, verbose=False):
-    all_strings = "\n\n".join(all_strings)
+    # all_strings = "\n\n".join(all_strings)
     tokens = tokenizer.encode(all_strings)
     if verbose:
         print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
@@ -325,6 +325,8 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
     total_blocks = len(sorted_processed_blocks)
     all_qa = []
     total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in sorted_strings])
+    # print('sorted_strings', sorted_strings)
+    print('len(sorted_strings)', sum([len("\n\n".join(string)) for string in sorted_strings]), len("\n\n".join(sorted_strings)), 'total_num_tokens', total_num_tokens)
 
     for i, block in enumerate(sorted_processed_blocks):
         if i + 1 < total_blocks:
@@ -347,6 +349,8 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
 
             num_tokens_q = sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_q)])
             num_tokens_q += count_tokens(sorted_strings[block_num_q][:start_index_q], tokenizer, verbose=False)
+            curr_context = " ".join([sorted_strings[i] for i in range(block_num_q)]) + sorted_strings[block_num_q][:start_index_q]
+            # print('count_tokens(curr_context)', count_tokens(curr_context, tokenizer, verbose=False))
 
             # Get where the reference information will be
             if 'Reference' not in q:
@@ -368,46 +372,9 @@ def compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer
             q['distance_blocks'] = block_num_q - block_num_ref
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
             q['context_length'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
+            q['curr_context'] = curr_context
+            # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
-
-            # q['distance'] = distance    # We should never write this back to the original JSON file. It depends on each current order of blocks.
-            # all_qa.append(q)
-            #
-            # # Find the location within the current block
-            # if 'Reference' not in q:
-            #     # Check the next q
-            #     next_q = block['qa'][idx + 1] if idx + 1 < len(block['qa']) else None
-            #     next_next_q = block['qa'][idx + 2] if idx + 2 < len(block['qa']) else None
-            #
-            #     if next_q and list(next_q.keys()) == ['Reference']:
-            #         curr_event = next_q['Reference']
-            #     elif next_next_q and list(next_next_q.keys()) == ['Reference']:
-            #         curr_event = next_next_q['Reference']
-            #     else:
-            #         q['start_index'] = -1
-            #         print(f"{utils.Colors.FAIL}No Reference found in the QA{utils.Colors.ENDC}{q}")
-            #         continue
-            # else:
-            #     curr_event = q['Reference']
-            #
-            # if block['context'] == 'writing':
-            #     start_index = 0
-            # else:
-            #     try:
-            #         timestamp = [key for key in curr_event][0]
-            #         curr_utterance = curr_event[timestamp]['Conversation']
-            #     except Exception as e:
-            #         curr_utterance = curr_event['Conversation']
-            #     try:
-            #         curr_utterance = curr_utterance.split('\n')[-2]
-            #     except Exception as e:
-            #         curr_utterance = curr_utterance.split('\n')[0]
-            #     start_index = curr_block.find(curr_utterance)
-            #
-            # num_tokens = count_tokens(curr_block[:start_index], tokenizer)
-            # q['start_index'] = total_num_tokens - (accumulated_num_tokens + num_tokens)     # count from the bottom up
-
-        # accumulated_num_tokens += count_tokens(curr_block, tokenizer)
 
     return all_qa
 
@@ -452,9 +419,10 @@ def question_loader(qa_list):
         question_type = qa['Type']
         topic = qa['Topic']
         context_length = qa['context_length']
+        curr_context = qa['curr_context']
         where = qa['Where'] if 'Where' in qa else None
 
-        yield question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length
+        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length
 
 
 if __name__ == "__main__":
@@ -537,7 +505,7 @@ if __name__ == "__main__":
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for question, formatted_question, correct_answer, all_options, distance, question_type, topic, where, context_length in question_loader(all_qa):
+    for curr_context, question, formatted_question, correct_answer, all_options, distance, question_type, topic, where, context_length in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.
