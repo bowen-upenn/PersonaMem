@@ -14,8 +14,10 @@ def prompts_for_random_question_follow_up():
 
 def prompts_for_expanding_persona(persona, start_time):
     birth_year = str(int(start_time.split('/')[2]) - 18)
+    gender_identity = (' transgender ' if random.random() < 0.2 else '') + random.choice(['female', 'male', 'non-binary'])
+    racial_identity = random.choice(['Asian', 'South Asian', 'African American', 'Hispanic', 'Indigenous', 'White', 'Jewish', 'Pacific Islander', 'Mixed race'])
     prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. " \
-             "Add a name, a gender identity, and a racial identity, if any of them is missing from the initial version." \
+             "Add a name, a gender identity of " + gender_identity + ", and a racial identity of " + racial_identity + ", if any of them is missing from the initial version." \
              "You should also include 5 personal hobbies and 5 things this person dislikes, using bullet points, all related to the persona. "\
              "List things this person may dislike, but avoid negative wording. Focus on things others might like that don’t match this person’s taste. " \
              "Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
@@ -348,38 +350,87 @@ def prompts_for_generating_qa(data, action):
     return prompt
 
 
-def prompt_for_preparing_new_content(data, action):
+def prompts_for_translating_code(data, persona):
+    prompt = "Here is a piece of code in Java:\n\n" + data + "\n\nand a new user persona: " + persona + "\n\nPlease translate this code into Python. " \
+             "Intentionally write the code with poor coding practices, add what this person DISLIKES in coding and writing styles, and VIOLATE what this person likes. " \
+             "Just give me the code formatted with triple backticks and python. No other words."
+    return prompt
+
+
+def prompt_for_preparing_new_content(data, action, data_type):
     if action == 'preferences':
-        prompt = "Here is a new author's persona:\n\n" + data + "\n\nGiven the persona above, please list 5 writing styles (e.g., tone, wording, emojis, valence, arousal, dominance, personality, and etc) and " \
-                 "5 formatting styles (e.g., subsections, signature, final closing, title, side notes, paragraph length, and ways to write first & last names, abbreviation, time, and etc) this writer may likes and dislikes, respectively, " \
-                 "using bullet points. You should output a Python dictionary of the following format:\n\n" \
-                 "{\n" \
-                 '   "[Writing Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
-                 '   "[Writing Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
-                 '   "[Formatting Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
-                 '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
-                "}\n" \
-                "Do NOT modify the names of these keys.  Please use double quotes for each key and value. No other words."
+        if data_type == 'coding':
+            data_type = 'code implementations in Python'
+            prompt = "Here is a new programmer's persona:\n\n" + data + \
+                     "\n\nGiven the persona above, please list 5 Python coding styles (e.g., naming conventions, commenting practices, function length, modularity, performance optimization, error handling, readability) and " \
+                     "5 Python formatting styles (e.g., indentation, line length, spacing, docstrings, imports organization, inline comments, variable alignment) " \
+                     "this programmer may like and dislike, respectively, related to the topic of " + data_type + ". " \
+                     "Use bullet points and be specific with short examples. Likes and dislikes should always be clear, objective, and easily verifiable, and all directly related to " + data_type + ". " \
+                     "You should output a Python dictionary of the following format:\n\n" \
+                     "{\n" \
+                     '   "[Coding Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Coding Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Formatting Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx}\n' \
+                     "}\n\n" \
+                     "Do NOT modify the names of these keys. Please use double quotes for each key and value. No other words."
+        elif data_type == 'writing':
+            prompt = "Here is a new author's persona:\n\n" + data + "\n\nGiven the persona above, please list 5 writing styles (e.g., tone, wording, emojis, valence, arousal, dominance, personality, and etc) and " \
+                     "5 formatting styles (e.g., subsections, signature, final closing, title, side notes, paragraph length, and ways to write first & last names, abbreviation, time, and etc) " \
+                     "this writer may like and dislike, respectively, related to the topic of " + data_type + ", " \
+                     "using bullet points. Always be specific using short examples. Likes and dislikes should always be clear, objective, and easily verifiable, and all directly related to " + data_type + \
+                     "You should output a Python dictionary of the following format:\n\n" \
+                     "{\n" \
+                     '   "[Writing Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Writing Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Formatting Styles] Likes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                     '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx},\n' \
+                    "}\n" \
+                    "Do NOT modify the names of these keys.  Please use double quotes for each key and value. No other words."
+        else:
+            raise ValueError("Invalid data type", data_type)
     elif action == 'rewrite_from_persona':
-        prompt = "Here is a creative writing sample:\n\n" + data + "\n\nGiven the creative writing sample and the persona above, " \
-                 "please modify some sentences and formats as if it was written by the author with this new persona, incorporating all likes and dislikes in writing and formatting styles. " \
-                 "Do NOT make any modifications on other sentences whose writing or formatting styles are not related to the new author's persona, keeping them word-by-word identical." \
-                 "Within the new sample, before each sentence you wanna modify, make sure to add a '[Side_Note]' in square brackets explaining why this modification is aligned with what writing or formatting persona points of this new author. " \
-                 "You should only output the rewritten sample as a simple string. No other words."
+        prompt = "Here is a " + data_type + " sample:\n\n" + data + "\n\nGiven the " + data_type + " sample and the persona above, " \
+                 "please modify some sentences and formats as if it was written by the author with this new persona, correctly reflecting ALL likes and avoiding ALL dislikes in " + data_type + " and formatting styles. "
+        if data_type == 'coding':
+            prompt += "You can add comments explaining the modifications using the first-person perspective. " \
+                      "You should only output the rewritten code, formatted with triple backticks and python. No other words."
+        elif data_type == 'writing':
+            prompt += "Within the new sample, before each sentence you wanna modify, make sure to add a '[Side_Note]' in square brackets explaining why this modification is aligned with what " + data_type + " or formatting persona points of this new author. " \
+                      "Do NOT make any modifications on other sentences whose " + data_type + " or formatting styles are not related to the new author's persona, keeping them word-by-word identical. " \
+                      "You should only output the rewritten sample as a simple string. No other words."
     elif action == 'rewrite_as_conversation':
-        prompt = "Given the original and rewritten samples above, create a conversation record as if the new author is consulting an expert writing assistant to help the author convert the original sample to the rewritten sample. " \
-                 "The author should propose questions and concerns, explicitly saying that they likes and dislikes regarding the writing and formatting styles. We need to see every explicit and concrete reasons, " \
-                 "and you should always use a '[Side_Note]' with square brackets to link each modification to its corresponding '[Writing Styles] Likes', '[Writing Styles] Dislikes', '[Formatting Styles] Likes', and '[Formatting Styles] Dislikes' in the persona. " \
-                 "The assistant should give recommendations that result in the modified sentences in the rewritten sample, but it could also propose a different suggestion, the author dislikes it and says why, and the assistant finally propose the one shown in the final rewritten sample." \
-                 "Make sure to explicitly include each pair of original and modified sentence in the conversation, as if these two persons are showing the sentence to each other in a conversation. " \
-                 "Each utterance in the conversation should be short, like a in-person consultation, but the whole conversation should be long enough to cover all modified sentences in the rewritten sample." \
-                 "Except for the very first two sentences where the user explains how they want the assistant to help them, you should follow this format for the conversation:\n\n" \
-                 "[Original_Sentence]: xxx\n" \
-                 "[Side_Note]: '[Writing Styles] Likes' OR '[Writing Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here) \n" \
-                 "User: xxx\n" \
-                 "Assistant: xxx\n" \
-                 "User: xxx\n" \
-                 "Output a Python list of strings, where each line is a string. Do NOT change the names before the colon mark. No other words."
+        if data_type == 'coding':
+            prompt = "Given the original and rewritten programming code above, create a conversation record as if the programmer is consulting an AI coding assistant to help refactor and improve the original code into the rewritten version. " \
+                     "The programmer should explicitly express what they like and dislike about coding style and formatting styles. " \
+                     "Each concern should be linked to '[Coding Styles] Likes', '[Coding Styles] Dislikes', '[Formatting Styles] Likes', '[Formatting Styles] Dislikes' listed in the persona above. " \
+                     "The assistant should recommend improvements, leading to the final rewritten version. However, if the assistant suggests a different approach first, the programmer should express their dissatisfaction and explain why, leading to the final version. " \
+                     "The user and assistant should explicitly display modified code snippets in their discussion. The whole conversation should be long enough to cover all changes in the rewritten sample. " \
+                     "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
+                     "Except for the very first two sentences where the user explains how they want the assistant to help them with the programming code, follow this format:\n\n" \
+                     "[Original_Code]: xxx (Code should be formatted with triple backticks and python. The mark [Original_Code] should appear once at each code section the user mentions, not every line)\n" \
+                     "[Side_Note]: '[Coding Styles] Likes' OR '[Coding Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here)\n" \
+                     "User: xxx\n (User utterance should be text, WITHOUT triple backticks)" \
+                     "Assistant: xxx\n (New code should be formatted with triple backticks and python. )" \
+                     "User: xxx\n" \
+                     "Do NOT change the names before the colon mark. No other words."
+        elif data_type == 'writing':
+            prompt = "Given the original and rewritten writing samples above, create a conversation record as if the new author is consulting an expert AI writing assistant to help the author convert the original sample to the rewritten sample. " \
+                     "The author should propose questions and concerns, explicitly saying that they likes and dislikes regarding the writing and formatting styles. We need to see every explicit and concrete reasons, " \
+                     "and you should always use a '[Side_Note]' with square brackets to link each modification to its corresponding '[Writing Styles] Likes', '[Writing Styles] Dislikes', '[Formatting Styles] Likes', and '[Formatting Styles] Dislikes' listed in the persona above. " \
+                     "The assistant should give recommendations that result in the modified sentences in the rewritten sample, but it could also propose a different suggestion, the author dislikes it and says why, and the assistant finally propose the one shown in the final rewritten sample." \
+                     "Make sure to explicitly include each pair of original and modified sentence in the conversation, as if these two persons are showing the sentence to each other in a conversation. " \
+                     "The whole conversation should be long enough to cover all modified sentences in the rewritten sample." \
+                     "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
+                     "Except for the very first two sentences where the user explains how they want the assistant to help them with the writing, you should follow this format for the conversation:\n\n" \
+                     "[Original_Sentence]: xxx\n" \
+                     "[Side_Note]: '[Writing Styles] Likes' OR '[Writing Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here) \n" \
+                     "User: xxx\n" \
+                     "Assistant: xxx\n" \
+                     "User: xxx\n" \
+                     "Output a Python list of strings, where each line is a string. Do NOT change the names before the colon mark. No other words."
+        else:
+            raise ValueError("Invalid data type", data_type)
     else:
         raise ValueError("Invalid action", action)
     return prompt

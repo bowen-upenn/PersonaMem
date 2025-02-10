@@ -80,7 +80,7 @@ class QueryLLM:
         else:
             raise ValueError(f'Invalid step: {step}')
 
-    def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, idx_topic=0, start_time=None, verbose=False):
+    def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, data_type=None, idx_topic=0, start_time=None, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'expand_persona':
@@ -92,6 +92,8 @@ class QueryLLM:
             prompt = prompts.prompts_for_random_question_follow_up()
         elif step == 'random_question_follow_up_response':
             prompt = data + " Explain thoroughly in details. "
+        elif step == 'translate_code':
+            prompt = prompts.prompts_for_translating_code(data, persona)
 
         # Generate once across multiple contexts
         elif step == 'init_general_personal_history':
@@ -139,7 +141,7 @@ class QueryLLM:
         elif step == 'qa_helper':
             prompt = prompts.prompts_for_generating_qa(data, action)
         elif step == 'prepare_new_content':
-            prompt = prompts.prompt_for_preparing_new_content(data, action)
+            prompt = prompts.prompt_for_preparing_new_content(data, action, data_type)
         elif step == 'new_content':
             prompt = prompts.prompt_for_content_generation(data, action)
         elif step == 'eval_new_content':
@@ -148,7 +150,7 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section':
+        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code':
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
             response = self.client.chat.completions.create(
                 model=model,

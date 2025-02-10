@@ -37,6 +37,9 @@ def load_all_source_data(source_dir, topic):
             data = json.load(f)
         prompts = list(data.keys())  # Preload the keys
         return {'data': data, 'prompts': prompts}
+    elif topic == 'coding':
+        all_source_files = parse_code_files_from_txt(source_dir)
+        return all_source_files
     else:
         all_source_files = os.listdir(source_dir)
         return all_source_files
@@ -49,6 +52,9 @@ def load_one_source_data(source_dir, all_source_files, topic):
         random_prompt = random.choice(prompts)
         curr_samples = data[random_prompt]
         return random.choice(curr_samples)
+    elif topic == 'coding':
+        random_index = random.randint(0, len(all_source_files) - 1)
+        return all_source_files[random_index]['content']
     else:
         random_idx = random.randint(0, len(all_source_files) - 1)
         selected_file = all_source_files[random_idx]
@@ -56,6 +62,43 @@ def load_one_source_data(source_dir, all_source_files, topic):
         with open(selected_file_path, 'r', encoding='utf-8') as file:
             source_data = json.load(file)
         return source_data
+
+
+def parse_code_files_from_txt(file_path):
+    code_pieces = []
+    with open(file_path, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    current_file = None
+    content_lines = []
+
+    for line in lines:
+        line = line.strip()
+
+        if line.startswith("File: "):
+            if current_file:
+                current_file["content"] = "\n".join(content_lines)
+                code_pieces.append(current_file)
+
+            file_name = line.split("File: ")[1]
+            current_file = {"file_name": file_name, "line_count": 0, "content": ""}
+            content_lines = []
+
+        elif line.startswith("Line count: "):
+            if current_file:
+                current_file["line_count"] = int(line.split("Line count: ")[1])
+
+        elif line.startswith("=================================================="):
+            continue
+
+        else:
+            content_lines.append(line)
+
+    if current_file:
+        current_file["content"] = "\n".join(content_lines)
+        code_pieces.append(current_file)
+
+    return code_pieces
 
 
 def process_json_from_api(response):

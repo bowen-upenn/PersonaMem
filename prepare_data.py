@@ -50,6 +50,10 @@ def prepare_topics(idx_topic, all_topics, curr_topic, args):
     # Load a random conversation history from the chosen real-world dataset
     if curr_topic == 'writing':
         source_dir = args['datasets']['writing_source_dir']
+    elif curr_topic == 'email':
+        source_dir = args['datasets']['email_source_dir']
+    elif curr_topic == 'coding':
+        source_dir = args['datasets']['code_source_dir']
     elif curr_topic == 'legal':
         source_dir = args['datasets']['legal_source_dir']
     elif curr_topic == 'therapy':
@@ -58,10 +62,7 @@ def prepare_topics(idx_topic, all_topics, curr_topic, args):
         source_dir = None
         print(f'{utils.Colors.WARNING}No source data is available for the topic: {curr_topic}{utils.Colors.ENDC}')
 
-    all_source_files = None
-    if source_dir is not None:
-        all_source_files = utils.load_all_source_data(source_dir, curr_topic)
-
+    all_source_files = utils.load_all_source_data(source_dir, curr_topic) if source_dir is not None else None
     return source_dir, all_source_files
 
 
@@ -110,23 +111,28 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     return expanded_conversation
 
 
-def prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args):
+def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_path, args):
     # Convert the writing sample into a conversation
-    preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', verbose=args['inference']['verbose'])
-    updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', verbose=args['inference']['verbose'])
+    preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', data_type=topic, verbose=args['inference']['verbose'])
+    if topic == 'coding':
+        source_data = LLM.query_llm(step='translate_code', persona=preferences, data=source_data, verbose=args['inference']['verbose'])
+
+    updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', data_type=topic, verbose=args['inference']['verbose'])
     if 'python' in preferences or 'plaintext' in preferences:
         preferences = preferences.strip("```python").strip("```plaintext").strip()
-    if 'python' in updated_writing_sample or 'plaintext' in updated_writing_sample:
-        updated_writing_sample = updated_writing_sample.strip("```python").strip("```plaintext").strip()
+    if 'plaintext' in updated_writing_sample:
+        updated_writing_sample = updated_writing_sample.strip("```plaintext").strip()
 
-    # writing_styles, formatting_styles, updated_writing_sample = utils.rewrite_sample(LLM, persona, source_data, verbose=args['inference']['verbose'])
-    conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', verbose=args['inference']['verbose'])
-    if 'python' in conversation or 'plaintext' in conversation:
-        conversation = ast.literal_eval(conversation.strip("```python").strip("```plaintext").strip())
-    conversation.append("User: Could you please help me write another sample?")
+    conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', data_type=topic, verbose=args['inference']['verbose'])
+    if 'plaintext' in conversation:
+        conversation = ast.literal_eval(conversation.strip("```plaintext").strip())
+    # conversation.append("User: Could you please help me write another sample?")
 
     responses = [source_data, preferences, updated_writing_sample, conversation]
-    data_names = ['Original Sample', 'Writing and Formatting Styles', 'Updated Writing Sample', 'Conversation']
+    if topic == 'coding':
+        data_names = ['Original Sample', 'Coding and Formatting Styles', 'Updated Coding Sample', 'Conversation']
+    else:
+        data_names = ['Original Sample', 'Writing and Formatting Styles', 'Updated Writing Sample', 'Conversation']
     for response, data_name in zip(responses, data_names):
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False)
 
@@ -184,6 +190,8 @@ def prepare_irrelevant_contexts(LLM, args):
 
     output_file_path = 'data/irrelevant_contexts.json'
     for index, question in enumerate(tqdm(all_random_questions)):
+        if index < 1044:
+            continue
         LLM.create_a_thread(step='irrelevant')
 
         model_answer = LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])
@@ -258,22 +266,19 @@ def prepare_data(args):
                     LLM.create_a_thread(step='conversation')
 
                     # Load a random source data to the LLM as a background memory about the topic
-                    source_data = None
-                    if source_dir is not None:
-                        source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic)
-
-                    try:
-                        if curr_topic == 'writing':
-                            """
-                            Besides other topics, we introduce the creative writing when evaluating the LLM's ability to generate persona-aligned new contents.
-                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                            """
-                            prepare_data_on_writing_topic(LLM, persona, source_data, output_file_path, args)
-                        else:
-                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
-                    except Exception as e:
-                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                        all_errored_data_paths[output_file_path] = e
+                    source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
+                    # try:
+                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                        """
+                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                        """
+                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                    # except Exception as e:
+                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    #     all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 
@@ -305,10 +310,12 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
-    parser.add_argument('--topics', type=str, default="therapy", nargs="+", help='Set conversation topics. Choose from therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing'
-                                                                                 'or all to select all existing topics under ./data/output/. '
-                                                                                 'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal'
-                                                                                 'Choose "irrelevant" if you want to generate data irrelevant to the topic to fill in long conversation context')  # https://docs.python.org/3/library/argparse.html#nargs
+    parser.add_argument('--topics', type=str, default="therapy", nargs="+",
+                            help='Set conversation topics. Choose from therapy, legalConsultation, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, '
+                                 'travelPlanning, movieRecommendation, songRecommendation, homeDecoration, financialConsultation, healthConsultation, writing, email, coding.'
+                                 'or all to select all existing topics under ./data/output/. '
+                                 'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal'
+                                 'Choose "irrelevant" if you want to generate data irrelevant to the topic to fill in long conversation context')  # https://docs.python.org/3/library/argparse.html#nargs
     parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
     parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per topic to generate')
     parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
