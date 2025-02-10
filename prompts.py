@@ -201,8 +201,8 @@ def prompts_for_expanding_conversation_section(context, data):
              "Follow exactly the SAME template in the original sentences:\n\n" \
              "[\n" \
              '"Side_Note: [...] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
-             '"' + user + ': yyy" (Do NOT include MM/DD/YYYY here),' \
-             '"' + agent + ': zzz",' \
+             '"' + user + ': yyy" (More than 5 sentences. Do NOT include MM/DD/YYYY here),' \
+             '"' + agent + ': zzz"  (More than 10 sentences. Do NOT include MM/DD/YYYY here),' \
              "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
     return prompt
 

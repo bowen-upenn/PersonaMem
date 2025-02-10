@@ -91,7 +91,7 @@ class QueryLLM:
         elif step == 'random_question_follow_up':
             prompt = prompts.prompts_for_random_question_follow_up()
         elif step == 'random_question_follow_up_response':
-            prompt = data
+            prompt = data + " Explain thoroughly in details. "
 
         # Generate once across multiple contexts
         elif step == 'init_general_personal_history':

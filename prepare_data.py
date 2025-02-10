@@ -175,6 +175,45 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
         utils.append_json_to_file(expanded_conversation, output_file_path, curr_data_name=data_name, parse_json=False, parse_list=False)
 
 
+def prepare_irrelevant_contexts(LLM, args):
+    with open(args['datasets']['random_questions_file'], 'r') as file:
+        all_random_questions = [line.strip() for line in file]
+    with open(args['datasets']['random_code_questions_file'], 'r') as file:
+        all_random_code_questions = [line.strip() for line in file]
+    all_random_questions = all_random_questions + all_random_code_questions
+
+    output_file_path = 'data/irrelevant_contexts.json'
+    for index, question in enumerate(tqdm(all_random_questions)):
+        LLM.create_a_thread(step='irrelevant')
+
+        model_answer = LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])
+        follow_up_question = LLM.query_llm(step='random_question_follow_up', verbose=args['inference']['verbose'])
+        follow_up_answer = LLM.query_llm(step='random_question_follow_up_response', data=follow_up_question, verbose=args['inference']['verbose'])
+
+        new_entry = [
+            {"role": "user", "content": question},
+            {"role": "assistant", "content": model_answer},
+            {"role": "user", "content": follow_up_question},
+            {"role": "assistant", "content": follow_up_answer}
+        ]
+
+        LLM.delete_a_thread(step='irrelevant')
+
+        existing_data = []
+        if os.path.exists(output_file_path):
+            try:
+                with open(output_file_path, "r", encoding="utf-8") as file:
+                    existing_data = json.load(file)
+                    if not isinstance(existing_data, list):
+                        existing_data = []
+            except json.JSONDecodeError:
+                existing_data = []
+
+        existing_data.append({str(index): new_entry})
+        with open(output_file_path, "w", encoding="utf-8") as file:
+            json.dump(existing_data, file, indent=4)
+
+
 def prepare_data(args):
     # Load all personas
     with open(args['datasets']['persona_file'], 'r') as file:
@@ -182,40 +221,7 @@ def prepare_data(args):
     LLM = QueryLLM(args)
 
     if args['datasets']['topics'] == ['irrelevant']:
-        with open(args['datasets']['random_questions_file'], 'r') as file:
-            all_random_questions = [line.strip() for line in file]
-
-        output_file_path = 'data/irrelevant_contexts.json'
-        for index, question in enumerate(tqdm(all_random_questions)):
-            LLM.create_a_thread(step='irrelevant')
-
-            model_answer = LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])
-            follow_up_question = LLM.query_llm(step='random_question_follow_up', verbose=args['inference']['verbose'])
-            follow_up_answer = LLM.query_llm(step='random_question_follow_up_response', data=follow_up_question, verbose=args['inference']['verbose'])
-
-            new_entry = [
-                {"role": "user", "content": question},
-                {"role": "assistant", "content": model_answer},
-                {"role": "user", "content": follow_up_question},
-                {"role": "assistant", "content": follow_up_answer}
-            ]
-
-            LLM.delete_a_thread(step='irrelevant')
-
-            existing_data = []
-            if os.path.exists(output_file_path):
-                try:
-                    with open(output_file_path, "r", encoding="utf-8") as file:
-                        existing_data = json.load(file)
-                        if not isinstance(existing_data, list):
-                            existing_data = []
-                except json.JSONDecodeError:
-                    existing_data = []
-
-            existing_data.append({str(index): new_entry})
-            with open(output_file_path, "w", encoding="utf-8") as file:
-                json.dump(existing_data, file, indent=4)
-
+        prepare_irrelevant_contexts(LLM, args)
     else:
         # Generate conversational data relevant to the topic and the persona
         all_errored_data_paths = {}
