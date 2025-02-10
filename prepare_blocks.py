@@ -270,9 +270,17 @@ def topological_sort(processed_blocks, all_strings, new_content_samples, verbose
     return all_blocks_sorted, all_strings_sorted, new_content_samples_sorted
 
 
-def concatenate_blocks(sorted_processed_blocks, new_content_samples, which_format, verbose=False):
+def concatenate_blocks(sorted_processed_blocks, new_content_samples, which_format, all_irrelevant_contexts=None, verbose=False):
     all_conversations = []
     for block_idx, block in enumerate(sorted_processed_blocks):
+        # Insert irrelevant contexts
+        if all_irrelevant_contexts and which_format == 'api_dict':
+            num_random_blocks = random.randint(0, 20)
+            all_keys = list(all_irrelevant_contexts.keys())
+            random_keys = random.sample(all_keys, min(num_random_blocks, len(all_keys)))
+            for key in random_keys:
+                all_conversations.extend(all_irrelevant_contexts[key])
+
         if which_format == 'string':
             all_conversations.append(block["conversation"])
         else:

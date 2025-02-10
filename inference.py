@@ -258,6 +258,9 @@ if __name__ == "__main__":
     tokenizer = tiktoken.encoding_for_model("gpt-4o")
     sentence_bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 
+    with open(args['datasets']['random_contexts_file'], "r", encoding="utf-8") as f:
+        all_irrelevant_contexts = json.load(f)
+
     if cmd_args.up_to is False:
         n_blocks = [cmd_args.n_blocks]
     else:
@@ -309,7 +312,7 @@ if __name__ == "__main__":
         sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, all_strings, new_content_samples, verbose)
 
         # Concatenate all conversation blocks
-        all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, verbose)
+        all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, all_irrelevant_contexts, verbose)
 
         # Reiterate through all qa after block concatenations to add the distance information
         total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
