@@ -40,6 +40,9 @@ def load_all_source_data(source_dir, topic):
     elif topic == 'coding':
         all_source_files = parse_code_files_from_txt(source_dir)
         return all_source_files
+    elif topic == 'email':
+        all_source_files = parse_emails_from_txt(source_dir)
+        return all_source_files
     else:
         all_source_files = os.listdir(source_dir)
         return all_source_files
@@ -55,6 +58,9 @@ def load_one_source_data(source_dir, all_source_files, topic):
     elif topic == 'coding':
         random_index = random.randint(0, len(all_source_files) - 1)
         return all_source_files[random_index]['content']
+    elif topic == 'email':
+        random_index = random.randint(0, len(all_source_files) - 1)
+        return all_source_files[random_index]
     else:
         random_idx = random.randint(0, len(all_source_files) - 1)
         selected_file = all_source_files[random_idx]
@@ -99,6 +105,23 @@ def parse_code_files_from_txt(file_path):
         code_pieces.append(current_file)
 
     return code_pieces
+
+
+def parse_emails_from_txt(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = file.read()
+
+    # Split emails using the separator line
+    emails = re.split(r'-{35,}', data)
+
+    email_samples = []
+    for email in emails:
+        # Find the subject line and everything after it
+        match = re.search(r'(Subject:.*)', email, re.DOTALL)
+        if match:
+            email_samples.append(match.group(1).strip())
+
+    return email_samples
 
 
 def process_json_from_api(response):

@@ -107,8 +107,6 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
 def prompts_for_generating_conversations(context, persona, curr_personal_history=None, period='INIT'):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif topic == 'legal':
-        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
         topic_name, user, agent = context, 'User', 'Assistant'
 
@@ -149,8 +147,6 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
 def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif topic == 'legal':
-        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
         topic_name, user, agent = context, 'User', 'Assistant'
 
@@ -187,8 +183,6 @@ def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
 def prompts_for_expanding_conversation_section(context, data):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
-    elif topic == 'legal':
-        topic_name, user, agent = 'legal consulting', 'Client', 'Lawyer Assistant'
     else:
         topic_name, user, agent = context, 'User', 'Assistant'
 
@@ -350,10 +344,25 @@ def prompts_for_generating_qa(data, action):
     return prompt
 
 
+def prompts_for_rewriting_creative_writing(data, persona):
+    prompt = "Here is a creative writing sample:\n\n" + data + "\n\nand a new user persona:\n\n" + persona['persona'] + "\n\nand preferences in creative writing:\n\n" + persona['preferences'] + "\n\n" \
+             "At this moment, please intentionally rewrite the sample with poor writing and formatting, INCLUDE what are inside this user's [Writing Styles] Dislikes and [Formatting Styles] Dislikes, but REMOVE what are inside this user's [Writing Styles] Likes and [Formatting Styles] Likes, " \
+             "the opposite to this user's preference. Just give me the new creative writing sample as a simple string. No other words."
+    return prompt
+
+
 def prompts_for_translating_code(data, persona):
     prompt = "Here is a piece of code in Java:\n\n" + data + "\n\nand a new user persona: " + persona + "\n\nPlease translate this code into Python. " \
-             "Intentionally write the code with poor coding practices, add what this person DISLIKES in coding and writing styles, and VIOLATE what this person likes. " \
-             "Just give me the code formatted with triple backticks and python. No other words."
+             "At this moment, please intentionally write the code with poor coding practices, INCLUDE what are inside this user's [Coding Styles] Dislikes and [Formatting Styles] Dislikes, but REMOVE what are inside this user's [Coding Styles] Likes and [Formatting Styles] Likes, " \
+             "the opposite to this user's preference. Just give me the new code formatted with triple backticks and python. No other words."
+    return prompt
+
+
+def prompts_for_rewriting_email(data, persona):
+    prompt = "Here is an email sample:\n\n" + data + "\n\nand a new user persona:\n\n" + persona['persona'] + "\n\nand preferences in email writing:\n\n" + persona['preferences'] + "\n\n" \
+             "The original email may contain personal information of others, please rewrite them to fit this new user. " \
+             "However, at this moment, please intentionally write the email with poor writing and formatting, INCLUDE what are inside this user's [Writing Styles] Dislikes and [Formatting Styles] Dislikes, but REMOVE what are inside this user's [Writing Styles] Likes and [Formatting Styles] Likes, " \
+             "the opposite to this user's preference. Just give me the new email as a simple string. No other words."
     return prompt
 
 
@@ -374,7 +383,7 @@ def prompt_for_preparing_new_content(data, action, data_type):
                      '   "[Formatting Styles] Dislikes": {"1": xxx, "2": xxx, "3": xxx, "4": xxx, "5": xxx}\n' \
                      "}\n\n" \
                      "Do NOT modify the names of these keys. Please use double quotes for each key and value. No other words."
-        elif data_type == 'writing':
+        elif data_type == 'writing' or data_type == 'email':
             prompt = "Here is a new author's persona:\n\n" + data + "\n\nGiven the persona above, please list 5 writing styles (e.g., tone, wording, emojis, valence, arousal, dominance, personality, and etc) and " \
                      "5 formatting styles (e.g., subsections, signature, final closing, title, side notes, paragraph length, and ways to write first & last names, abbreviation, time, and etc) " \
                      "this writer may like and dislike, respectively, related to the topic of " + data_type + ", " \
@@ -390,13 +399,14 @@ def prompt_for_preparing_new_content(data, action, data_type):
         else:
             raise ValueError("Invalid data type", data_type)
     elif action == 'rewrite_from_persona':
-        prompt = "Here is a " + data_type + " sample:\n\n" + data + "\n\nGiven the " + data_type + " sample and the persona above, " \
-                 "please modify some sentences and formats as if it was written by the author with this new persona, correctly reflecting ALL likes and avoiding ALL dislikes in " + data_type + " and formatting styles. "
+        prompt = "Here is a " + data_type + " sample:\n\n" + data + "\n\nGiven the " + data_type + " sample and the persona above. "
         if data_type == 'coding':
-            prompt += "You can add comments explaining the modifications using the first-person perspective. " \
+            prompt += "Please modify some sentences and formats as if it was written by the author with this new persona, correctly reflecting EVERY SINGLE like and avoiding EVERY SINGLE dislike in coding and formatting styles. " \
+                      "You can add comments explaining the modifications using the first-person perspective. " \
                       "You should only output the rewritten code, formatted with triple backticks and python. No other words."
-        elif data_type == 'writing':
-            prompt += "Within the new sample, before each sentence you wanna modify, make sure to add a '[Side_Note]' in square brackets explaining why this modification is aligned with what " + data_type + " or formatting persona points of this new author. " \
+        elif data_type == 'writing' or data_type == 'email':
+            prompt += "Please modify some sentences and formats as if it was written by the author with this new persona, correctly reflecting EVERY SINGLE like and avoiding EVERY SINGLE dislike in writing and formatting styles. " \
+                      "Within the new sample, before each sentence you wanna modify, make sure to add a '[Side_Note]' in square brackets explaining why this modification is aligned with what " + data_type + " or formatting persona points of this new author. " \
                       "Do NOT make any modifications on other sentences whose " + data_type + " or formatting styles are not related to the new author's persona, keeping them word-by-word identical. " \
                       "You should only output the rewritten sample as a simple string. No other words."
     elif action == 'rewrite_as_conversation':
@@ -408,13 +418,15 @@ def prompt_for_preparing_new_content(data, action, data_type):
                      "The user and assistant should explicitly display modified code snippets in their discussion. The whole conversation should be long enough to cover all changes in the rewritten sample. " \
                      "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
                      "Except for the very first two sentences where the user explains how they want the assistant to help them with the programming code, follow this format:\n\n" \
-                     "[Original_Code]: xxx (Code should be formatted with triple backticks and python. The mark [Original_Code] should appear once at each code section the user mentions, not every line)\n" \
-                     "[Side_Note]: '[Coding Styles] Likes' OR '[Coding Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here)\n" \
-                     "User: xxx\n (User utterance should be text, WITHOUT triple backticks)" \
-                     "Assistant: xxx\n (New code should be formatted with triple backticks and python. )" \
-                     "User: xxx\n" \
-                     "Do NOT change the names before the colon mark. No other words."
-        elif data_type == 'writing':
+                     "[\n" \
+                     "'[Original_Code]: xxx', (Code should be formatted with triple backticks and python. The mark [Original_Code] should appear once at each code section the user mentions, not every line)\n" \
+                     "'[Side_Note]: [Coding Styles] Likes OR [Coding Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx', (details here)\n" \
+                     "'User: xxx',\n (User utterance should be text, WITHOUT triple backticks)" \
+                     "'Assistant: xxx',\n (New code should be formatted with triple backticks and python. )" \
+                     "'User: xxx',\n" \
+                     "...,]\n" \
+                     "Output the full conversation as a python list of strings, where each element in the list is one utterance or one piece of the original code. Do NOT change the names before the colon mark. No other words."
+        elif data_type == 'writing' or data_type == 'email':
             prompt = "Given the original and rewritten writing samples above, create a conversation record as if the new author is consulting an expert AI writing assistant to help the author convert the original sample to the rewritten sample. " \
                      "The author should propose questions and concerns, explicitly saying that they likes and dislikes regarding the writing and formatting styles. We need to see every explicit and concrete reasons, " \
                      "and you should always use a '[Side_Note]' with square brackets to link each modification to its corresponding '[Writing Styles] Likes', '[Writing Styles] Dislikes', '[Formatting Styles] Likes', and '[Formatting Styles] Dislikes' listed in the persona above. " \
@@ -423,12 +435,14 @@ def prompt_for_preparing_new_content(data, action, data_type):
                      "The whole conversation should be long enough to cover all modified sentences in the rewritten sample." \
                      "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
                      "Except for the very first two sentences where the user explains how they want the assistant to help them with the writing, you should follow this format for the conversation:\n\n" \
-                     "[Original_Sentence]: xxx\n" \
-                     "[Side_Note]: '[Writing Styles] Likes' OR '[Writing Styles] Dislikes' OR '[Formatting Styles] Likes' OR '[Formatting Styles] Dislikes' xxx (details here) \n" \
-                     "User: xxx\n" \
-                     "Assistant: xxx\n" \
-                     "User: xxx\n" \
-                     "Output a Python list of strings, where each line is a string. Do NOT change the names before the colon mark. No other words."
+                     "[\n" \
+                     "'[Original_Sentence]: xxx',\n" \
+                     "'[Side_Note]: [Writing Styles] Likes OR [Writing Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx', (details here) \n" \
+                     "'User: xxx',\n" \
+                     "'Assistant: xxx',\n" \
+                     "'User: xxx',\n" \
+                     "...,]\n" \
+                     "Output the full conversation as a python list of strings, where each line is string. Do NOT change the names before the colon mark. No other words."
         else:
             raise ValueError("Invalid data type", data_type)
     else:

@@ -92,8 +92,13 @@ class QueryLLM:
             prompt = prompts.prompts_for_random_question_follow_up()
         elif step == 'random_question_follow_up_response':
             prompt = data + " Explain thoroughly in details. "
+
         elif step == 'translate_code':
             prompt = prompts.prompts_for_translating_code(data, persona)
+        elif step == 'rewrite_email':
+            prompt = prompts.prompts_for_rewriting_email(data, persona)
+        elif step == 'rewrite_creative_writing':
+            prompt = prompts.prompts_for_rewriting_creative_writing(data, persona)
 
         # Generate once across multiple contexts
         elif step == 'init_general_personal_history':
@@ -150,7 +155,7 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code':
+        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code' or step == 'rewrite_email' or step == 'rewrite_creative_writing':
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
             response = self.client.chat.completions.create(
                 model=model,

@@ -113,9 +113,14 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
 
 def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_path, args):
     # Convert the writing sample into a conversation
+    print('source_data', source_data)
     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', data_type=topic, verbose=args['inference']['verbose'])
     if topic == 'coding':
         source_data = LLM.query_llm(step='translate_code', persona=preferences, data=source_data, verbose=args['inference']['verbose'])
+    elif topic == 'email':
+        source_data = LLM.query_llm(step='rewrite_email', persona={'persona': persona, 'preferences': preferences}, data=source_data, verbose=args['inference']['verbose'])
+    elif topic == 'writing':
+        source_data = LLM.query_llm(step='rewrite_creative_writing', persona={'persona': persona, 'preferences': preferences}, data=source_data, verbose=args['inference']['verbose'])
 
     updated_writing_sample = LLM.query_llm(step='prepare_new_content', data=source_data, action='rewrite_from_persona', data_type=topic, verbose=args['inference']['verbose'])
     if 'python' in preferences or 'plaintext' in preferences:
@@ -124,8 +129,11 @@ def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_
         updated_writing_sample = updated_writing_sample.strip("```plaintext").strip()
 
     conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', data_type=topic, verbose=args['inference']['verbose'])
-    if 'plaintext' in conversation:
+    if 'python' in conversation or 'plaintext' in conversation:
         conversation = ast.literal_eval(conversation.strip("```plaintext").strip())
+        # remove the initial ```python, if any
+        conversation = conversation.replace('```python', '', 1)
+
     # conversation.append("User: Could you please help me write another sample?")
 
     responses = [source_data, preferences, updated_writing_sample, conversation]

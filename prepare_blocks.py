@@ -33,13 +33,10 @@ def reformat_conversation(topic, conversation, which_format):
         for line in conversation:
             if not line.startswith("Side_Note"):
                 if topic == 'therapy':
-                    role = "user" if line.startswith("Patient") or line.startswith("Patient:") else "assistant"
-                    extracted_conversation.append({"role": role, "content": line})
-                elif topic == 'legal':
-                    role = "user" if line.startswith("Client") or line.startswith("Client:") else "assistant"
+                    role = 'assistant' if line.startswith("Therapist") or line.startswith("Therapist:") else "user"
                     extracted_conversation.append({"role": role, "content": line})
                 else:
-                    role = "user" if line.startswith("User") or line.startswith("User:") else "assistant"
+                    role = 'assistant' if line.startswith("Assistant") or line.startswith("Assistant:") else "user" # in writing topics, all original samples are also included in user
                     extracted_conversation.append({"role": role, "content": line})
     else:
         raise NotImplementedError("Unknown format: {}".format(which_format))
