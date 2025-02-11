@@ -27,7 +27,7 @@ def prompts_for_expanding_persona(persona, start_time):
 def prompts_for_init_general_personal_history(persona, start_time):
     prompt = "Given the following persona, expand it with 10 person's general background history within ten years starting at " + start_time + "." \
              "Turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. " \
-             "Remember that these events should be general like career development, and they will be shared across multiple different contexts." \
+             "Remember that these events should be general like career development, and they will be shared across multiple different topics." \
              "You should mention both daily activities and important key milestones, and both positive and negative history events. Also relate history to what this person prefers and dislikes. " \
              "Use JSON format where each timestamp is a key in the JSON dictionary. Each point should also be marked with labels of either ['Short-Term'] or ['Long-Term'], " \
              "where short-term fact refers to something happening daily, which can be irrelevant to the persona like what the person eats, " \
@@ -46,10 +46,10 @@ def prompts_for_init_general_personal_history(persona, start_time):
     return prompt
 
 
-def prompts_for_init_contextual_personal_history(context, start_time, persona, general_personal_history):
+def prompts_for_init_contextual_personal_history(topic, start_time, persona, general_personal_history):
     prompt = "Here is the persona:\n\n" + persona + "\n\nHere are 10 events related to the person's general background history:\n\n" + general_personal_history + "\n\n" \
-             "Given the persona and the person's general background history above, continue to list 10 personal hobbies and 10 things this person dislikes but others might like, using bullet points, related to " + context + ". " \
-             "Next, write 10 more events related to the context of " + context + ". Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
+             "Given the persona and the person's general background history above, continue to list 10 personal hobbies and 10 things this person dislikes but others might like, using bullet points, related to " + topic + ". " \
+             "Next, write 10 more events related to the topic of " + topic + ". Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
              "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
              "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
@@ -63,14 +63,14 @@ def prompts_for_init_contextual_personal_history(context, start_time, persona, g
     return prompt
 
 
-def prompts_for_expanding_personal_history(context=None, type='general', period='WEEK'):
+def prompts_for_expanding_personal_history(topic=None, type='general', period='WEEK'):
     if type != 'general':
-        assert context is not None
+        assert topic is not None
 
     if type == 'general':
         prompt = "Given the initial general personal history, think about what would happen to the same person in a " + period + ". "
     else:
-        prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + context + ". "
+        prompt = "Given the initial contextual personal history, think about what would happen to the same person in a " + period + " related to the " + topic + ". "
     prompt += "More than half of those new points could be, though logically still make sense, but contradictory to the original persona and personal history, especially those ['Short-Term'] facts." \
               "If there is any contradictions or knowledge updates, remember to include why, i.e., the user's reasons and intentions using an additional key '[Reasons of Change]'. " \
               "Try finding some very unique and personal reasons for this person, uncommon for the general public, that trigger the change. " \
@@ -104,13 +104,13 @@ def prompts_for_expanding_personal_history(context=None, type='general', period=
     return prompt
 
 
-def prompts_for_generating_conversations(context, persona, curr_personal_history=None, period='INIT'):
+def prompts_for_generating_conversations(topic, persona, curr_personal_history=None, period='INIT'):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
     else:
-        topic_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = topic, 'User', 'Assistant'
 
-    prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the context of " + topic_name + ". " \
+    prompt = "Your task is to rewrite the following list of events related to a personal history as a format of conversation record under the topic of " + topic_name + ". " \
              "The conversation should strictly follow each event mentioned by the personal history and explicitly mention these events one by one, using them and their time stamps of the format MM/DD/YYYY as the skeleton. Do NOT change the time stamps. " \
              "Think about what the person's persona and history could cause trouble so that the person seeks a " + agent.lower() + ". " \
              "Write the conversation as a list of string, where each sentence is an element in the list and starts with either '" + user + "', '" + agent + "', or 'Side_Note'." \
@@ -144,11 +144,11 @@ def prompts_for_generating_conversations(context, persona, curr_personal_history
     return prompt
 
 
-def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
+def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
     else:
-        topic_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = topic, 'User', 'Assistant'
 
     if period == 'INIT':
         history_block = "'Init General Personal History'"
@@ -180,14 +180,14 @@ def prompts_for_reflecting_conversations(context, data, round, period='INIT'):
     return prompt
 
 
-def prompts_for_expanding_conversation_section(context, data):
+def prompts_for_expanding_conversation_section(topic, data):
     if topic == 'therapy':
         topic_name, user, agent = 'therapy', 'Patient', 'Therapist'
     else:
-        topic_name, user, agent = context, 'User', 'Assistant'
+        topic_name, user, agent = topic, 'User', 'Assistant'
 
     prompt = "Please expand these sentences. I do NOT want any new user preferences, examples, or changes to the story behind the conversation. " \
-             "Instead, extend each line to AT LEAST FIVE sentences by adding additional details or irrelevant context that delves deeper into the mentioned objects or events. " \
+             "Instead, extend each line to AT LEAST FIVE sentences by adding additional details or irrelevant topic that delves deeper into the mentioned objects or events. " \
              "Ensure that no new preferences are introduced or altered. Each revised sentence should provide greater depth while maintaining consistency with the original narrative and intent." \
              "Note that the lines said by " + agent + " should be even longer to show the caring or professionalism. " \
              "Also note that if the last line is another line of 'Side_Note', that 'Side_Note' indicates the next event, so the previous line should consider how to smoothly transit the conversation. " \
@@ -209,7 +209,7 @@ def prompts_for_generating_qa(data, action):
                  "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
                  "What question might the user query the chatbot model to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
                  "Also, simply draft the user’s question to the model, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory. " \
-                 "Make the user question more detailed with some context. Remember that the user is asking this question to an LLM, not a real human. " \
+                 "Make the user question more detailed with some topic. Remember that the user is asking this question to an LLM, not a real human. " \
                  "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
                  "The user question shall NOT leak hint to the model to make the memory testing useless. " \
                  "Always follow the template below:\n\n" \
@@ -229,7 +229,7 @@ def prompts_for_generating_qa(data, action):
                  "What question might the user ask the chatbot to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
                  "Also, simply mimic the user’s question, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory." \
                  "Most importantly, the user should say they want to try something new, WITHOUT explicitly saying what they have done before to test the model's memory capability. " \
-                 "Make the user question more detailed with some context. Remember that the user is asking this question to an LLM, not a real human. " \
+                 "Make the user question more detailed with some topic. Remember that the user is asking this question to an LLM, not a real human. " \
                  "Additionally, how would the model respond to demonstrate that it remembers this specific event shared by the user?" \
                  "The model's response should simply give an answer, WITHOUT first mentioning what the user has already done before. " \
                  "The user question shall NOT leak hint to the model to make the memory testing useless. " \

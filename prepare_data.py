@@ -74,7 +74,11 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     def expand_section(LLM, section, last_timestamps):
         response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
         response = response.strip("```python").strip("```plaintext").strip()
-        response = ast.literal_eval(response)
+        for parser in (json.loads, ast.literal_eval):
+            try:
+                return parser(response)
+            except:
+                continue  # Try the next parser
         return response
 
     # Keywords to identify the start of a new section
