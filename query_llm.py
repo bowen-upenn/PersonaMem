@@ -34,7 +34,7 @@ class QueryLLM:
         )
 
         self.thread_irrelevant = None
-
+        self.thread_persona = None
         self.thread_conversation = None
         self.thread_reflect_conversation = None
         self.thread_preparing_new_content = None
@@ -56,6 +56,7 @@ class QueryLLM:
 
     def create_a_thread(self, step):
         if step == 'conversation':
+            self.thread_persona = self.client.beta.threads.create()
             self.thread_conversation = self.client.beta.threads.create()
             self.thread_reflect_conversation = self.client.beta.threads.create()
             self.thread_preparing_new_content = self.client.beta.threads.create()
@@ -69,6 +70,7 @@ class QueryLLM:
 
     def delete_a_thread(self, step):
         if step == 'conversation':
+            self.client.beta.threads.delete(thread_id=self.thread_persona.id)
             self.client.beta.threads.delete(thread_id=self.thread_conversation.id)
             self.client.beta.threads.delete(thread_id=self.thread_reflect_conversation.id)
             self.client.beta.threads.delete(thread_id=self.thread_preparing_new_content.id)
@@ -181,7 +183,7 @@ class QueryLLM:
             elif step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
                 curr_thread = self.thread_irrelevant
             else:
-                raise ValueError(f'Invalid step: {step}')
+                curr_thread = self.thread_persona
 
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
