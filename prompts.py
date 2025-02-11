@@ -419,13 +419,13 @@ def prompt_for_preparing_new_content(data, action, data_type):
                      "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
                      "Except for the very first two sentences where the user explains how they want the assistant to help them with the programming code, follow this format:\n\n" \
                      "[\n" \
-                     "'[Original_Code]: xxx', (Code should be formatted with triple backticks and python. The mark [Original_Code] should appear once at each code section the user mentions, not every line)\n" \
-                     "'[Side_Note]: [Coding Styles] Likes OR [Coding Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx', (details here)\n" \
-                     "'User: xxx',\n (User utterance should be text, WITHOUT triple backticks)" \
-                     "'Assistant: xxx',\n (New code should be formatted with triple backticks and python. )" \
-                     "'User: xxx',\n" \
+                     '"[Original_Code]: xxx", (Code should be formatted with triple backticks and python. The mark [Original_Code] should appear once at each code section the user mentions, not every line)\n' \
+                     '"[Side_Note]: [Coding Styles] Likes OR [Coding Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx", (details here)\n' \
+                     '"User: xxx",\n (User utterance should be text, WITHOUT triple backticks)' \
+                     '"Assistant: xxx",\n (New code should be formatted with triple backticks and python. )' \
+                     '"User: xxx",\n' \
                      "...,]\n" \
-                     "Output the full conversation as a python list of strings, where each element in the list is one utterance or one piece of the original code. Do NOT change the names before the colon mark. No other words."
+                     "Output the full conversation as a python list of strings, where each element in the list is one utterance or one piece of the original code. Use double quotes for each string. Do NOT change the names before the colon mark. No other words."
         elif data_type == 'writing' or data_type == 'email':
             prompt = "Given the original and rewritten writing samples above, create a conversation record as if the new author is consulting an expert AI writing assistant to help the author convert the original sample to the rewritten sample. " \
                      "The author should propose questions and concerns, explicitly saying that they likes and dislikes regarding the writing and formatting styles. We need to see every explicit and concrete reasons, " \
@@ -436,13 +436,13 @@ def prompt_for_preparing_new_content(data, action, data_type):
                      "The user should also say their preferences mentioned in the Side_Note, as if the AI assistant can not see those Side_Note. " \
                      "Except for the very first two sentences where the user explains how they want the assistant to help them with the writing, you should follow this format for the conversation:\n\n" \
                      "[\n" \
-                     "'[Original_Sentence]: xxx',\n" \
-                     "'[Side_Note]: [Writing Styles] Likes OR [Writing Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx', (details here) \n" \
-                     "'User: xxx',\n" \
-                     "'Assistant: xxx',\n" \
-                     "'User: xxx',\n" \
+                     '"[Original_Sentence]: xxx",\n' \
+                     '"[Side_Note]: [Writing Styles] Likes OR [Writing Styles] Dislikes OR [Formatting Styles] Likes OR [Formatting Styles] Dislikes xxx", (details here) \n' \
+                     '"User: xxx",\n' \
+                     '"Assistant: xxx",\n' \
+                     '"User: xxx",\n' \
                      "...,]\n" \
-                     "Output the full conversation as a python list of strings, where each line is string. Do NOT change the names before the colon mark. No other words."
+                     "Output the full conversation as a python list of strings, where each line is string. Use double quotes for each string. Do NOT change the names before the colon mark. No other words."
         else:
             raise ValueError("Invalid data type", data_type)
     else:

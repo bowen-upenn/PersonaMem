@@ -113,7 +113,6 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
 
 def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_path, args):
     # Convert the writing sample into a conversation
-    print('source_data', source_data)
     preferences = LLM.query_llm(step='prepare_new_content', data=persona, action='preferences', data_type=topic, verbose=args['inference']['verbose'])
     if topic == 'coding':
         source_data = LLM.query_llm(step='translate_code', persona=preferences, data=source_data, verbose=args['inference']['verbose'])
@@ -129,12 +128,18 @@ def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_
         updated_writing_sample = updated_writing_sample.strip("```plaintext").strip()
 
     conversation = LLM.query_llm(step='prepare_new_content', action='rewrite_as_conversation', data_type=topic, verbose=args['inference']['verbose'])
-    if 'python' in conversation or 'plaintext' in conversation:
-        conversation = ast.literal_eval(conversation.strip("```plaintext").strip())
-        # remove the initial ```python, if any
+    if conversation.startswith('```python'):
         conversation = conversation.replace('```python', '', 1)
+    conversation = conversation.strip("```plaintext")
+    try:
+        conversation = json.loads(conversation)
+    except:
+        conversation = conversation
 
-    # conversation.append("User: Could you please help me write another sample?")
+    # if 'python' in conversation or 'plaintext' in conversation:
+    #     conversation = conversation.strip("```plaintext").replace('```python', '', 1).strip()
+    #     conversation = ast.literal_eval(conversation)
+    # # conversation.append("User: Could you please help me write another sample?")
 
     responses = [source_data, preferences, updated_writing_sample, conversation]
     if topic == 'coding':
@@ -165,6 +170,7 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
 
     last_timestamps = []
     for step, data_name in tqdm(zip(steps, data_names)):
+        print(f'{utils.Colors.OKGREEN}Processing step: {step}{utils.Colors.ENDC}')
         # Only generate general personal history once, to be shared across multiple topics for the same persona
         if idx_topic > 0 and step in existing_general_personal_history:
             utils.append_json_to_file(existing_general_personal_history[step], output_file_path, curr_data_name=data_name, parse_json=True)
@@ -182,6 +188,7 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
 
     last_timestamps = utils.merge_timestamps(last_timestamps)
     for conv_idx, (step, data_name) in enumerate(zip(steps, data_names)):
+        print(f'{utils.Colors.OKGREEN}Processing step: {step}{utils.Colors.ENDC}')
         response = LLM.query_llm(step=step, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, topic=curr_topic, data=response, action=1, verbose=args['inference']['verbose'])
         response = LLM.query_llm(step='reflect_' + step, topic=curr_topic, action=2, verbose=args['inference']['verbose'])
@@ -275,18 +282,18 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    try:
-                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                            """
-                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                            """
-                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                        else:
-                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
-                    except Exception as e:
-                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                        all_errored_data_paths[output_file_path] = e
+                    # try:
+                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                        """
+                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                        """
+                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                    # except Exception as e:
+                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    #     all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 
