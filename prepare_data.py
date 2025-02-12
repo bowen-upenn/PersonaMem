@@ -74,12 +74,13 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     def expand_section(LLM, section, last_timestamps):
         response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
         response = response.strip("```python").strip("```plaintext").strip()
-        for parser in (json.loads, ast.literal_eval):
-            try:
-                return parser(response)
-            except:
-                continue  # Try the next parser
-        return response
+        # for parser in ast.literal_eval:
+        try:
+            return ast.literal_eval(response)
+        except:
+            return response
+            # continue  # Try the next parser
+        # return response
 
     # Keywords to identify the start of a new section
     keywords = {'Side_Note', 'Side_Notes', '[Side_Note]', '[Side_Notes]', 'Side', '[Side'}
@@ -286,18 +287,18 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    # try:
-                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                        """
-                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                        """
-                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                    else:
-                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
-                    # except Exception as e:
-                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                    #     all_errored_data_paths[output_file_path] = e
+                    try:
+                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                            """
+                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                            """
+                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                        else:
+                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                    except Exception as e:
+                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                        all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 
