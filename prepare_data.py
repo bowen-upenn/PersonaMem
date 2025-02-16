@@ -71,11 +71,18 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     :param input_conversation: A list of strings representing the conversation
     We define each section in the conversation as a group of lines before the next Side_Note
     """
-    def expand_section(LLM, section, last_timestamps):
+    def expand_section(LLM, section, last_timestamp):
+        # print('Original section', section, '\n\n')
         response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=False)
-        response = response.strip("```python").strip("```plaintext").replace("\n", " ").strip()
+        # print('Expanded section', response, '\n\n')
+        match = re.search(r'```(?:python|plaintext)?\s*(.*?)\s*```', response, re.DOTALL)
+        response = match.group(1) if match else response
+        if response[-1] != ']':
+            response += ']'
+        # response = response.strip("```python").strip("```plaintext").strip()
         # for parser in ast.literal_eval:
         # try:
+        # print('Parsed section', response, '\n\n')
         return ast.literal_eval(response)
         # except:
         #     return response
@@ -88,7 +95,7 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     with_next_sidenote = []
     current_section = []  # To collect strings for the current section
 
-    input_conversation = input_conversation.strip("```python").strip("```plaintext").replace("\n", " ").strip()
+    input_conversation = input_conversation.strip("```python").strip("```plaintext").strip()
     input_conversation = ast.literal_eval(input_conversation)
     # print('input_conversation', input_conversation, '\n\n')
 

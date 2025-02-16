@@ -200,7 +200,8 @@ def prompts_for_expanding_conversation_section(topic, data):
              '"Side_Note: [xxx] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
              '"' + user + ': yyy" (More than 5 sentences. Do NOT include MM/DD/YYYY here),' \
              '"' + agent + ': zzz"  (More than 10 sentences. Do NOT include MM/DD/YYYY here),' \
-             "...] Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
+             "...]\n Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. " \
+             "Please output only a valid Python list of strings in a code block with no extra text."
     return prompt
 
 
