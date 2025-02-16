@@ -72,13 +72,13 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     We define each section in the conversation as a group of lines before the next Side_Note
     """
     def expand_section(LLM, section, last_timestamps):
-        response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=verbose)
-        response = response.strip("```python").strip("```plaintext").strip()
+        response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=False)
+        response = response.strip("```python").strip("```plaintext").replace("\n", " ").strip()
         # for parser in ast.literal_eval:
-        try:
-            return ast.literal_eval(response)
-        except:
-            return response
+        # try:
+        return ast.literal_eval(response)
+        # except:
+        #     return response
             # continue  # Try the next parser
         # return response
 
@@ -87,6 +87,10 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     sections = []  # To store the parsed sections
     with_next_sidenote = []
     current_section = []  # To collect strings for the current section
+
+    input_conversation = input_conversation.strip("```python").strip("```plaintext").replace("\n", " ").strip()
+    input_conversation = ast.literal_eval(input_conversation)
+    # print('input_conversation', input_conversation, '\n\n')
 
     for idx, line in enumerate(input_conversation):
         # Check if the line starts with any of the keywords
@@ -104,14 +108,23 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     # Add the last section if there is one
     if current_section:
         sections.append(current_section)
+    # print('all sections', sections, '\n\n')
 
     expanded_conversation = []
     for idx, section in enumerate(sections):
+        # print('section', section, '\n\n')
         expanded_section = expand_section(LLM, section, last_timestamp)
-        if idx + 1 < len(sections):
+        if idx == 0:
+            if any(expanded_section[0].startswith(keyword) for keyword in keywords) and not any(section[0].startswith(keyword) for keyword in keywords):
+                expanded_conversation += expanded_section[1:]  # Remove extra side note not existed in the original data, resulting from the prompt template to expand those sections
+        elif idx + 1 < len(sections):
             expanded_conversation += expanded_section[:-1]  # Do not repetitively add the last line of each section, i.e., the Side_Note in the next section
         else:
             expanded_conversation += expanded_section
+
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}{"Expanded Conversation"}:{utils.Colors.ENDC}')
+        print(expanded_conversation)
 
     return expanded_conversation
 
@@ -287,18 +300,18 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    try:
-                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                            """
-                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                            """
-                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                        else:
-                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
-                    except Exception as e:
-                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                        all_errored_data_paths[output_file_path] = e
+                    # try:
+                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                        """
+                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                        """
+                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                    # except Exception as e:
+                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    #     all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 

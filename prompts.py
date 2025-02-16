@@ -41,7 +41,7 @@ def prompts_for_init_general_personal_history(persona, start_time):
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format." \
+             "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format." \
              "Here is the persona: " + persona
     return prompt
 
@@ -59,7 +59,7 @@ def prompts_for_init_contextual_personal_history(topic, start_time, persona, gen
                     '"Category": "Short-Term" OR "Long-Term"\n' \
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
-             "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format."
+             "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format."
     return prompt
 
 
@@ -100,7 +100,7 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
                   '"[Old Event Date]": MM/DD/YYYY, \n' \
                   '"[Old Event]": xxx, \n' \
               "}\n" \
-              "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format."
+              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format."
     return prompt
 
 
@@ -140,7 +140,7 @@ def prompts_for_generating_conversations(topic, persona, curr_personal_history=N
               '"Side_Note: [xxx] MM/DD/YYYY",' \
               '"' + user + ': yyy",' \
               '"' + agent + ': zzz",' \
-              "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. No other words."
+              "...] Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. No other words."
     return prompt
 
 
@@ -174,7 +174,8 @@ def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
                  '"Side_Note: [xxx] MM/DD/YYYY",' \
                  '"' + user + ': yyy",' \
                  '"' + agent + ': zzz",' \
-                 "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the completed conversation. No other words."
+                 "...] " \
+                 "The whole output should be a Python list of strings where each utterance is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. Just output the completed conversation. No other words."
     else:
         raise ValueError("Invalid round", round)
     return prompt
@@ -196,10 +197,10 @@ def prompts_for_expanding_conversation_section(topic, data):
              "But you should keep the Side_Note unmodified. Each Side_Note should include the original timestamp MM/DD/YYYY. " \
              "Follow exactly the SAME template in the original sentences:\n\n" \
              "[\n" \
-             '"Side_Note: [...] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
+             '"Side_Note: [xxx] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
              '"' + user + ': yyy" (More than 5 sentences. Do NOT include MM/DD/YYYY here),' \
              '"' + agent + ': zzz"  (More than 10 sentences. Do NOT include MM/DD/YYYY here),' \
-             "...] Use a Python list of strings where each sentence is one string. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
+             "...] Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. Just output the expanded conversation. No other words."
     return prompt
 
 
