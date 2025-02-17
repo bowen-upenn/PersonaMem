@@ -295,36 +295,55 @@ def remove_side_notes(conversation):
 
 
 def find_existing_persona_files(idx_persona):
-    # Dynamically retrieve all subdirectories in './data/output'
     output_base_dir = "./data/output"
-    topic_dirs = [os.path.join(output_base_dir, d) for d in os.listdir(output_base_dir) if os.path.isdir(os.path.join(output_base_dir, d))]
+    topic_dirs = [
+        os.path.join(output_base_dir, d)
+        for d in os.listdir(output_base_dir)
+        if os.path.isdir(os.path.join(output_base_dir, d))
+    ]
 
-    # Find an existing file belonging to the same persona index
     matching_file = None
+    selected_data = None
+
+    # Loop over each topic directory and each file inside it
     for topic_dir in topic_dirs:
         for file_name in os.listdir(topic_dir):
             if f"_persona{idx_persona}_" in file_name:
-                matching_file = os.path.join(topic_dir, file_name)
-                break
+                file_path = os.path.join(topic_dir, file_name)
+                with open(file_path, 'r') as file:
+                    data = json.load(file)
+                # Check if the file contains the key we're interested in
+                if "General Personal History Next Year" in data:
+                    matching_file = file_path
+                    selected_data = data
+                    break  # Stop searching this directory if we found a match
         if matching_file:
-            break
+            break  # Stop searching further directories
 
-    print(f'Loaded persona file from {matching_file}')
     if matching_file:
-        with open(matching_file, 'r') as file:
-            data = json.load(file)
-        persona = data["Original Persona"]
-        expanded_persona = data["Expanded Persona"]
+        print(f'Loaded persona file from {matching_file}')
 
-        if "Init General Personal History" in data:
-            start_time = next(iter(data["Init General Personal History"].keys()))  # Get the first timestamp
+        persona = selected_data.get("Original Persona")
+        expanded_persona = selected_data.get("Expanded Persona")
+
+        # Retrieve the first timestamp from "General Persona History Next Year" if available
+        if "Init General Personal History" in selected_data:
+            start_time = next(iter(selected_data["Init General Personal History"].keys()))
         else:
             start_time = None
 
         print(f'Found an existing persona file for persona {idx_persona}.')
-
-        return {'persona': persona, 'expanded_persona': expanded_persona, 'start_time': start_time}
+        return {
+            'persona': persona,
+            'expanded_persona': expanded_persona,
+            'start_time': start_time,
+            'init_general_personal_history': selected_data.get("Init General Personal History"),
+            'general_personal_history_next_week': selected_data.get("General Personal History Next Week"),
+            'general_personal_history_next_month': selected_data.get("General Personal History Next Month"),
+            'general_personal_history_next_year': selected_data.get("General Personal History Next Year"),
+        }
     else:
+        print(f"No persona file with 'General Personal History Next Year' found for persona {idx_persona}.")
         return None
 
 

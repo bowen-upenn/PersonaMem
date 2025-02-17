@@ -12,6 +12,11 @@ def prompts_for_random_question_follow_up():
     return prompt
 
 
+def prompts_for_elaborating_topic(topic):
+    prompt = "Please elaborate what a person would like to talk about under the topic of " + topic + ". "
+    return prompt
+
+
 def prompts_for_expanding_persona(persona, start_time):
     birth_year = str(int(start_time.split('/')[2]) - 18)
     gender_identity = (' transgender ' if random.random() < 0.2 else '') + random.choice(['female', 'male', 'non-binary'])
@@ -49,9 +54,10 @@ def prompts_for_init_general_personal_history(persona, start_time):
 def prompts_for_init_contextual_personal_history(topic, start_time, persona, general_personal_history):
     prompt = "Here is the persona:\n\n" + persona + "\n\nHere are 10 events related to the person's general background history:\n\n" + general_personal_history + "\n\n" \
              "Given the persona and the person's general background history above, continue to list 10 personal hobbies and 10 things this person dislikes but others might like, using bullet points, related to " + topic + ". " \
-             "Next, write 10 more events related to the topic of " + topic + ". Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
+             "Next, write 10 more events related to the topic of " + topic + ". Think about how this person's general background history may affect their events under " + topic + \
+             "Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
              "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
-             "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
+             "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:', and they should concentrate on the topic of " + topic + \
              "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
              "Here is the template you should follow for each event:\n\n" \
                 '"MM/DD/YYYY": {\n' \
@@ -151,21 +157,21 @@ def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
         topic_name, user, agent = topic, 'User', 'Assistant'
 
     if period == 'INIT':
-        history_block = "'Init General Personal History'"
+        history_block = "'Init Contextual Personal History'"
         conversation_block = "'Init Conversation'"
     elif period == 'WEEK':
-        history_block = "'General Personal History Next Week'"
+        history_block = "'Contextual Personal History Next Week'"
         conversation_block = "'Conversation Next Week'"
     elif period == 'MONTH':
-        history_block = "'General Personal History Next Month'"
+        history_block = "'Contextual Personal History Next Month'"
         conversation_block = "'Conversation Next Month'"
     else:
-        history_block = "'General Personal History Next Year'"
+        history_block = "'Contextual Personal History Next Year'"
         conversation_block = "'Conversation Next Year'"
 
     if round == 1:
         prompt = "Given the following " + history_block + " and the " + conversation_block + ", check if the " + conversation_block + " has covered every single timestamp in the " + history_block + ". " \
-                 "List all missed ones:\n\n" + data['history_block'] + "\n\n" + data['conversation_block']
+                 "List all missed ones:\n\n" + history_block + "\n\n" + data['history_block'] + "\n\n" + conversation_block + "\n\n" + data['conversation_block']
     elif round == 2:
         prompt = "Please fill in these missed timestamps with their corresponding events mentioned in the " + history_block + " into the " + conversation_block + ". " \
                  "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation. Keep them word-by-word IDENTICAL." \
@@ -195,13 +201,13 @@ def prompts_for_expanding_conversation_section(topic, data):
              "Here is the section you should expand, while do NOT expand or modify the line(s) of Side_Note.\n\n" + '\n'.join(data['section']) + "\n\n" \
              "Please remove or rephrase any timestamp MM/DD/YYYY mentioned by the " + user + " and " + agent + " in their utterances. Note that this conversation is happening at " + data['last_timestamp'] + "." \
              "But you should keep the Side_Note unmodified. Each Side_Note should include the original timestamp MM/DD/YYYY. " \
-             "Follow exactly the SAME template in the original sentences:\n\n" \
+             "Follow the template in the original sentences:\n\n" \
              "[\n" \
              '"Side_Note: [xxx] MM/DD/YYYY" (Please include MM/DD/YYYY here),' \
              '"' + user + ': yyy" (More than 5 sentences. Do NOT include MM/DD/YYYY here),' \
              '"' + agent + ': zzz"  (More than 10 sentences. Do NOT include MM/DD/YYYY here),' \
              "...]\n Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. " \
-             "Please output only a valid Python list of strings in a code block with no extra text."
+             "The actual order of " + user + " and " + agent + " in your expanded sentences should follow the original order in the original sentences. Please output only a valid Python list of strings in a code block with no extra text."
     return prompt
 
 

@@ -41,18 +41,18 @@ class QueryLLM:
         self.thread_new_content = None
         self.thread_eval_new_content = None
 
-        self.expanded_persona = None
+        self.expanded_persona = ""
 
-        self.general_personal_history = None
-        self.init_general_personal_history = None
-        self.first_expand_general_personal_history = None
-        self.second_expand_general_personal_history = None
-        self.third_expand_general_personal_history = None
+        self.general_personal_history = ""
+        self.init_general_personal_history = ""
+        self.first_expand_general_personal_history = ""
+        self.second_expand_general_personal_history = ""
+        self.third_expand_general_personal_history = ""
 
-        self.init_personal_history = None
-        self.first_expand_personal_history = None
-        self.second_expand_personal_history = None
-        self.third_expand_personal_history = None
+        self.init_personal_history = ""
+        self.first_expand_personal_history = ""
+        self.second_expand_personal_history = ""
+        self.third_expand_personal_history = ""
 
     def create_a_thread(self, step):
         if step == 'conversation':
@@ -85,6 +85,8 @@ class QueryLLM:
     def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, data_type=None, idx_topic=0, start_time=None, verbose=False):
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
+        elif step == 'elaborate_topic':
+            prompt = prompts.prompts_for_elaborating_topic(topic)
         elif step == 'expand_persona':
             prompt = prompts.prompts_for_expanding_persona(persona, start_time)
 
@@ -218,36 +220,36 @@ class QueryLLM:
 
         # Save general personal history to be shared across contexts
         if idx_topic == 0:
-            if step == 'init_general_personal_history':
-                self.general_personal_history = response
-                self.init_general_personal_history = response
-            elif step == 'first_expand_general_personal_history':
-                self.general_personal_history += response
-                self.first_expand_general_personal_history = response
-            elif step == 'second_expand_general_personal_history':
-                self.general_personal_history += response
-                self.second_expand_general_personal_history = response
-            elif step == 'third_expand_general_personal_history':
-                self.general_personal_history += response
-                self.third_expand_general_personal_history = response
-            elif step == 'expand_persona':
+            # if step == 'init_general_personal_history':
+            #     self.general_personal_history = response
+            #     self.init_general_personal_history = response
+            # elif step == 'first_expand_general_personal_history':
+            #     self.general_personal_history += response
+            #     self.first_expand_general_personal_history = response
+            # elif step == 'second_expand_general_personal_history':
+            #     self.general_personal_history += response
+            #     self.second_expand_general_personal_history = response
+            # elif step == 'third_expand_general_personal_history':
+            #     self.general_personal_history += response
+            #     self.third_expand_general_personal_history = response
+            if step == 'expand_persona':
                 self.expanded_persona = response
 
         # Save general+contextual personal history in order to generate conversations
-        if step == 'init_general_personal_history':
-            self.init_personal_history = response
-        elif step == 'init_contextual_personal_history':
+        # if step == 'init_general_personal_history':
+        #     self.init_personal_history = response
+        if step == 'init_contextual_personal_history':
             self.init_personal_history += response
-        elif step == 'first_expand_general_personal_history':
-            self.first_expand_personal_history = response
+        # elif step == 'first_expand_general_personal_history':
+        #     self.first_expand_personal_history = response
         elif step == 'first_expand_contextual_personal_history':
             self.first_expand_personal_history += response
-        elif step == 'second_expand_general_personal_history':
-            self.second_expand_personal_history = response
+        # elif step == 'second_expand_general_personal_history':
+        #     self.second_expand_personal_history = response
         elif step == 'second_expand_contextual_personal_history':
             self.second_expand_personal_history += response
-        elif step == 'third_expand_general_personal_history':
-            self.third_expand_personal_history = response
+        # elif step == 'third_expand_general_personal_history':
+        #     self.third_expand_personal_history = response
         elif step == 'third_expand_contextual_personal_history':
             self.third_expand_personal_history += response
 

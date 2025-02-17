@@ -20,7 +20,8 @@ def prepare_persona(LLM, idx_persona, all_personas, args):
     found = utils.find_existing_persona_files(idx_persona)
     if found:
         # Ensure that every data file with the same idx_persona share the same persona
-        persona, expanded_persona, start_time = found['persona'], found['expanded_persona'], found['start_time']
+        persona, expanded_persona, start_time, init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year \
+            = found['persona'], found['expanded_persona'], found['start_time'], found['init_general_personal_history'], found['general_personal_history_next_week'], found['general_personal_history_next_month'], found['general_personal_history_next_year']
         LLM.expanded_persona = expanded_persona
         if not start_time:
             start_time = utils.pick_a_random_time()
@@ -39,8 +40,9 @@ def prepare_persona(LLM, idx_persona, all_personas, args):
         # Expand the persona to at least five sentences
         start_time = utils.pick_a_random_time()
         expanded_persona = LLM.query_llm(step='expand_persona', persona=persona, start_time=start_time, verbose=args['inference']['verbose'])
+        init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year = None, None, None, None
 
-    return persona, expanded_persona, start_time
+    return persona, expanded_persona, start_time, init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year
 
 
 def prepare_topics(idx_topic, all_topics, curr_topic, args):
@@ -72,18 +74,28 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     We define each section in the conversation as a group of lines before the next Side_Note
     """
     def expand_section(LLM, section, last_timestamp):
-        # print('Original section', section, '\n\n')
+        if verbose:
+            print(f'{utils.Colors.OKGREEN}{"Original Section"}:{utils.Colors.ENDC}')
+            print(section)
+
         response = LLM.query_llm(step='expand_conversation_section', topic=topic, data={'section': section, 'last_timestamp': last_timestamp}, verbose=False)
-        # print('Expanded section', response, '\n\n')
         match = re.search(r'```(?:python|plaintext)?\s*(.*?)\s*```', response, re.DOTALL)
         response = match.group(1) if match else response
+        response = response.strip().replace('\n', '')
+        if '=' in response:
+            response = re.sub(r'^\s*\w+\s*=\s*', '', response, count=1).strip()
         if response[-1] != ']':
             response += ']'
+
+        if verbose:
+            print(f'{utils.Colors.OKGREEN}{"Expanded Section"}:{utils.Colors.ENDC}')
+            print(response)
         # response = response.strip("```python").strip("```plaintext").strip()
         # for parser in ast.literal_eval:
         # try:
-        # print('Parsed section', response, '\n\n')
-        return ast.literal_eval(response)
+        print('Parsed section', response, '\n\n')
+        response = ast.literal_eval(response)
+        return response
         # except:
         #     return response
             # continue  # Try the next parser
@@ -95,7 +107,16 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     with_next_sidenote = []
     current_section = []  # To collect strings for the current section
 
-    input_conversation = input_conversation.strip("```python").strip("```plaintext").strip()
+    # print('input_conversation', input_conversation, '\n\n')
+    match = re.search(r'```(?:python|plaintext)?\s*(.*?)\s*```', input_conversation, re.DOTALL)
+    input_conversation = match.group(1) if match else input_conversation
+    input_conversation = input_conversation.strip().replace('\n', '')
+    if '=' in input_conversation:
+        input_conversation = re.sub(r'^\s*\w+\s*=\s*', '', input_conversation, count=1).strip()
+    if input_conversation[-1] != ']':
+        input_conversation += ']'
+    print('parsed input_conversation', input_conversation, '\n\n')
+    # input_conversation = input_conversation.strip("```python").strip("```plaintext").strip()
     input_conversation = ast.literal_eval(input_conversation)
     # print('input_conversation', input_conversation, '\n\n')
 
@@ -104,9 +125,9 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
         if any(line.startswith(keyword) for keyword in keywords):
             # Save the current section (if not empty) and start a new one
             if current_section:
-                # Add the next line containing the next Side_Note, if any, to support smoother transition
-                if idx + 1 < len(input_conversation):
-                    current_section.append(input_conversation[idx + 1])
+                # # Add the next line containing the next Side_Note, if any, to support smoother transition
+                # if idx + 1 < len(input_conversation):
+                #     current_section.append(input_conversation[idx + 1])
                 sections.append(current_section)
                 current_section = []
         # Add the current line to the current section
@@ -121,11 +142,10 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     for idx, section in enumerate(sections):
         # print('section', section, '\n\n')
         expanded_section = expand_section(LLM, section, last_timestamp)
+
         if idx == 0:
             if any(expanded_section[0].startswith(keyword) for keyword in keywords) and not any(section[0].startswith(keyword) for keyword in keywords):
                 expanded_conversation += expanded_section[1:]  # Remove extra side note not existed in the original data, resulting from the prompt template to expand those sections
-        elif idx + 1 < len(sections):
-            expanded_conversation += expanded_section[:-1]  # Do not repetitively add the last line of each section, i.e., the Side_Note in the next section
         else:
             expanded_conversation += expanded_section
 
@@ -175,20 +195,22 @@ def prepare_data_on_writing_topic(LLM, topic, persona, source_data, output_file_
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False)
 
 
-def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args):
+def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
+                                 init_general_personal_history, first_expand_general_personal_history, second_expand_general_personal_history, third_expand_general_personal_history, args):
     # Feed the thread with a seeding data from the real-world conversation
     if source_dir is not None:
         source_conversation = utils.preprocess_source_data(source_data, curr_topic)
         _ = LLM.query_llm(step='source_data', seed=source_conversation, verbose=args['inference']['verbose'])
+    else:
+        _ = LLM.query_llm(step='elaborate_topic', topic=curr_topic, verbose=args['inference']['verbose'])
 
     # Generate general and contextual personal histories across time frames
     steps = ['init_general_personal_history', 'first_expand_general_personal_history', 'second_expand_general_personal_history', 'third_expand_general_personal_history',
              'init_contextual_personal_history', 'first_expand_contextual_personal_history', 'second_expand_contextual_personal_history', 'third_expand_contextual_personal_history']
     data_names = ['Init General Personal History', 'General Personal History Next Week', 'General Personal History Next Month', 'General Personal History Next Year',
                   'Init Contextual Personal History', 'Contextual Personal History Next Week', 'Contextual Personal History Next Month', 'Contextual Personal History Next Year']
-    existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history, 'first_expand_general_personal_history': LLM.first_expand_general_personal_history,
-                                         'second_expand_general_personal_history': LLM.second_expand_general_personal_history,
-                                         'third_expand_general_personal_history': LLM.third_expand_general_personal_history}
+    existing_general_personal_history = {'init_general_personal_history': init_general_personal_history, 'first_expand_general_personal_history': first_expand_general_personal_history,
+                                         'second_expand_general_personal_history': second_expand_general_personal_history, 'third_expand_general_personal_history': third_expand_general_personal_history}
     # steps = ['init_general_personal_history', 'init_contextual_personal_history']
     # data_names = ['Init General Personal History', 'Init Contextual Personal History']
     # existing_general_personal_history = {'init_general_personal_history': LLM.init_general_personal_history}
@@ -197,9 +219,14 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
     for step, data_name in tqdm(zip(steps, data_names)):
         print(f'{utils.Colors.OKGREEN}Processing step: {step}{utils.Colors.ENDC}')
         # Only generate general personal history once, to be shared across multiple topics for the same persona
-        if idx_topic > 0 and step in existing_general_personal_history:
-            utils.append_json_to_file(existing_general_personal_history[step], output_file_path, curr_data_name=data_name, parse_json=True)
-            continue
+        # if idx_topic > 0 and step in existing_general_personal_history:
+        #     utils.append_json_to_file(existing_general_personal_history[step], output_file_path, curr_data_name=data_name, parse_json=True)
+        #     continue
+        if step in existing_general_personal_history:
+            if existing_general_personal_history[step] is not None:
+                # Use existing general personal history shared across multiple topics for the same persona
+                utils.append_json_to_file('```json' + str(existing_general_personal_history[step]) + '```', output_file_path, curr_data_name=data_name, parse_json=True)
+                continue
 
         response = LLM.query_llm(step=step, persona=expanded_persona, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
         utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
@@ -275,7 +302,8 @@ def prepare_data(args):
         all_errored_data_paths = {}
 
         for idx_persona in tqdm(range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas']))):
-            persona, expanded_persona, start_time = prepare_persona(LLM, idx_persona, all_personas, args)
+            persona, expanded_persona, start_time, init_general_personal_history, general_personal_history_next_week, \
+                general_personal_history_next_month, general_personal_history_next_year = prepare_persona(LLM, idx_persona, all_personas, args)
 
             # Clean up the names of topics
             if args['datasets']['topics'] == ['all']:
@@ -315,7 +343,8 @@ def prepare_data(args):
                         """
                         prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
                     else:
-                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path, args)
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
+                                                     init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
                     # except Exception as e:
                     #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
                     #     all_errored_data_paths[output_file_path] = e
