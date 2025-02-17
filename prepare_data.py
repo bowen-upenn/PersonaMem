@@ -86,6 +86,8 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
             response = re.sub(r'^\s*\w+\s*=\s*', '', response, count=1).strip()
         if response[-1] != ']':
             response += ']'
+        if response[-2] != '"' and response[-3] == '"':
+            response = response[:-3] + '"]'
 
         if verbose:
             print(f'{utils.Colors.OKGREEN}{"Expanded Section"}:{utils.Colors.ENDC}')
@@ -93,7 +95,8 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
         # response = response.strip("```python").strip("```plaintext").strip()
         # for parser in ast.literal_eval:
         # try:
-        print('Parsed section', response, '\n\n')
+        if verbose:
+            print('Parsed section', response, '\n\n')
         response = ast.literal_eval(response)
         return response
         # except:
@@ -115,7 +118,8 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
         input_conversation = re.sub(r'^\s*\w+\s*=\s*', '', input_conversation, count=1).strip()
     if input_conversation[-1] != ']':
         input_conversation += ']'
-    print('parsed input_conversation', input_conversation, '\n\n')
+    if verbose:
+        print('parsed input_conversation', input_conversation, '\n\n')
     # input_conversation = input_conversation.strip("```python").strip("```plaintext").strip()
     input_conversation = ast.literal_eval(input_conversation)
     # print('input_conversation', input_conversation, '\n\n')
@@ -335,19 +339,19 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    # try:
-                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                        """
-                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                        """
-                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                    else:
-                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
-                                                     init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
-                    # except Exception as e:
-                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                    #     all_errored_data_paths[output_file_path] = e
+                    try:
+                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                            """
+                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                            """
+                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                        else:
+                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
+                                                         init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
+                    except Exception as e:
+                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                        all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 

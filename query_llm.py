@@ -213,6 +213,7 @@ class QueryLLM:
                     if step == 'new_content':
                         print(f'{utils.Colors.OKGREEN}{action.capitalize()}:{utils.Colors.ENDC} {response}')
                     else:
+                        print(f'{utils.Colors.OKGREEN}{topic}{utils.Colors.ENDC}' if topic else '')
                         print(f'{utils.Colors.OKGREEN}{step.capitalize()}:{utils.Colors.ENDC} {response}')
             else:
                 response = None
