@@ -18,6 +18,7 @@ import utils
 def prepare_persona(LLM, idx_persona, all_personas, args):
     # Load a random persona
     found = utils.find_existing_persona_files(idx_persona)
+    found = False
     if found:
         # Ensure that every data file with the same idx_persona share the same persona
         persona, expanded_persona, start_time, init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year \

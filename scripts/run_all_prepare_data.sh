@@ -8,7 +8,7 @@ for idx_persona in $idx_personas; do
         # Construct the command
         command="python prepare_data.py --model gpt-4o \
                  --topics familyRelations \
-                 --n_persona ${idx_persona} --n_samples 1 --s_persona 0 --s_samples 0"
+                 --n_persona ${idx_persona} --n_samples 1 --s_persona 0 --s_samples 0 --verbose"
 
         # Print the command for debugging/logging purposes
         echo "$command"

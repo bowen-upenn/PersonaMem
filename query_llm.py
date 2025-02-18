@@ -221,18 +221,20 @@ class QueryLLM:
 
         # Save general personal history to be shared across contexts
         if idx_topic == 0:
-            # if step == 'init_general_personal_history':
-            #     self.general_personal_history = response
-            #     self.init_general_personal_history = response
-            # elif step == 'first_expand_general_personal_history':
-            #     self.general_personal_history += response
-            #     self.first_expand_general_personal_history = response
-            # elif step == 'second_expand_general_personal_history':
-            #     self.general_personal_history += response
-            #     self.second_expand_general_personal_history = response
-            # elif step == 'third_expand_general_personal_history':
-            #     self.general_personal_history += response
-            #     self.third_expand_general_personal_history = response
+            # pattern = r'^\s*"\[(Fact|Updated Fact)\] (Likes|Dislikes)":.*$'
+            # processed_response = "\n".join([line for line in response.split("\n") if not re.match(pattern, line)])
+            if step == 'init_general_personal_history':
+                self.general_personal_history = response
+                # self.init_general_personal_history = response
+            elif step == 'first_expand_general_personal_history':
+                self.general_personal_history += response
+                # self.first_expand_general_personal_history = response
+            elif step == 'second_expand_general_personal_history':
+                self.general_personal_history += response
+                # self.second_expand_general_personal_history = response
+            elif step == 'third_expand_general_personal_history':
+                self.general_personal_history += response
+                # self.third_expand_general_personal_history = response
             if step == 'expand_persona':
                 self.expanded_persona = response
 

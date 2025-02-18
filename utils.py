@@ -168,6 +168,11 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     # Load the existing JSON data from the file (if any)
     existing_json_file = load_existing_json(output_file_path)
 
+    if curr_data_name == 'Init Contextual Personal History':
+        match = re.split(r'```json', response, maxsplit=1)
+        likes_and_dislikes = match[0].strip() if match else ""
+        existing_json_file['Likes and Dislikes'] = likes_and_dislikes
+
     # Extract and append the new JSON data
     parsed_response = extract_json_from_response(response, parse_json, parse_list)
     existing_json_file[curr_data_name] = parsed_response
