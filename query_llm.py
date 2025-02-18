@@ -118,11 +118,11 @@ class QueryLLM:
         elif step == 'init_contextual_personal_history':
             prompt = prompts.prompts_for_init_contextual_personal_history(topic, start_time, self.expanded_persona, self.general_personal_history)
         elif step == 'first_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='WEEK')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='WEEK')
         elif step == 'second_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='MONTH')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='MONTH')
         elif step == 'third_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='YEAR')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='YEAR')
 
         # A separate thread to populate personal histories into conversations
         elif step == 'init_conversation':

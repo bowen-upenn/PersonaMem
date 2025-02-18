@@ -53,14 +53,18 @@ def prompts_for_init_general_personal_history(persona, start_time):
 
 def prompts_for_init_contextual_personal_history(topic, start_time, persona, general_personal_history):
     prompt = "Here is the persona:\n\n" + persona + "\n\nHere are some events related to the person's general background history:\n\n" + general_personal_history + "\n\n" \
-             "Given the persona above, please list 10 unique personal hobbies and 10 things this person dislikes but others might still like, using bullet points, related to " + topic + ". " \
+             "Given the persona above, please first list 20 hobbies related to " + topic + ". Next, please randomly assign 10 of them to the likes of this person, and remaining 10 to the dislikes of this person. " \
+             "Make sure every hobby, regardless of whether it is a like or dislike, is unique and attractive in common, so that the exact dislikes can potentially be turned into likes in the future." \
+             "please list 10 unique personal hobbies and 10 things this person dislikes but others might still like, using bullet points, related to " + topic + ". " \
              "Next, write 10 more events related to the topic of " + topic + ". Think about how this person's general background history may affect their events under " + topic + \
              "Include all these 20 new things this person likes and dislikes, and rewrite them as appropriate events." \
              "Do NOT mention anything already mentioned above. Do NOT mention anything about the general personal history, like the professional development. " \
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:' closely associated with the 20 things you listed here, and they should concentrate on the topic of " + topic + \
+             "If an event is related to a dislike, it should show that this person dislikes it after experienced it or the person is trying to avoid it. " \
              "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
-             "Here is the template you should follow to list those 20 things this person likes or dislikes:\n\n" \
-             "[1] Likes xxx\n" \
+             "List all 20 hobbies first, and then follow this template to randomly assign those 20 hobbies into likes or dislikes for this person:\n\n" \
+             "20 hobbies: xxx, ..., xxx\n" \
+             "Initial preferences randomly assigned: [1] Likes xxx\n" \
              "[2] Likes xxx\n" \
              "[3] Likes xxx\n" \
              "[4] Likes xxx\n" \
@@ -103,26 +107,49 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
               "Try finding some very unique and personal reasons for this person, uncommon for the general public, that trigger the change. " \
               "Please also use the following keys, and do NOT modify the name of these keys:\n\n" \
               "The key '[Old Event]' to mention the related old event contradictory to it, the key '[Old Event Date]' to mention its timestamp MM/DD/YYYY, " \
-              "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n" \
-              "Any contradictions should focus on what this person prefers and dislikes. " \
+              "If this is a new event without contradiction with previous ones, marked related personal hobbies or dislikes using the key '[Fact] Likes:' or '[Fact] Dislikes:', but do NOT include the '[Reasons of Change]' key.\n\n"
+    if type == 'contextual':
+        prompt += "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the previous like or dislike of this peron related to this event." \
+                  "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the OPPOSITE to its corresponding '[Old Fact] Likes' or '[Old Fact] Dislikes'."
+    prompt += "Any contradictions should focus on what this person prefers and dislikes. " \
               "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
               "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
               "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
 
-    prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
-              '"MM/DD/YYYY": {\n' \
+    if type == 'general':
+        prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
+                  '"MM/DD/YYYY": {\n' \
                   '"Event": xxx, \n' \
                   '"Category": "Short-Term" OR "Long-Term"\n' \
-              "}, \n\n" \
-              "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
-              "'MM/DD/YYYY': {\n" \
-                  '"Event": xxx, \n' \
-                  '"Category": "Short-Term" OR "Long-Term"\n' \
-                  '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!) \n' \
+                  "}, \n\n" \
+                  "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
+                  "'MM/DD/YYYY': {\n" \
+                      '"Event": xxx, \n' \
+                      '"Category": "Short-Term" OR "Long-Term"\n' \
+                      '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!) \n' \
+                      '"[Old Event Date]": MM/DD/YYYY, \n' \
+                      '"[Old Event]": xxx, \n' \
+                  "}\n" \
+                  "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    else:
+        prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
+                  '"MM/DD/YYYY": {\n' \
+                      '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
+                      '"Event": xxx, \n' \
+                      '"Category": "Short-Term" OR "Long-Term"\n' \
+                  "}, \n\n" \
+                  "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
+                  "'MM/DD/YYYY': {\n" \
+                  '"[Old Fact] Likes" OR "[Old Fact] Dislikes": xxx, \n' \
                   '"[Old Event Date]": MM/DD/YYYY, \n' \
                   '"[Old Event]": xxx, \n' \
-              "}\n" \
-              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                  '"[Updated Fact] Likes" OR "[Updated Fact] Dislikes": xxx, \n' \
+                  '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!) \n' \
+                  '"Event": xxx, \n' \
+                  '"Category": "Short-Term" OR "Long-Term"\n' \
+                  "}\n" \
+                  "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+
     # "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
     # "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the OPPOSITE to its corresponding '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
     # '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
