@@ -124,8 +124,14 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
     conversation = last_two_details[1]['Conversation']
     conversation = list(conversation.split('\n'))
     user_utterance = conversation[-2]
+    if "[Fact] Likes" in last_two_details[1] or "[Fact] Dislikes" in last_two_details[1]:
+        related_fact = last_two_details[1]['[Fact] Likes'] if "[Fact] Likes" in last_two_details[1] else last_two_details[1]['[Fact] Dislikes']
+    elif "[Updated Fact] Likes" in last_two_details[1] or "[Updated Fact] Dislikes" in last_two_details[1]:
+        related_fact = last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else last_two_details[1]['[Updated Fact] Dislikes']
+    else:
+        return qa_entries
 
-    response = LLM.query_llm(step='qa_helper', data={'event': user_utterance}, action='recall_facts', verbose=False)
+    response = LLM.query_llm(step='qa_helper', data={'user_utterance': user_utterance, 'related_fact': related_fact}, action='recall_facts', verbose=False)
     response = utils.process_json_from_api(response)
     question = response.get("User Question", "")
     correct_answer = response.get("Model Response", "")
@@ -141,7 +147,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "factual",
+        "Type": "recalling_facts_mentioned_by_the_user",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
@@ -170,7 +176,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
             "Question": question,
             "Correct_Answer": correct_answer,
             "Incorrect_Answers": incorrect_answers,
-            "Type": "factual_inverse",
+            "Type": "identifying_new_things_not_mentioned_by_the_user.",
             "Topic": topic,
             "Reference": last_two_details[1],
             "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
@@ -212,12 +218,15 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Event": last_two_details[1]["Event"],
         "[Reasons of Change]": last_two_details[1]["[Reasons of Change]"],
     }
-    if "[Updated Fact] Likes" in last_two_details[1]:
-        related_event["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
-        related_event["[Old Fact] Dislikes"] = last_two_details[1]["[Old Fact] Dislikes"]
-    else:
-        related_event["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
-        related_event["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"]
+    try:
+        if "[Updated Fact] Likes" in last_two_details[1]:
+            related_event["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
+            related_event["[Old Fact] Dislikes"] = last_two_details[1]["[Old Fact] Dislikes"]
+        else:
+            related_event["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
+            related_event["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"]
+    except:
+        return qa_entries
 
     # This Q&A will be asked immediately before the last event
     response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
@@ -237,7 +246,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "reasons_of_change_generalization",
+        "Type": "generalizing_past_reasons_in_memory_to_new_scenarios",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
@@ -259,7 +268,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "reasons_of_change_after_new_updates",
+        "Type": "recalling_the_reasons_behind_previous_updates.",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
@@ -340,7 +349,7 @@ def generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=False):
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "sequence_of_updates",
+        "Type": "tracking_the_full_sequence_of_preference_updates",
         "Topic": topic,
         "Reference": event_history,
         "Where": last_event["Conversation"].split('\n')[-2]  # insert this question before this place, -2 since the question already includes the user's utterance
@@ -380,10 +389,13 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         last_two_details.insert(0, None)    # No more recent event
 
     if parent_object is None:
+        # try:
         if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
             data = last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else last_two_details[1]['[Fact] Likes']
         else:
             data = last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else last_two_details[1]['[Fact] Dislikes']
+        # except:
+        #     return None
         response = LLM.query_llm(step='qa_helper', data=data, action='extract_object', verbose=False)
         response = utils.process_json_from_api(response)
         parent_object = response.get("parent_object", "")
@@ -422,7 +434,7 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "recommendation",
+        "Type": "recommendation_aligned_with_users_latest_preferences.",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
@@ -457,7 +469,7 @@ def qa_generative(LLM, curr_data, verbose=False):
         "Violated_new_writing_styles": violated_writing_styles,
         "Aligned_results": aligned_results,
         "Violated_results": violated_results,
-        "Type": "new_content_generative",
+        "Type": "crafting_new_writing_samples_aligned_with_users_preferences",
         "Topic": "writing",
         "Reference": preferences,
     }
@@ -473,11 +485,20 @@ def qa_generative(LLM, curr_data, verbose=False):
 
 def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose=False):
     # Load a random creative writing sample
-    source_data = utils.load_one_source_data(source_dir, all_source_files, topic='writing')
+    if 'writing' in data_path:
+        topic = 'writing'
+    elif 'coding' in data_path:
+        topic = 'coding'
+    elif 'email' in data_path:
+        topic = 'email'
+    else:
+        raise ValueError("Invalid topic")
+
+    source_data = utils.load_one_source_data(source_dir, all_source_files, topic=topic)
 
     # Load personas from the current file and three other random files
     assert len(all_writing_files) >= 4, "There should be at least 3 writing samples for comparison"
-    all_data_paths = random.sample(['./data/output/writing/'+another_path for another_path in all_writing_files
+    all_data_paths = random.sample(['./data/output/'+topic+'/'+another_path for another_path in all_writing_files
                                     if another_path != data_path and another_path.rsplit('_', 1)[-2] != data_path.rsplit('_', 1)[-2]], 3)
     all_data_paths = [data_path] + all_data_paths   # The first one will be the correct answer
 
@@ -487,17 +508,23 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
         with open(curr_data_path, "r", encoding="utf-8") as f:
             curr_data = json.load(f)
 
-        new_writing_samples.append(LLM.query_llm(step='new_content', data={'persona': curr_data.get('Expanded Persona'), 'preferences': curr_data.get('Writing and Formatting Styles'), 'source_data': source_data},
+        if topic == 'writing' or topic == 'email':
+            preference = curr_data.get('Writing and Formatting Styles')
+        elif topic == 'coding':
+            preference = curr_data.get('Coding and Formatting Styles')
+        else:
+            raise ValueError("Invalid topic")
+        new_writing_samples.append(LLM.query_llm(step='new_content', data={'topic': topic, 'persona': curr_data.get('Expanded Persona'), 'preferences': preference, 'source_data': source_data},
                                                  action='write_new_sample_oracle', verbose=False))
         if i == 0:
-            persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + curr_data.get('Writing and Formatting Styles')
+            persona = curr_data.get('Expanded Persona') + '\n\nWriting and Formatting Styles:\n\n' + preference
 
     qa_entry = {
         "Question": "Which of the following writing samples best aligns with the writer's persona above?",
         "Correct_Answer": new_writing_samples[0],
         "Incorrect_Answers": new_writing_samples[1:],
-        "Type": "new_content_discriminative",
-        "Topic": "writing",
+        "Type": "discriminating_new_writing_samples_aligned_with_users_preferences",
+        "Topic": topic,
         "Reference": persona,
     }
 
@@ -515,18 +542,26 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
     all_qa_entries = []
 
     # # Generative type of QA
-    # qa_entry = qa_generative(LLM, data, verbose)
-    # all_qa_entries.extend([qa_entry])
+    # try:
+    #     qa_entry = qa_generative(LLM, data, verbose)
+    #     all_qa_entries.extend([qa_entry])
+    # except Exception as e:
+    #     print(f'{utils.Colors.FAIL}Error generating Q&A for generative type{utils.Colors.ENDC}{e}')
 
     # Discriminative type of QA
-    qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
-    all_qa_entries.extend([qa_entry])
+    # try:
+    for i in range(10):
+        print(f'{utils.Colors.OKGREEN}Generating Q&A No. {i}{utils.Colors.ENDC}')
+        qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
+        all_qa_entries.extend([qa_entry])
+    # except Exception as e:
+    #     print(f'{utils.Colors.FAIL}Error generating Q&A for discriminative type{utils.Colors.ENDC}{e}')
 
     # Save all Q&A entries to the JSON file at data_path
-    if "Q&A" not in data:
-        data["Q&A"] = {'Conversation': all_qa_entries}
-    else:
-        data["Q&A"]['Conversation'].extend(all_qa_entries)
+    # if "Q&A" not in data:
+    data["Q&A"] = {'Conversation': all_qa_entries}
+    # else:
+    #     data["Q&A"]['Conversation'].extend(all_qa_entries)
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
@@ -542,11 +577,16 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     # Remove old Q&A entries if they exist
     if "Q&A" in data:
         if conversation_key in data["Q&A"]:
+
+            # user_input = input("Are you sure to remove existing Q&As (y/n): ").strip().lower()
+            # if user_input == 'y':
             del data["Q&A"][conversation_key]
             # Write the updated data back to the file
             with open(data_path, 'w') as file:
                 json.dump(data, file, indent=4)
             print(f'{utils.Colors.WARNING}Removed old Q&As from the JSON file.{utils.Colors.ENDC}')
+            # else:
+            #     print("Skipping cleanup.")
 
     match = re.search(r'/([^/]+)/conversation_', data_path)
     topic = match.group(1)
@@ -557,17 +597,23 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     side_notes = extract_side_notes_with_timestamps(conversation)
 
     previous_personal_histories = {
-        "Init Conversation": ["Init General Personal History", "Init Contextual Personal History"],
-        "Conversation Next Week": ["Init General Personal History", "General Personal History Next Week",
-                                   "Init Contextual Personal History", "Contextual Personal History Next Week"],
-        "Conversation Next Month": ["Init General Personal History", "General Personal History Next Week",
-                                    "General Personal History Next Month",
-                                    "Init Contextual Personal History", "Contextual Personal History Next Week",
+        "Init Conversation": ["Init Contextual Personal History"],
+        "Conversation Next Week": ["Init Contextual Personal History", "Contextual Personal History Next Week"],
+        "Conversation Next Month": ["Init Contextual Personal History", "Contextual Personal History Next Week",
                                     "Contextual Personal History Next Month"],
-        "Conversation Next Year": ["Init General Personal History", "General Personal History Next Week",
-                                   "General Personal History Next Month", "General Personal History Next Year",
-                                   "Init Contextual Personal History", "Contextual Personal History Next Week",
+        "Conversation Next Year": ["Init Contextual Personal History", "Contextual Personal History Next Week",
                                    "Contextual Personal History Next Month", "Contextual Personal History Next Year"]
+        # "Init Conversation": ["Init General Personal History", "Init Contextual Personal History"],
+        # "Conversation Next Week": ["Init General Personal History", "General Personal History Next Week",
+        #                            "Init Contextual Personal History", "Contextual Personal History Next Week"],
+        # "Conversation Next Month": ["Init General Personal History", "General Personal History Next Week",
+        #                             "General Personal History Next Month",
+        #                             "Init Contextual Personal History", "Contextual Personal History Next Week",
+        #                             "Contextual Personal History Next Month"],
+        # "Conversation Next Year": ["Init General Personal History", "General Personal History Next Week",
+        #                            "General Personal History Next Month", "General Personal History Next Year",
+        #                            "Init Contextual Personal History", "Contextual Personal History Next Week",
+        #                            "Contextual Personal History Next Month", "Contextual Personal History Next Year"]
     }
     previous_conversations = {
         "Init Conversation": ["Init Conversation"],
@@ -603,6 +649,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
     for timestamp, side_note in side_notes:
         # Find related data in the previous personal history for each current event
         related_data = find_related_data(timestamp, previous_history_blocks)
+        # print('related_data', related_data)
         if not related_data:
             continue
 
@@ -613,49 +660,54 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             corresponding_data = related_data[0]
 
         event_history = trace_event_history(timestamp, previous_history_blocks, previous_conversation_blocks, verbose=(action=='view_graphs'))
+        # print('event_history', event_history)
 
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                try:
-                    qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                    if qa_entry:
-                        all_qa_entries.extend([qa_entry])
-                except Exception as e:
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
-                # qa_entries = generate_qa_personalized_response(LLM, topic, event_history, verbose=verbose)
-                # all_qa_entries.extend(qa_entries)
-        else:
-            try:
-                qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
+                # try:
+                qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
-            except Exception as e:
-                print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-            try:
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                # try:
+                qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
+                if len(qa_entries) > 0:
+                    all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
+                # try:
+                qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
+                if len(qa_entries) > 0:
+                    all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                # try:
                 qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
                 if qa_entry:
                     all_qa_entries.extend([qa_entry])
-            except Exception as e:
-                print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_personalized_response(LLM, topic, event_history, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for personalized response{utils.Colors.ENDC}{e}')
+        else:
+            # try:
+            qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
+            if len(qa_entries) > 0:
+                all_qa_entries.extend(qa_entries)
+            # except Exception as e:
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+            # try:
+            qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+            if qa_entry:
+                all_qa_entries.extend([qa_entry])
+            # except Exception as e:
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:
@@ -714,10 +766,22 @@ if __name__ == "__main__":
         raise ValueError("Invalid time", cmd_args.time)
 
     # try:
-    if 'writing' in data_path:
-        source_dir = args['datasets']['writing_source_dir']
-        all_source_files = utils.load_all_source_data(source_dir, 'writing')
-        all_writing_files = utils.load_all_writing_data()
+    if 'writing' in data_path or 'coding' in data_path or 'email' in data_path:
+        if 'writing' in data_path:
+            source_dir = args['datasets']['writing_source_dir']
+            all_source_files = utils.load_all_source_data(source_dir, 'writing')
+            all_writing_files = utils.load_all_writing_data('writing')
+        elif 'coding' in data_path:
+            source_dir = args['datasets']['coding_source_dir']
+            all_source_files = utils.load_all_source_data(source_dir, 'coding')
+            all_writing_files = utils.load_all_writing_data('coding')
+        elif 'email' in data_path:
+            source_dir = args['datasets']['email_source_dir']
+            all_source_files = utils.load_all_source_data(source_dir, 'email')
+            all_writing_files = utils.load_all_writing_data('email')
+        else:
+            raise ValueError("Invalid topic")
+
         evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
     else:
         SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')

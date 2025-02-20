@@ -990,9 +990,20 @@ def prompt_for_content_generation(data, action):
                  "You have written a paragraph that aligns with the personas. Next, given the same conversation, please write a new creative writing paragraph of at most 5 sentences that, on-purposely, violates the personas, likes, and dislikes in writing and formatting styles." \
                  "You should simply output the new paragraph as a string. No other words."
     elif action == 'write_new_sample_oracle':
-        prompt = "The writer's persona:\n\n" + data['persona'] + "\n\nand the likes and dislikes in writing and formatting styles:\n\n" + data['preferences'] + "\n\n" \
-                 "Given the information above about the writer, your task is to write a new creative writing paragraph of at most 5 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
-                 "You should simply output the new paragraph as a string. No other words."
+        if data['topic'] == 'writing':
+            prompt = "The writer's persona:\n\n" + data['persona'] + "\n\nand the likes and dislikes in writing and formatting styles:\n\n" + data['preferences'] + "\n\n" \
+                     "Given the information above about the writer, your task is to write a new creative writing paragraph of at least 10 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
+                     "You should simply output the new paragraph as a string. No other words."
+        elif data['topic'] == 'coding':
+            prompt = "The programmer's persona:\n\n" + data['persona'] + "\n\nand the likes and dislikes in coding and formatting styles:\n\n" + data['preferences'] + "\n\n" \
+                     "Given the information above about the programmer, your task is to write a new piece of Python code that directly and explicitly aligns with the personas, likes, and dislikes in coding and formatting styles." \
+                     "You should simply output the new code formatted with triple backticks and python. No other words."
+        elif data['topic'] == 'email':
+            prompt = "The email writer's persona:\n\n" + data['persona'] + "\n\nand the likes and dislikes in writing and formatting styles:\n\n" + data['preferences'] + "\n\n" \
+                     "Given the information above about the email writer, your task is to write a new email of at least 10 sentences that directly and explicitly aligns with the personas, likes, and dislikes in writing and formatting styles." \
+                     "You should simply output the new email as a string. No other words."
+        else:
+            raise ValueError("Invalid topic", data['topic'])
     else:
         raise ValueError("Invalid action", action)
     return prompt

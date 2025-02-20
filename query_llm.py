@@ -159,7 +159,8 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code' or step == 'rewrite_email' or step == 'rewrite_creative_writing':
+        if (step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code'
+                or step == 'rewrite_email' or step == 'rewrite_creative_writing' or step == 'new_content'):
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
             response = self.client.chat.completions.create(
                 model=model,
@@ -178,8 +179,8 @@ class QueryLLM:
                 curr_thread = self.thread_reflect_conversation
             elif step == 'prepare_new_content':
                 curr_thread = self.thread_preparing_new_content
-            elif step == 'new_content':
-                curr_thread = self.thread_new_content
+            # elif step == 'new_content':
+            #     curr_thread = self.thread_new_content
             elif step == 'eval_new_content':
                 curr_thread = self.thread_eval_new_content
             elif step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':

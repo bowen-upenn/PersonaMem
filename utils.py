@@ -285,10 +285,10 @@ def clean_raw_writing_data(source_file, output_file):
         print(f"An unexpected error occurred: {e}")
 
 
-def load_all_writing_data():
-    directory_path = "data/output/writing/"
+def load_all_writing_data(topic):
+    directory_path = os.path.join("./data/output", topic)
     writing_data_files = [
-        filename for filename in os.listdir(directory_path) if "writing" in filename
+        filename for filename in os.listdir(directory_path) if topic in filename
     ]
     return writing_data_files
 
