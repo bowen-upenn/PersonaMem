@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
         # Process each chosen conversation block
         processed_blocks_dict = {}
-        all_strings = []
+        # all_strings = []
         new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
         for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
@@ -297,6 +297,18 @@ if __name__ == "__main__":
                     original_sample = data.get("Original Sample")
                     updated_sample = data.get("Updated Writing Sample")
                 new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
+            elif topic == 'email':
+                with open(os.path.join(args['inference']['output_dir'], 'email', file_name), 'r') as file:
+                    data = json.load(file)
+                    original_sample = data.get("Original Sample")
+                    updated_sample = data.get("Updated Writing Sample")
+                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
+            elif topic == 'coding':
+                with open(os.path.join(args['inference']['output_dir'], 'coding', file_name), 'r') as file:
+                    data = json.load(file)
+                    original_sample = data.get("Original Sample")
+                    updated_sample = data.get("Updated Coding Sample")
+                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
 
             processed_blocks_dict[latest_ts] = {
                 "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
@@ -306,99 +318,102 @@ if __name__ == "__main__":
                 "topic": topic,
                 "qa": qa
             }
-            all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
+            # all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
 
         # Topological sort chosen conversation blocks by the latest timestamp
-        sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, all_strings, new_content_samples, verbose)
+        variants = topological_sort(processed_blocks_dict, new_content_samples, num_variants=1, verbose=verbose)
+        for variant in variants:
+            sorted_processed_blocks, sorted_new_content_samples = variant
 
-        # Concatenate all conversation blocks
-        all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, all_irrelevant_contexts, verbose)
+            # Concatenate all conversation blocks
+            all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, all_irrelevant_contexts, verbose)
 
-        # Reiterate through all qa after block concatenations to add the distance information
-        total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
-        if verbose:
-            print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
-        all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
+            # Reiterate through all qa after block concatenations to add the distance information
+            # total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
+            total_num_tokens = count_tokens(" ".join(item['content'] for item in all_conversations), tokenizer, verbose=False)
+            if verbose:
+                print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
+            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens)
 
-        # Show all Q&As related to this concatenated conversation
-        for curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length in tqdm(question_loader(all_qa), total=len(all_qa)):
-            # Generate a random unique ID for the question
-            question_id = str(uuid.uuid4())  # Generate a random unique ID
+            # Show all Q&As related to this concatenated conversation
+            for curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length in tqdm(question_loader(all_qa), total=len(all_qa)):
+                # Generate a random unique ID for the question
+                question_id = str(uuid.uuid4())  # Generate a random unique ID
 
-            if save_only:
-                curr_qa_info = {
-                    "question_id": question_id,
-                    "question": question,
-                    "correct_answer": correct_answer,
-                    "all_options": all_options,
-                    "distance_blocks": distance_blocks,
-                    "distance_tokens": distance_tokens,
-                    "question_type": question_type,
-                    "topic": topic,
-                    "context_length": context_length
-                }
-                # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-                save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
-                save_questions_to_csv(curr_qa_info, "data/questions.csv")
-
-            else:
-                predicted_answer = evaluation.query_llm(curr_context, formatted_question, which_format)
-                match = evaluate_answer(predicted_answer, correct_answer)
-
-                if verbose:
-                    print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
-                    print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
-                    if match:
-                        print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
-                    else:
-                        print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
-
-                """
-                (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
-                (2) Save results based on the question types
-                (3) Save results based on the conversation contexts
-                (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
-                """
-                keys = [distance_blocks, distance_tokens, question_type, context]
-                for key in keys:
-                    if key == distance_blocks:
-                        key = f"distance_blocks_{key}"
-                    if key == distance_tokens:
-                        key = f"distance_tokens_{key}"
-                    if key not in results:
-                        results[key] = {"correct": 0, "total": 0}
-                    else:
-                        results[key]["total"] += 1
-                        if match:
-                            results[key]["correct"] += 1
-
-                full_results.append({
+                if save_only:
+                    curr_qa_info = {
                         "question_id": question_id,
-                        "question": formatted_question,
+                        "question": question,
                         "correct_answer": correct_answer,
                         "all_options": all_options,
-                        "predicted_answer": predicted_answer,
-                        "match": match,
                         "distance_blocks": distance_blocks,
                         "distance_tokens": distance_tokens,
                         "question_type": question_type,
-                        "topic": topic
+                        "topic": topic,
+                        "context_length": context_length
                     }
-                )
+                    # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
+                    save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
+                    save_questions_to_csv(curr_qa_info, "data/questions.csv")
 
-        if not save_only:
-            # Calculate the percentage of the results
-            for key in results:
-                results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
-            print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
-            for key in results:
-                print(f'{key}: {results[key]["accuracy"]:.2f}%')
+                else:
+                    predicted_answer = evaluation.query_llm(curr_context, formatted_question, which_format)
+                    match = evaluate_answer(predicted_answer, correct_answer)
 
-            # Save evaluation results to a JSON file.
-            with open(output_file_path, "w") as json_file:
-                json.dump(results, json_file, indent=4)
+                    if verbose:
+                        print(f'{utils.Colors.OKGREEN}{"Correct answer"}:{utils.Colors.ENDC}{correct_answer}')
+                        print(f'{utils.Colors.OKGREEN}{"Predicted answer"}:{utils.Colors.ENDC}{predicted_answer}')
+                        if match:
+                            print(f'{utils.Colors.OKBLUE}{"Correct"}{utils.Colors.ENDC}')
+                        else:
+                            print(f'{utils.Colors.FAIL}{"Incorrect"}{utils.Colors.ENDC}')
 
-            full_results.append({"all_conversations": all_conversations})
-            with open(output_file_path_full_results, "w") as json_file:
-                json.dump(full_results, json_file, indent=4)
-         
+                    """
+                    (1) Save evaluation results based on the distances from the question being asked at the end to the sourced conversation block
+                    (2) Save results based on the question types
+                    (3) Save results based on the conversation contexts
+                    (4) Evaluation with long contexts is expensive, so we also save full results for further analysis
+                    """
+                    keys = [distance_blocks, distance_tokens, question_type, context]
+                    for key in keys:
+                        if key == distance_blocks:
+                            key = f"distance_blocks_{key}"
+                        if key == distance_tokens:
+                            key = f"distance_tokens_{key}"
+                        if key not in results:
+                            results[key] = {"correct": 0, "total": 0}
+                        else:
+                            results[key]["total"] += 1
+                            if match:
+                                results[key]["correct"] += 1
+
+                    full_results.append({
+                            "question_id": question_id,
+                            "question": formatted_question,
+                            "correct_answer": correct_answer,
+                            "all_options": all_options,
+                            "predicted_answer": predicted_answer,
+                            "match": match,
+                            "distance_blocks": distance_blocks,
+                            "distance_tokens": distance_tokens,
+                            "question_type": question_type,
+                            "topic": topic
+                        }
+                    )
+
+            if not save_only:
+                # Calculate the percentage of the results
+                for key in results:
+                    results[key]["accuracy"] = results[key]["correct"] / results[key]["total"] * 100 if results[key]["total"] > 0 else 0
+                print(f'{utils.Colors.OKGREEN}{"Final Results"}:{utils.Colors.ENDC}')
+                for key in results:
+                    print(f'{key}: {results[key]["accuracy"]:.2f}%')
+
+                # Save evaluation results to a JSON file.
+                with open(output_file_path, "w") as json_file:
+                    json.dump(results, json_file, indent=4)
+
+                full_results.append({"all_conversations": all_conversations})
+                with open(output_file_path_full_results, "w") as json_file:
+                    json.dump(full_results, json_file, indent=4)
+
