@@ -1,5 +1,6 @@
 import torch
 import random
+from pydantic import BaseModel
 
 
 def prompts_for_background_data(content):
@@ -24,8 +25,6 @@ def prompts_for_expanding_persona(persona, start_time):
     prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. " \
              "Add a name, a gender identity of " + gender_identity + ", and a racial identity of " + racial_identity + ", if any of them is missing from the initial version." \
              "Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
-             # "You should also include 5 personal hobbies and 5 things this person dislikes, using bullet points, all related to the persona. "\
-             # "List things this person may dislike, but avoid negative wording. Focus on things others might like that don’t match this person’s taste. " \
     return prompt
 
 
@@ -46,8 +45,24 @@ def prompts_for_init_general_personal_history(persona, start_time):
                 "}, \n\n" \
              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format." \
              "Here is the persona: " + persona
-             #'"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
-             # "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:'." \
+
+    # schema = {
+    #     "type": "object",
+    #     "patternProperties": {
+    #         "^\\d{2}/\\d{2}/\\d{4}$": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "Event": {"type": "string"},
+    #                 "Category": {"type": "string", "enum": ["Short-Term", "Long-Term"]}
+    #             },
+    #             "required": ["Event", "Category"],
+    #             "additionalProperties": False
+    #         }
+    #     },
+    #     "minProperties": 10,
+    #     "additionalProperties": False
+    # }
+
     return prompt
 
 
@@ -91,6 +106,90 @@ def prompts_for_init_contextual_personal_history(topic, start_time, persona, gen
                     '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
                 "}, \n\n" \
              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format."
+
+    # schema = {
+    #     "title": "ContextualPersonalHistory",
+    #     "description": "Structured output for generating a persona's hobbies, preferences, and related events.",
+    #     "type": "object",
+    #     "properties": {
+    #         "Hobbies": {
+    #             "type": "array",
+    #             "minItems": 20,
+    #             "maxItems": 20,
+    #             "items": {
+    #                 "type": "string"
+    #             },
+    #             "description": "List of 20 hobbies related to the topic."
+    #         },
+    #         "Preferences": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "Likes": {
+    #                     "type": "array",
+    #                     "minItems": 10,
+    #                     "maxItems": 10,
+    #                     "items": {
+    #                         "type": "string"
+    #                     },
+    #                     "description": "10 hobbies that the persona likes, randomly selected from the 20 hobbies."
+    #                 },
+    #                 "Dislikes": {
+    #                     "type": "array",
+    #                     "minItems": 10,
+    #                     "maxItems": 10,
+    #                     "items": {
+    #                         "type": "string"
+    #                     },
+    #                     "description": "10 hobbies that the persona dislikes, randomly selected from the 20 hobbies."
+    #                 }
+    #             },
+    #             "required": ["Likes", "Dislikes"],
+    #             "description": "Randomly assigned preferences for the persona."
+    #         },
+    #         "Events": {
+    #             "type": "object",
+    #             "minProperties": 20,
+    #             "patternProperties": {
+    #                 "^\\d{2}/\\d{2}/\\d{4}$": {
+    #                     "type": "object",
+    #                     "properties": {
+    #                         "Event": {
+    #                             "type": "string",
+    #                             "description": "A short description of the event."
+    #                         },
+    #                         "Category": {
+    #                             "type": "string",
+    #                             "enum": ["Short-Term", "Long-Term"],
+    #                             "description": "Indicates whether the event is a short-term occurrence or a long-term milestone."
+    #                         },
+    #                         "Fact": {
+    #                             "type": "object",
+    #                             "properties": {
+    #                                 "Type": {
+    #                                     "type": "string",
+    #                                     "enum": ["[Fact] Likes", "[Fact] Dislikes"],
+    #                                     "description": "Indicates whether the event relates to a like or dislike."
+    #                                 },
+    #                                 "Value": {
+    #                                     "type": "string",
+    #                                     "description": "The specific hobby or dislike associated with the event."
+    #                                 }
+    #                             },
+    #                             "required": ["Type", "Value"],
+    #                             "description": "Fact must be either a liked or disliked hobby."
+    #                         }
+    #                     },
+    #                     "required": ["Event", "Category", "Fact"],
+    #                     "additionalProperties": false
+    #                 }
+    #             },
+    #             "description": "At least 20 events related to the topic and persona preferences."
+    #         }
+    #     },
+    #     "required": ["Hobbies", "Preferences", "Events"],
+    #     "additionalProperties": false
+    # }
+
     return prompt
 
 
@@ -150,11 +249,162 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
                   "}\n" \
                   "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
 
-    # "the key '[Old Fact] Likes' or '[Old Fact] Dislikes' to mention the underlying like or dislike of this peron." \
-    # "the key '[Updated Fact] Likes' or '[Updated Fact] Dislikes' should be exactly the OPPOSITE to its corresponding '[Old Fact] Likes' or '[Old Fact] Dislikes'." \
-    # '"[Fact] Likes" OR "[Fact] Dislikes": xxx, \n' \
-    # '"[Updated Fact] Likes" OR "[Updated Fact] Dislikes": xxx, \n' \
-    # '"[Old Fact] Likes" OR "[Old Fact] Dislikes": xxx, \n' \
+    # schema = {
+    #     "title": "GeneralPersonalHistoryExpansion",
+    #     "description": "Schema for expanding general personal history, including new events and knowledge updates.",
+    #     "type": "object",
+    #     "minProperties": 10,
+    #     "patternProperties": {
+    #         "^\\d{2}/\\d{2}/\\d{4}$": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "Event": {
+    #                     "type": "string",
+    #                     "description": "A description of the new event."
+    #                 },
+    #                 "Category": {
+    #                     "type": "string",
+    #                     "enum": ["Short-Term", "Long-Term"],
+    #                     "description": "Specifies whether the event is short-term or long-term."
+    #                 },
+    #                 "[Reasons of Change]": {
+    #                     "type": "string",
+    #                     "description": "A unique, uncommon, and personal reason for the contradiction or update.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Event Date]": {
+    #                     "type": "string",
+    #                     "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+    #                     "description": "The date of the previous contradictory event.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Event]": {
+    #                     "type": "string",
+    #                     "description": "The old event that contradicts the new one.",
+    #                     "nullable": true
+    #                 }
+    #             },
+    #             "required": ["Event", "Category"],
+    #             "oneOf": [
+    #                 {
+    #                     "required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]
+    #                 },
+    #                 {
+    #                     "not": {"required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]}
+    #                 }
+    #             ],
+    #             "additionalProperties": false
+    #         }
+    #     },
+    #     "additionalProperties": false
+    # }
+    #
+    # schema = {
+    #     "title": "ContextualPersonalHistoryExpansion",
+    #     "description": "Schema for expanding contextual personal history, including contradictions in preferences.",
+    #     "type": "object",
+    #     "minProperties": 10,
+    #     "patternProperties": {
+    #         "^\\d{2}/\\d{2}/\\d{4}$": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "Event": {
+    #                     "type": "string",
+    #                     "description": "A description of the new event."
+    #                 },
+    #                 "Category": {
+    #                     "type": "string",
+    #                     "enum": ["Short-Term", "Long-Term"],
+    #                     "description": "Specifies whether the event is short-term or long-term."
+    #                 },
+    #                 "[Fact] Likes": {
+    #                     "type": "string",
+    #                     "description": "A hobby or preference associated with the event.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Fact] Dislikes": {
+    #                     "type": "string",
+    #                     "description": "A dislike related to the event.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Fact] Likes": {
+    #                     "type": "string",
+    #                     "description": "Previous hobby that is now disliked.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Fact] Dislikes": {
+    #                     "type": "string",
+    #                     "description": "Previous dislike that is now liked.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Updated Fact] Likes": {
+    #                     "type": "string",
+    #                     "description": "A new preference that was previously disliked.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Updated Fact] Dislikes": {
+    #                     "type": "string",
+    #                     "description": "A new dislike that was previously liked.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Reasons of Change]": {
+    #                     "type": "string",
+    #                     "description": "A unique, uncommon, and personal reason for changing preferences.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Event Date]": {
+    #                     "type": "string",
+    #                     "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+    #                     "description": "The date of the previous contradictory event.",
+    #                     "nullable": true
+    #                 },
+    #                 "[Old Event]": {
+    #                     "type": "string",
+    #                     "description": "The old event that contradicts the new one.",
+    #                     "nullable": true
+    #                 }
+    #             },
+    #             "required": ["Event", "Category"],
+    #             "oneOf": [
+    #                 {
+    #                     "required": ["[Fact] Likes"],
+    #                     "not": {"required": ["[Fact] Dislikes"]}
+    #                 },
+    #                 {
+    #                     "required": ["[Fact] Dislikes"],
+    #                     "not": {"required": ["[Fact] Likes"]}
+    #                 },
+    #                 {
+    #                     "required": [
+    #                         "[Old Fact] Likes",
+    #                         "[Updated Fact] Dislikes",
+    #                         "[Reasons of Change]",
+    #                         "[Old Event Date]",
+    #                         "[Old Event]"
+    #                     ],
+    #                     "not": {
+    #                         "required": ["[Old Fact] Dislikes", "[Updated Fact] Likes"]
+    #                     }
+    #                 },
+    #                 {
+    #                     "required": [
+    #                         "[Old Fact] Dislikes",
+    #                         "[Updated Fact] Likes",
+    #                         "[Reasons of Change]",
+    #                         "[Old Event Date]",
+    #                         "[Old Event]"
+    #                     ],
+    #                     "not": {
+    #                         "required": ["[Old Fact] Likes", "[Updated Fact] Dislikes"]
+    #                     }
+    #                 }
+    #             ],
+    #             "additionalProperties": false
+    #         }
+    #     },
+    #     "additionalProperties": false
+    # }
+
     return prompt
 
 
@@ -194,7 +444,21 @@ def prompts_for_generating_conversations(topic, persona, curr_personal_history=N
               '"Side_Note: [xxx] MM/DD/YYYY",' \
               '"' + user + ': yyy",' \
               '"' + agent + ': zzz",' \
-              "...] Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. No other words."
+              "...] Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. " \
+              "Use double quotes for each sentence. Do NOT use JSON. Please make sure every timestamp in the Side_Note can be found in the given list of personal history. No other words."
+
+    # schema = {
+    #     "title": "GeneratedConversation",
+    #     "description": f"Schema for generating structured conversations between {user} and {agent} based on personal history events.",
+    #     "type": "array",
+    #     "items": {
+    #         "type": "string",
+    #         "pattern": f"^(Side_Note: \\[.+\\] \\d{{2}}/\\d{{2}}/\\d{{4}}|{user}: .+|{agent}: .+)$",
+    #         "description": f"Each entry is a string representing a conversation line between {user} and {agent}."
+    #     },
+    #     "minItems": 10
+    # }
+
     return prompt
 
 
@@ -218,11 +482,13 @@ def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
         conversation_block = "'Conversation Next Year'"
 
     if round == 1:
-        prompt = "Given the following " + history_block + " and the " + conversation_block + ", check if the " + conversation_block + " has covered every single timestamp in the " + history_block + ". " \
-                 "List all missed ones:\n\n" + history_block + "\n\n" + data['history_block'] + "\n\n" + conversation_block + "\n\n" + data['conversation_block']
+        prompt = "Given the following " + history_block + " and the " + conversation_block + ", check if the " + conversation_block + " has covered every single timestamp in the " + history_block + ". All [Old Event Date] does NOT count! Ignore them! " \
+                 "List all missed ones in the conversation, as well as those in the conversation but not in the " + history_block + ":\n\n" + history_block + "\n\n" + data['history_block'] + "\n\n" + conversation_block + "\n\n" + data['conversation_block']
+        # schema = None
     elif round == 2:
         prompt = "Please fill in these missed timestamps with their corresponding events mentioned in the " + history_block + " into the " + conversation_block + ". " \
-                 "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation. Keep them word-by-word IDENTICAL." \
+                 "Make sure every single timestamp in the Side_Note in this conversation can be found in the given " + history_block + ", instead of personal history in other time periods. " \
+                 "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation, except for the sentences with incorrect timestamps. " \
                  "If there is no missed timestamp, no need to change any part of the original conversation. Follow exactly the SAME template in the original conversation:\n\n" \
                  "[\n" \
                  '"Side_Note: [xxx] MM/DD/YYYY",' \
@@ -230,6 +496,18 @@ def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
                  '"' + agent + ': zzz",' \
                  "...] " \
                  "The whole output should be a Python list of strings where each utterance is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. Do NOT use JSON. Just output the completed conversation. No other words."
+
+        # schema = {
+        #     "title": "FixedConversationWithTimestamps",
+        #     "description": "Schema for filling in missing or incorrect timestamps in a conversation while keeping the structure unchanged.",
+        #     "type": "array",
+        #     "items": {
+        #         "type": "string",
+        #         "pattern": f"^(Side_Note: \\[.+\\] \\d{{2}}/\\d{{2}}/\\d{{4}}|{user}: .+|{agent}: .+)$",
+        #         "description": "Each entry is a string representing a conversation line with corrected timestamps."
+        #     },
+        #     "minItems": 10
+        # }
     else:
         raise ValueError("Invalid round", round)
     return prompt
@@ -256,13 +534,26 @@ def prompts_for_expanding_conversation_section(topic, data):
              '"' + agent + ': zzz"  (More than 10 sentences. Do NOT include MM/DD/YYYY here),' \
              "...]\n Use a Python list of strings where each sentence is one string. Fill in the actual data at placeholders 'MM/DD/YYYY', 'xxx', 'yyy', and 'zzz' in the template. Use double quotes for each sentence. " \
              "The actual order of " + user + " and " + agent + " in your expanded sentences should follow the original order in the original sentences. Please output only a valid Python list of strings in a code block with no extra text."
+
+    # schema = {
+    #     "title": "ExpandedConversationSection",
+    #     "description": f"Schema for expanding conversation lines between {user} and {agent} while maintaining logical consistency and structure.",
+    #     "type": "array",
+    #     "items": {
+    #         "type": "string",
+    #         "pattern": f"^(Side_Note: \\[.+\\] \\d{{2}}/\\d{{2}}/\\d{{4}}|{user}: (?:[^.!?]+[.!?]\\s*){{5,}}|{agent}: (?:[^.!?]+[.!?]\\s*){{10,}})$",
+    #         "description": f"Each entry is a string representing an expanded conversation line between {user} and {agent}, requiring at least 5 sentences for {user} and 10 sentences for {agent}."
+    #     },
+    #     "minItems": 10
+    # }
+
     return prompt
 
 
 def prompts_for_generating_qa(data, action):
     if action == 'recall_facts':
         prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
-                 "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
+                 "and whether the model can utilize its memory to provide a personalized response. Given this specific activity\n\n'" + data['related_fact'] + "'\n\ndescribed by the user in a conversation with the chatbot:\n\n" + data['user_utterance'] + "\n\n" \
                  "What question might the user query the chatbot model to bring up this topic again? Please mention only the topic or the parent-class name, WITHOUT explicitly referencing the name of this specific event. " \
                  "Also, simply draft the user’s question to the model, WITHOUT stating that they have mentioned it before or that the model needs to recall the memory. " \
                  "Make the user question more detailed with some topic. Remember that the user is asking this question to an LLM, not a real human. " \
@@ -274,11 +565,39 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "ChatbotMemoryRecallEvaluation",
+        #   "description": "Schema for evaluating a chatbot’s ability to recall factual information shared by the user in prior conversations.",
+        #   "type": "object",
+        #   "properties": {
+        #     "User Question": {
+        #       "type": "string",
+        #       "description": "A detailed question from the user that indirectly brings up a previously mentioned factual topic without explicitly referencing the exact event."
+        #     },
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A response demonstrating that the chatbot remembers and correctly references the previously shared factual information."
+        #     }
+        #   },
+        #   "required": ["User Question", "Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_facts':
         prompt = "This is the correct personalized response to the question: " + data['question'] + ": " + data['response'] + "\n\n" \
                  "Please propose three incorrect options to prepare a multiple choice Q&A, keeping all incorrect responses generally good but mentioning different things or activities. " \
-                 "Each option should share similar tone, matching length, and equal level of detail." \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+        # schema = {
+        #   "title": "IncorrectFactsProposals",
+        #   "description": "A list of three incorrect factual responses for multiple-choice Q&A, ensuring each option is well-written and equal in length to the correct response.",
+        #   "type": "array",
+        #   "items": {
+        #     "type": "string",
+        #     "description": "An incorrect response option with similar tone, detail, and length to the correct response."
+        #   },
+        #   "minItems": 3,
+        #   "maxItems": 3
+        # }
     elif action == 'recall_facts_inverse':
         prompt = "We want to evaluate whether a chatbot can remember factual information (NOT the user's preferences toward it) shared by the user during previous conversations, " \
                  "and whether the model can utilize its memory to provide a personalized response. Given this specific activity described by the user in a conversation with the chatbot:\n\n" + data['event'] + "\n\n" \
@@ -295,11 +614,39 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "RecallFactsInverse",
+        #   "description": "Schema for testing chatbot memory recall when the user asks about trying something new, indirectly referencing a past event.",
+        #   "type": "object",
+        #   "properties": {
+        #     "User Question": {
+        #       "type": "string",
+        #       "description": "A detailed question from the user that hints at a previously mentioned topic but does not explicitly mention past experiences."
+        #     },
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A response demonstrating that the chatbot remembers and correctly references the previously shared factual information without stating what the user has done before."
+        #     }
+        #   },
+        #   "required": ["User Question", "Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_facts_inverse':
         prompt = "Given this question from the user: " + data['question'] + ", please create three responses inspired by these conversations from other users. " \
                  "Since they originate from other users, it is safe to use them here.\n\n" + data['random_event_histories'] + "\n\n" \
-                 "Each option should share similar tone, matching length, and equal level of detail. " \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+        # schema = {
+        #   "title": "IncorrectFactsInverseProposals",
+        #   "description": "A list of three incorrect responses inspired by other user conversations, ensuring each option is well-written and equal in length to the correct response.",
+        #   "type": "array",
+        #   "items": {
+        #     "type": "string",
+        #     "description": "An incorrect response option that matches the tone, detail, and length of the correct response."
+        #   },
+        #   "minItems": 3,
+        #   "maxItems": 3
+        # }
 
     elif action == 'generalize_reason_to_other_scenarios':
         prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
@@ -315,12 +662,40 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "GeneralizedReasoning",
+        #   "description": "Schema for evaluating chatbot memory recall by testing its ability to generalize the user's previous reason for change to a new scenario.",
+        #   "type": "object",
+        #   "properties": {
+        #     "User Question": {
+        #       "type": "string",
+        #       "description": "A new user question where the user inquires about a different activity but with a similar underlying reason as before."
+        #     },
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A response demonstrating that the chatbot remembers the previous reason and proactively assumes user preference based on it."
+        #     }
+        #   },
+        #   "required": ["User Question", "Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_reasons_generalization':
         prompt = "Here is the model's response to the user after they mentioned a new activity, where the model accurately connects the user's previous reason for change to this new experience." \
                  "The user's utterance is: " + data['user_utterance'] + "\n\nPrevious reason of change on another activity: " + data['reason_of_change'] + "\n\nThe correct model response: " + data['model_response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, but either mentions a wrong reason or completely does not mention the previous reason at all. " \
-                 "Each option should share similar tone, matching length, and equal level of detail. " \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+        # schema = {
+        #   "title": "IncorrectReasonGeneralizationProposals",
+        #   "description": "A list of three incorrect responses that either mention the wrong reason or fail to connect to the user's previously stated reason.",
+        #   "type": "array",
+        #   "items": {
+        #     "type": "string",
+        #     "description": "An incorrect response that either connects the wrong reason or completely omits the previous reason."
+        #   },
+        #   "minItems": 3,
+        #   "maxItems": 3
+        # }
     elif action == 'ask_previous_reason_after_new_updates':
         prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
                  "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change in the following conversation. " \
@@ -331,11 +706,36 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "RecallPreviousReason",
+        #   "description": "Schema for chatbot response demonstrating awareness of past reasons when the user updates their preferences again.",
+        #   "type": "object",
+        #   "properties": {
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A chatbot response that recalls the past reason for the user’s previous preference changes while addressing their new update."
+        #     }
+        #   },
+        #   "required": ["Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_reasons_after_new_updates':
         prompt = "Based on this model's response that recalls the correct reason of the user's previous preference changes when the same user changes their preference once again: " + data['response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
                  "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone, matching length, and equal level of detail." \
+                 "Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. " \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+        # schema = {
+        #   "title": "IncorrectReasonsAfterNewUpdates",
+        #   "description": "A list of three incorrect responses that either reference the wrong reason or ignore past reasons altogether.",
+        #   "type": "array",
+        #   "items": {
+        #     "type": "string",
+        #     "description": "An incorrect response that either misremembers the past reason or fails to acknowledge any prior preference changes."
+        #   },
+        #   "minItems": 3,
+        #   "maxItems": 3
+        # }
 
     elif action == 'recall_sequence':
         prompt = "We are designing a memory benchmark focused on personalization. Consider the following sequence of user preference changes:\n\n" + data['full_sequence'] + "\n\n" \
@@ -348,13 +748,37 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "RecallPreferenceSequence",
+        #   "description": "Schema for chatbot response demonstrating awareness of the full sequence of user preference changes.",
+        #   "type": "object",
+        #   "properties": {
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A chatbot response that explicitly references the full sequence of the user’s preference changes rather than just the latest update."
+        #     }
+        #   },
+        #   "required": ["Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_sequence':
         prompt = "Given following the model's response that correctly references the full sequence of preference updates of the user:\n\n" + data['model_response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each response should look similar, except that they color different incorrect sequence of preference updates. " \
                  "If there is any updates in the sequence, incorrect ones could include incorrect updates or mentions that it is the first time the user mentioned this thing or activity. " \
                  "Do NOT modify the most recent one (the right most one in the sequence). If the sequence has no preference updates, incorrect ones could flip the preference or add one additional change. " \
-                 'Each option should share similar tone, matching length, and equal level of detail. Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
-
+                 'Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+        # schema = {
+        #   "title": "IncorrectPreferenceSequence",
+        #   "description": "A list of three incorrect responses that either misinterpret the preference update sequence or introduce inaccuracies.",
+        #   "type": "array",
+        #   "items": {
+        #     "type": "string",
+        #     "description": "An incorrect response that references the preference history inaccurately or contradicts previous changes, ensuring each option is well-written and equal in length to the correct response.",
+        #   },
+        #   "minItems": 3,
+        #   "maxItems": 3
+        # }
     elif action == 'extract_object':
         prompt = "You have two tasks. First, please extract the primary noun from the following phrase, ignoring all adjectives or descriptors. Output a single word or short phrase only into the key 'parent_object':\n\n" + data + "\n\n" \
                  "Second, based on the extracted primary noun, propose one different child object name under this parent category, adding some different adjectives or descriptors. Output it into the key 'random_child_object'." \
@@ -364,8 +788,27 @@ def prompts_for_generating_qa(data, action):
                  '    "random_child_object": yyy\n' \
                  "}\n" \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "ExtractedObject",
+        #   "description": "Schema for extracting a parent object and generating a related child object.",
+        #   "type": "object",
+        #   "properties": {
+        #     "parent_object": {
+        #       "type": "string",
+        #       "description": "The primary noun extracted from the phrase, ignoring adjectives or descriptors."
+        #     },
+        #     "random_child_object": {
+        #       "type": "string",
+        #       "description": "A different object name under the same parent category with additional adjectives or descriptors."
+        #     }
+        #   },
+        #   "required": ["parent_object", "random_child_object"],
+        #   "additionalProperties": false
+        # }
+
     elif action == 'extract_identity':
         prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
+        schema = None
     elif action == 'recommendation':
         prompt = "We aim to assess whether a chatbot can recall a user's most recent preference for a specific type of " + data['parent_object'] + " and provide a personalized recommendation based on this preference. " \
                  "Consider the user's latest preference: " + data['preference'] + " and what they have said: " + data['user_utterance'] + "\n\n" \
@@ -382,19 +825,50 @@ def prompts_for_generating_qa(data, action):
                  '    "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+        # schema = {
+        #   "title": "UserPreferenceRecommendation",
+        #   "description": "Schema for evaluating chatbot memory recall by testing its ability to recommend personalized items based on the user's most recent preferences.",
+        #   "type": "object",
+        #   "properties": {
+        #     "User Question": {
+        #       "type": "string",
+        #       "description": "A detailed question from the user asking for a recommendation without explicitly referencing past preferences."
+        #     },
+        #     "Model Response": {
+        #       "type": "string",
+        #       "description": "A chatbot response that provides a personalized recommendation based on the user's most recent preferences, ensuring it is engaging and unique."
+        #     }
+        #   },
+        #   "required": ["User Question", "Model Response"],
+        #   "additionalProperties": false
+        # }
     elif action == 'propose_incorrect_recommendations':
         prompt = "Given the following response: " + data['model_response'] + "\n\n to the question: " + data['question'] + "\n\n" \
                  "propose two incorrect responses on purpose to prepare a multiple choice Q&A. "\
                  "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific user or VIOLATE this user's most recent preferences: " + data['preference'] + \
                  "If the user's preference is about liking something, the incorrect answer should talk about somehow opposite things, as if the model does not remember what this user's preferences are. " \
                  "If the user's preference is about disliking something, the incorrect answer should talk about things this user dislikes. " \
-                 'Each option should share similar tone, matching length, and equal level of detail. Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
+                 'Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
+                 'Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
+        # schema = {
+        #     "$schema": "https://json-schema.org/draft/2020-12/schema",
+        #     "title": "IncorrectUserRecommendations",
+        #     "description": "A list of two incorrect recommendations that either contradict the user's known preferences or suggest something opposite to what they like/dislike.",
+        #     "type": "array",
+        #     "items": {
+        #         "type": "string",
+        #         "description": "An incorrect recommendation that does not align with the user's most recent preferences but still sounds like a valid suggestion, ensuring each option is well-written and equal in length to the correct response.",
+        #     },
+        #     "minItems": 2,
+        #     "maxItems": 2
+        # }
     elif action == 'propose_stereotypical_recommendation':
         prompt = "Given the following question: " + data['question'] + " and correct response " + data['model_response'] + "\n\n, " \
                  "prepare one incorrect answer that is stereotypical to this user's gender and racial identities, but irrelevant to the specific context " \
                  "and irrelevant to or violate this user's actual preference. Here is the user's identities:\n\n" + data['persona'] + "\n\n"\
-                 "Follow the same length as the correct answer. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
+                 "Please do NOT be lazy! Make sure this incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
                  "Remember we are creating misleading options in a multiple choice question, so make it sounds like a correct one but do NOT mention that this is actually stereotypical. No other words."
+        # schema = None
     else:
         raise ValueError("Invalid action", action)
     return prompt
