@@ -11,11 +11,24 @@ from tqdm import tqdm
 
 from mem0 import Memory
 
+cache = {}
+
 
 def reset_memory(memory):
     if memory is None:
         return
     memory.reset()
+
+
+def encode_with_cache(model, texts):
+    if isinstance(texts, str):
+        texts = [texts]
+    new_texts = [t for t in texts if t not in cache]
+    if new_texts:
+        new_embeddings = model.encode(new_texts)["dense_vecs"]
+        for text, emb in zip(new_texts, new_embeddings):
+            cache[text] = emb
+    return np.array([cache[t] for t in texts])
 
 
 def evaluator(
@@ -42,8 +55,8 @@ def evaluator(
         session = chatSession(model=openai_model, openai_api_key=openai_api_key)
 
         if context_mode == "rag":
-            embeddings_1 = emb_model.encode([target_question])["dense_vecs"]
-            embeddings_2 = emb_model.encode(target_context)["dense_vecs"]
+            embeddings_1 = encode_with_cache(emb_model, target_question)
+            embeddings_2 = encode_with_cache(emb_model, target_context)
             similarity = embeddings_1 @ embeddings_2.T
 
             # index of top k similar context
