@@ -6,7 +6,7 @@
 #studyConsultation therapy travelPlanning writing \
 
 # Lauren
-start_persona_id=0
+start_persona_id=1
 end_persona_id=4
 
 ## Zoey
@@ -30,7 +30,7 @@ command="python prepare_data.py --model gpt-4o \
          --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
                   legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
                   studyConsultation therapy travelPlanning writing \
-         --n_persona ${start_persona_id} --n_samples 1 --s_persona ${end_persona_id} --s_samples 0"
+         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0"
 
 # Print the command for debugging/logging purposes
 echo "$command"

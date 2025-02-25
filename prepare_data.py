@@ -56,7 +56,7 @@ def prepare_topics(idx_topic, all_topics, curr_topic, args):
     elif curr_topic == 'email':
         source_dir = args['datasets']['email_source_dir']
     elif curr_topic == 'coding':
-        source_dir = args['datasets']['code_source_dir']
+        source_dir = args['datasets']['coding_source_dir']
     elif curr_topic == 'legal':
         source_dir = args['datasets']['legal_source_dir']
     elif curr_topic == 'therapy':
@@ -317,6 +317,14 @@ def prepare_data(args):
             # Since we assign a consecutive time frame for all topics, we randomly permute topics to ensure generalization
             if len(all_topics) > 1:
                 random.shuffle(all_topics)
+
+                # Ensure "coding," "writing," or "email" is not the first topic
+                restricted_topics = {"coding", "writing", "email"}
+                if all_topics[0] in restricted_topics:
+                    for i in range(1, len(all_topics)):
+                        if all_topics[i] not in restricted_topics:
+                            all_topics[0], all_topics[i] = all_topics[i], all_topics[0]
+                            break
 
             # Loop through each topic in the list
             for idx_topic, curr_topic in tqdm(enumerate(all_topics)):
