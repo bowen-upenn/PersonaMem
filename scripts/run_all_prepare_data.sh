@@ -7,7 +7,7 @@
 
 # Lauren
 start_persona_id=1
-end_persona_id=4
+end_persona_id=4  # non-inclusive
 
 ## Zoey
 #start_persona_id=4
