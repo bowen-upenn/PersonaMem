@@ -317,7 +317,6 @@ def find_existing_persona_files(idx_persona):
                 file_path = os.path.join(topic_dir, file_name)
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                # Check if the file contains the key we're interested in
                 if "General Personal History Next Year" in data:
                     matching_file = file_path
                     selected_data = data
@@ -390,12 +389,23 @@ def clean_up_one_file(file_path):
         print(f"File not found: {file_path}")
 
 
-def find_string_in_list(data, target):
+def find_string_in_list(data, target, sorted_processed_blocks=None):
     # Check if the data is a list of dictionaries
     if isinstance(data, list) and isinstance(data[0], dict):
         for index, item in enumerate(data):
             if item.get('content') == target:
-                return index
+                return 0, index
+    # if isinstance(data, list) and isinstance(data[0], dict):
+    #     # print('sorted_processed_blocks', sorted_processed_blocks[0]['conversation'])
+    #     for index, item in enumerate(data):
+    #         if item.get('content') == target:
+    #             # print('index', index, len(sorted_processed_blocks), sum(len(block['conversation']) for block in sorted_processed_blocks))
+    #             # # Find block index
+    #             # for block_index, block in enumerate(sorted_processed_blocks):
+    #             #     for entry in block['conversation']:
+    #             #         if target in entry['content']:
+    #             block_index = 0
+    #             return block_index, index
 
     # Check if the data is a list of strings
     elif isinstance(data, list) and isinstance(data[0], str):
@@ -406,4 +416,5 @@ def find_string_in_list(data, target):
             else:
                 continue
 
+    print('target not found')
     return -1  # Return -1 if not found

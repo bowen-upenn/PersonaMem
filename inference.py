@@ -229,6 +229,7 @@ if __name__ == "__main__":
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
     parser.add_argument('--format', type=str, default='api_dict', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
+    parser.add_argument('--n_variants', type=int, default=1, help='Number of variants of topological sorts to concatenate conversation sessions')
     parser.add_argument('--up_to', dest='up_to', action='store_true', help='Generate up-to n_blocks, not just n_blocks itself')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
     parser.add_argument('--save_only', dest='save_only', action='store_true', help='Save the data only, not evaluating')
@@ -252,6 +253,7 @@ if __name__ == "__main__":
     which_format = cmd_args.format
     verbose = cmd_args.verbose
     save_only = cmd_args.save_only
+    n_variants = cmd_args.n_variants
 
     base_dir = "./data/output"
     evaluation = Evaluation(args)
@@ -279,7 +281,7 @@ if __name__ == "__main__":
         # Process each chosen conversation block
         processed_blocks_dict = {}
         # all_strings = []
-        new_content_samples = [{} for _ in range(len(chosen_blocks))]
+        # new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
         for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
             topic = file_name.split('_')[1]
@@ -291,24 +293,24 @@ if __name__ == "__main__":
 
             qa = extract_qa(base_dir, topic, file_name, time_period)
 
-            if topic == 'writing':
-                with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
-                    data = json.load(file)
-                    original_sample = data.get("Original Sample")
-                    updated_sample = data.get("Updated Writing Sample")
-                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
-            elif topic == 'email':
-                with open(os.path.join(args['inference']['output_dir'], 'email', file_name), 'r') as file:
-                    data = json.load(file)
-                    original_sample = data.get("Original Sample")
-                    updated_sample = data.get("Updated Writing Sample")
-                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
-            elif topic == 'coding':
-                with open(os.path.join(args['inference']['output_dir'], 'coding', file_name), 'r') as file:
-                    data = json.load(file)
-                    original_sample = data.get("Original Sample")
-                    updated_sample = data.get("Updated Coding Sample")
-                new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
+            # if topic == 'writing':
+            #     with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
+            #         data = json.load(file)
+            #         original_sample = data.get("Original Sample")
+            #         updated_sample = data.get("Updated Writing Sample")
+            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
+            # elif topic == 'email':
+            #     with open(os.path.join(args['inference']['output_dir'], 'email', file_name), 'r') as file:
+            #         data = json.load(file)
+            #         original_sample = data.get("Original Sample")
+            #         updated_sample = data.get("Updated Writing Sample")
+            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
+            # elif topic == 'coding':
+            #     with open(os.path.join(args['inference']['output_dir'], 'coding', file_name), 'r') as file:
+            #         data = json.load(file)
+            #         original_sample = data.get("Original Sample")
+            #         updated_sample = data.get("Updated Coding Sample")
+            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
 
             processed_blocks_dict[latest_ts] = {
                 "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
@@ -321,19 +323,25 @@ if __name__ == "__main__":
             # all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
 
         # Topological sort chosen conversation blocks by the latest timestamp
-        variants = topological_sort(processed_blocks_dict, new_content_samples, num_variants=1, verbose=verbose)
+        # print('Before sort new_content_samples: ', new_content_samples)
+        variants = topological_sort(processed_blocks_dict, num_variants=n_variants, verbose=verbose)
         for variant in variants:
-            sorted_processed_blocks, sorted_new_content_samples = variant
+            sorted_processed_blocks = variant
 
             # Concatenate all conversation blocks
-            all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, all_irrelevant_contexts, verbose)
+            all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts, verbose)
 
             # Reiterate through all qa after block concatenations to add the distance information
             # total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
-            total_num_tokens = count_tokens(" ".join(item['content'] for item in all_conversations), tokenizer, verbose=False)
+            # print('len(all_conversations)', len(all_conversations))
+            # for item in all_conversations:
+            #     print('item', item)
+            #     if item is None:
+            #         break
+            total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
                 print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
-            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, total_num_tokens)
+            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations)
 
             # Show all Q&As related to this concatenated conversation
             for curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length in tqdm(question_loader(all_qa), total=len(all_qa)):

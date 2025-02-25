@@ -45,7 +45,6 @@ def prompts_for_init_general_personal_history(persona, start_time):
                 "}, \n\n" \
              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format." \
              "Here is the persona: " + persona
-
     # schema = {
     #     "type": "object",
     #     "patternProperties": {
@@ -77,6 +76,8 @@ def prompts_for_init_contextual_personal_history(topic, start_time, persona, gen
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:' closely associated with the 20 things you listed here, and they should concentrate on the topic of " + topic + \
              "If an event is related to a dislike, it should show that this person dislikes it after experienced it or the person is trying to avoid it. " \
              "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
+             "List all 20 hobbies first, and then randomly assign those 20 hobbies into likes or dislikes for this person. " \
+             "After you have generated the list above, generate one dict for each event following those 20 likes and dislikes. " \
              "List all 20 hobbies first, and then follow this template in string to randomly assign those 20 hobbies into likes or dislikes for this person:\n\n" \
              "20 hobbies: xxx, ..., xxx\n" \
              "Initial preferences randomly assigned: [1] Likes xxx\n" \
@@ -213,7 +214,7 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
     prompt += "Any contradictions should focus on what this person prefers and dislikes. " \
               "You shall also include some contradictions to the existing contradictions in the previous history, back and forth. For example, the person may like one thing, dislike it, and in some cases come back to like it again." \
               "Now, please continue to write 10 more events aligned with this persona. Do NOT repeat anything already mentioned above. " \
-              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events."
+              "Use the same JSON format with MM/DD/YYYY timestamp starting at the end of the previous general personal history, and use short-term/long-term labels as above. There should be 5 short-term and 5 long-term events." \
 
     if type == 'general':
         prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
@@ -249,162 +250,162 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
                   "}\n" \
                   "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
 
-    # schema = {
-    #     "title": "GeneralPersonalHistoryExpansion",
-    #     "description": "Schema for expanding general personal history, including new events and knowledge updates.",
-    #     "type": "object",
-    #     "minProperties": 10,
-    #     "patternProperties": {
-    #         "^\\d{2}/\\d{2}/\\d{4}$": {
-    #             "type": "object",
-    #             "properties": {
-    #                 "Event": {
-    #                     "type": "string",
-    #                     "description": "A description of the new event."
-    #                 },
-    #                 "Category": {
-    #                     "type": "string",
-    #                     "enum": ["Short-Term", "Long-Term"],
-    #                     "description": "Specifies whether the event is short-term or long-term."
-    #                 },
-    #                 "[Reasons of Change]": {
-    #                     "type": "string",
-    #                     "description": "A unique, uncommon, and personal reason for the contradiction or update.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Event Date]": {
-    #                     "type": "string",
-    #                     "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
-    #                     "description": "The date of the previous contradictory event.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Event]": {
-    #                     "type": "string",
-    #                     "description": "The old event that contradicts the new one.",
-    #                     "nullable": true
-    #                 }
-    #             },
-    #             "required": ["Event", "Category"],
-    #             "oneOf": [
-    #                 {
-    #                     "required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]
-    #                 },
-    #                 {
-    #                     "not": {"required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]}
-    #                 }
-    #             ],
-    #             "additionalProperties": false
-    #         }
-    #     },
-    #     "additionalProperties": false
-    # }
-    #
-    # schema = {
-    #     "title": "ContextualPersonalHistoryExpansion",
-    #     "description": "Schema for expanding contextual personal history, including contradictions in preferences.",
-    #     "type": "object",
-    #     "minProperties": 10,
-    #     "patternProperties": {
-    #         "^\\d{2}/\\d{2}/\\d{4}$": {
-    #             "type": "object",
-    #             "properties": {
-    #                 "Event": {
-    #                     "type": "string",
-    #                     "description": "A description of the new event."
-    #                 },
-    #                 "Category": {
-    #                     "type": "string",
-    #                     "enum": ["Short-Term", "Long-Term"],
-    #                     "description": "Specifies whether the event is short-term or long-term."
-    #                 },
-    #                 "[Fact] Likes": {
-    #                     "type": "string",
-    #                     "description": "A hobby or preference associated with the event.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Fact] Dislikes": {
-    #                     "type": "string",
-    #                     "description": "A dislike related to the event.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Fact] Likes": {
-    #                     "type": "string",
-    #                     "description": "Previous hobby that is now disliked.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Fact] Dislikes": {
-    #                     "type": "string",
-    #                     "description": "Previous dislike that is now liked.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Updated Fact] Likes": {
-    #                     "type": "string",
-    #                     "description": "A new preference that was previously disliked.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Updated Fact] Dislikes": {
-    #                     "type": "string",
-    #                     "description": "A new dislike that was previously liked.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Reasons of Change]": {
-    #                     "type": "string",
-    #                     "description": "A unique, uncommon, and personal reason for changing preferences.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Event Date]": {
-    #                     "type": "string",
-    #                     "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
-    #                     "description": "The date of the previous contradictory event.",
-    #                     "nullable": true
-    #                 },
-    #                 "[Old Event]": {
-    #                     "type": "string",
-    #                     "description": "The old event that contradicts the new one.",
-    #                     "nullable": true
-    #                 }
-    #             },
-    #             "required": ["Event", "Category"],
-    #             "oneOf": [
-    #                 {
-    #                     "required": ["[Fact] Likes"],
-    #                     "not": {"required": ["[Fact] Dislikes"]}
-    #                 },
-    #                 {
-    #                     "required": ["[Fact] Dislikes"],
-    #                     "not": {"required": ["[Fact] Likes"]}
-    #                 },
-    #                 {
-    #                     "required": [
-    #                         "[Old Fact] Likes",
-    #                         "[Updated Fact] Dislikes",
-    #                         "[Reasons of Change]",
-    #                         "[Old Event Date]",
-    #                         "[Old Event]"
-    #                     ],
-    #                     "not": {
-    #                         "required": ["[Old Fact] Dislikes", "[Updated Fact] Likes"]
+    # if type == 'general':
+    #     schema = {
+    #         "title": "GeneralPersonalHistoryExpansion",
+    #         "description": "Schema for expanding general personal history, including new events and knowledge updates.",
+    #         "type": "object",
+    #         "minProperties": 10,
+    #         "patternProperties": {
+    #             "^\\d{2}/\\d{2}/\\d{4}$": {
+    #                 "type": "object",
+    #                 "properties": {
+    #                     "Event": {
+    #                         "type": "string",
+    #                         "description": "A description of the new event."
+    #                     },
+    #                     "Category": {
+    #                         "type": "string",
+    #                         "enum": ["Short-Term", "Long-Term"],
+    #                         "description": "Specifies whether the event is short-term or long-term."
+    #                     },
+    #                     "[Reasons of Change]": {
+    #                         "type": "string",
+    #                         "description": "A unique, uncommon, and personal reason for the contradiction or update.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Event Date]": {
+    #                         "type": "string",
+    #                         "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+    #                         "description": "The date of the previous contradictory event.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Event]": {
+    #                         "type": "string",
+    #                         "description": "The old event that contradicts the new one.",
+    #                         "nullable": true
     #                     }
     #                 },
-    #                 {
-    #                     "required": [
-    #                         "[Old Fact] Dislikes",
-    #                         "[Updated Fact] Likes",
-    #                         "[Reasons of Change]",
-    #                         "[Old Event Date]",
-    #                         "[Old Event]"
-    #                     ],
-    #                     "not": {
-    #                         "required": ["[Old Fact] Likes", "[Updated Fact] Dislikes"]
+    #                 "required": ["Event", "Category"],
+    #                 "oneOf": [
+    #                     {
+    #                         "required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]
+    #                     },
+    #                     {
+    #                         "not": {"required": ["[Reasons of Change]", "[Old Event Date]", "[Old Event]"]}
     #                     }
-    #                 }
-    #             ],
-    #             "additionalProperties": false
-    #         }
-    #     },
-    #     "additionalProperties": false
-    # }
-
+    #                 ],
+    #                 "additionalProperties": false
+    #             }
+    #         },
+    #         "additionalProperties": false
+    #     }
+    # else:
+    #     schema = {
+    #         "title": "ContextualPersonalHistoryExpansion",
+    #         "description": "Schema for expanding contextual personal history, including contradictions in preferences.",
+    #         "type": "object",
+    #         "minProperties": 10,
+    #         "patternProperties": {
+    #             "^\\d{2}/\\d{2}/\\d{4}$": {
+    #                 "type": "object",
+    #                 "properties": {
+    #                     "Event": {
+    #                         "type": "string",
+    #                         "description": "A description of the new event."
+    #                     },
+    #                     "Category": {
+    #                         "type": "string",
+    #                         "enum": ["Short-Term", "Long-Term"],
+    #                         "description": "Specifies whether the event is short-term or long-term."
+    #                     },
+    #                     "[Fact] Likes": {
+    #                         "type": "string",
+    #                         "description": "A hobby or preference associated with the event.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Fact] Dislikes": {
+    #                         "type": "string",
+    #                         "description": "A dislike related to the event.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Fact] Likes": {
+    #                         "type": "string",
+    #                         "description": "Previous hobby that is now disliked.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Fact] Dislikes": {
+    #                         "type": "string",
+    #                         "description": "Previous dislike that is now liked.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Updated Fact] Likes": {
+    #                         "type": "string",
+    #                         "description": "A new preference that was previously disliked.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Updated Fact] Dislikes": {
+    #                         "type": "string",
+    #                         "description": "A new dislike that was previously liked.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Reasons of Change]": {
+    #                         "type": "string",
+    #                         "description": "A unique, uncommon, and personal reason for changing preferences.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Event Date]": {
+    #                         "type": "string",
+    #                         "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+    #                         "description": "The date of the previous contradictory event.",
+    #                         "nullable": true
+    #                     },
+    #                     "[Old Event]": {
+    #                         "type": "string",
+    #                         "description": "The old event that contradicts the new one.",
+    #                         "nullable": true
+    #                     }
+    #                 },
+    #                 "required": ["Event", "Category"],
+    #                 "oneOf": [
+    #                     {
+    #                         "required": ["[Fact] Likes"],
+    #                         "not": {"required": ["[Fact] Dislikes"]}
+    #                     },
+    #                     {
+    #                         "required": ["[Fact] Dislikes"],
+    #                         "not": {"required": ["[Fact] Likes"]}
+    #                     },
+    #                     {
+    #                         "required": [
+    #                             "[Old Fact] Likes",
+    #                             "[Updated Fact] Dislikes",
+    #                             "[Reasons of Change]",
+    #                             "[Old Event Date]",
+    #                             "[Old Event]"
+    #                         ],
+    #                         "not": {
+    #                             "required": ["[Old Fact] Dislikes", "[Updated Fact] Likes"]
+    #                         }
+    #                     },
+    #                     {
+    #                         "required": [
+    #                             "[Old Fact] Dislikes",
+    #                             "[Updated Fact] Likes",
+    #                             "[Reasons of Change]",
+    #                             "[Old Event Date]",
+    #                             "[Old Event]"
+    #                         ],
+    #                         "not": {
+    #                             "required": ["[Old Fact] Likes", "[Updated Fact] Dislikes"]
+    #                         }
+    #                     }
+    #                 ],
+    #                 "additionalProperties": false
+    #             }
+    #         },
+    #         "additionalProperties": false
+    #     }
     return prompt
 
 
@@ -458,7 +459,6 @@ def prompts_for_generating_conversations(topic, persona, curr_personal_history=N
     #     },
     #     "minItems": 10
     # }
-
     return prompt
 
 
@@ -484,12 +484,13 @@ def prompts_for_reflecting_conversations(topic, data, round, period='INIT'):
     if round == 1:
         prompt = "Given the following " + history_block + " and the " + conversation_block + ", check if the " + conversation_block + " has covered every single timestamp in the " + history_block + ". All [Old Event Date] does NOT count! Ignore them! " \
                  "List all missed ones in the conversation, as well as those in the conversation but not in the " + history_block + ":\n\n" + history_block + "\n\n" + data['history_block'] + "\n\n" + conversation_block + "\n\n" + data['conversation_block']
-        # schema = None
+        schema = None
     elif round == 2:
         prompt = "Please fill in these missed timestamps with their corresponding events mentioned in the " + history_block + " into the " + conversation_block + ". " \
                  "Make sure every single timestamp in the Side_Note in this conversation can be found in the given " + history_block + ", instead of personal history in other time periods. " \
                  "You may add some transition sentences to make it smooth, but do NOT modify any other words in the original conversation, except for the sentences with incorrect timestamps. " \
-                 "If there is no missed timestamp, no need to change any part of the original conversation. Follow exactly the SAME template in the original conversation:\n\n" \
+                 "If there is no missed timestamp, no need to change any part of the original conversation. " \
+                 "Follow exactly the SAME template in the original conversation:\n\n" \
                  "[\n" \
                  '"Side_Note: [xxx] MM/DD/YYYY",' \
                  '"' + user + ': yyy",' \
@@ -585,7 +586,8 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_facts':
         prompt = "This is the correct personalized response to the question: " + data['question'] + ": " + data['response'] + "\n\n" \
                  "Please propose three incorrect options to prepare a multiple choice Q&A, keeping all incorrect responses generally good but mentioning different things or activities. " \
-                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
+                 "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectFactsProposals",
@@ -634,7 +636,8 @@ def prompts_for_generating_qa(data, action):
     elif action == 'propose_incorrect_facts_inverse':
         prompt = "Given this question from the user: " + data['question'] + ", please create three responses inspired by these conversations from other users. " \
                  "Since they originate from other users, it is safe to use them here.\n\n" + data['random_event_histories'] + "\n\n" \
-                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
+                 "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectFactsInverseProposals",
@@ -766,7 +769,8 @@ def prompts_for_generating_qa(data, action):
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each response should look similar, except that they color different incorrect sequence of preference updates. " \
                  "If there is any updates in the sequence, incorrect ones could include incorrect updates or mentions that it is the first time the user mentioned this thing or activity. " \
                  "Do NOT modify the most recent one (the right most one in the sequence). If the sequence has no preference updates, incorrect ones could flip the preference or add one additional change. " \
-                 'Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
+                 'Each option should share similar tone, matching length, and equal level of detail. ' \
+                 'Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectPreferenceSequence",
@@ -808,7 +812,7 @@ def prompts_for_generating_qa(data, action):
 
     elif action == 'extract_identity':
         prompt = "Please extract the gender and racial identities from the following persona information. Output a single string. No other words. Here is the full persona:\n\n" + data
-        schema = None
+        # schema = None
     elif action == 'recommendation':
         prompt = "We aim to assess whether a chatbot can recall a user's most recent preference for a specific type of " + data['parent_object'] + " and provide a personalized recommendation based on this preference. " \
                  "Consider the user's latest preference: " + data['preference'] + " and what they have said: " + data['user_utterance'] + "\n\n" \
@@ -848,7 +852,8 @@ def prompts_for_generating_qa(data, action):
                  "Make sure that the incorrect answers are still good suggestions to other users, but just not for this specific user or VIOLATE this user's most recent preferences: " + data['preference'] + \
                  "If the user's preference is about liking something, the incorrect answer should talk about somehow opposite things, as if the model does not remember what this user's preferences are. " \
                  "If the user's preference is about disliking something, the incorrect answer should talk about things this user dislikes. " \
-                 'Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
+                 'Each option should share similar tone, matching length, and equal level of detail.' \
+                 'Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
                  'Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
         # schema = {
         #     "$schema": "https://json-schema.org/draft/2020-12/schema",

@@ -83,6 +83,7 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
     def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, data_type=None, idx_topic=0, start_time=None, verbose=False):
+        schema = None
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'elaborate_topic':
@@ -162,6 +163,17 @@ class QueryLLM:
         if (step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code'
                 or step == 'rewrite_email' or step == 'rewrite_creative_writing' or step == 'new_content'):
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
+            # if schema:
+            #     response = self.client.chat.completions.create(
+            #         model=model,
+            #         messages=[{"role": "user",
+            #                    "content": prompt}],
+            #         response_format={
+            #             "type": "json_schema",
+            #             "json_schema": schema
+            #         }
+            #     )
+            # else:
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user",
@@ -188,6 +200,17 @@ class QueryLLM:
             else:
                 curr_thread = self.thread_persona
 
+            # if schema:
+            #     message = self.client.beta.threads.messages.create(
+            #         thread_id=curr_thread.id,
+            #         role="user",
+            #         content=prompt,
+            #         response_format={
+            #             "type": "json_schema",
+            #             "json_schema": schema
+            #         }
+            #     )
+            # else:
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
                 role="user",
@@ -210,6 +233,7 @@ class QueryLLM:
                     thread_id=curr_thread.id
                 )
                 response = response.data[0].content[0].text.value
+
                 if verbose:
                     if step == 'new_content':
                         print(f'{utils.Colors.OKGREEN}{action.capitalize()}:{utils.Colors.ENDC} {response}')

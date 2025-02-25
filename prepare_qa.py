@@ -176,7 +176,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
             "Question": question,
             "Correct_Answer": correct_answer,
             "Incorrect_Answers": incorrect_answers,
-            "Type": "identifying_new_things_not_mentioned_by_the_user.",
+            "Type": "identifying_new_things_not_mentioned_by_the_user",
             "Topic": topic,
             "Reference": last_two_details[1],
             "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
@@ -268,7 +268,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "recalling_the_reasons_behind_previous_updates.",
+        "Type": "recalling_the_reasons_behind_previous_updates",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
@@ -434,7 +434,7 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         "Question": question,
         "Correct_Answer": correct_answer,
         "Incorrect_Answers": incorrect_answers,
-        "Type": "recommendation_aligned_with_users_latest_preferences.",
+        "Type": "recommendation_aligned_with_users_latest_preferences",
         "Topic": topic,
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
@@ -471,6 +471,7 @@ def qa_generative(LLM, curr_data, verbose=False):
         "Violated_results": violated_results,
         "Type": "crafting_new_writing_samples_aligned_with_users_preferences",
         "Topic": "writing",
+        "Where": "END OF TEXT",
         "Reference": preferences,
     }
 
@@ -525,6 +526,7 @@ def qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_
         "Incorrect_Answers": new_writing_samples[1:],
         "Type": "discriminating_new_writing_samples_aligned_with_users_preferences",
         "Topic": topic,
+        "Where": "END OF TEXT",
         "Reference": persona,
     }
 

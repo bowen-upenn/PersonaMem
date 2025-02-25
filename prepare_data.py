@@ -262,8 +262,6 @@ def prepare_irrelevant_contexts(LLM, args):
 
     output_file_path = 'data/irrelevant_contexts.json'
     for index, question in enumerate(tqdm(all_random_questions)):
-        if index < 1044:
-            continue
         LLM.create_a_thread(step='irrelevant')
 
         model_answer = LLM.query_llm(step='random_question', data=question, verbose=args['inference']['verbose'])
