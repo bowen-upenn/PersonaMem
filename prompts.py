@@ -100,7 +100,7 @@ def prompts_for_init_contextual_personal_history(topic, start_time, persona, gen
              "[8] Dislikes xxx\n" \
              "[9] Dislikes xxx\n" \
              "[10] Dislikes xxx\n" \
-             "After you have generated the list above, here is the template in JSON you should follow for each event:\n\n" \
+             "After you have generated the list above, here is the template in JSON you should follow for each event. PLEASE MUST USE JSON FOR THIS PART:\n\n" \
                 '"MM/DD/YYYY": {\n' \
                     '"Event": xxx, \n' \
                     '"Category": "Short-Term" OR "Long-Term"\n' \

@@ -148,6 +148,9 @@ def extract_json_from_response(response, parse_json=False, parse_list=False):
             # Extract the JSON part
             json_part = json_match.group(1).strip()
             response = process_json_from_api(json_part)
+        else:
+            # already in JSON format
+            response = json.loads(response)
     elif parse_list:
         response = response.strip("```python").strip("```plaintext").strip()
         response = ast.literal_eval(response)
@@ -168,10 +171,10 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     # Load the existing JSON data from the file (if any)
     existing_json_file = load_existing_json(output_file_path)
 
-    if curr_data_name == 'Init Contextual Personal History':
-        match = re.split(r'```json', response, maxsplit=1)
-        likes_and_dislikes = match[0].strip() if match else ""
-        existing_json_file['Likes and Dislikes'] = likes_and_dislikes
+    # if curr_data_name == 'Init Contextual Personal History':
+    #     match = re.split(r'```json', response, maxsplit=1)
+    #     likes_and_dislikes = match[0].strip() if match else ""
+    #     existing_json_file['Likes and Dislikes'] = likes_and_dislikes
 
     # Extract and append the new JSON data
     parsed_response = extract_json_from_response(response, parse_json, parse_list)
@@ -212,8 +215,10 @@ def pick_a_random_time_within_a_year(input_date):
     return new_date.strftime("%m/%d/%Y")
 
 
-def extract_last_timestamp(response):
-    json_response = extract_json_from_response(response, parse_json=True)
+def extract_last_timestamp(json_response):
+    json_response = json.loads(json_response)
+    if isinstance(json_response, list):
+        json_response = json_response[0]
     timestamps = list(json_response.keys())
     last_timestamp = max(timestamps, key=lambda x: tuple(map(int, x.split('/')[::-1])))
     return last_timestamp

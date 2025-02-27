@@ -10,6 +10,7 @@ import yaml
 import argparse
 import sys
 import ast
+from json_repair import repair_json
 
 from query_llm import QueryLLM
 import utils
@@ -93,17 +94,14 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
         if verbose:
             print(f'{utils.Colors.OKGREEN}{"Expanded Section"}:{utils.Colors.ENDC}')
             print(response)
-        # response = response.strip("```python").strip("```plaintext").strip()
-        # for parser in ast.literal_eval:
-        # try:
+
+        # response = ast.literal_eval(response)
+        response = repair_json(response)
+        response = json.loads(response)
+
         if verbose:
             print('Parsed section', response, '\n\n')
-        response = ast.literal_eval(response)
         return response
-        # except:
-        #     return response
-            # continue  # Try the next parser
-        # return response
 
     # Keywords to identify the start of a new section
     keywords = {'Side_Note', 'Side_Notes', '[Side_Note]', '[Side_Notes]', 'Side', '[Side'}
@@ -122,7 +120,10 @@ def parse_conversation_sections(LLM, input_conversation, topic, last_timestamp, 
     if verbose:
         print('parsed input_conversation', input_conversation, '\n\n')
     # input_conversation = input_conversation.strip("```python").strip("```plaintext").strip()
-    input_conversation = ast.literal_eval(input_conversation)
+
+    input_conversation = repair_json(input_conversation)
+    input_conversation = json.loads(input_conversation)
+    # input_conversation = ast.literal_eval(input_conversation)
     # print('input_conversation', input_conversation, '\n\n')
 
     for idx, line in enumerate(input_conversation):
@@ -234,8 +235,25 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
                 continue
 
         response = LLM.query_llm(step=step, persona=expanded_persona, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
-        utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
-        last_timestamps.append(utils.extract_last_timestamp(response))
+
+        if step == 'init_contextual_personal_history':
+            # print(utils.Colors.OKGREEN, "Response:", utils.Colors.ENDC, response)
+            text_before_json = re.split(r'```json', response)[0].strip()
+            # print(utils.Colors.OKGREEN, "Text Before JSON:", utils.Colors.ENDC, text_before_json)
+            utils.append_json_to_file(text_before_json, output_file_path, curr_data_name="Topic-Specific Hobbies", parse_json=False)
+            try:
+                json_part = re.split(r'```json', response)[1].strip()
+            except:
+                json_part = response
+            # print(utils.Colors.OKGREEN, "JSON Part before repair:", utils.Colors.ENDC, json_part)
+            json_part = repair_json('[{'+json_part+'}]')
+            utils.append_json_to_file(json_part, output_file_path, curr_data_name=data_name, parse_json=True)
+            # print(utils.Colors.OKGREEN, "JSON Part after repair:", utils.Colors.ENDC, json_part)
+            last_timestamps.append(utils.extract_last_timestamp(json_part))
+        else:
+            response = repair_json('[{'+response+'}]')
+            utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=True)
+            last_timestamps.append(utils.extract_last_timestamp(response))
 
     # Populate personal history into conversation
     steps = ['init_conversation', 'first_expand_conversation', 'second_expand_conversation', 'third_expand_conversation']
@@ -260,7 +278,7 @@ def prepare_irrelevant_contexts(LLM, args):
         all_random_code_questions = [line.strip() for line in file]
     all_random_questions = all_random_questions + all_random_code_questions
 
-    output_file_path = 'data/irrelevant_contexts.json'
+    output_file_path = os.path.join(args['inference']['output_dir'], 'irrelevant_contexts.json')
     for index, question in enumerate(tqdm(all_random_questions)):
         LLM.create_a_thread(step='irrelevant')
 
@@ -346,19 +364,19 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    try:
-                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                            """
-                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                            """
-                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                        else:
-                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
-                                                         init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
-                    except Exception as e:
-                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                        all_errored_data_paths[output_file_path] = e
+                    # try:
+                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                        """
+                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                        """
+                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                    else:
+                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
+                                                     init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
+                    # except Exception as e:
+                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                    #     all_errored_data_paths[output_file_path] = e
 
                     LLM.delete_a_thread(step='conversation')
 
@@ -401,6 +419,7 @@ if __name__ == "__main__":
     parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
     parser.add_argument('--s_samples', type=int, default=0, help='Set the starting idx of samples per topic to generate')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing data files and start clean')
+    parser.add_argument('--output_dir', type=str, default='data/output/', help='Set the path to the output directory')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
@@ -411,6 +430,7 @@ if __name__ == "__main__":
     args['inference']['num_samples_per_topic'] = cmd_args.n_samples if cmd_args.n_samples is not None else args['inference']['num_samples_per_topic']
     args['inference']['start_persona_idx'] = cmd_args.s_persona if cmd_args.s_persona is not None else args['inference']['start_persona_idx']
     args['inference']['start_sample_idx'] = cmd_args.s_samples if cmd_args.s_samples is not None else args['inference']['start_sample_idx']
+    args['inference']['output_dir'] = cmd_args.output_dir if cmd_args.output_dir is not None else args['inference']['output_dir']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
     # Start inference
