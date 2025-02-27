@@ -374,11 +374,10 @@ def prepare_data(args):
                         else:
                             prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
                                                          init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
+                        LLM.delete_a_thread(step='conversation')
                     except Exception as e:
                         print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
                         all_errored_data_paths[output_file_path] = e
-
-                    LLM.delete_a_thread(step='conversation')
 
         if len(all_errored_data_paths) > 0:
             print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')
