@@ -219,7 +219,16 @@ def extract_last_timestamp(json_response):
     json_response = json.loads(json_response)
     if isinstance(json_response, list):
         json_response = json_response[0]
-    timestamps = list(json_response.keys())
+
+    # Define regex pattern for MM/DD/YYYY format
+    date_pattern = re.compile(r'^(0[1-9]|1[0-2])/([0-2][0-9]|3[01])/\d{4}$')
+
+    # Filter keys that match MM/DD/YYYY format
+    timestamps = [key for key in json_response.keys() if date_pattern.match(key)]
+
+    if not timestamps:
+        return None  # Return None if no valid date keys exist
+
     last_timestamp = max(timestamps, key=lambda x: tuple(map(int, x.split('/')[::-1])))
     return last_timestamp
 
