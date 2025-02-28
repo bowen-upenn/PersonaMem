@@ -18,7 +18,7 @@ class QueryLLM:
         self.args = args
         # Load the API key
         with open("openai_key.txt", "r") as api_key_file:
-            self.api_key = api_key_file.read()
+            self.api_key = api_key_file.read().strip()
 
         self.client = OpenAI(api_key=self.api_key)
         self.assistant = self.client.beta.assistants.create(
