@@ -152,6 +152,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
         "Incorrect_Answers": incorrect_answers,
         "Type": "recalling_facts_mentioned_by_the_user",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
     })
@@ -183,6 +184,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
             "Incorrect_Answers": incorrect_answers,
             "Type": "identifying_new_things_not_mentioned_by_the_user",
             "Topic": topic,
+            "How_Many_Pref_Updates": len(timestamps),
             "Reference": last_two_details[1],
             "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
         })
@@ -255,6 +257,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "generalizing_past_reasons_in_memory_to_new_scenarios",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
     })
@@ -279,6 +282,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "recalling_the_reasons_behind_previous_updates",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
     })
@@ -362,6 +366,7 @@ def generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "tracking_the_full_sequence_of_preference_updates",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": event_history,
         "Where": last_event["Conversation"].split('\n')[-2]  # insert this question before this place, -2 since the question already includes the user's utterance
     })
@@ -449,6 +454,7 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         "Incorrect_Answers": incorrect_answers,
         "Type": "recommendation_aligned_with_users_latest_preferences",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
     }
@@ -518,6 +524,7 @@ def generate_qa_recalling_preference(LLM, topic, event_history, verbose=False):
         "Incorrect_Answers": incorrect_answers,
         "Type": "recalling_the_latest_user_preferences",
         "Topic": topic,
+        "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[1],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
     })
