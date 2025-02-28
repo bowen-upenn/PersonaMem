@@ -479,15 +479,15 @@ def generate_qa_recalling_preference(LLM, topic, event_history, verbose=False):
         if len(last_two_details) == 2:
             break
 
-    if len(last_two_details) < 2:
-        return qa_entries
+    if len(last_two_details) == 1:
+        last_two_details.insert(0, None)  # No more recent event
+        prev_event = {"Model_Response": None}
+    else:
+        prev_event = {"Model_Response": last_two_details[0]["Conversation"].split("\n")[2]}
 
     related_event = {
         "Event": last_two_details[1]["Event"],
         "User_Utterance": last_two_details[1]["Conversation"].split("\n")[1],
-    }
-    prev_event = {
-        "Model_Response": last_two_details[0]["Conversation"].split("\n")[2],
     }
 
     if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
@@ -760,7 +760,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
                 # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
                 # try:
                 qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
                 if len(qa_entries) > 0:
@@ -792,6 +792,12 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 all_qa_entries.extend(qa_entries)
             # except Exception as e:
             #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+            # try:
+            qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
+            if len(qa_entries) > 0:
+                all_qa_entries.extend(qa_entries)
+            # except Exception as e:
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
             # try:
             qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
             if qa_entry:

@@ -890,11 +890,14 @@ def prompts_for_generating_qa(data, action):
         prompt = "This is the correct personalized response to the user utterance '" + data['User_Mention'] + "': " + data['Response'] + "\n\n" \
                  "Please propose three incorrect options. Each incorrect response must cover exactly the same event\n\n" + data['Event'] + "\n\nbut VIOLATE the user’s stated preference in one or more of the following ways: " \
                  "1. Incorrect Acknowledgment of User Preference - acknowledge the opposite preference and then add something neutral to finish this utterance" \
-                 "2. Complete Forgetfulness- act as though the user never mentioned their preference and then add something consistent with this ignorance to finish this utterance." \
-                 "3. Repetition of Old Response - " + data['Old_Response'] + \
-                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
-                 "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
-                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
+                 "2. Complete Forgetfulness- act as though the user never mentioned their preference and then add something consistent with this ignorance to finish this utterance."
+        if data['Old_Response']:
+            prompt += "3. Repetition of Old Response - " + data['Old_Response']
+        else:
+            prompt += "3. Correct Acknowledgment of User Preference but on Incorrect Event - acknowledge the user's preference but on a different event and then add something neutral to finish this utterance"
+        prompt += "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
+                  "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
+                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
 
     else:
         raise ValueError("Invalid action", action)
