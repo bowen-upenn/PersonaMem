@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer, util
 import random
 from tqdm import tqdm
 import torch
+from json_repair import repair_json
 
 import utils
 from query_llm import QueryLLM
@@ -141,7 +142,9 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = ast.literal_eval(incorrect_answers)
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
 
     qa_entries.append({
         "Question": question,
@@ -170,7 +173,9 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
         if match:
             incorrect_answers = match.group(1)  # Extract the code block
         incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-        incorrect_answers = ast.literal_eval(incorrect_answers)
+        incorrect_answers = repair_json(incorrect_answers)
+        incorrect_answers = json.loads(incorrect_answers)
+        # incorrect_answers = ast.literal_eval(incorrect_answers)
 
         qa_entries.append({
             "Question": question,
@@ -240,7 +245,9 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = ast.literal_eval(incorrect_answers)
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
 
     qa_entries.append({
         "Question": question,
@@ -262,7 +269,9 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = ast.literal_eval(incorrect_answers)
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
 
     qa_entries.append({
         "Question": question,
@@ -340,10 +349,12 @@ def generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=False):
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = ast.literal_eval(incorrect_answers)
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
 
     colon_index = user_utterance.find(':')
-    question = user_utterance[colon_index+1:].strip() + " How do you think about it?"
+    question = user_utterance[colon_index+1:].strip()# + " How do you think about it?"
     event_history['full_sequence'] = full_sequence
     qa_entries.append({
         "Question": question,
@@ -423,7 +434,9 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
     if match:
         incorrect_answers = match.group(1)  # Extract the code block
     incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = ast.literal_eval(incorrect_answers)
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
 
     identity = LLM.query_llm(step='qa_helper', data=persona["Expanded Persona"], action='extract_identity', verbose=False)
     stereotypical_answer = LLM.query_llm(step='qa_helper', data={'persona': identity, 'question': question, 'model_response': correct_answer}, action='propose_stereotypical_recommendation', verbose=False)
@@ -446,6 +459,75 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         print(json.dumps(qa_entry, indent=4))
 
     return qa_entry
+
+
+def generate_qa_recalling_preference(LLM, topic, event_history, verbose=False):
+    # Initialize a list to store the last two details with non-zero conversations
+    qa_entries = []
+    last_two_details = []
+    timestamps = list(event_history.keys())
+
+    # Iterate through the timestamps in reverse order
+    for timestamp in timestamps:
+        current_detail = event_history[timestamp]
+
+        # Check if the conversation is non-zero
+        if len(current_detail['Conversation']) > 0:
+            last_two_details.append(current_detail)
+
+        # Stop once the list contains two details
+        if len(last_two_details) == 2:
+            break
+
+    if len(last_two_details) < 2:
+        return qa_entries
+
+    related_event = {
+        "Event": last_two_details[1]["Event"],
+        "User_Utterance": last_two_details[1]["Conversation"].split("\n")[1],
+    }
+    prev_event = {
+        "Model_Response": last_two_details[0]["Conversation"].split("\n")[2],
+    }
+
+    if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
+        correct_latest_event['Preference'] = 'Likes' + last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else 'Likes' + last_two_details[1]['[Fact] Likes']
+    else:
+        correct_latest_event['Preference'] = 'Dislikes' + last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else 'Dislikes' + last_two_details[1]['[Fact] Dislikes']
+
+    # This Q&A will be asked immediately before the last event
+    response = LLM.query_llm(step='qa_helper', data={'Event': related_event['Event'], 'User_Utterance': related_event['User_Utterance'],
+                                                     'Preference': related_event['Preference']}, action='recall_preference', verbose=False)
+    response = utils.process_json_from_api(response)
+    question = response.get("User Mention", "")
+    correct_answer = response.get("Model Response", "")
+
+    incorrect_answers = LLM.query_llm(step='qa_helper', data={'User_Mention': question, 'Response': correct_answer,
+                                                              'Event': related_event['Event'], 'Old_Response': prev_event['Model_Response']}, action='propose_incorrect_preferences', verbose=False)
+    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    if match:
+        incorrect_answers = match.group(1)  # Extract the code block
+    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    incorrect_answers = repair_json(incorrect_answers)
+    incorrect_answers = json.loads(incorrect_answers)
+    # incorrect_answers = ast.literal_eval(incorrect_answers)
+
+    qa_entries.append({
+        "Question": question,
+        "Correct_Answer": correct_answer,
+        "Incorrect_Answers": incorrect_answers,
+        "Type": "recalling_the_latest_user_preferences",
+        "Topic": topic,
+        "Reference": last_two_details[1],
+        "Where": last_two_details[0]["Conversation"].split('\n')[-2] if last_two_details[0] else "END OF TEXT"  # insert this question before this place, -2 to insert before the user's utterance
+    })
+
+    # Save to JSON file
+    if verbose:
+        print(f'{utils.Colors.OKGREEN}Q&A:{utils.Colors.ENDC}')
+        print(json.dumps(qa_entries, indent=4))
+
+    return qa_entries
 
 
 def qa_generative(LLM, curr_data, verbose=False):
@@ -669,6 +751,12 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             if action == 'qa':
                 # try:
                 qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
+                if len(qa_entries) > 0:
+                    all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                # try:
+                qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
                 # except Exception as e:

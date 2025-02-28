@@ -615,7 +615,7 @@ def prompts_for_generating_qa(data, action):
                  '    "User Question": xxx,\n' \
                  '    "Model Response": yyy\n' \
                  "}. " \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "RecallFactsInverse",
         #   "description": "Schema for testing chatbot memory recall when the user asks about trying something new, indirectly referencing a past event.",
@@ -638,7 +638,7 @@ def prompts_for_generating_qa(data, action):
                  "Since they originate from other users, it is safe to use them here.\n\n" + data['random_event_histories'] + "\n\n" \
                  "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
                  "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
-                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx" and "yyy" in the template. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectFactsInverseProposals",
         #   "description": "A list of three incorrect responses inspired by other user conversations, ensuring each option is well-written and equal in length to the correct response.",
@@ -664,7 +664,7 @@ def prompts_for_generating_qa(data, action):
                  '    "User Question": xxx,\n' \
                  '    "Model Response": yyy\n' \
                  "}. " \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "GeneralizedReasoning",
         #   "description": "Schema for evaluating chatbot memory recall by testing its ability to generalize the user's previous reason for change to a new scenario.",
@@ -687,7 +687,7 @@ def prompts_for_generating_qa(data, action):
                  "The user's utterance is: " + data['user_utterance'] + "\n\nPrevious reason of change on another activity: " + data['reason_of_change'] + "\n\nThe correct model response: " + data['model_response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, but either mentions a wrong reason or completely does not mention the previous reason at all. " \
                  "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
-                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectReasonGeneralizationProposals",
         #   "description": "A list of three incorrect responses that either mention the wrong reason or fail to connect to the user's previously stated reason.",
@@ -706,9 +706,9 @@ def prompts_for_generating_qa(data, action):
                  "Propose a response that specifically has sensitivity to shifts, and mention how the user still thinks about the previous reason of the previous attitude change. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
-                 '    "Model Response": yyy\n' \
+                 '    "Model Response": xxx\n' \
                  "}. " \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholder 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "RecallPreviousReason",
         #   "description": "Schema for chatbot response demonstrating awareness of past reasons when the user updates their preferences again.",
@@ -727,7 +727,7 @@ def prompts_for_generating_qa(data, action):
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
                  "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone, matching length, and equal level of detail." \
                  "Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. " \
-                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectReasonsAfterNewUpdates",
         #   "description": "A list of three incorrect responses that either reference the wrong reason or ignore past reasons altogether.",
@@ -748,9 +748,9 @@ def prompts_for_generating_qa(data, action):
                  "Emphasis should be on the sequence of changes rather than the final state of preferences." \
                  "Always follow the template below:\n\n" \
                  "{\n" \
-                 '    "Model Response": yyy\n' \
+                 '    "Model Response": xxx\n' \
                  "}. " \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "RecallPreferenceSequence",
         #   "description": "Schema for chatbot response demonstrating awareness of the full sequence of user preference changes.",
@@ -771,7 +771,7 @@ def prompts_for_generating_qa(data, action):
                  "Do NOT modify the most recent one (the right most one in the sequence). If the sequence has no preference updates, incorrect ones could flip the preference or add one additional change. " \
                  'Each option should share similar tone, matching length, and equal level of detail. ' \
                  'Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
-                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Please use double quotes for each string. No other words.'
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
         # schema = {
         #   "title": "IncorrectPreferenceSequence",
         #   "description": "A list of three incorrect responses that either misinterpret the preference update sequence or introduce inaccuracies.",
@@ -791,7 +791,7 @@ def prompts_for_generating_qa(data, action):
                  '    "parent_object": xxx,\n' \
                  '    "random_child_object": yyy\n' \
                  "}\n" \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "ExtractedObject",
         #   "description": "Schema for extracting a parent object and generating a related child object.",
@@ -828,7 +828,7 @@ def prompts_for_generating_qa(data, action):
                  '    "User Question": xxx,\n' \
                  '    "Model Response": yyy\n' \
                  "}. " \
-                 "Do NOT modify the names of these keys. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
         # schema = {
         #   "title": "UserPreferenceRecommendation",
         #   "description": "Schema for evaluating chatbot memory recall by testing its ability to recommend personalized items based on the user's most recent preferences.",
@@ -854,7 +854,7 @@ def prompts_for_generating_qa(data, action):
                  "If the user's preference is about disliking something, the incorrect answer should talk about things this user dislikes. " \
                  'Each option should share similar tone, matching length, and equal level of detail.' \
                  'Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization.' \
-                 'Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Do NOT use JSON. No other words.'
+                 'Output a Python list of two strings, following this format: ["xxx", "yyy"]. Please use double quotes for each sentence. Fill in the actual data at placeholders "xxx" and "yyy" in the template. Do NOT use JSON. No other words.'
         # schema = {
         #     "$schema": "https://json-schema.org/draft/2020-12/schema",
         #     "title": "IncorrectUserRecommendations",
@@ -874,6 +874,28 @@ def prompts_for_generating_qa(data, action):
                  "Please do NOT be lazy! Make sure this incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. Output the answer part only using a simple string, like 'xxx'. No additional words. " \
                  "Remember we are creating misleading options in a multiple choice question, so make it sounds like a correct one but do NOT mention that this is actually stereotypical. No other words."
         # schema = None
+
+    elif action == "recall_preference":  # data['Reference'] refers to the two consecutive events
+        prompt = "We want to evaluate whether a chatbot can remember user's preferences shared by the user during previous conversations, " \
+                 "and whether the model can utilize its memory to provide a personalized response. Given this specific activity\n\n'" + data['Event'] + "\n\n and the user's preferences:\n\n" + data['Preference'] + "\n\nmentioned by the user\n\n" + data['User_Utterance'] + \
+                 "we want the user to briefly mention the same activity again in a later conversation, NOT necessary in a question but in a natural sentence, WITHOUT including any preferences. " \
+                 "Please then propose a natural model response that specifically acknowledge the user preference and then add something neutral to finish this utterance. " \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '    "User Mention": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify these names of the keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == "propose_incorrect_preferences":
+        prompt = "This is the correct personalized response to the user utterance '" + data['User_Mention'] + "': " + data['Response'] + "\n\n" \
+                 "Please propose three incorrect options. Each incorrect response must cover exactly the same event\n\n" + data['Event'] + "\n\nbut VIOLATE the user’s stated preference in one or more of the following ways: " \
+                 "1. Incorrect Acknowledgment of User Preference - acknowledge the opposite preference and then add something neutral to finish this utterance" \
+                 "2. Complete Forgetfulness- act as though the user never mentioned their preference and then add something consistent with this ignorance to finish this utterance." \
+                 "3. Repetition of Old Response - " + data['Old_Response'] + \
+                 "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
+                 "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
+                 'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
+
     else:
         raise ValueError("Invalid action", action)
     return prompt
