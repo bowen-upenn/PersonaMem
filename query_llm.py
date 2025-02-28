@@ -70,17 +70,23 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
     def delete_a_thread(self, step):
+        def safe_delete(thread_id):
+            try:
+                self.client.beta.threads.delete(thread_id=thread_id)
+            except Exception as e:
+                print(utils.Colors.WARNING + f'Error deleting thread: {e}' + utils.Colors.ENDC)
+
         if step == 'conversation':
-            self.client.beta.threads.delete(thread_id=self.thread_persona.id)
-            self.client.beta.threads.delete(thread_id=self.thread_conversation.id)
-            self.client.beta.threads.delete(thread_id=self.thread_reflect_conversation.id)
+            safe_delete(thread_id=self.thread_persona.id)
+            safe_delete(thread_id=self.thread_conversation.id)
+            safe_delete(thread_id=self.thread_reflect_conversation.id)
         elif step == 'writing':
-            self.client.beta.threads.delete(thread_id=self.thread_preparing_new_content.id)
+            safe_delete(thread_id=self.thread_preparing_new_content.id)
         elif step == 'qa':
-            self.client.beta.threads.delete(thread_id=self.thread_new_content.id)
-            self.client.beta.threads.delete(thread_id=self.thread_eval_new_content.id)
+            safe_delete(thread_id=self.thread_new_content.id)
+            safe_delete(thread_id=self.thread_eval_new_content.id)
         elif step == 'irrelevant':
-            self.client.beta.threads.delete(thread_id=self.thread_irrelevant.id)
+            safe_delete(thread_id=self.thread_irrelevant.id)
         else:
             raise ValueError(f'Invalid step: {step}')
 
