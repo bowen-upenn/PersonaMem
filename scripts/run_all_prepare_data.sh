@@ -6,7 +6,7 @@
 #studyConsultation therapy travelPlanning writing \
 
 # Lauren
-start_persona_id=0
+start_persona_id=3
 end_persona_id=4  # non-inclusive
 
 ## Zoey

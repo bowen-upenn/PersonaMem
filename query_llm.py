@@ -59,6 +59,7 @@ class QueryLLM:
             self.thread_persona = self.client.beta.threads.create()
             self.thread_conversation = self.client.beta.threads.create()
             self.thread_reflect_conversation = self.client.beta.threads.create()
+        elif step == 'writing':
             self.thread_preparing_new_content = self.client.beta.threads.create()
         elif step == 'qa':
             self.thread_new_content = self.client.beta.threads.create()
@@ -73,6 +74,7 @@ class QueryLLM:
             self.client.beta.threads.delete(thread_id=self.thread_persona.id)
             self.client.beta.threads.delete(thread_id=self.thread_conversation.id)
             self.client.beta.threads.delete(thread_id=self.thread_reflect_conversation.id)
+        elif step == 'writing':
             self.client.beta.threads.delete(thread_id=self.thread_preparing_new_content.id)
         elif step == 'qa':
             self.client.beta.threads.delete(thread_id=self.thread_new_content.id)
