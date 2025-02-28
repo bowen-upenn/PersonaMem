@@ -878,8 +878,9 @@ def prompts_for_generating_qa(data, action):
     elif action == "recall_preference":  # data['Reference'] refers to the two consecutive events
         prompt = "We want to evaluate whether a chatbot can remember user's preferences shared by the user during previous conversations, " \
                  "and whether the model can utilize its memory to provide a personalized response. Given this specific activity\n\n'" + data['Event'] + "\n\n and the user's preferences:\n\n" + data['Preference'] + "\n\nmentioned by the user\n\n" + data['User_Utterance'] + \
-                 "we want the user to briefly mention the same activity again in a later conversation, NOT necessary in a question but in a natural sentence, WITHOUT including any preferences. " \
-                 "Please then propose a natural model response that specifically acknowledge the user preference and then add something neutral to finish this utterance. " \
+                 "we want the user to briefly mention the same activity again in a later conversation in a neutral tone, NOT necessary in a question but in a simple and natural sentence. " \
+                 "The user should avoid expressing or indicating their preference towards " + data['Event'] + "here, even implicitly, as well as avoiding asking the model to recall the memory. Do NOT use any positive or negative words that leaks user's preference. Otherwise we are leaking the hint to the model and making this QA useless. " \
+                 "Please then propose a model's response to this user's mention about this activity. The response should explicitly show that the model correctly remembers this user's previous preference and then add something neutral to finish this utterance. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
                  '    "User Mention": xxx,\n' \
@@ -888,14 +889,14 @@ def prompts_for_generating_qa(data, action):
                  "Do NOT modify these names of the keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     elif action == "propose_incorrect_preferences":
         prompt = "This is the correct personalized response to the user utterance '" + data['User_Mention'] + "': " + data['Response'] + "\n\n" \
-                 "Please propose three incorrect options. Each incorrect response must cover exactly the same event\n\n" + data['Event'] + "\n\nbut VIOLATE the user’s stated preference in one or more of the following ways: " \
-                 "1. Incorrect Acknowledgment of User Preference - acknowledge the opposite preference and then add something neutral to finish this utterance" \
-                 "2. Complete Forgetfulness- act as though the user never mentioned their preference and then add something consistent with this ignorance to finish this utterance."
+                 "Please propose three incorrect options. Each incorrect response must cover exactly the same event\n\n" + data['Event'] + "\n\nbut VIOLATE the user’s stated preference in one or more of the following ways in order: " \
+                 "1. Incorrect Acknowledgment of User Preference - the model expresses incorrect and opposite memory about this user's preference and then add something neutral to finish this utterance" \
+                 "2. Complete Forgetfulness- act as though the user never mentioned their preference towards " + data['Event'] + " and then add something consistent with this ignorance to finish this utterance."
         if data['Old_Response']:
-            prompt += "3. Repetition of Old Response - " + data['Old_Response']
+            prompt += "3. Repetition of Old Response - summarize old response " + data['Old_Response'] + " to the same length of other options without altering the content. "
         else:
             prompt += "3. Correct Acknowledgment of User Preference but on Incorrect Event - acknowledge the user's preference but on a different event and then add something neutral to finish this utterance"
-        prompt += "Each option should share similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
+        prompt += "Each option should be detailed, sharing similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
                   "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                   'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
 

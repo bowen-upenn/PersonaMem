@@ -110,7 +110,7 @@ def generate_qa_factual(LLM, topic, event_history, random_event_histories=None, 
 
         # Check if the conversation is non-zero
         if len(current_detail['Conversation']) > 0:
-            last_two_details.append(current_detail)
+            last_two_details.append(current_detail.copy())
 
         # Stop once the list contains two details
         if len(last_two_details) == 2:
@@ -395,7 +395,7 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
         if 'Conversation' not in current_detail:
             continue
         if len(current_detail['Conversation']) > 0:
-            last_two_details.append(current_detail)
+            last_two_details.append(current_detail.copy())
 
         # Stop once the list contains two details
         if len(last_two_details) == 2:
@@ -497,9 +497,9 @@ def generate_qa_recalling_preference(LLM, topic, event_history, verbose=False):
     }
 
     if "[Updated Fact] Likes" in last_two_details[1] or "[Fact] Likes" in last_two_details[1]:
-        correct_latest_event['Preference'] = 'Likes' + last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else 'Likes' + last_two_details[1]['[Fact] Likes']
+        related_event['Preference'] = 'Likes' + last_two_details[1]['[Updated Fact] Likes'] if "[Updated Fact] Likes" in last_two_details[1] else 'Likes' + last_two_details[1]['[Fact] Likes']
     else:
-        correct_latest_event['Preference'] = 'Dislikes' + last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else 'Dislikes' + last_two_details[1]['[Fact] Dislikes']
+        related_event['Preference'] = 'Dislikes' + last_two_details[1]['[Updated Fact] Dislikes'] if "[Updated Fact] Dislikes" in last_two_details[1] else 'Dislikes' + last_two_details[1]['[Fact] Dislikes']
 
     # This Q&A will be asked immediately before the last event
     response = LLM.query_llm(step='qa_helper', data={'Event': related_event['Event'], 'User_Utterance': related_event['User_Utterance'],
@@ -667,8 +667,8 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
 
     # Remove old Q&A entries if they exist
     if "Q&A" in data:
+        print('conversation_key', conversation_key)
         if conversation_key in data["Q&A"]:
-
             # user_input = input("Are you sure to remove existing Q&As (y/n): ").strip().lower()
             # if user_input == 'y':
             del data["Q&A"][conversation_key]
@@ -756,72 +756,72 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                # try:
-                qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
-                if len(qa_entries) > 0:
-                    all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-                # try:
+                # # try:
+                # qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
+                # if len(qa_entries) > 0:
+                #     all_qa_entries.extend(qa_entries)
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                # # try:
                 qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
-                # try:
-                qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
-                if len(qa_entries) > 0:
-                    all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
-                # try:
-                qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
-                if len(qa_entries) > 0:
-                    all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
-                # try:
-                qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                if qa_entry:
-                    all_qa_entries.extend([qa_entry])
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
-                # try:
-                #     qa_entries = generate_qa_personalized_response(LLM, topic, event_history, verbose=verbose)
-                #     if len(qa_entries) > 0:
-                #         all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for personalized response{utils.Colors.ENDC}{e}')
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+                # # try:
+                # qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
+                # if len(qa_entries) > 0:
+                #     all_qa_entries.extend(qa_entries)
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
+                # # try:
+                # qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
+                # if len(qa_entries) > 0:
+                #     all_qa_entries.extend(qa_entries)
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                # # try:
+                # qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+                # if qa_entry:
+                #     all_qa_entries.extend([qa_entry])
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                # # try:
+                # #     qa_entries = generate_qa_personalized_response(LLM, topic, event_history, verbose=verbose)
+                # #     if len(qa_entries) > 0:
+                # #         all_qa_entries.extend(qa_entries)
+                # # except Exception as e:
+                # #     print(f'{utils.Colors.FAIL}Error generating Q&A for personalized response{utils.Colors.ENDC}{e}')
         else:
-            # try:
-            qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
-            if len(qa_entries) > 0:
-                all_qa_entries.extend(qa_entries)
-            # except Exception as e:
-            #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-            # try:
+            # # try:
+            # qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
+            # if len(qa_entries) > 0:
+            #     all_qa_entries.extend(qa_entries)
+            # # except Exception as e:
+            # #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+            # # try:
             qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
             if len(qa_entries) > 0:
                 all_qa_entries.extend(qa_entries)
-            # except Exception as e:
-            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
-            # try:
-            qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-            if qa_entry:
-                all_qa_entries.extend([qa_entry])
-            # except Exception as e:
-            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+            # # except Exception as e:
+            # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+            # # try:
+            # qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+            # if qa_entry:
+            #     all_qa_entries.extend([qa_entry])
+            # # except Exception as e:
+            # #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
 
-    # Save all Q&A entries to the JSON file at data_path
-    if "Q&A" not in data:
-        data["Q&A"] = {conversation_key: all_qa_entries}
-    else:
-        if conversation_key not in data["Q&A"]:
-            data["Q&A"][conversation_key] = all_qa_entries
-        else:
-            data["Q&A"][conversation_key].extend(all_qa_entries)
-    with open(data_path, "w") as json_file:
-        json.dump(data, json_file, indent=4)
+    # # Save all Q&A entries to the JSON file at data_path
+    # if "Q&A" not in data:
+    #     data["Q&A"] = {conversation_key: all_qa_entries}
+    # else:
+    #     if conversation_key not in data["Q&A"]:
+    #         data["Q&A"][conversation_key] = all_qa_entries
+    #     else:
+    #         data["Q&A"][conversation_key].extend(all_qa_entries)
+    # with open(data_path, "w") as json_file:
+    #     json.dump(data, json_file, indent=4)
 
     return
 
