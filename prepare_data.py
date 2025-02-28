@@ -64,7 +64,7 @@ def prepare_topics(idx_topic, all_topics, curr_topic, args):
         source_dir = args['datasets']['therapy_source_dir']
     else:
         source_dir = None
-        print(f'{utils.Colors.WARNING}No source data is available for the topic: {curr_topic}{utils.Colors.ENDC}')
+        # print(f'{utils.Colors.WARNING}No source data is available for the topic: {curr_topic}{utils.Colors.ENDC}')
 
     all_source_files = utils.load_all_source_data(source_dir, curr_topic) if source_dir is not None else None
     return source_dir, all_source_files
