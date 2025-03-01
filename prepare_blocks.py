@@ -264,77 +264,6 @@ def topological_sort(processed_blocks, num_variants=10, verbose=False):
 
     return variants
 
-# def topological_sort(processed_blocks, new_content_samples, num_variants=3, verbose=False):
-#     def random_date(start, end):
-#         delta = end - start
-#         random_days = random.randint(0, delta.days)
-#         return start + timedelta(days=random_days)
-#
-#     all_timestamps = []
-#     for latest_ts, block in processed_blocks.items():
-#         if latest_ts[:2] != '00':  # Only process valid timestamps
-#             all_timestamps.append(parse_date(block['last_timestamp']))
-#     all_timestamps.sort()
-#
-#     if not all_timestamps:
-#         raise ValueError("No valid timestamps found. Ensure some blocks have timestamps.")
-#
-#     earliest_timestamp = all_timestamps[0]
-#     latest_timestamp = all_timestamps[-1]
-#
-#     variants = []
-#
-#     for _ in range(num_variants):
-#         all_blocks = list(processed_blocks.values())  # Copy of blocks
-#         # all_strings_copy = list(all_strings)  # Ensure strings match the blocks
-#         new_content_samples_copy = list(new_content_samples)  # Ensure alignment
-#
-#         # Shuffle blocks before assigning timestamps to add randomness
-#         shuffled_data = list(zip(all_blocks, new_content_samples_copy))
-#         random.shuffle(shuffled_data)  # Shuffle before assigning timestamps
-#         all_blocks, new_content_samples_copy = zip(*shuffled_data)
-#
-#         all_blocks = list(all_blocks)
-#         # all_strings_copy = list(all_strings_copy)
-#         new_content_samples_copy = list(new_content_samples_copy)
-#
-#         for block in all_blocks:
-#             if block['last_timestamp'][:2] == '00':  # Assign random timestamp if missing
-#                 random_timestamp = random_date(earliest_timestamp, latest_timestamp)
-#                 block['last_timestamp'] = random_timestamp.strftime("%m/%d/%Y")
-#
-#         all_timestamps = [parse_date(block['last_timestamp']) for block in all_blocks]
-#
-#         # Shuffle blocks with the same timestamp to introduce more variation
-#         combined = list(zip(all_timestamps, all_blocks, new_content_samples_copy))
-#         combined.sort(key=lambda x: x[0])  # Sort primarily by timestamp
-#
-#         # If multiple items have the same timestamp, shuffle them within that timestamp
-#         grouped_by_timestamp = {}
-#         for item in combined:
-#             ts = item[0]
-#             if ts not in grouped_by_timestamp:
-#                 grouped_by_timestamp[ts] = []
-#             grouped_by_timestamp[ts].append(item)
-#
-#         sorted_blocks = []
-#         for ts in sorted(grouped_by_timestamp.keys()):  # Iterate through sorted timestamps
-#             random.shuffle(grouped_by_timestamp[ts])  # Shuffle within timestamp group
-#             sorted_blocks.extend(grouped_by_timestamp[ts])
-#
-#         # Unpack sorted components while maintaining order
-#         all_timestamps_sorted, all_blocks_sorted, new_content_samples_sorted = zip(*sorted_blocks)
-#
-#         if verbose:
-#             print(f'Variant {_ + 1}:')
-#             print(f'Sorted timestamps: {[block["last_timestamp"] for block in all_blocks_sorted]}')
-#             print(f'Sorted conversation blocks: {[block["file_name"] + ": " + block["time_period"] for block in all_blocks_sorted]}')
-#             print('-' * 50)
-#
-#         variants.append((list(all_blocks_sorted), list(new_content_samples_sorted)))
-#
-#     return variants
-
 
 def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts=None, verbose=False):
     all_conversations = []
@@ -352,19 +281,6 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
             all_conversations.append(block["conversation"])
         else:
             all_conversations.extend(block["conversation"])
-
-        # If this block is about writing new samples, we also append the new sample into the whole topic
-        # if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
-        #     print('After sort new_content_samples: ', block_idx, sorted_new_content_samples)
-        #     assert sorted_new_content_samples[block_idx]   # should not be empty
-        #     original_sample = sorted_new_content_samples[block_idx]["Original Sample"]
-        #     updated_sample = sorted_new_content_samples[block_idx]["Updated Sample"]
-        #     if which_format == 'string':
-        #         all_conversations.append("Help summarize our conversation by showing the original sample and the updated sample here again."
-        #                                  "\n\nOriginal Sample" + original_sample + "\n\nUpdated Sample" + updated_sample + "\n\n")
-        #     else:
-        #         all_conversations.append({"role": "user", "content": "Help summarize our conversation by showing the original sample and the updated sample here again."})
-        #         all_conversations.append({"role": "assistant", "content": "Original Sample:\n\n" + original_sample + "\n\n" + "Updated Sample:\n\n" + updated_sample + "\n\n"})
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -443,93 +359,14 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             q['distance_blocks'] = block_num_q - block_num_ref
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
             q['context_length'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
+            q['context_length_in_letters'] = len(curr_context)
+            q['shared_context'] = all_conversations
+            q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
 
     return all_qa
-
-# def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations):
-#     """
-#     We assume the questions are asked at the end of all concatenated conversation blocks.
-#     This function computes the distance of each question from the end to its corresponding conversation block.
-#     Range of distance: [0, total_blocks-1]
-#     """
-#     total_blocks = len(sorted_processed_blocks)
-#     all_qa = []
-#
-#
-#
-#     sorted_strings = []
-#     for block in sorted_processed_blocks:
-#         curr_block_string = ""
-#         for item in block['conversation']:
-#             curr_block_string += '\n' + item['content']
-#         sorted_strings.append(curr_block_string)
-#
-#     for i, block in enumerate(sorted_processed_blocks):
-#         # Only keep Q&As in the last block, i.e., the current session during conversation
-#         if i + 1 < total_blocks:
-#             continue
-#
-#         distance = total_blocks - (i + 1)
-#         curr_block = sorted_strings[i]
-#
-#         # we assign distance to all qa in the current block
-#         for idx, q in enumerate(block.get('qa', [])):
-#             if not q:
-#                 continue
-#
-#             # Get where the question will be asked
-#             where = q['Where']
-#             if where == 'END OF TEXT':
-#                 block_num_q, start_index_q = i, len(curr_block) - 1 # This Q&A will be asked at the end of this block
-#             else:
-#                 block_num_q, start_index_q = utils.find_string_in_list(sorted_strings, where)
-#
-#             # count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
-#             num_tokens_q = sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_q)])
-#             num_tokens_q += count_tokens(sorted_strings[block_num_q][:start_index_q], tokenizer, verbose=False)
-#             curr_context = " ".join([sorted_strings[i] for i in range(block_num_q)]) + sorted_strings[block_num_q][:start_index_q]
-#             # print('count_tokens(curr_context)', count_tokens(curr_context, tokenizer, verbose=False))
-#
-#             print('!!!!!!!', sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_q)]),
-#                   count_tokens(" ".join([sorted_strings[i] for i in range(block_num_q)]), tokenizer, verbose=False),
-#                   count_tokens(" ".join([item['content'] for item in sorted_processed_blocks]), tokenizer, verbose=False)
-#             )
-#
-#             # Get where the reference information will be
-#             if 'Reference' not in q:
-#                 continue
-#             else:
-#                 if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
-#                     # pick the first sentence
-#                     block_num_ref, start_index_ref = i, 0
-#                 elif 'Conversation' in q['Reference']:
-#                     reference_event = q['Reference']['Conversation']
-#                     reference_utterance = reference_event.split('\n')[1]
-#                     block_num_ref, start_index_ref = utils.find_string_in_list(sorted_strings, reference_utterance)
-#                 else:
-#                     # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
-#                     all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
-#                     all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
-#                     reference_event = q['Reference'][all_timestamps[0]]['Conversation']
-#                     # print('reference_event', reference_event)
-#                     reference_utterance = reference_event.split('\n')[1]
-#                     # print('reference_utterance', reference_utterance)
-#                     block_num_ref, start_index_ref = utils.find_string_in_list(sorted_strings, reference_utterance)
-#
-#             num_tokens_ref = sum([count_tokens(sorted_strings[i], tokenizer, verbose=False) for i in range(block_num_ref)])
-#             num_tokens_ref += count_tokens(sorted_strings[block_num_ref][:start_index_ref], tokenizer, verbose=False)
-#
-#             q['distance_blocks'] = block_num_q - block_num_ref
-#             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
-#             q['context_length'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
-#             q['curr_context'] = curr_context
-#             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
-#             all_qa.append(q)
-#
-#     return all_qa
 
 
 def question_loader(qa_list):
@@ -572,10 +409,13 @@ def question_loader(qa_list):
         question_type = qa['Type']
         topic = qa['Topic']
         context_length = qa['context_length']
+        context_length_in_letters = qa['context_length_in_letters']
+        shared_context = qa['shared_context']
+        end_index_in_shared_context = qa['end_index_in_shared_context']
         curr_context = qa['curr_context']
         where = qa['Where'] if 'Where' in qa else None
 
-        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length
+        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length, context_length_in_letters, shared_context, end_index_in_shared_context
 
 
 if __name__ == "__main__":
@@ -659,7 +499,7 @@ if __name__ == "__main__":
     all_qa = compute_question_distance(sorted_processed_blocks, sorted_strings, tokenizer, total_num_tokens)
 
     # Show all Q&As related to this concatenated conversation
-    for curr_context, question, formatted_question, correct_answer, all_options, distance, question_type, topic, where, context_length in question_loader(all_qa):
+    for curr_context, question, formatted_question, correct_answer, all_options, distance, question_type, topic, where, context_length, context_length_in_letters, shared_context, end_index_in_shared_context in question_loader(all_qa):
         """
         The formatted_question is the input to the LLM model, and correct_answer is the target answer. 
         We (1) split the formatted_question (2) add the distance here, only for display purposes.

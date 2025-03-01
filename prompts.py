@@ -895,7 +895,7 @@ def prompts_for_generating_qa(data, action):
         if data['Old_Response']:
             prompt += "3. Repetition of Old Response - summarize old response " + data['Old_Response'] + " to the same length of other options without altering the content. "
         else:
-            prompt += "3. Correct Acknowledgment of User Preference but on Incorrect Event - acknowledge the user's preference but on a different event and then add something neutral to finish this utterance"
+            prompt += "3. Correct Acknowledgment of User Preference but on Incorrect Event - acknowledge the user's preference but on a different, irrelevant event and then add something neutral to finish this utterance"
         prompt += "Each option should be detailed, sharing similar tone, matching length, and equal level of detail. Please do NOT be lazy! " \
                   "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                   'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'

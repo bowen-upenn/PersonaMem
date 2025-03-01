@@ -7,6 +7,8 @@ import re
 from datetime import datetime, timedelta
 from sentence_transformers import util
 import ast
+import hashlib
+import base64
 
 
 class Colors:
@@ -432,3 +434,11 @@ def find_string_in_list(data, target, sorted_processed_blocks=None):
 
     print('target not found')
     return -1  # Return -1 if not found
+
+
+def generate_unique_id_from_string(input_string):
+    """Generate a unique fixed-length ID from a string."""
+    hash_object = hashlib.sha256(input_string.encode())  # Hash the input string
+    hash_digest = hash_object.digest()  # Get binary hash
+    base64_encoded = base64.urlsafe_b64encode(hash_digest).decode()  # Encode in base64
+    return base64_encoded

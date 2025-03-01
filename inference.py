@@ -172,13 +172,14 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         writer = csv.writer(file)
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
-            writer.writerow(["question_id", "question_type", "topic", "context_length", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "question", "correct_answer", "all_options"])
+            writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "question", "correct_answer", "all_options"])
 
         writer.writerow([
             result["question_id"],
             result["question_type"],
             result['topic'],
             result['context_length'],
+            result['context_length_in_letters'],
             result['distance_blocks'],
             result['distance_tokens'],
             result["question"],
@@ -195,6 +196,10 @@ def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
             existing_data = json.load(file)
             if not isinstance(existing_data, list):
                 existing_data = []
+
+    # If the unique key already exists
+    if contexts_dict.keys() in [item.keys() for item in existing_data]:
+        return
 
     # Append new context
     existing_data.append(contexts_dict)
@@ -293,25 +298,6 @@ if __name__ == "__main__":
 
             qa = extract_qa(base_dir, topic, file_name, time_period)
 
-            # if topic == 'writing':
-            #     with open(os.path.join(args['inference']['output_dir'], 'writing', file_name), 'r') as file:
-            #         data = json.load(file)
-            #         original_sample = data.get("Original Sample")
-            #         updated_sample = data.get("Updated Writing Sample")
-            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
-            # elif topic == 'email':
-            #     with open(os.path.join(args['inference']['output_dir'], 'email', file_name), 'r') as file:
-            #         data = json.load(file)
-            #         original_sample = data.get("Original Sample")
-            #         updated_sample = data.get("Updated Writing Sample")
-            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
-            # elif topic == 'coding':
-            #     with open(os.path.join(args['inference']['output_dir'], 'coding', file_name), 'r') as file:
-            #         data = json.load(file)
-            #         original_sample = data.get("Original Sample")
-            #         updated_sample = data.get("Updated Coding Sample")
-            #     new_content_samples[block_idx] = {"Original Sample": original_sample, "Updated Sample": updated_sample}
-
             processed_blocks_dict[latest_ts] = {
                 "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
                 "file_name": file_name,
@@ -344,9 +330,11 @@ if __name__ == "__main__":
             all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations)
 
             # Show all Q&As related to this concatenated conversation
-            for curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length in tqdm(question_loader(all_qa), total=len(all_qa)):
+            for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
+                 context_length, context_length_in_letters, shared_context, end_index_in_shared_context) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
+                shared_context_id = utils.generate_unique_id_from_string(shared_context)    # More efficient way to store long context shared by multiple Q&As with just different end indices
 
                 if save_only:
                     curr_qa_info = {
@@ -358,10 +346,14 @@ if __name__ == "__main__":
                         "distance_tokens": distance_tokens,
                         "question_type": question_type,
                         "topic": topic,
-                        "context_length": context_length
+                        "shared_context_id": shared_context_id,
+                        "end_index_in_shared_context": end_index_in_shared_context,
+                        "context_length": context_length,
+                        "context_length_in_letters": context_length_in_letters
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
                     save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
+                    save_contexts_to_json({shared_context_id: shared_context}, "data/shared_contexts.json")
                     save_questions_to_csv(curr_qa_info, "data/questions.csv")
 
                 else:
