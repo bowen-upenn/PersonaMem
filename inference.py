@@ -170,21 +170,25 @@ def generate_conversation_id(context):
 def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
+
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
-            writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "question", "correct_answer", "all_options"])
+            writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens",
+                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
 
         writer.writerow([
             result["question_id"],
             result["question_type"],
             result['topic'],
-            result['context_length'],
+            result['context_length_in_tokens'],
             result['context_length_in_letters'],
             result['distance_blocks'],
             result['distance_tokens'],
             result["question"],
             result["correct_answer"],
             result['all_options'],
+            result["shared_context_id"],
+            result["end_index_in_shared_context"]
         ])
 
 
@@ -285,7 +289,7 @@ if __name__ == "__main__":
 
         # Process each chosen conversation block
         processed_blocks_dict = {}
-        # all_strings = []
+        all_strings = []
         # new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
         for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
@@ -306,7 +310,7 @@ if __name__ == "__main__":
                 "topic": topic,
                 "qa": qa
             }
-            # all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
+            all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
 
         # Topological sort chosen conversation blocks by the latest timestamp
         # print('Before sort new_content_samples: ', new_content_samples)
@@ -327,11 +331,11 @@ if __name__ == "__main__":
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
                 print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
-            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations)
+            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, all_strings)
 
             # Show all Q&As related to this concatenated conversation
             for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
-                 context_length, context_length_in_letters, shared_context, end_index_in_shared_context) in tqdm(question_loader(all_qa), total=len(all_qa)):
+                 context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
                 shared_context_id = utils.generate_unique_id_from_string(shared_context)    # More efficient way to store long context shared by multiple Q&As with just different end indices
@@ -348,7 +352,7 @@ if __name__ == "__main__":
                         "topic": topic,
                         "shared_context_id": shared_context_id,
                         "end_index_in_shared_context": end_index_in_shared_context,
-                        "context_length": context_length,
+                        "context_length_in_tokens": context_length_in_tokens,
                         "context_length_in_letters": context_length_in_letters
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset

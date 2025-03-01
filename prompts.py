@@ -76,11 +76,12 @@ def prompts_for_init_contextual_personal_history(topic, start_time, persona, gen
              "Each event must come with the related personal hobbies or dislikes, marked using a key '[Fact] Likes:' or '[Fact] Dislikes:' closely associated with the 20 things you listed here, and they should concentrate on the topic of " + topic + \
              "If an event is related to a dislike, it should show that this person dislikes it after experienced it or the person is trying to avoid it. " \
              "Use the same JSON format with MM/DD/YYYY timestamp from " + start_time + ", and use short-term/long-term labels as above. There should be 10 short-term and 10 long-term events." \
-             "List all 20 hobbies first, and then randomly assign those 20 hobbies into likes or dislikes for this person. " \
+             "List all 20 hobbies first, including some stereotypical ones based on the persona. Mark stereotypical ones by square brackets '[stereotypical]'. " \
+             "Next, randomly assign those 20 hobbies into likes or dislikes for this person. " \
              "After you have generated the list above, generate one dict for each event following those 20 likes and dislikes. " \
              "List all 20 hobbies first, and then follow this template in string to randomly assign those 20 hobbies into likes or dislikes for this person:\n\n" \
              "20 hobbies: xxx, ..., xxx\n" \
-             "Initial preferences randomly assigned: [1] Likes xxx\n" \
+             "Initial preferences randomly assigned: [1] Likes xxx (Add [stereotypical] here if appropriate, same for each of the 20 rows below)\n" \
              "[2] Likes xxx\n" \
              "[3] Likes xxx\n" \
              "[4] Likes xxx\n" \

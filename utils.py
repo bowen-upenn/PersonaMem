@@ -405,32 +405,21 @@ def clean_up_one_file(file_path):
         print(f"File not found: {file_path}")
 
 
-def find_string_in_list(data, target, sorted_processed_blocks=None):
-    # Check if the data is a list of dictionaries
-    if isinstance(data, list) and isinstance(data[0], dict):
-        for index, item in enumerate(data):
-            if item.get('content') == target:
-                return 0, index
-    # if isinstance(data, list) and isinstance(data[0], dict):
-    #     # print('sorted_processed_blocks', sorted_processed_blocks[0]['conversation'])
-    #     for index, item in enumerate(data):
-    #         if item.get('content') == target:
-    #             # print('index', index, len(sorted_processed_blocks), sum(len(block['conversation']) for block in sorted_processed_blocks))
-    #             # # Find block index
-    #             # for block_index, block in enumerate(sorted_processed_blocks):
-    #             #     for entry in block['conversation']:
-    #             #         if target in entry['content']:
-    #             block_index = 0
-    #             return block_index, index
+def find_string_in_list(where, all_conversations, all_strings):
+    """
+    :param where: the target sentence
+    :param all_conversations: it is a list of dict, with each dict content being an utterance. Its length is equal to the total number of utterance over all blocks
+    :param all_strings: it is a list of strings, with each string being a whole block of text. Its length is equal to the number of blocks
+    :return block_num: the block number in all_strings where the target sentence is found
+    :return start_index: the index of the target sentence in all_conversations
+    """
+    # start_index is the i_th utterance in api_dict
+    start_index = next((i for i, item in enumerate(all_conversations) if item.get('content') == where), -1)
 
-    # Check if the data is a list of strings
-    elif isinstance(data, list) and isinstance(data[0], str):
-        for block_num, data_block in enumerate(data):
-            start_index = data_block.find(target)
-            if start_index != -1:
-                return block_num, start_index
-            else:
-                continue
+    for block_num, data_block in enumerate(all_strings):
+        in_curr_block = data_block.find(where)
+        if in_curr_block != -1:
+            return block_num, start_index
 
     print('target not found')
     return -1  # Return -1 if not found
@@ -438,6 +427,10 @@ def find_string_in_list(data, target, sorted_processed_blocks=None):
 
 def generate_unique_id_from_string(input_string):
     """Generate a unique fixed-length ID from a string."""
+    # check if input_string is a list of dict
+    if isinstance(input_string, list) and isinstance(input_string[0], dict):
+        input_string = ' '.join([item['content'] for item in input_string])
+
     hash_object = hashlib.sha256(input_string.encode())  # Hash the input string
     hash_digest = hash_object.digest()  # Get binary hash
     base64_encoded = base64.urlsafe_b64encode(hash_digest).decode()  # Encode in base64

@@ -269,13 +269,13 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
     all_conversations = []
     for block_idx, block in enumerate(sorted_processed_blocks):
         # Insert irrelevant contexts
-        if all_irrelevant_contexts and which_format == 'api_dict':
-            num_random_blocks = random.randint(0, 20)
-            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-            for session in random_sessions:
-                key = list(session.keys())[0]   # only one key in each session
-                if session[key]:
-                    all_conversations.extend(session[key])
+        # if all_irrelevant_contexts and which_format == 'api_dict':
+        #     num_random_blocks = random.randint(0, 20)
+        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+        #     for session in random_sessions:
+        #         key = list(session.keys())[0]   # only one key in each session
+        #         if session[key]:
+        #             all_conversations.extend(session[key])
 
         if which_format == 'string':
             all_conversations.append(block["conversation"])
@@ -304,7 +304,7 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations):
+def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, all_strings):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -326,9 +326,11 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             # Get where the question will be asked
             where = q['Where']
             if where == 'END OF TEXT':
+                print('End of text')
                 block_num_q, start_index_q = i, len(all_conversations) - 1
             else:
-                block_num_q, start_index_q = utils.find_string_in_list(all_conversations, where, sorted_processed_blocks)
+                print('During text')
+                block_num_q, start_index_q = utils.find_string_in_list(where, all_conversations, all_strings)
 
             num_tokens_q = count_tokens(" ".join([item['content'] for item in all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = all_conversations[:start_index_q]
@@ -338,28 +340,35 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 continue
             else:
                 if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
+                    print('type1')
                     reference_utterance = sorted_processed_blocks[i]['conversation'][0]['content']
-                    block_num_ref, start_index_ref = utils.find_string_in_list(all_conversations, reference_utterance, sorted_processed_blocks)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
                 elif 'Conversation' in q['Reference']:
+                    print('type2')
                     reference_event = q['Reference']['Conversation']
                     reference_utterance = reference_event.split('\n')[1]
-                    block_num_ref, start_index_ref = utils.find_string_in_list(all_conversations, reference_utterance, sorted_processed_blocks)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
                 else:
                     # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
+                    print('type3')
                     all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
                     all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
                     reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                     # print('reference_event', reference_event)
                     reference_utterance = reference_event.split('\n')[1]
                     # print('reference_utterance', reference_utterance)
-                    block_num_ref, start_index_ref = utils.find_string_in_list(all_conversations, reference_utterance, sorted_processed_blocks)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
 
             num_tokens_ref = count_tokens(" ".join([item['content'] for item in all_conversations[:start_index_ref]]), tokenizer, verbose=False)
 
+            print('len(all_conversations)', len(all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False))
+            print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref,)
+            print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
+
             q['distance_blocks'] = block_num_q - block_num_ref
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
-            q['context_length'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
-            q['context_length_in_letters'] = len(curr_context)
+            q['context_length_in_tokens'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
+            q['context_length_in_letters'] = len(" ".join([item['content'] for item in curr_context]))
             q['shared_context'] = all_conversations
             q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
@@ -408,14 +417,14 @@ def question_loader(qa_list):
         distance_tokens = qa['distance_tokens']
         question_type = qa['Type']
         topic = qa['Topic']
-        context_length = qa['context_length']
+        context_length_in_tokens = qa['context_length_in_tokens']
         context_length_in_letters = qa['context_length_in_letters']
         shared_context = qa['shared_context']
         end_index_in_shared_context = qa['end_index_in_shared_context']
         curr_context = qa['curr_context']
         where = qa['Where'] if 'Where' in qa else None
 
-        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length, context_length_in_letters, shared_context, end_index_in_shared_context
+        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context
 
 
 if __name__ == "__main__":
