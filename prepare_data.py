@@ -49,7 +49,7 @@ def prepare_persona(LLM, idx_persona, all_personas, args):
 
 def prepare_topics(idx_topic, all_topics, curr_topic, args):
     # Process each topic as needed
-    print(f'{utils.Colors.OKGREEN}Processing topic: {curr_topic}, {idx_topic + 1}/{len(all_topics)}{utils.Colors.ENDC}')
+    print(f'{utils.Colors.OKBLUE}Processing topic: {curr_topic}, {idx_topic + 1}/{len(all_topics)}{utils.Colors.ENDC}')
 
     # Load a random conversation history from the chosen real-world dataset
     if curr_topic == 'writing':
