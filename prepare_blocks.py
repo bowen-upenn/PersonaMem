@@ -283,16 +283,17 @@ def get_order_mapping(original_blocks, sorted_blocks):
 def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts=None, verbose=False):
     all_conversations = []
     for block_idx, block in enumerate(sorted_processed_blocks):
-        # Insert irrelevant contexts
-        # if all_irrelevant_contexts and which_format == 'api_dict':
-        #     num_random_blocks = random.randint(0, 20)
-        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-        #     for session in random_sessions:
-        #         key = list(session.keys())[0]   # only one key in each session
-        #         if session[key]:
-        #             all_conversations.extend(session[key])
-
         curr_conversations = []
+
+        # Insert irrelevant contexts
+        if all_irrelevant_contexts and which_format == 'api_dict':
+            num_random_blocks = random.randint(0, 20)
+            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+            for session in random_sessions:
+                key = list(session.keys())[0]   # only one key in each session
+                if session[key]:
+                    curr_conversations.extend(session[key])
+
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
         else:
@@ -377,9 +378,9 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
 
             num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
 
-            print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
-            print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref,)
-            print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
+            # print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
+            # print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref,)
+            # print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
 
             q['distance_blocks'] = block_num_q - block_num_ref
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
