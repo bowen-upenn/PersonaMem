@@ -289,7 +289,7 @@ if __name__ == "__main__":
 
         # Process each chosen conversation block
         processed_blocks_dict = {}
-        all_strings = []
+        # all_strings = []
         # new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
         for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
@@ -310,28 +310,20 @@ if __name__ == "__main__":
                 "topic": topic,
                 "qa": qa
             }
-            all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
+            # all_strings.append(processed_conversation[-1])  # idx -1 always corresponds to the conversation in the plain string format
 
         # Topological sort chosen conversation blocks by the latest timestamp
         # print('Before sort new_content_samples: ', new_content_samples)
         variants = topological_sort(processed_blocks_dict, num_variants=n_variants, verbose=verbose)
-        for variant in variants:
-            sorted_processed_blocks = variant
 
+        for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts, verbose)
+            all_qa, all_conversations = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations)
 
-            # Reiterate through all qa after block concatenations to add the distance information
-            # total_num_tokens = sum([count_tokens(string, tokenizer, verbose=False) for string in all_strings])
-            # print('len(all_conversations)', len(all_conversations))
-            # for item in all_conversations:
-            #     print('item', item)
-            #     if item is None:
-            #         break
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
                 print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
-            all_qa = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, all_strings)
 
             # Show all Q&As related to this concatenated conversation
             for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,

@@ -265,6 +265,21 @@ def topological_sort(processed_blocks, num_variants=10, verbose=False):
     return variants
 
 
+def get_order_mapping(original_blocks, sorted_blocks):
+    """
+    Generate a mapping from the original order to the sorted order, using both file_name and time_period.
+
+    :param original_blocks: List of blocks in the original order.
+    :param sorted_blocks: List of blocks in the sorted order.
+    :return: Dictionary mapping original indices to sorted indices.
+    """
+    original_indices = {(block["file_name"], block["time_period"]): i for i, block in enumerate(original_blocks)}
+    sorted_indices = {(block["file_name"], block["time_period"]): i for i, block in enumerate(sorted_blocks)}
+
+    mapping = {original_indices[key]: sorted_indices[key] for key in original_indices}
+    return mapping
+
+
 def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts=None, verbose=False):
     all_conversations = []
     for block_idx, block in enumerate(sorted_processed_blocks):
@@ -277,10 +292,12 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
         #         if session[key]:
         #             all_conversations.extend(session[key])
 
+        curr_conversations = []
         if which_format == 'string':
-            all_conversations.append(block["conversation"])
+            curr_conversations.append(block["conversation"])
         else:
-            all_conversations.extend(block["conversation"])
+            curr_conversations.extend(block["conversation"])
+        all_conversations.append(curr_conversations)
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -304,13 +321,14 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, all_strings):
+def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
     Range of distance: [0, total_blocks-1]
     """
     total_blocks = len(sorted_processed_blocks)
+    flattened_all_conversations = [item for curr_conversations in all_conversations for item in curr_conversations]
     all_qa = []
 
     for i, block in enumerate(sorted_processed_blocks):
@@ -326,42 +344,40 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             # Get where the question will be asked
             where = q['Where']
             if where == 'END OF TEXT':
-                print('End of text')
-                block_num_q, start_index_q = i, len(all_conversations) - 1
+                block_num_q, start_index_q = i, len(flattened_all_conversations) - 1
             else:
-                print('During text')
-                block_num_q, start_index_q = utils.find_string_in_list(where, all_conversations, all_strings)
+                print('\n\nDuring text')
+                block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 
-            num_tokens_q = count_tokens(" ".join([item['content'] for item in all_conversations[:start_index_q]]), tokenizer, verbose=False)
-            curr_context = all_conversations[:start_index_q]
+            num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
+            curr_context = flattened_all_conversations[:start_index_q]
 
             # Get where the reference information will be
             if 'Reference' not in q:
                 continue
             else:
                 if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
-                    print('type1')
                     reference_utterance = sorted_processed_blocks[i]['conversation'][0]['content']
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
                 elif 'Conversation' in q['Reference']:
-                    print('type2')
                     reference_event = q['Reference']['Conversation']
                     reference_utterance = reference_event.split('\n')[1]
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+                    # print('all_conversations[start_index_ref]', all_conversations[start_index_ref])
+                    # print('reference_utterance', reference_utterance)
                 else:
                     # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
-                    print('type3')
                     all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
                     all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
                     reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                     # print('reference_event', reference_event)
                     reference_utterance = reference_event.split('\n')[1]
                     # print('reference_utterance', reference_utterance)
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, all_conversations, all_strings)
+                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
-            num_tokens_ref = count_tokens(" ".join([item['content'] for item in all_conversations[:start_index_ref]]), tokenizer, verbose=False)
+            num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
 
-            print('len(all_conversations)', len(all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False))
+            print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
             print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref,)
             print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
 
@@ -369,13 +385,13 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
             q['context_length_in_tokens'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
             q['context_length_in_letters'] = len(" ".join([item['content'] for item in curr_context]))
-            q['shared_context'] = all_conversations
+            q['shared_context'] = flattened_all_conversations
             q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
 
-    return all_qa
+    return all_qa, flattened_all_conversations
 
 
 def question_loader(qa_list):
@@ -464,7 +480,7 @@ if __name__ == "__main__":
 
     # Process each chosen conversation block
     processed_blocks_dict = {}
-    # all_strings = []
+    all_strings = []
     new_content_samples = [{} for _ in range(len(chosen_blocks))]
 
     for block_idx, ((file_name, time_period), conversation) in enumerate(chosen_blocks):
@@ -492,10 +508,10 @@ if __name__ == "__main__":
             "topic": topic,
             "qa": qa
         }
-        # all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
+        all_strings.append(processed_conversation[-1]) # idx -1 always corresponds to the conversation in the plain string format
 
     # Topological sort chosen conversation blocks by the latest timestamp
-    sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, new_content_samples, verbose)
+    sorted_processed_blocks, sorted_strings, sorted_new_content_samples = topological_sort(processed_blocks_dict, all_strings, new_content_samples, verbose)
 
     # Concatenate all conversation blocks
     all_conversations = concatenate_blocks(sorted_processed_blocks, sorted_new_content_samples, which_format, verbose)

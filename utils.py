@@ -405,24 +405,34 @@ def clean_up_one_file(file_path):
         print(f"File not found: {file_path}")
 
 
-def find_string_in_list(where, all_conversations, all_strings):
+def sort_based_on_mapping(strings, mapping):
     """
-    :param where: the target sentence
-    :param all_conversations: it is a list of dict, with each dict content being an utterance. Its length is equal to the total number of utterance over all blocks
-    :param all_strings: it is a list of strings, with each string being a whole block of text. Its length is equal to the number of blocks
-    :return block_num: the block number in all_strings where the target sentence is found
-    :return start_index: the index of the target sentence in all_conversations
+    Sort a list of strings based on a given index mapping.
+
+    :param strings: List of strings to be sorted.
+    :param mapping: Dictionary mapping original indices to sorted indices.
+    :return: List of strings sorted based on the mapping.
     """
-    # start_index is the i_th utterance in api_dict
-    start_index = next((i for i, item in enumerate(all_conversations) if item.get('content') == where), -1)
+    if len(strings) != len(mapping):
+        raise ValueError("The length of the strings list must match the length of the mapping.")
 
-    for block_num, data_block in enumerate(all_strings):
-        in_curr_block = data_block.find(where)
-        if in_curr_block != -1:
-            return block_num, start_index
+    sorted_strings = [None] * len(strings)  # Create a list of the same length
+    for original_idx, sorted_idx in mapping.items():
+        sorted_strings[sorted_idx] = strings[original_idx]  # Place elements in the correct order
 
-    print('target not found')
-    return -1  # Return -1 if not found
+    return sorted_strings
+
+
+def find_string_in_list(where, flattened_all_conversations, all_conversations):
+    start_index = next((i for i, utterance in enumerate(flattened_all_conversations) if utterance.get('content') == where), -1)
+    block_num = next((i for i, session in enumerate(all_conversations) if any(item.get('content') == where for item in session)), -1)
+
+    # for block_num, block in enumerate(all_conversations):
+    #     if where in block:
+    #         return block_num, start_index
+    # print('target not found')
+    # return -1  # Return -1 if not found
+    return block_num, start_index
 
 
 def generate_unique_id_from_string(input_string):
