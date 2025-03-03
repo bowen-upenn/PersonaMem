@@ -33,6 +33,7 @@ def reformat_conversation(topic, conversation, which_format):
         extracted_conversation = []
         for line in conversation:
             if not line.startswith("Side_Note"):
+                line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
                 if topic == 'therapy':
                     role = 'assistant' if line.startswith("Therapist") or line.startswith("Therapist:") else "user"
                     extracted_conversation.append({"role": role, "content": line})
@@ -357,40 +358,6 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
         variants.append(merged_list)
 
     return variants
-# def topological_sort(processed_blocks, num_variants=10, verbose=False):
-#     def extract_topic(file_name):
-#         return "_".join(file_name.split("_")[1:3])  # Extracts the topic, e.g., "homeDecoration_persona0"
-#
-#     def causal_order(blocks):
-#         order = {"Init Conversation": 0, "Conversation Next Week": 1, "Conversation Next Month": 2, "Conversation Next Year": 3}
-#         return sorted(blocks, key=lambda b: order.get(b["time_period"], float("inf")))
-#
-#     variants = []
-#
-#     for _ in range(num_variants):
-#         all_blocks = list(processed_blocks.values())  # Copy of blocks
-#
-#         # Shuffle blocks randomly before grouping them by topic
-#         random.shuffle(all_blocks)
-#
-#         topic_groups = defaultdict(list)
-#         for block in all_blocks:
-#             topic = extract_topic(block["file_name"])
-#             topic_groups[topic].append(block)
-#
-#         sorted_blocks = []
-#         for topic, blocks in topic_groups.items():
-#             sorted_topic_blocks = causal_order(blocks)
-#             sorted_blocks.extend(sorted_topic_blocks)
-#
-#         if verbose:
-#             print(f'Variant {_ + 1}:', len(sorted_blocks), 'blocks')
-#             print(f'Sorted conversation blocks: {[block["file_name"] + ": " + block["time_period"] for block in sorted_blocks]}')
-#             print('-' * 50)
-#
-#         variants.append(list(sorted_blocks))
-#
-#     return variants
 
 
 def get_order_mapping(original_blocks, sorted_blocks):
@@ -413,14 +380,14 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
     for block_idx, block in enumerate(sorted_processed_blocks):
         curr_conversations = []
 
-        # Insert irrelevant contexts
-        if all_irrelevant_contexts and which_format == 'api_dict':
-            num_random_blocks = random.randint(0, 20)
-            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-            for session in random_sessions:
-                key = list(session.keys())[0]   # only one key in each session
-                if session[key]:
-                    curr_conversations.extend(session[key])
+        # # Insert irrelevant contexts
+        # if all_irrelevant_contexts and which_format == 'api_dict':
+        #     num_random_blocks = random.randint(0, 20)
+        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+        #     for session in random_sessions:
+        #         key = list(session.keys())[0]   # only one key in each session
+        #         if session[key]:
+        #             curr_conversations.extend(session[key])
 
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
@@ -458,6 +425,7 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
     """
     total_blocks = len(sorted_processed_blocks)
     flattened_all_conversations = [item for curr_conversations in all_conversations for item in curr_conversations]
+    print('flattened_all_conversations', flattened_all_conversations, '\n\n\n')
     all_qa = []
 
     for i, block in enumerate(sorted_processed_blocks):
@@ -477,6 +445,8 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             else:
                 block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 
+            # for item in flattened_all_conversations[:start_index_q]:
+            #     print(item['content'])
             num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = flattened_all_conversations[:start_index_q]
 
