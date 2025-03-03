@@ -27,7 +27,13 @@ def parse_date(date_str):
 def reformat_conversation(topic, conversation, which_format):
     if which_format == 'string':
         # Format as a pure string, removing lines that start with 'Side_Note'
-        extracted_conversation = "\n".join([line for line in conversation if not line.startswith("Side_Note")])
+        extracted_conversation = []
+        for line in conversation:
+            if not line.startswith("Side_Note"):
+                line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
+                extracted_conversation.append(line)
+        extracted_conversation = "\n".join(extracted_conversation)
+
     elif which_format == 'api_dict':
         # Format the list for an LLM API in a message format
         extracted_conversation = []
