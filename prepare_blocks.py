@@ -168,6 +168,18 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
         if yr_key in year_candidates:
             available_years.add(yr_key)
 
+    # Dynamic weighting function for priority
+    def get_weight(block, progress_ratio):
+        """ Assigns a dynamic weight based on the progress in block selection. """
+        if progress_ratio < 0.25:
+            return 1 if block in available_inits else 0.1
+        elif progress_ratio < 0.5:
+            return 1 if block in available_weeks else (0.2 if block in available_inits else 0.1)
+        elif progress_ratio < 0.75:
+            return 1 if block in available_months else (0.2 if block in available_weeks else 0.1)
+        else:
+            return 1 if block in available_years else (0.2 if block in available_months else 0.1)
+
     # Since we must always start from init conversation, the first chosen block must be from init.
     # The loop will continue until we have n_blocks chosen.
     while len(chosen) < n_blocks:
@@ -179,11 +191,41 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
         # - Any year blocks unlocked by chosen month blocks
         current_pool = list(available_inits | available_weeks | available_months | available_years)
 
-        if len(current_pool) == 0:
-            # No more blocks to choose from and we haven't reached n_blocks
-            raise ValueError("Cannot reach n_blocks, ran out of available candidates.")
+        # Track the count of blocks per topic
+        topic_counts = {}
+        for block in chosen:
+            fname, _ = block
+            topic = fname.split('_')[1]
+            topic_counts[topic] = topic_counts.get(topic, 0) + 1
 
-        block = random.choice(current_pool)
+        # Determine dynamic weights based on progress
+        progress_ratio = len(chosen) / n_blocks
+        weights = [get_weight(block, progress_ratio) for block in current_pool]
+
+        # Normalize weights
+        total_weight = sum(weights)
+        normalized_weights = [w / total_weight for w in weights]
+
+        # Sample using weighted probabilities
+        block = random.choices(current_pool, weights=normalized_weights, k=1)[0]
+        # weights = []
+        # base_weight = 1.0  # Uniform base weight for all blocks
+        #
+        # for block in current_pool:
+        #     fname, _ = block
+        #     topic = fname.split('_')[1]
+        #
+        #     # Increase weight if the topic already has an earlier block selected
+        #     weight = base_weight * (1 + topic_counts.get(topic, 0))
+        #     weights.append(weight)
+        #
+        # # Normalize weights
+        # total_weight = sum(weights)
+        # normalized_weights = [w / total_weight for w in weights]
+        #
+        # # Sample using weighted probabilities
+        # block = random.choices(current_pool, weights=normalized_weights, k=1)[0]
+        # block = random.choice(current_pool)
         if block in chosen:
             # If somehow block is already chosen (should not happen if we handle sets correctly), skip
             continue
@@ -219,50 +261,136 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     final_blocks = [ (b, candidates[b]) for b in chosen ]
 
     # if verbose:
-        # print("Chosen conversation blocks:")
-        # for (fn, k), data in final_blocks:
-        #     print(f"{fn}: {k}")
+    #     print("Chosen conversation blocks:")
+    #     for (fn, k), data in final_blocks:
+    #         print(f"{fn}: {k}")
+    #     print(len(final_blocks), "blocks chosen.")
 
     return final_blocks
 
 
-def topological_sort(processed_blocks, num_variants=10, verbose=False):
+def topological_sort(processed_blocks, num_variants=1, verbose=False):
     def extract_topic(file_name):
-        return "_".join(file_name.split("_")[1:3])  # Extracts the topic, e.g., "homeDecoration_persona0"
+        # Extract the topic. For example, for "conversation_travelPlanning_persona0_sample0.json"
+        # we return "travelPlanning_persona0"
+        parts = file_name.split("_")
+        return "_".join(parts[1:3])
 
-    def causal_order(blocks):
-        order = {"Init Conversation": 0, "Conversation Next Week": 1, "Conversation Next Month": 2, "Conversation Next Year": 3}
-        return sorted(blocks, key=lambda b: order.get(b["time_period"], float("inf")))
+    # Map time_period to a causal order value. For writing/coding, we treat "Conversation" as order 0.
+    causal_order_mapping = {
+        "Init Conversation": 0,
+        "Conversation Next Week": 1,
+        "Conversation Next Month": 2,
+        "Conversation Next Year": 3,
+        "Conversation": 0  # for writing, email, coding topics
+    }
+
+    def get_candidate_order(block):
+        return causal_order_mapping.get(block["time_period"], float("inf"))
+
+    # First, group blocks by topic and sort each topic's blocks by their causal order.
+    topics = defaultdict(list)
+    for block in processed_blocks.values():
+        topic = extract_topic(block["file_name"])
+        topics[topic].append(block)
+
+    for topic, blocks in topics.items():
+        blocks.sort(key=lambda b: get_candidate_order(b))
+
+    # Calculate total blocks count (all topics) to gauge progress.
+    total_blocks = sum(len(b) for b in topics.values())
 
     variants = []
+    for variant in range(num_variants):
+        merged_list = []
+        # Make a copy of the sorted lists so that we can remove blocks as we select them.
+        topic_lists = {topic: blocks.copy() for topic, blocks in topics.items()}
 
-    for _ in range(num_variants):
-        all_blocks = list(processed_blocks.values())  # Copy of blocks
+        # Continue until we've exhausted all topics.
+        while any(topic_lists.values()):
+            # Compute progress ratio (number of blocks merged so far relative to total).
+            progress_ratio = len(merged_list) / total_blocks
+            # Define a desired causal order based on global progress:
+            # Early progress prefers order 0 (Init), then 1, 2, and finally 3.
+            if progress_ratio < 0.25:
+                desired_order = 0
+            elif progress_ratio < 0.5:
+                desired_order = 1
+            elif progress_ratio < 0.75:
+                desired_order = 2
+            else:
+                desired_order = 3
 
-        # Shuffle blocks randomly before grouping them by topic
-        random.shuffle(all_blocks)
+            # Build candidate pool: each topic contributes its next (earliest) block.
+            candidate_blocks = []
+            for topic, blocks in topic_lists.items():
+                if blocks:
+                    candidate_blocks.append(blocks[0])
 
-        topic_groups = defaultdict(list)
-        for block in all_blocks:
-            topic = extract_topic(block["file_name"])
-            topic_groups[topic].append(block)
+            # Assign weights based on how close a candidate's order is to the desired order.
+            # Closer order differences yield a higher weight.
+            weights = []
+            for block in candidate_blocks:
+                candidate_order = get_candidate_order(block)
+                diff = abs(candidate_order - desired_order)
+                if diff == 0:
+                    weight = 1.0
+                elif diff == 1:
+                    weight = 0.2
+                else:
+                    weight = 0.1
+                weights.append(weight)
 
-        sorted_blocks = []
-        for topic, blocks in topic_groups.items():
-            random.shuffle(blocks)  # Shuffle topic blocks before ordering
-            sorted_topic_blocks = causal_order(blocks)
-            sorted_blocks.extend(sorted_topic_blocks)
-
-        random.shuffle(sorted_blocks)  # Ensure different valid topological orders across variants
+            # Select one candidate block using weighted random choice.
+            chosen_block = random.choices(candidate_blocks, weights=weights, k=1)[0]
+            merged_list.append(chosen_block)
+            # Remove the chosen block from its topic list to preserve causal order.
+            topic = extract_topic(chosen_block["file_name"])
+            topic_lists[topic].pop(0)
 
         if verbose:
-            print(f'Variant {_ + 1}:')
-            print(f'Sorted conversation blocks: {[block["file_name"] + ": " + block["time_period"] for block in sorted_blocks]}')
+            print(f'Variant {variant + 1}: {len(merged_list)} blocks')
+            sorted_info = [f"{block['file_name']}: {block['time_period']}" for block in merged_list]
+            print("Sorted conversation blocks:", sorted_info)
             print('-' * 50)
 
-        variants.append(list(sorted_blocks))
+        variants.append(merged_list)
 
     return variants
+# def topological_sort(processed_blocks, num_variants=10, verbose=False):
+#     def extract_topic(file_name):
+#         return "_".join(file_name.split("_")[1:3])  # Extracts the topic, e.g., "homeDecoration_persona0"
+#
+#     def causal_order(blocks):
+#         order = {"Init Conversation": 0, "Conversation Next Week": 1, "Conversation Next Month": 2, "Conversation Next Year": 3}
+#         return sorted(blocks, key=lambda b: order.get(b["time_period"], float("inf")))
+#
+#     variants = []
+#
+#     for _ in range(num_variants):
+#         all_blocks = list(processed_blocks.values())  # Copy of blocks
+#
+#         # Shuffle blocks randomly before grouping them by topic
+#         random.shuffle(all_blocks)
+#
+#         topic_groups = defaultdict(list)
+#         for block in all_blocks:
+#             topic = extract_topic(block["file_name"])
+#             topic_groups[topic].append(block)
+#
+#         sorted_blocks = []
+#         for topic, blocks in topic_groups.items():
+#             sorted_topic_blocks = causal_order(blocks)
+#             sorted_blocks.extend(sorted_topic_blocks)
+#
+#         if verbose:
+#             print(f'Variant {_ + 1}:', len(sorted_blocks), 'blocks')
+#             print(f'Sorted conversation blocks: {[block["file_name"] + ": " + block["time_period"] for block in sorted_blocks]}')
+#             print('-' * 50)
+#
+#         variants.append(list(sorted_blocks))
+#
+#     return variants
 
 
 def get_order_mapping(original_blocks, sorted_blocks):
@@ -347,7 +475,6 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             if where == 'END OF TEXT':
                 block_num_q, start_index_q = i, len(flattened_all_conversations) - 1
             else:
-                print('\n\nDuring text')
                 block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 
             num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)

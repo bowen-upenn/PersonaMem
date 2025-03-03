@@ -302,6 +302,8 @@ if __name__ == "__main__":
 
             qa = extract_qa(base_dir, topic, file_name, time_period)
 
+            if latest_ts in processed_blocks_dict:
+                latest_ts = latest_ts + '_2'
             processed_blocks_dict[latest_ts] = {
                 "conversation": processed_conversation[0],  # idx 0 corresponds to the conversation in the required format, either string or api_dict
                 "file_name": file_name,
