@@ -386,14 +386,16 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
     for block_idx, block in enumerate(sorted_processed_blocks):
         curr_conversations = []
 
-        # # Insert irrelevant contexts
-        # if all_irrelevant_contexts and which_format == 'api_dict':
-        #     num_random_blocks = random.randint(0, 20)
-        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-        #     for session in random_sessions:
-        #         key = list(session.keys())[0]   # only one key in each session
-        #         if session[key]:
-        #             curr_conversations.extend(session[key])
+        # Insert irrelevant contexts
+        if all_irrelevant_contexts and which_format == 'api_dict':
+            num_random_blocks = random.randint(0, 20)
+            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+            for session in random_sessions:
+                key = list(session.keys())[0]   # only one key in each session
+                if session[key]:
+                    curr_conversations.extend(session[key])
+            # Remove all items whose content is None from curr_conversations
+            curr_conversations = [item for item in curr_conversations if item['content'] is not None]
 
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
@@ -431,7 +433,6 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
     """
     total_blocks = len(sorted_processed_blocks)
     flattened_all_conversations = [item for curr_conversations in all_conversations for item in curr_conversations]
-    print('flattened_all_conversations', flattened_all_conversations, '\n\n\n')
     all_qa = []
 
     for i, block in enumerate(sorted_processed_blocks):
@@ -451,8 +452,6 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             else:
                 block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 
-            # for item in flattened_all_conversations[:start_index_q]:
-            #     print(item['content'])
             num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = flattened_all_conversations[:start_index_q]
 
@@ -475,8 +474,10 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                     all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
                     reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                     # print('reference_event', reference_event)
-                    reference_utterance = reference_event.split('\n')[1]
-                    # print('reference_utterance', reference_utterance)
+                    try:
+                        reference_utterance = reference_event.split('\n')[1]
+                    except:
+                        print('all_timestamps', all_timestamps, 'reference_event', reference_event, "q['Reference']", q['Reference'])
                     block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
             num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
