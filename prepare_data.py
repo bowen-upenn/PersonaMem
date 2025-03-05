@@ -346,6 +346,8 @@ def prepare_data(args):
 
             # Loop through each topic in the list
             for idx_topic, curr_topic in tqdm(enumerate(all_topics)):
+                if curr_topic == '' or curr_topic is None:
+                    continue
                 source_dir, all_source_files = prepare_topics(idx_topic, all_topics, curr_topic, args)
 
                 # Set a consecutive time frame for different topics for each persona, while all samples below are independent
