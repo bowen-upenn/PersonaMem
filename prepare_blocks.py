@@ -381,8 +381,9 @@ def get_order_mapping(original_blocks, sorted_blocks):
     return mapping
 
 
-def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts=None, verbose=False):
+def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts=None, verbose=False):
     all_conversations = []
+    num_irrelevant_tokens = 0
     for block_idx, block in enumerate(sorted_processed_blocks):
         curr_conversations = []
 
@@ -396,6 +397,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
                     curr_conversations.extend(session[key])
             # Remove all items whose content is None from curr_conversations
             curr_conversations = [item for item in curr_conversations if item['content'] is not None]
+            num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
 
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
@@ -406,7 +408,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_con
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
     #     print(all_conversations)
-    return all_conversations
+    return all_conversations, num_irrelevant_tokens
 
 
 def count_tokens(all_strings, tokenizer, verbose=False):
@@ -425,7 +427,7 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations):
+def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -472,12 +474,12 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                     # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
                     all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
                     all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
-                    reference_event = q['Reference'][all_timestamps[0]]['Conversation']
-                    # print('reference_event', reference_event)
                     try:
+                        reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                         reference_utterance = reference_event.split('\n')[1]
                     except:
-                        print('all_timestamps', all_timestamps, 'reference_event', reference_event, "q['Reference']", q['Reference'])
+                        reference_event = q['Reference'][all_timestamps[1]]['Conversation'] # in case the earliest timestamp is not associated with a conversation
+                        reference_utterance = reference_event.split('\n')[1]
                     block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
             num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
@@ -493,6 +495,7 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             q['shared_context'] = flattened_all_conversations
             q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
+            q['num_irrelevant_tokens'] = num_irrelevant_tokens
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
 
@@ -543,6 +546,8 @@ def question_loader(qa_list):
         shared_context = qa['shared_context']
         end_index_in_shared_context = qa['end_index_in_shared_context']
         curr_context = qa['curr_context']
+        num_irrelevant_tokens = qa['num_irrelevant_tokens']
         where = qa['Where'] if 'Where' in qa else None
 
-        yield curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context
+        yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
+               context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens)

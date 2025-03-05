@@ -174,7 +174,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
             writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens",
-                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
+                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens"])
 
         writer.writerow([
             result["question_id"],
@@ -188,7 +188,8 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result["correct_answer"],
             result['all_options'],
             result["shared_context_id"],
-            result["end_index_in_shared_context"]
+            result["end_index_in_shared_context"],
+            result["num_irrelevant_tokens"]
         ])
 
 
@@ -320,8 +321,8 @@ if __name__ == "__main__":
 
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
-            all_conversations = concatenate_blocks(sorted_processed_blocks, which_format, all_irrelevant_contexts, verbose)
-            all_qa, all_conversations = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations)
+            all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, verbose)
+            all_qa, all_conversations = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
@@ -329,7 +330,7 @@ if __name__ == "__main__":
 
             # Show all Q&As related to this concatenated conversation
             for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
-                 context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context) in tqdm(question_loader(all_qa), total=len(all_qa)):
+                 context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
                 shared_context_id = utils.generate_unique_id_from_string(shared_context)    # More efficient way to store long context shared by multiple Q&As with just different end indices
@@ -347,7 +348,8 @@ if __name__ == "__main__":
                         "shared_context_id": shared_context_id,
                         "end_index_in_shared_context": end_index_in_shared_context,
                         "context_length_in_tokens": context_length_in_tokens,
-                        "context_length_in_letters": context_length_in_letters
+                        "context_length_in_letters": context_length_in_letters,
+                        "num_irrelevant_tokens": num_irrelevant_tokens,
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
                     save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
