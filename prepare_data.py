@@ -379,12 +379,12 @@ def prepare_data(args):
                             """
                             LLM.create_a_thread(step='writing')
                             prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                            LLM.delete_a_thread(step='writing')
+                            # LLM.delete_a_thread(step='writing')
                         else:
                             LLM.create_a_thread(step='conversation')
                             prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
                                                          init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
-                            LLM.delete_a_thread(step='conversation')
+                            # LLM.delete_a_thread(step='conversation')
                     except Exception as e:
                         print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
                         all_errored_data_paths[output_file_path] = e

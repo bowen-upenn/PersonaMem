@@ -6,16 +6,16 @@
 #studyConsultation therapy travelPlanning writing \
 
 ## Lauren
-#start_persona_id=0
-#end_persona_id=4  # non-inclusive
+start_persona_id=1
+end_persona_id=4  # non-inclusive
 
 ## Zoey
 #start_persona_id=4
 #end_persona_id=8
 #
 # Yuan
-start_persona_id=8
-end_persona_id=12
+#start_persona_id=8
+#end_persona_id=12
 
 ## Jeff
 #start_persona_id=12
@@ -29,7 +29,7 @@ end_persona_id=12
 command="python prepare_data.py --model gpt-4o \
         --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
                  legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
-                 studyConsultation therapy travelPlanning writing \
+                 studyConsultation therapy travelPlanning writing \ \
         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --output_dir data/output/ "
 
 # Print the command for debugging/logging purposes
