@@ -33,9 +33,13 @@ def find_related_data(timestamp, history_blocks):
     """
     related_data = []
     for _, block in history_blocks.items():
+        if isinstance(block, list):
+            block = block[0]
+        print('timestamp', timestamp, 'block', block.keys())
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
+    print('related_data', related_data)
     return related_data
 
 
@@ -642,7 +646,7 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
     # Discriminative type of QA
     # try:
     for i in range(10):
-        print(f'{utils.Colors.OKGREEN}Generating Q&A No. {i}{utils.Colors.ENDC}')
+        # print(f'{utils.Colors.OKGREEN}Generating Q&A No. {i}{utils.Colors.ENDC}')
         qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
         all_qa_entries.extend([qa_entry])
     # except Exception as e:

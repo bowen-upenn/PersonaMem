@@ -253,9 +253,9 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
             last_timestamps.append(utils.extract_last_timestamp(json_part))
         else:
             response = repair_json('[{'+response+'}]')
-            print('step', step, 'response', type(response), response)
+            # print('step', step, 'response', type(response), response)
             response = utils.filter_valid_dates(response)
-            print('filtered response', response)
+            # print('filtered response', response)
             utils.append_json_to_file(response, output_file_path, curr_data_name=data_name, parse_json=False)
             last_timestamps.append(utils.extract_last_timestamp(response))
 
@@ -318,15 +318,16 @@ def prepare_data(args):
     # Load all personas
     with open(args['datasets']['persona_file'], 'r') as file:
         all_personas = file.readlines()
-    LLM = QueryLLM(args)
 
     if args['datasets']['topics'] == ['irrelevant']:
+        LLM = QueryLLM(args)
         prepare_irrelevant_contexts(LLM, args)
     else:
         # Generate conversational data relevant to the topic and the persona
         all_errored_data_paths = {}
 
         for idx_persona in tqdm(range(int(args['inference']['start_persona_idx']), int(args['inference']['num_personas']))):
+            LLM = QueryLLM(args)
             persona, expanded_persona, start_time, init_general_personal_history, general_personal_history_next_week, \
                 general_personal_history_next_month, general_personal_history_next_year = prepare_persona(LLM, idx_persona, all_personas, args)
 
@@ -359,6 +360,8 @@ def prepare_data(args):
                     start_time = utils.pick_a_random_time_within_a_year(start_time)
 
                 for idx_sample in range(int(args['inference']['start_sample_idx']), int(args['inference']['num_samples_per_topic'])):
+                    LLM = QueryLLM(args)
+
                     output_file_path = os.path.join(args['inference']['output_dir'],
                                                     os.path.join(f'{curr_topic}', f'{args["inference"]["output_file_name"]}_{curr_topic}_persona{idx_persona}_sample{idx_sample}.json'))
                     utils.append_json_to_file(persona, output_file_path, curr_data_name='Original Persona', parse_json=False)
