@@ -224,7 +224,6 @@ class QueryLLM:
                 thread_id=curr_thread.id,
                 role="user",
                 content=prompt,
-                max_tokens=10000
             )
 
             if step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
