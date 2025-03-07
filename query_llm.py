@@ -185,7 +185,8 @@ class QueryLLM:
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user",
-                           "content": prompt}]
+                           "content": prompt}],
+                max_tokens=10000
             )
             response = response.choices[0].message.content
             if verbose:
@@ -222,7 +223,8 @@ class QueryLLM:
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
                 role="user",
-                content=prompt
+                content=prompt,
+                max_tokens=10000
             )
 
             if step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
