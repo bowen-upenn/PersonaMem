@@ -218,7 +218,8 @@ def pick_a_random_time_within_a_year(input_date):
 
 
 def extract_last_timestamp(json_response):
-    json_response = json.loads(json_response)
+    if isinstance(json_response, str):
+        json_response = json.loads(json_response)
     if isinstance(json_response, list):
         json_response = json_response[0]
 
@@ -363,9 +364,31 @@ def find_existing_persona_files(idx_persona):
             'general_personal_history_next_year': selected_data.get("General Personal History Next Year"),
         }
     else:
-        print(f"No persona file with 'General Personal History Next Year' found for persona {idx_persona}.")
+        print(f"No existing persona file with 'General Personal History Next Year' found for persona {idx_persona}. Retrieving a persona now...")
         return None
 
+
+def filter_valid_dates(data):
+    """
+    Filters JSON-like data:
+    - If it's a list, keep only its dictionary elements and select the one with the most keys.
+    - If it's a dictionary, remove keys that are not in MM/DD/YYYY format.
+    """
+    if isinstance(data, str):
+        data = json.loads(data)
+
+    # If data is a list, filter dictionaries and pick the one with the most keys
+    if isinstance(data, list):
+        dict_list = [item for item in data if isinstance(item, dict)]
+        if not dict_list:
+            return {}  # Return empty dict if no valid dict is found
+        data = max(dict_list, key=lambda d: len(d.keys()), default={})
+
+    # If data is a dict, remove invalid keys
+    if isinstance(data, dict):
+        data = {k: v for k, v in data.items() if re.match(r'\d{2}/\d{2}/\d{4}', k)}
+
+    return data
 
 def get_all_context_names():
     base_path = './data/output'
