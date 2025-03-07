@@ -5,18 +5,18 @@
 #legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
 #studyConsultation therapy travelPlanning writing \
 
-# Lauren
-start_persona_id=0
-end_persona_id=4  # non-inclusive
+## Lauren
+#start_persona_id=0
+#end_persona_id=4  # non-inclusive
 
 ## Zoey
 #start_persona_id=4
 #end_persona_id=8
 #
-## Yuan
-#start_persona_id=8
-#end_persona_id=12
-#
+# Yuan
+start_persona_id=8
+end_persona_id=12
+
 ## Jeff
 #start_persona_id=12
 #end_persona_id=16

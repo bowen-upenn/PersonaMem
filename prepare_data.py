@@ -368,23 +368,23 @@ def prepare_data(args):
 
                     # Load a random source data to the LLM as a background memory about the topic
                     source_data = utils.load_one_source_data(source_dir, all_source_files, curr_topic) if all_source_files is not None else None
-                    # try:
-                    if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
-                        """
-                        Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
-                        It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
-                        """
-                        LLM.create_a_thread(step='writing')
-                        prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
-                        LLM.delete_a_thread(step='writing')
-                    else:
-                        LLM.create_a_thread(step='conversation')
-                        prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
-                                                     init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
-                        LLM.delete_a_thread(step='conversation')
-                    # except Exception as e:
-                    #     print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
-                    #     all_errored_data_paths[output_file_path] = e
+                    try:
+                        if curr_topic == 'writing' or curr_topic == 'email' or curr_topic == 'coding':
+                            """
+                            Besides other topics, we introduce the creative writing, email writing, and code programming when evaluating the LLM's ability to generate persona-aligned new contents.
+                            It is meaningful as a special case since it is (1) practically useful (2) need to translate writing samples into conversations (3) does not involve personal historical events as in other topics.
+                            """
+                            LLM.create_a_thread(step='writing')
+                            prepare_data_on_writing_topic(LLM, curr_topic, persona, source_data, output_file_path, args)
+                            LLM.delete_a_thread(step='writing')
+                        else:
+                            LLM.create_a_thread(step='conversation')
+                            prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir, curr_topic, idx_topic, start_time, output_file_path,
+                                                         init_general_personal_history, general_personal_history_next_week, general_personal_history_next_month, general_personal_history_next_year, args)
+                            LLM.delete_a_thread(step='conversation')
+                    except Exception as e:
+                        print(f'{utils.Colors.FAIL}Error at generating file{output_file_path}: {e}{utils.Colors.ENDC}')
+                        all_errored_data_paths[output_file_path] = e
 
         if len(all_errored_data_paths) > 0:
             print(f'{utils.Colors.FAIL}All errored data paths: {utils.Colors.ENDC}')
