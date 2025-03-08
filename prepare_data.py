@@ -230,9 +230,14 @@ def prepare_data_on_other_topics(LLM, expanded_persona, source_data, source_dir,
         #     continue
         if step in existing_general_personal_history:
             if existing_general_personal_history[step] is not None:
+                if step == 'init_general_personal_history':
+                    print('Loading existing general personal history.')
                 # Use existing general personal history shared across multiple topics for the same persona
                 utils.append_json_to_file('```json' + str(existing_general_personal_history[step]) + '```', output_file_path, curr_data_name=data_name, parse_json=True)
                 continue
+            else:
+                if step == 'init_general_personal_history':
+                    print('Generating new general personal history.')
 
         response = LLM.query_llm(step=step, persona=expanded_persona, topic=curr_topic, idx_topic=idx_topic, start_time=start_time, verbose=args['inference']['verbose'])
 
