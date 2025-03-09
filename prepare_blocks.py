@@ -438,9 +438,9 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
     all_qa = []
 
     for i, block in enumerate(sorted_processed_blocks):
-        # Only keep Q&As in the last block, i.e., the current session during conversation
-        if i + 1 < total_blocks:
-            continue
+        # # Only keep Q&As in the last block, i.e., the current session during conversation
+        # if i + 1 < total_blocks:
+        #     continue
 
         # we assign distance to all qa in the current block
         for idx, q in enumerate(block.get('qa', [])):
@@ -449,6 +449,11 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
 
             # Get where the question will be asked
             where = q['Where']
+
+            # For all sessions except for the final one, we ignore all questions asked within the conversation
+            if i + 1 < total_blocks and where != 'END OF TEXT':
+                continue
+
             if where == 'END OF TEXT':
                 block_num_q, start_index_q = i, len(flattened_all_conversations) - 1
             else:
