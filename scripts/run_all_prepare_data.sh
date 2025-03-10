@@ -22,8 +22,8 @@ end_persona_id=1  # non-inclusive
 #end_persona_id=16
 
 ## Brian
-#start_persona_id=16
-#end_persona_id=20
+start_persona_id=16
+end_persona_id=17
 
 # Construct the command
 command="python prepare_data.py --model gpt-4o \
