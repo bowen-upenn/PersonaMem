@@ -182,6 +182,7 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     parsed_response = extract_json_from_response(response, parse_json, parse_list)
     existing_json_file[curr_data_name] = parsed_response
 
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
     # Save the updated data back to the file
     with open(output_file_path, "w") as json_file:
         json.dump(existing_json_file, json_file, indent=4)
