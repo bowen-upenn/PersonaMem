@@ -35,11 +35,11 @@ def find_related_data(timestamp, history_blocks):
     for _, block in history_blocks.items():
         if isinstance(block, list):
             block = block[0]
-        print('timestamp', timestamp, 'block', block.keys())
+        # print('timestamp', timestamp, 'block', block.keys())
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
-    print('related_data', related_data)
+    # print('related_data', related_data)
     return related_data
 
 
@@ -805,6 +805,8 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             data["Q&A"][conversation_key] = all_qa_entries
         else:
             data["Q&A"][conversation_key].extend(all_qa_entries)
+    if len(all_qa_entries) == 0:
+        print(f'{utils.Colors.FAIL}No Q&A entries generated for {conversation_key}{utils.Colors.ENDC}')
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
