@@ -6,8 +6,8 @@
 # studyConsultation therapy travelPlanning writing \
 
 # Lauren
-# start_persona_id=3
-# end_persona_id=4  # non-inclusive
+start_persona_id=0
+end_persona_id=4  # non-inclusive
 
 ## Zoey
 #start_persona_id=4
@@ -23,7 +23,7 @@
 
 ## Brian
 #start_persona_id=16
-#end_persona_id=20
+#end_persona_id=17
 
 # Construct the command
 command="python prepare_data.py --model gpt-4o \
