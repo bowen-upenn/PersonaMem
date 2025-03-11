@@ -174,7 +174,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
             writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens",
-                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens"])
+                             "distance_to_ref_proportion_in_context", "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens"])
 
         writer.writerow([
             result["question_id"],
@@ -184,6 +184,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result['context_length_in_letters'],
             result['distance_blocks'],
             result['distance_tokens'],
+            f"{(result['distance_blocks'] / result['context_length_in_tokens']) * 100:.2f}%",
             result["question"],
             result["correct_answer"],
             result['all_options'],

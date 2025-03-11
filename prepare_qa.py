@@ -35,11 +35,11 @@ def find_related_data(timestamp, history_blocks):
     for _, block in history_blocks.items():
         if isinstance(block, list):
             block = block[0]
-        print('timestamp', timestamp, 'block', block.keys())
+        # print('timestamp', timestamp, 'block', block.keys())
         for key, value in block.items():
             if key == timestamp:
                 related_data.append(value)
-    print('related_data', related_data)
+    # print('related_data', related_data)
     return related_data
 
 
@@ -219,25 +219,26 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         if len(last_two_details) == 2:
             break
 
-    # Find the last two events in this event graph, which should appear in two different conversation blocks.
-    # The Q&As below will be based on the second last event, and will be asked immediately before the last event.
-    # If the Q&As are asked immediately after the second last event, there won't be challenge for the model.
-    if len(last_two_details) < 2 or "[Reasons of Change]" not in last_two_details[1]:
+    if len(last_two_details) < 2 or "[Reasons of Change]" not in last_two_details[0]:
         return qa_entries
 
+    # The reason of change will be extracted from the most recent event
+    # and queried immediately after the user utterance of this most recent event
     related_event = {
-        "Event": last_two_details[1]["Event"],
-        "[Reasons of Change]": last_two_details[1]["[Reasons of Change]"],
+        "Event": last_two_details[0]["Event"],
+        "[Reasons of Change]": last_two_details[0]["[Reasons of Change]"],
     }
-    try:
-        if "[Updated Fact] Likes" in last_two_details[1]:
-            related_event["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
-            related_event["[Old Fact] Dislikes"] = last_two_details[1]["[Old Fact] Dislikes"]
-        else:
-            related_event["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
-            related_event["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"]
-    except:
-        return qa_entries
+
+    if "[Updated Fact] Likes" in last_two_details[0]:
+        related_event["[Updated Fact] Likes"] = last_two_details[0]["[Updated Fact] Likes"]
+        if "[Old Fact] Likes" in last_two_details[0]:
+            return qa_entries
+        related_event["[Old Fact] Dislikes"] = last_two_details[0]["[Old Fact] Dislikes"]
+    else:
+        related_event["[Updated Fact] Dislikes"] = last_two_details[0]["[Updated Fact] Dislikes"]
+        if "[Old Fact] Dislikes" in last_two_details[0]:
+            return qa_entries
+        related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"]
 
     # This Q&A will be asked immediately before the last event
     response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
@@ -262,7 +263,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Type": "generalizing_past_reasons_in_memory_to_new_scenarios",
         "Topic": topic,
         "How_Many_Pref_Updates": len(timestamps),
-        "Reference": last_two_details[1],
+        "Reference": last_two_details[0],
         "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
     })
 
@@ -287,8 +288,8 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Type": "recalling_the_reasons_behind_previous_updates",
         "Topic": topic,
         "How_Many_Pref_Updates": len(timestamps),
-        "Reference": last_two_details[1],
-        "Where": last_two_details[0]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
+        "Reference": last_two_details[0],
+        "Where": last_two_details[1]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
     })
 
     # Save to JSON file
@@ -635,6 +636,7 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
         data = json.load(f)
 
     all_qa_entries = []
+    all_errored_path = []
 
     # # Generative type of QA
     # try:
@@ -644,13 +646,14 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
     #     print(f'{utils.Colors.FAIL}Error generating Q&A for generative type{utils.Colors.ENDC}{e}')
 
     # Discriminative type of QA
-    # try:
-    for i in range(10):
-        # print(f'{utils.Colors.OKGREEN}Generating Q&A No. {i}{utils.Colors.ENDC}')
-        qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
-        all_qa_entries.extend([qa_entry])
-    # except Exception as e:
-    #     print(f'{utils.Colors.FAIL}Error generating Q&A for discriminative type{utils.Colors.ENDC}{e}')
+    try:
+        for i in range(10):
+            # print(f'{utils.Colors.OKGREEN}Generating Q&A No. {i}{utils.Colors.ENDC}')
+            qa_entry = qa_discriminative(LLM, data_path, source_dir, all_source_files, all_writing_files, verbose)
+            all_qa_entries.extend([qa_entry])
+    except Exception as e:
+        all_errored_path.append(f"Error generating Q&A for discriminative type {data_path}")
+        print(f'{utils.Colors.FAIL}Error generating Q&A for discriminative type{utils.Colors.ENDC}{e}')
 
     # Save all Q&A entries to the JSON file at data_path
     # if "Q&A" not in data:
@@ -660,17 +663,20 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
-    return
+    return all_errored_path
 
 
-def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, verbose):
+def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, clean, verbose):
     # Load json file
     with open(data_path, 'r') as file:
         data = json.load(file)
     print(f'{utils.Colors.OKGREEN}data_path: {data_path}: {conversation_key}{utils.Colors.ENDC}')
 
+    all_errored_path = []
+    all_empty_path = []
+
     # Remove old Q&A entries if they exist
-    if "Q&A" in data:
+    if clean and "Q&A" in data:
         if conversation_key in data["Q&A"]:
             # user_input = input("Are you sure to remove existing Q&As (y/n): ").strip().lower()
             # if user_input == 'y':
@@ -752,49 +758,58 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                     if len(qa_entries) > 0:
                         all_qa_entries.extend(qa_entries)
                 except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
                         all_qa_entries.extend(qa_entries)
                 except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
                         all_qa_entries.extend(qa_entries)
                 except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
                         all_qa_entries.extend(qa_entries)
                 except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
                 try:
                     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
                     if qa_entry:
                         all_qa_entries.extend([qa_entry])
                 except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
         else:
+            # pass
             try:
                 qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
             except Exception as e:
+                all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
                 print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
             try:
                 qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
                 if len(qa_entries) > 0:
                     all_qa_entries.extend(qa_entries)
             except Exception as e:
+                all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
                 print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
             try:
                 qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
                 if qa_entry:
                     all_qa_entries.extend([qa_entry])
             except Exception as e:
+                all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
                 print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
 
     # Save all Q&A entries to the JSON file at data_path
@@ -805,8 +820,13 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
             data["Q&A"][conversation_key] = all_qa_entries
         else:
             data["Q&A"][conversation_key].extend(all_qa_entries)
+    if len(all_qa_entries) == 0:
+        all_empty_path.append(f"No Q&A entries generated for {data_path}: {conversation_key}")
+        print(f'{utils.Colors.WARNING}No Q&A entries generated for {conversation_key}{utils.Colors.ENDC}')
     with open(data_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
+
+    return all_errored_path, all_empty_path
 
 
 if __name__ == "__main__":
@@ -826,53 +846,97 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from gpt-4-turbo, gpt-4o')
     parser.add_argument('--action', type=str, default="qa", help='Choose from qa, and view_graphs (not applicable for "writing" topic.')
-    parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
+    parser.add_argument('--topics', type=str, default="therapy", nargs="+",
+                            help='Set conversation topics. Choose from therapy, legalConsultation, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, '
+                                 'travelPlanning, movieRecommendation, songRecommendation, homeDecoration, financialConsultation, healthConsultation, writing, email, coding.'
+                                 'or all to select all existing topics under ./data/output/. '
+                                 'If you want to select multiple topics manually, separate the names by space, e.g. --topics therapy legal'
+                                 'Choose "irrelevant" if you want to generate data irrelevant to the topic to fill in long conversation context')  # https://docs.python.org/3/library/argparse.html#nargs
+    parser.add_argument('--n_persona', type=int, default=1, help='Set number of personas to generate')
+    parser.add_argument('--n_samples', type=int, default=1, help='Set number of samples per topic to generate')
+    parser.add_argument('--s_persona', type=int, default=0, help='Set the starting idx of personas to generate')
+    parser.add_argument('--s_samples', type=int, default=0, help='Set the starting idx of samples per topic to generate')
+    # parser.add_argument('--data', type=str, default="therapy_persona0_sample0", help='Path to the JSON data file')
     parser.add_argument('--time', type=str, default="next_year", help='Select the cut-off time (included) for the conversation data (not applicable for "writing" topic.')
+    parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing data files and start clean')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
     cmd_args = parser.parse_args()
 
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
+    clean = False
+    if cmd_args.clean:
+        user_input = input("The 'clean' flag is set. Do you really want clean up all existing Q&As in the files (y/n): ").strip().lower()
+        if user_input == 'y':
+            clean = True
+        else:
+            print("Skipping cleanup.")
+
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')
 
-    match = re.match(r'^([^_]+)_', cmd_args.data)
-    data_path = './data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json'
+    all_data_paths = []
+    for topic in cmd_args.topics:
+        for persona_id in range(cmd_args.s_persona, cmd_args.s_persona + cmd_args.n_persona):
+            data_path = f'./data/output/{topic}/conversation_{topic}_persona{persona_id}_sample0.json'
+            all_data_paths.append(data_path)
+    # match = re.match(r'^([^_]+)_', cmd_args.data)
+    # data_path = './data/output/' + match.group(1) + '/conversation_' + cmd_args.data + '.json'
 
     if cmd_args.time == 'init':
-        time_period = 'Init Conversation'
+        time_periods = ['Init Conversation']
     elif cmd_args.time == 'next_week':
-        time_period = 'Conversation Next Week'
+        time_periods = ['Conversation Next Week']
     elif cmd_args.time == 'next_month':
-        time_period = 'Conversation Next Month'
+        time_periods = ['Conversation Next Month']
     elif cmd_args.time == 'next_year':
-        time_period = 'Conversation Next Year'
+        time_periods = ['Conversation Next Year']
+    elif cmd_args.time == 'all':
+        time_periods = ['Init Conversation', 'Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
     else:
         raise ValueError("Invalid time", cmd_args.time)
 
-    # try:
-    if 'writing' in data_path or 'coding' in data_path or 'email' in data_path:
-        if 'writing' in data_path:
-            source_dir = args['datasets']['writing_source_dir']
-            all_source_files = utils.load_all_source_data(source_dir, 'writing')
-            all_writing_files = utils.load_all_writing_data('writing')
-        elif 'coding' in data_path:
-            source_dir = args['datasets']['coding_source_dir']
-            all_source_files = utils.load_all_source_data(source_dir, 'coding')
-            all_writing_files = utils.load_all_writing_data('coding')
-        elif 'email' in data_path:
-            source_dir = args['datasets']['email_source_dir']
-            all_source_files = utils.load_all_source_data(source_dir, 'email')
-            all_writing_files = utils.load_all_writing_data('email')
+    all_errored_paths = []
+    all_empty_paths = []
+    for data_path in all_data_paths:
+        if 'writing' in data_path or 'coding' in data_path or 'email' in data_path:
+            if 'writing' in data_path:
+                source_dir = args['datasets']['writing_source_dir']
+                all_source_files = utils.load_all_source_data(source_dir, 'writing')
+                all_writing_files = utils.load_all_writing_data('writing')
+            elif 'coding' in data_path:
+                source_dir = args['datasets']['coding_source_dir']
+                all_source_files = utils.load_all_source_data(source_dir, 'coding')
+                all_writing_files = utils.load_all_writing_data('coding')
+            elif 'email' in data_path:
+                source_dir = args['datasets']['email_source_dir']
+                all_source_files = utils.load_all_source_data(source_dir, 'email')
+                all_writing_files = utils.load_all_writing_data('email')
+            else:
+                raise ValueError("Invalid topic")
+
+            all_errored_path = evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
+            if len(all_errored_path) > 0:
+                all_errored_paths.extend(all_errored_path)
         else:
-            raise ValueError("Invalid topic")
+            SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
+            for time_period in time_periods:
+                all_errored_path, all_empty_path = evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, clean=clean, verbose=cmd_args.verbose)
+                if len(all_errored_path) > 0:
+                    all_errored_paths.extend(all_errored_path)
+                if len(all_empty_path) > 0:
+                    all_empty_paths.extend(all_empty_path)
 
-        evaluate_content_generation_from_memory(LLM, data_path=data_path, source_dir=source_dir, all_source_files=all_source_files, all_writing_files=all_writing_files, verbose=cmd_args.verbose)
-    else:
-        SentenceBERT = SentenceTransformer('all-MiniLM-L6-v2')
-        evaluate_memory_from_conversation(cmd_args.action, LLM, SentenceBERT, conversation_key=time_period, data_path=data_path, verbose=cmd_args.verbose)
-    # except Exception as e:
-    #     print(f'{utils.Colors.FAIL}Error processing {data_path}: {e}{utils.Colors.ENDC}')
-
+    print(f'{utils.Colors.FAIL}All errored paths:{utils.Colors.ENDC}')
+    already_printed = []
+    for path in all_errored_paths:
+        if path not in already_printed:
+            print(path)
+        already_printed.append(path)
+    print(f'{utils.Colors.WARNING}All empty paths:{utils.Colors.ENDC}')
+    already_printed = []
+    for path in all_empty_paths:
+        if path not in already_printed:
+            print(path)
     LLM.delete_a_thread(step='qa')
