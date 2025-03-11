@@ -820,7 +820,7 @@ if __name__ == "__main__":
     torch.manual_seed(0)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     world_size = torch.cuda.device_count()
-    assert world_size == 1
+    # assert world_size == 1
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')

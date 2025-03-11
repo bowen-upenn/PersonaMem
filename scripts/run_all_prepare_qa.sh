@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Full list of topics for reference
-#contexts=("bookRecommendation" "coding" "datingConsultation" "email" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
-#          "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
-#          "studyConsultation" "therapy" "travelPlanning" "writing")
-contexts=("studyConsultation")
+contexts=("datingConsultation" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
+         "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
+         "studyConsultation" "therapy" "travelPlanning")
+# contexts=("bookRecommendation")
 
 # Lauren
-idx_personas=$(seq 1 1) # this range should be inclusive
+# idx_personas=$(seq 1 1) # this range should be inclusive
 
 ## Zoey
 #idx_personas=$(seq 4 7)
@@ -16,7 +16,7 @@ idx_personas=$(seq 1 1) # this range should be inclusive
 #idx_personas=$(seq 8 11)
 #
 ## Jeff
-#idx_personas=$(seq 12 15)
+idx_personas=$(seq 12 15)
 #
 ## Brian
 #idx_personas=$(seq 16 19)
@@ -29,7 +29,7 @@ for context in "${contexts[@]}"; do
             time_periods=("init")
         else
 #            time_periods=("init" "next_week" "next_month" "next_year")
-             time_periods=("next_year")
+             time_periods=("init")
         fi
 
         for time_period in "${time_periods[@]}"; do
