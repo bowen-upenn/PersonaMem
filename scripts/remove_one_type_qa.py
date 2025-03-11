@@ -55,7 +55,7 @@ def process_json_files(directory, persona_range):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Remove specific Q&A types from JSON files.")
-    parser.add_argument("--path", type=str, default="./data//output/", help="Directory path to search JSON files.")
+    parser.add_argument("--path", type=str, default="./data/output/", help="Directory path to search JSON files.")
     parser.add_argument("--persona_range", type=str, default=None, help="Persona ID range (e.g., 8-11).")
 
     args = parser.parse_args()

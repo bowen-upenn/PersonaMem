@@ -1,47 +1,43 @@
 #!/bin/bash
 
 # Full list of topics for reference
-#contexts=("bookRecommendation" "coding" "datingConsultation" "email" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
-#          "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
-#          "studyConsultation" "therapy" "travelPlanning" "writing")
-contexts=("bookRecommendation" "datingConsultation" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
-          "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
-          "studyConsultation" "therapy" "travelPlanning")
+# bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
+# legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
+# studyConsultation therapy travelPlanning writing \
+
+# Full list of topics for reference
+# init next_week next_month next_year all
+time_period="all"
 
 # Lauren
-idx_personas=$(seq 0 3) # this range should be inclusive
+start_persona_id=0
+end_persona_id=4  # non-inclusive
 
 ## Zoey
-#idx_personas=$(seq 4 7)
+#start_persona_id=4
+#end_persona_id=8
 #
 ## Yuan
-#idx_personas=$(seq 8 11)
-#
+#start_persona_id=10
+#end_persona_id=11
+
 ## Jeff
-#idx_personas=$(seq 12 15)
-#
+#start_persona_id=12
+#end_persona_id=16
+
 ## Brian
-#idx_personas=$(seq 16 19)
+#start_persona_id=16
+#end_persona_id=20
 
-# Iterate over each combination of parameters
-for context in "${contexts[@]}"; do
-    for idx_persona in $idx_personas; do
-        # If the context is "writing", "coding", or "email", set time_period to "init" only
-        if [[ "$context" == "writing" || "$context" == "coding" || "$context" == "email" ]]; then
-            time_periods=("init")
-        else
-            time_periods=("init" "next_week" "next_month" "next_year")
-        fi
+# Construct the command
+command="python prepare_qa.py --model gpt-4o --action qa \
+         --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
+                  legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
+                  studyConsultation therapy travelPlanning writing \
+         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period}"
 
-        for time_period in "${time_periods[@]}"; do
-            # Construct the command
-            command="python prepare_qa.py --action qa --data ${context}_persona${idx_persona}_sample0 --time ${time_period}"
+# Print the command for debugging/logging purposes
+echo "$command"
 
-            # Print the command for debugging/logging purposes
-            echo "$command"
-
-            # Execute the command
-            eval "$command"
-        done
-    done
-done
+# Execute the command
+eval "$command"
