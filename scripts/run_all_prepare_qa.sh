@@ -4,10 +4,12 @@
 #contexts=("bookRecommendation" "coding" "datingConsultation" "email" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
 #          "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
 #          "studyConsultation" "therapy" "travelPlanning" "writing")
-contexts=("datingConsultation")
+contexts=("bookRecommendation" "datingConsultation" "familyRelations" "financialConsultation" "foodRecommendation" "homeDecoration"
+          "legalConsultation" "medicalConsultation" "movieRecommendation" "musicRecommendation" "onlineShopping" "sportsRecommendation"
+          "studyConsultation" "therapy" "travelPlanning")
 
 # Lauren
-idx_personas=$(seq 0 0) # this range should be inclusive
+idx_personas=$(seq 0 3) # this range should be inclusive
 
 ## Zoey
 #idx_personas=$(seq 4 7)
@@ -28,7 +30,6 @@ for context in "${contexts[@]}"; do
         if [[ "$context" == "writing" || "$context" == "coding" || "$context" == "email" ]]; then
             time_periods=("init")
         else
-#            time_periods=("init" "next_week" "next_month" "next_year")
             time_periods=("init" "next_week" "next_month" "next_year")
         fi
 
