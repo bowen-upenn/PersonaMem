@@ -878,7 +878,7 @@ if __name__ == "__main__":
 
     all_data_paths = []
     for topic in cmd_args.topics:
-        for persona_id in range(cmd_args.s_persona, cmd_args.s_persona + cmd_args.n_persona):
+        for persona_id in range(cmd_args.s_persona, cmd_args.n_persona):
             data_path = f'./data/output/{topic}/conversation_{topic}_persona{persona_id}_sample0.json'
             all_data_paths.append(data_path)
     # match = re.match(r'^([^_]+)_', cmd_args.data)
