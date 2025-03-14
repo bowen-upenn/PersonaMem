@@ -31,7 +31,7 @@ end_persona_id=15
 
 # Construct the command
 command="python prepare_qa.py --model gpt-4o --action qa \
-         --topics studyConsultation \
+         --topics sportsRecommendation \
          --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period}"
 
 # Print the command for debugging/logging purposes
@@ -59,8 +59,6 @@ eval "$command"
 # Error generating Q&A for reasons of change ./data/output/sportsRecommendation/conversation_sportsRecommendation_persona14_sample0.json:Conversation Next Week
     # '[Old Fact] Dislikes'   
 
-# persona13
-#     movieRecommendation 
 # persoan14
 #     onlineShopping
 #     sportsRecommendation
