@@ -6,8 +6,8 @@
 # studyConsultation therapy travelPlanning writing \
 
 # Lauren
-start_persona_id=0
-end_persona_id=4  # non-inclusive
+start_persona_id=2
+end_persona_id=3  # non-inclusive
 
 ## Zoey
 #start_persona_id=4
@@ -27,9 +27,7 @@ end_persona_id=4  # non-inclusive
 
 # Construct the command
 command="python prepare_data.py --model gpt-4o \
-         --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
-                  legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
-                  studyConsultation therapy travelPlanning writing \
+         --topics musicRecommendation \
          --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --output_dir data/output/ "
 
 # Print the command for debugging/logging purposes
