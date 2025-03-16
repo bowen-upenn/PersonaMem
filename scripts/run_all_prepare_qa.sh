@@ -10,12 +10,12 @@
 time_period="all"
 
 # Lauren
-start_persona_id=0
-end_persona_id=4  # non-inclusive
+# start_persona_id=0
+# end_persona_id=4  # non-inclusive
 
 ## Zoey
-#start_persona_id=4
-#end_persona_id=8
+start_persona_id=6
+end_persona_id=7
 #
 ## Yuan
 #start_persona_id=10
@@ -31,7 +31,7 @@ end_persona_id=4  # non-inclusive
 
 # Construct the command
 command="python prepare_qa.py --model gpt-4o --action qa \
-         --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
+         --topics email familyRelations financialConsultation foodRecommendation homeDecoration \
                   legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
                   studyConsultation therapy travelPlanning writing \
          --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period}"

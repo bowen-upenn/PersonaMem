@@ -840,7 +840,7 @@ if __name__ == "__main__":
     torch.manual_seed(0)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     world_size = torch.cuda.device_count()
-    assert world_size == 1
+    #assert world_size == 1
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
@@ -878,7 +878,7 @@ if __name__ == "__main__":
 
     all_data_paths = []
     for topic in cmd_args.topics:
-        for persona_id in range(cmd_args.s_persona, cmd_args.s_persona + cmd_args.n_persona):
+        for persona_id in range(cmd_args.s_persona, cmd_args.n_persona):
             data_path = f'./data/output/{topic}/conversation_{topic}_persona{persona_id}_sample0.json'
             all_data_paths.append(data_path)
     # match = re.match(r'^([^_]+)_', cmd_args.data)
