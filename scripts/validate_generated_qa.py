@@ -20,8 +20,8 @@ def validate_json(file_path):
     required_types = {
         "recalling_facts_mentioned_by_the_user": 0,
         "identifying_new_things_not_mentioned_by_the_user": 0,
-        # "generalizing_past_reasons_in_memory_to_new_scenarios": 0,
-        # "recalling_the_reasons_behind_previous_updates": 0,
+        "generalizing_past_reasons_in_memory_to_new_scenarios": 0,
+        "recalling_the_reasons_behind_previous_updates": 0,
         "tracking_the_full_sequence_of_preference_updates": 0,
         "recommendation_aligned_with_users_latest_preferences": 0,
         "recalling_the_latest_user_preferences": 0
@@ -56,6 +56,10 @@ def validate_json(file_path):
         value = data["Q&A"][period]
         if not value or len(value) == 0:
             print(f"{Colors.FAIL}Empty list under '{period}' in {file_path}{Colors.END}")
+            continue
+
+        if len(value) < 10:
+            print(f"{Colors.WARNING}The number of Q&As is {len(value)} '{period}' in {file_path} which is less than usual{Colors.END}")
             continue
 
         for item in value:

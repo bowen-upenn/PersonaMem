@@ -865,13 +865,14 @@ if __name__ == "__main__":
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
-    clean = False
-    if cmd_args.clean:
-        user_input = input("The 'clean' flag is set. Do you really want clean up all existing Q&As in the files (y/n): ").strip().lower()
-        if user_input == 'y':
-            clean = True
-        else:
-            print("Skipping cleanup.")
+    # clean = False
+    # if cmd_args.clean:
+    #     user_input = input("The 'clean' flag is set. Do you really want clean up all existing Q&As in the files (y/n): ").strip().lower()
+    #     if user_input == 'y':
+    #         clean = True
+    #     else:
+    #         print("Skipping cleanup.")
+    clean = cmd_args.clean
 
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')
