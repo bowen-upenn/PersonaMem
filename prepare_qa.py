@@ -753,20 +753,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                try:
-                    qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
@@ -774,20 +774,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 except Exception as e:
                     all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                    if qa_entry:
-                        all_qa_entries.extend([qa_entry])
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+                #     if qa_entry:
+                #         all_qa_entries.extend([qa_entry])
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
         else:
             # pass
             try:
