@@ -264,7 +264,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Topic": topic,
         "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[0],
-        "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
+        "Where": "END OF TEXT"  # insert this question before this place
     })
 
     # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
@@ -866,14 +866,14 @@ if __name__ == "__main__":
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
     args['inference']['verbose'] = cmd_args.verbose if cmd_args.verbose is not None else args['inference']['verbose']
 
-    # clean = False
-    # if cmd_args.clean:
-    #     user_input = input("The 'clean' flag is set. Do you really want clean up all existing Q&As in the files (y/n): ").strip().lower()
-    #     if user_input == 'y':
-    #         clean = True
-    #     else:
-    #         print("Skipping cleanup.")
-    clean = cmd_args.clean
+    clean = False
+    if cmd_args.clean:
+        user_input = input("The 'clean' flag is set. Do you really want clean up all existing Q&As in the files (y/n): ").strip().lower()
+        if user_input == 'y':
+            clean = True
+        else:
+            print("Skipping cleanup.")
+    # clean = cmd_args.clean
 
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')

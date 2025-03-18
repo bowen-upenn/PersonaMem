@@ -4,6 +4,7 @@ import random
 import tiktoken
 import argparse
 import yaml
+import math
 import re
 import torch
 from datetime import datetime, timedelta
@@ -99,6 +100,7 @@ def process_conversation_block(topic, conversation, which_format):
 def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", verbose=False):
     # Load all candidates
     candidates = {}
+    persona = None
     for root, dirs, files in os.walk(base_dir):
         for file_name in files:
             if f"persona{idx_persona}_" in file_name:
@@ -106,6 +108,9 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
                 fpath = os.path.join(root, file_name)
                 with open(fpath, "r", encoding="utf-8") as f:
                     data = json.load(f)
+
+                if not persona:
+                    persona = data['Expanded Persona']
 
                 if topic == 'writing' or topic == "email" or topic == "coding":
                     # For writing, we have only "Conversation"
@@ -273,7 +278,7 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     #         print(f"{fn}: {k}")
     #     print(len(final_blocks), "blocks chosen.")
 
-    return final_blocks
+    return final_blocks, persona
 
 
 def topological_sort(processed_blocks, num_variants=1, verbose=False):
@@ -283,87 +288,219 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
         parts = file_name.split("_")
         return "_".join(parts[1:3])
 
-    # Map time_period to a causal order value. For writing/coding, we treat "Conversation" as order 0.
+    # Map time_period to a causal order value.
     causal_order_mapping = {
         "Init Conversation": 0,
         "Conversation Next Week": 1,
         "Conversation Next Month": 2,
         "Conversation Next Year": 3,
-        "Conversation": 0  # for writing, email, coding topics
+        "Conversation": 0  # for topics like writing, email, coding
     }
 
-    def get_candidate_order(block):
+    def get_causal_order(block):
         return causal_order_mapping.get(block["time_period"], float("inf"))
 
-    # First, group blocks by topic and sort each topic's blocks by their causal order.
+    # Group blocks by topic.
     topics = defaultdict(list)
     for block in processed_blocks.values():
         topic = extract_topic(block["file_name"])
         topics[topic].append(block)
 
+    # Sort each topic's blocks in causal order.
     for topic, blocks in topics.items():
-        blocks.sort(key=lambda b: get_candidate_order(b))
-
-    # Calculate total blocks count (all topics) to gauge progress.
-    total_blocks = sum(len(b) for b in topics.values())
+        blocks.sort(key=get_causal_order)
 
     variants = []
     for variant in range(num_variants):
-        merged_list = []
-        # Make a copy of the sorted lists so that we can remove blocks as we select them.
-        topic_lists = {topic: blocks.copy() for topic, blocks in topics.items()}
+        # Step 1: Randomly sample one "Conversation Next Year" session (from any topic)
+        next_year_blocks = [
+            block
+            for blocks in topics.values()
+            for block in blocks
+            if block["time_period"] == "Conversation Next Year"
+        ]
+        if not next_year_blocks:
+            raise ValueError("No 'Conversation Next Year' sessions available.")
+        chosen_next_year_block = random.choice(next_year_blocks)
+        chosen_topic = extract_topic(chosen_next_year_block["file_name"])
 
-        # Continue until we've exhausted all topics.
-        while any(topic_lists.values()):
-            # Compute progress ratio (number of blocks merged so far relative to total).
-            progress_ratio = len(merged_list) / total_blocks
-            # Define a desired causal order based on global progress:
-            # Early progress prefers order 0 (Init), then 1, 2, and finally 3.
-            if progress_ratio < 0.25:
-                desired_order = 0
-            elif progress_ratio < 0.5:
-                desired_order = 1
-            elif progress_ratio < 0.75:
-                desired_order = 2
-            else:
-                desired_order = 3
+        # Step 2: For the chosen topic, arrange all its sessions in causal order.
+        t_sessions = topics[chosen_topic]
+        t_sessions = sorted(t_sessions, key=get_causal_order)
 
-            # Build candidate pool: each topic contributes its next (earliest) block.
-            candidate_blocks = []
-            for topic, blocks in topic_lists.items():
-                if blocks:
-                    candidate_blocks.append(blocks[0])
+        # Step 3: Split the chosen topic's sessions into two parts.
+        # We search for the "Conversation Next Month" session.
+        split_index = None
+        for i, block in enumerate(t_sessions):
+            if block["time_period"] == "Conversation Next Month":
+                split_index = i
+                break
+        # If no "Conversation Next Month" is found, fallback: use the first "Conversation Next Year"
+        if split_index is None:
+            for i, block in enumerate(t_sessions):
+                if block["time_period"] == "Conversation Next Year":
+                    split_index = i
+                    break
+        # If still not found (unlikely), put everything in the first part.
+        if split_index is None:
+            split_index = len(t_sessions) - 1
 
-            # Assign weights based on how close a candidate's order is to the desired order.
-            # Closer order differences yield a higher weight.
-            weights = []
-            for block in candidate_blocks:
-                candidate_order = get_candidate_order(block)
-                diff = abs(candidate_order - desired_order)
-                if diff == 0:
-                    weight = 1.0
-                elif diff == 1:
-                    weight = 0.2
+        t_before = t_sessions[:split_index + 1]  # sessions up to and including the split
+        t_after = t_sessions[split_index + 1:]     # sessions after the split
+
+        # Step 4: Gather all sessions from other topics.
+        other_sessions = []
+        for topic, blocks in topics.items():
+            if topic != chosen_topic:
+                other_sessions.extend(blocks)
+        other_sessions.sort(key=get_causal_order)
+
+        # Step 5: Partition other sessions into two groups:
+        #  - A small fraction to interleave with t_before (max 10% of t_before count)
+        #  - The remainder to insert between t_before and t_after.
+        allowed_count = math.floor(0.1 * len(t_before))
+        interleaved_others = other_sessions[:allowed_count]
+        remaining_others = other_sessions[allowed_count:]
+
+        # Step 6: Interleave the allowed other sessions evenly into t_before.
+        interleaved_t_before = []
+        if interleaved_others and len(t_before) > 1:
+            gap = len(t_before) / (len(interleaved_others) + 1)
+            insertion_indices = [int(round(gap * (i + 1))) for i in range(len(interleaved_others))]
+            idx_other = 0
+            for i in range(len(t_before) + len(interleaved_others)):
+                # If this index matches an insertion index, insert one from interleaved_others.
+                if idx_other < len(insertion_indices) and i == insertion_indices[idx_other] + idx_other:
+                    interleaved_t_before.append(interleaved_others[idx_other])
+                    idx_other += 1
                 else:
-                    weight = 0.1
-                weights.append(weight)
+                    # Otherwise, pop the next t_before element.
+                    t_elem = t_before.pop(0)
+                    interleaved_t_before.append(t_elem)
+        else:
+            # No interleaving needed.
+            interleaved_t_before = t_before
 
-            # Select one candidate block using weighted random choice.
-            chosen_block = random.choices(candidate_blocks, weights=weights, k=1)[0]
-            merged_list.append(chosen_block)
-            # Remove the chosen block from its topic list to preserve causal order.
-            topic = extract_topic(chosen_block["file_name"])
-            topic_lists[topic].pop(0)
+        # Step 7: Final merge:
+        # All sessions in the chosen topic's early block (with a small insertion from other topics),
+        # then the bulk of the remaining other sessions,
+        # then the remaining chosen topic sessions.
+        merged_list = interleaved_t_before + remaining_others + t_after
 
         if verbose:
-            print(f'Variant {variant + 1}: {len(merged_list)} blocks')
-            sorted_info = [f"{block['file_name']}: {block['time_period']}" for block in merged_list]
+            print(f"Variant {variant+1}:")
+            sorted_info = [
+                f"{block['file_name']}: {block['time_period']}"
+                for block in merged_list
+            ]
             print("Sorted conversation blocks:", sorted_info)
             print('-' * 50)
 
         variants.append(merged_list)
 
     return variants
+
+# def topological_sort(processed_blocks, num_variants=1, verbose=False):
+#     def extract_topic(file_name):
+#         # Extract the topic. For example, for "conversation_travelPlanning_persona0_sample0.json"
+#         # we return "travelPlanning_persona0"
+#         parts = file_name.split("_")
+#         return "_".join(parts[1:3])
+#
+#     # Map time_period to a causal order value.
+#     causal_order_mapping = {
+#         "Init Conversation": 0,
+#         "Conversation Next Week": 1,
+#         "Conversation Next Month": 2,
+#         "Conversation Next Year": 3,
+#         "Conversation": 0  # for writing, email, coding topics
+#     }
+#
+#     def get_candidate_order(block):
+#         return causal_order_mapping.get(block["time_period"], float("inf"))
+#
+#     # Group blocks by topic and sort each topic's blocks by their causal order.
+#     topics = defaultdict(list)
+#     for block in processed_blocks.values():
+#         topic = extract_topic(block["file_name"])
+#         topics[topic].append(block)
+#
+#     for topic, blocks in topics.items():
+#         blocks.sort(key=lambda b: get_candidate_order(b))
+#
+#     total_blocks = sum(len(b) for b in topics.values())
+#
+#     variants = []
+#     for variant in range(num_variants):
+#         merged_list = []
+#         # Make a copy of the sorted lists so that we can remove blocks as we select them.
+#         topic_lists = {topic: blocks.copy() for topic, blocks in topics.items()}
+#
+#         while any(topic_lists.values()):
+#             # Compute progress ratio (number of blocks merged so far relative to total).
+#             progress_ratio = len(merged_list) / total_blocks
+#             # Define a desired causal order based on global progress:
+#             if progress_ratio < 0.25:
+#                 desired_order = 0
+#             elif progress_ratio < 0.5:
+#                 desired_order = 1
+#             elif progress_ratio < 0.75:
+#                 desired_order = 2
+#             else:
+#                 desired_order = 3
+#
+#             # Build candidate pool: each topic contributes its next (earliest) block.
+#             candidate_blocks = []
+#             for topic, blocks in topic_lists.items():
+#                 if blocks:
+#                     candidate_blocks.append(blocks[0])
+#
+#             # Assign weights based on how close a candidate's order is to the desired order.
+#             weights = []
+#             for block in candidate_blocks:
+#                 candidate_order = get_candidate_order(block)
+#                 diff = abs(candidate_order - desired_order)
+#                 if diff == 0:
+#                     weight = 1.0
+#                 elif diff == 1:
+#                     weight = 0.5
+#                 else:
+#                     weight = 0.1
+#                 weights.append(weight)
+#
+#             # --- Modification 1: Interleave topics ---
+#             # Penalize candidate blocks from the same topic as the last chosen block if alternatives exist.
+#             if merged_list:
+#                 last_topic = extract_topic(merged_list[-1]["file_name"])
+#                 if any(extract_topic(b["file_name"]) != last_topic for b in candidate_blocks):
+#                     for i, block in enumerate(candidate_blocks):
+#                         if extract_topic(block["file_name"]) == last_topic:
+#                             weights[i] *= 0.01
+#
+#             # --- Modification 2: Delay "Conversation Next Year" blocks ---
+#             # If there is any candidate with a time period other than "Conversation Next Year",
+#             # penalize those with "Conversation Next Year" to push them towards the end.
+#             if any(block["time_period"] != "Conversation Next Year" for block in candidate_blocks):
+#                 for i, block in enumerate(candidate_blocks):
+#                     if block["time_period"] == "Conversation Next Year":
+#                         weights[i] *= 0.01
+#
+#             # Select one candidate block using weighted random choice.
+#             chosen_block = random.choices(candidate_blocks, weights=weights, k=1)[0]
+#             merged_list.append(chosen_block)
+#             # Remove the chosen block from its topic list to preserve causal order.
+#             topic = extract_topic(chosen_block["file_name"])
+#             topic_lists[topic].pop(0)
+#
+#         if verbose:
+#             print(f'Variant {variant + 1}: {len(merged_list)} blocks')
+#             sorted_info = [f"{block['file_name']}: {block['time_period']}" for block in merged_list]
+#             print("Sorted conversation blocks:", sorted_info)
+#             print('-' * 50)
+#
+#         variants.append(merged_list)
+#
+#     return variants
 
 
 def get_order_mapping(original_blocks, sorted_blocks):
@@ -381,11 +518,19 @@ def get_order_mapping(original_blocks, sorted_blocks):
     return mapping
 
 
-def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts=None, verbose=False):
+def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts=None, persona=None, verbose=False):
     all_conversations = []
     num_irrelevant_tokens = 0
+
     for block_idx, block in enumerate(sorted_processed_blocks):
         curr_conversations = []
+
+        # Append persona at the beginning of each block
+        if persona:
+            if which_format == 'string':
+                curr_conversations.append(persona)
+            else:
+                curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
 
         # Insert irrelevant contexts
         if all_irrelevant_contexts and which_format == 'api_dict':
@@ -437,10 +582,17 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
     flattened_all_conversations = [item for curr_conversations in all_conversations for item in curr_conversations]
     all_qa = []
 
+    # Precompute the token counts for each conversation block and a prefix sum list.
+    prefix_tokens = [0]
+    for item in flattened_all_conversations:
+        # Count tokens in each block's content.
+        token_count = count_tokens(item['content'], tokenizer, verbose=False)
+        prefix_tokens.append(prefix_tokens[-1] + token_count)
+
     for i, block in enumerate(sorted_processed_blocks):
-        # # Only keep Q&As in the last block, i.e., the current session during conversation
-        # if i + 1 < total_blocks:
-        #     continue
+        # Only keep Q&As in the last block, i.e., the current session during conversation
+        if i + 1 < total_blocks:
+            continue
 
         # we assign distance to all qa in the current block
         for idx, q in enumerate(block.get('qa', [])):
@@ -455,11 +607,12 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 continue
 
             if where == 'END OF TEXT':
-                block_num_q, start_index_q = i, len(flattened_all_conversations) - 1
+                block_num_q, start_index_q = total_blocks - 1, len(flattened_all_conversations) - 1
             else:
                 block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 
-            num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
+            num_tokens_q = prefix_tokens[start_index_q]
+            # num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = flattened_all_conversations[:start_index_q]
 
             # Get where the reference information will be
@@ -472,7 +625,9 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 elif 'Conversation' in q['Reference']:
                     reference_event = q['Reference']['Conversation']
                     reference_utterance = reference_event.split('\n')[1]
+                    # print('reference_utterance', reference_utterance, 'where', where, 'type', q['Type'])
                     block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+                    # print('start_index_ref', start_index_ref, 'len(all_conversations)', len(all_conversations))
                     # print('all_conversations[start_index_ref]', all_conversations[start_index_ref])
                     # print('reference_utterance', reference_utterance)
                 else:
@@ -485,18 +640,21 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                     except:
                         reference_event = q['Reference'][all_timestamps[1]]['Conversation'] # in case the earliest timestamp is not associated with a conversation
                         reference_utterance = reference_event.split('\n')[1]
+
                     block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
-            num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
+            num_tokens_ref = prefix_tokens[start_index_ref]
+            # num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
 
             # print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
-            # print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref,)
-            # print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
+            print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref)
+            print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
 
+            num_tokens_question = count_tokens(q['Question'], tokenizer, verbose=False)
             q['distance_blocks'] = block_num_q - block_num_ref
-            q['distance_tokens'] = num_tokens_q - num_tokens_ref + count_tokens(q['Question'], tokenizer, verbose=False)
-            q['context_length_in_tokens'] = num_tokens_q + count_tokens(q['Question'], tokenizer, verbose=False)
-            q['context_length_in_letters'] = len(" ".join([item['content'] for item in curr_context]))
+            q['distance_tokens'] = num_tokens_q - num_tokens_ref + num_tokens_question
+            q['context_length_in_tokens'] = num_tokens_q + num_tokens_question
+            q['context_length_in_letters'] = len("".join([item['content'] for item in curr_context]))
             q['shared_context'] = flattened_all_conversations
             q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
@@ -553,6 +711,7 @@ def question_loader(qa_list):
         curr_context = qa['curr_context']
         num_irrelevant_tokens = qa['num_irrelevant_tokens']
         where = qa['Where'] if 'Where' in qa else None
+        stereotypical = qa['Stereotypical'] if 'Stereotypical' in qa else None
 
-        yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
+        yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
                context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens)

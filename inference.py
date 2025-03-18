@@ -174,7 +174,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
             writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens",
-                             "distance_to_ref_proportion_in_context", "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens"])
+                             "distance_to_ref_proportion_in_context", "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens", "stereotypical"])
 
         writer.writerow([
             result["question_id"],
@@ -190,29 +190,14 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result['all_options'],
             result["shared_context_id"],
             result["end_index_in_shared_context"],
-            result["num_irrelevant_tokens"]
+            result["num_irrelevant_tokens"],
+            result["stereotypical"]
         ])
 
 
 def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
-    # Load existing data or initialize an empty list
-    existing_data = []
-    if os.path.exists(json_file_path):
-        with open(json_file_path, "r", encoding="utf-8") as file:
-            existing_data = json.load(file)
-            if not isinstance(existing_data, list):
-                existing_data = []
-
-    # If the unique key already exists
-    if contexts_dict.keys() in [item.keys() for item in existing_data]:
-        return
-
-    # Append new context
-    existing_data.append(contexts_dict)
-
-    # Save updated data
-    with open(json_file_path, "w", encoding="utf-8") as file:
-        json.dump(existing_data, file, indent=4)
+    with open(json_file_path, "a", encoding="utf-8") as file:
+        file.write(json.dumps(contexts_dict, indent=4) + "\n")
 
 
 if __name__ == "__main__":
@@ -251,14 +236,19 @@ if __name__ == "__main__":
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
 
     if cmd_args.clean:
-        user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
-        if user_input == 'y':
-            if os.path.exists("data/questions.csv"):
-                os.remove("data/questions.csv")
-            if os.path.exists("data/contexts.json"):
-                os.remove("data/contexts.json")
-        else:
-            print("Skipping cleanup.")
+        if os.path.exists("data/questions.csv"):
+            os.remove("data/questions.csv")
+        if os.path.exists("data/contexts.json"):
+            os.remove("data/contexts.json")
+    #     user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
+    #     if user_input == 'y':
+    #         if os.path.exists("data/questions.csv"):
+    #             os.remove("data/questions.csv")
+    #         if os.path.exists("data/contexts.json"):
+    #             os.remove("data/contexts.json")
+    #     else:
+    #         print("Skipping cleanup.")
+
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
@@ -288,7 +278,7 @@ if __name__ == "__main__":
         full_results = []
 
         # Gather all candidate conversation blocks
-        chosen_blocks = load_n_conversation_blocks(idx_persona, curr_n_blocks, base_dir, verbose)
+        chosen_blocks, persona = load_n_conversation_blocks(idx_persona, curr_n_blocks, base_dir, verbose)
 
         # Process each chosen conversation block
         processed_blocks_dict = {}
@@ -323,7 +313,7 @@ if __name__ == "__main__":
 
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
-            all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, verbose)
+            all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
             all_qa, all_conversations = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
@@ -331,7 +321,7 @@ if __name__ == "__main__":
                 print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
 
             # Show all Q&As related to this concatenated conversation
-            for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
+            for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
                  context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
@@ -352,6 +342,7 @@ if __name__ == "__main__":
                         "context_length_in_tokens": context_length_in_tokens,
                         "context_length_in_letters": context_length_in_letters,
                         "num_irrelevant_tokens": num_irrelevant_tokens,
+                        "stereotypical": stereotypical,
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
                     save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
