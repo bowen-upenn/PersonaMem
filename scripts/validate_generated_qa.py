@@ -20,8 +20,8 @@ def validate_json(file_path):
     required_types = {
         "recalling_facts_mentioned_by_the_user": 0,
         "identifying_new_things_not_mentioned_by_the_user": 0,
-        # "generalizing_past_reasons_in_memory_to_new_scenarios": 0,
-        # "recalling_the_reasons_behind_previous_updates": 0,
+        "generalizing_past_reasons_in_memory_to_new_scenarios": 0,
+        "recalling_the_reasons_behind_previous_updates": 0,
         "tracking_the_full_sequence_of_preference_updates": 0,
         "recommendation_aligned_with_users_latest_preferences": 0,
         "recalling_the_latest_user_preferences": 0
@@ -58,6 +58,10 @@ def validate_json(file_path):
             print(f"{Colors.FAIL}Empty list under '{period}' in {file_path}{Colors.END}")
             continue
 
+        if len(value) < 10:
+            print(f"{Colors.WARNING}The number of Q&As is {len(value)} '{period}' in {file_path} which is less than usual{Colors.END}")
+            continue
+
         for item in value:
             if not isinstance(item, dict) or "Topic" not in item:
                 print(f"{Colors.FAIL}Invalid entry in '{period}': Each item must have 'Type' in {file_path}{Colors.END}")
@@ -85,8 +89,11 @@ def validate_json(file_path):
 
 
 
-def process_json_files(directory="./data/output/", persona_range=None):
-    min_persona, max_persona = map(int, persona_range.split('-')) if persona_range else (None, None)
+def process_json_files(persona_range, directory="./data/output/"):
+    if '-' in persona_range:
+        min_persona, max_persona = map(int, persona_range.split('-'))
+    else:
+        min_persona, max_persona = int(persona_range), int(persona_range)
 
     for root, _, files in os.walk(directory):
         for file in files:
@@ -108,7 +115,7 @@ def process_json_files(directory="./data/output/", persona_range=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Validate JSON files in a directory.")
     parser.add_argument("--path", type=str, default="./data/output/", help="Directory path to search JSON files.")
-    parser.add_argument("--persona_range", type=str, default=None, help="Persona ID range (e.g., 8-11).")
+    parser.add_argument("--persona_range", type=str, default=0, help="Persona ID range (e.g., 8-11).")
 
     args = parser.parse_args()
-    process_json_files(args.path, args.persona_range)
+    process_json_files(args.persona_range, args.path)

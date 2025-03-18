@@ -218,7 +218,6 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         # Stop once the list contains two details
         if len(last_two_details) == 2:
             break
-    print(last_two_details)
 
     if len(last_two_details) < 2 or "[Reasons of Change]" not in last_two_details[0]:
         return qa_entries
@@ -234,12 +233,12 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         related_event["[Updated Fact] Likes"] = last_two_details[0]["[Updated Fact] Likes"]
         if "[Old Fact] Likes" in last_two_details[0]:
             return qa_entries
-        related_event["[Old Fact] Dislikes"] = last_two_details[0]["[Old Fact] Dislikes"]
+        related_event["[Old Fact] Dislikes"] = last_two_details[0]["[Old Fact] Dislikes"] if "[Old Fact] Dislikes" in last_two_details[0] else last_two_details[0]["[Fact] Dislikes"]
     else:
         related_event["[Updated Fact] Dislikes"] = last_two_details[0]["[Updated Fact] Dislikes"]
         if "[Old Fact] Dislikes" in last_two_details[0]:
             return qa_entries
-        related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"]
+        related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[0] else last_two_details[0]["[Fact] Likes"]
 
     # This Q&A will be asked immediately before the last event
     response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
@@ -265,7 +264,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Topic": topic,
         "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[0],
-        "Where": last_two_details[0]["Conversation"].split('\n')[-2]  # insert this question before this place
+        "Where": "END OF TEXT"  # insert this question before this place
     })
 
     # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
@@ -671,6 +670,7 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
 def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, clean, verbose):
     # Load json file
     with open(data_path, 'r') as file:
+        print('data_path', data_path)
         data = json.load(file)
     print(f'{utils.Colors.OKGREEN}data_path: {data_path}: {conversation_key}{utils.Colors.ENDC}')
 
@@ -755,20 +755,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                # try:
-                #     qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
-                #     if len(qa_entries) > 0:
-                #         all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-                # try:
-                #     qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
-                #     if len(qa_entries) > 0:
-                #         all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+                try:
+                    qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
+                    if len(qa_entries) > 0:
+                        all_qa_entries.extend(qa_entries)
+                except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                try:
+                    qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
+                    if len(qa_entries) > 0:
+                        all_qa_entries.extend(qa_entries)
+                except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
@@ -776,20 +776,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 except Exception as e:
                     all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
-                # try:
-                #     qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
-                #     if len(qa_entries) > 0:
-                #         all_qa_entries.extend(qa_entries)
-                # except Exception as e:
-                #     all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
-                # try:
-                #     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                #     if qa_entry:
-                #         all_qa_entries.extend([qa_entry])
-                # except Exception as e:
-                #     all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
-                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                try:
+                    qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
+                    if len(qa_entries) > 0:
+                        all_qa_entries.extend(qa_entries)
+                except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                try:
+                    qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+                    if qa_entry:
+                        all_qa_entries.extend([qa_entry])
+                except Exception as e:
+                    all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
         else:
             # pass
             try:
@@ -840,9 +840,10 @@ if __name__ == "__main__":
         print('Error reading the config file')
 
     torch.manual_seed(0)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     world_size = torch.cuda.device_count()
-    #assert world_size == 1
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    if world_size > 1:
+        assert world_size == 1
 
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
@@ -874,6 +875,7 @@ if __name__ == "__main__":
             clean = True
         else:
             print("Skipping cleanup.")
+    # clean = cmd_args.clean
 
     LLM = QueryLLM(args)
     LLM.create_a_thread(step='qa')

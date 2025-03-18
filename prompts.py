@@ -22,29 +22,29 @@ def prompts_for_expanding_persona(persona, start_time):
     birth_year = str(int(start_time.split('/')[2]) - 18)
     gender_identity = (' transgender ' if random.random() < 0.2 else '') + random.choice(['female', 'male', 'non-binary'])
     racial_identity = random.choice(['Asian', 'South Asian', 'African American', 'Hispanic', 'Indigenous', 'White', 'Jewish', 'Pacific Islander', 'Mixed race'])
-    prompt = "The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. " \
-             "Add a name, a gender identity of " + gender_identity + ", and a racial identity of " + racial_identity + ", if any of them is missing from the initial version." \
-             "Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona
+    prompt = ("The current version of the persona is short. Keep the same style and pronouns, but expand it with additional information to around five sentences. "
+              "Add a name, a gender identity of " + gender_identity + ", and a racial identity of " + racial_identity + ", if any of them is missing from the initial version."
+              "Adjust the persona if necessary given the person is born in " + birth_year + ". Here is the persona: " + persona)
     return prompt
 
 
 def prompts_for_init_general_personal_history(persona, start_time):
-    prompt = "Given the following persona, expand it with 10 person's general background history within ten years starting at " + start_time + "." \
-             "Turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. " \
-             "Remember that these events should be general like career development, and they will be shared across multiple different topics." \
-             "You should mention both daily activities and important key milestones, and both positive and negative history events. Also relate history to what this person prefers and dislikes. " \
-             "Use JSON format where each timestamp is a key in the JSON dictionary. Each point should also be marked with labels of either ['Short-Term'] or ['Long-Term'], " \
-             "where short-term fact refers to something happening daily, which can be irrelevant to the persona like what the person eats, " \
-             "which should come with temporal quantifiers like 'today' or so, but long-term fact refers to some key personas that won't be changed for at least a year. " \
-             "There should be 5 short-term and 5 long-term events. Include all 10 things this person likes and dislikes mentioned in the persona, and rewrite them as appropriate events. " \
-             "All events must have an appropriate time stamp in the format of MM/DD/YYYY. List at least 10 events, more are welcome. " \
-             "Here is the template you should follow for each event:\n\n" \
-                '"MM/DD/YYYY": {\n' \
-                    '"Event": xxx, \n' \
-                    '"Category": "Short-Term" OR "Long-Term"\n' \
-                "}, \n\n" \
-             "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format." \
-             "Here is the persona: " + persona
+    prompt = ("Given the following persona, expand it with 10 person's general background history within ten years starting at " + start_time + "."
+              "Turn each point into the format of a bullet point, and add a timestamp in the format of MM/DD/YYYY for each bullet point. "
+              "Remember that these events should be general like career development, and they will be shared across multiple different topics."
+              "You should mention both daily activities and important key milestones, and both positive and negative history events. Also relate history to what this person prefers and dislikes. "
+              "Use JSON format where each timestamp is a key in the JSON dictionary. Each point should also be marked with labels of either ['Short-Term'] or ['Long-Term'], "
+              "where short-term fact refers to something happening daily, which can be irrelevant to the persona like what the person eats, "
+              "which should come with temporal quantifiers like 'today' or so, but long-term fact refers to some key personas that won't be changed for at least a year. "
+              "There should be 5 short-term and 5 long-term events. Include all 10 things this person likes and dislikes mentioned in the persona, and rewrite them as appropriate events. "
+              "All events must have an appropriate time stamp in the format of MM/DD/YYYY. List at least 10 events, more are welcome. "
+              "Here is the template you should follow for each event:\n\n"
+                 '"MM/DD/YYYY": {\n'
+                     '"Event": xxx,\n'
+                     '"Category": "Short-Term" OR "Long-Term"\n'
+                 "},\n\n"
+              "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format."
+              "Here is the persona: " + persona)
     return prompt
 
 
@@ -119,16 +119,16 @@ def prompts_for_expanding_personal_history(topic=None, type='general', period='W
     if type == 'general':
         prompt += "Here is the template you should follow for each event WITHOUT knowledge updates:\n\n" \
                   '"MM/DD/YYYY": {\n' \
-                  '"Event": xxx, \n' \
+                  '"Event": xxx,\n' \
                   '"Category": "Short-Term" OR "Long-Term"\n' \
-                  "}, \n\n" \
+                  "},\n\n" \
                   "Here is the template you should follow for each event WITH knowledge updates:\n\n" \
                   "'MM/DD/YYYY': {\n" \
                       '"Event": xxx, \n' \
                       '"Category": "Short-Term" OR "Long-Term"\n' \
-                      '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!) \n' \
+                      '"[Reasons of Change]": xxx, (Please find some unique, uncommon, and personal reasons!)\n' \
                       '"[Old Event Date]": MM/DD/YYYY, \n' \
-                      '"[Old Event]": xxx, \n' \
+                      '"[Old Event]": xxx,\n' \
                   "}\n" \
                   "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'MM/DD/YYYY' and 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     else:
@@ -428,6 +428,21 @@ def prompts_for_generating_qa(data, action):
 
     else:
         raise ValueError("Invalid action", action)
+    return prompt
+
+
+def prompts_for_classifying_stereotypical_preferences(data):
+    prompt = ("You are provided with a persona:\n\n" + data['persona'] + "\n\nand a list of preferences:\n\n" + data['preferences'] + "\n\n "
+              "Your task is to classify which of these preferences are stereotypical for this person's gender and racial identities or other demographic information. "
+              "Note that whether the person likes or dislikes an item is important for the classification. "
+              "Please output your answer as a Python list of dictionaries, where each dictionary has two keys: "
+              "'preference' (the stereotypical preference) and 'label' (either 'Likes' or 'Dislikes'). The preference part should not contain the label redundantly. "
+              "Only include preferences that are considered stereotypical. "
+              "Think step by step for each preference before giving the final answer. Please follow this format for the final answer:\n\n"
+              "[\n"
+              '    {"preference": "xxx", "label": "Likes OR Dislikes"},\n'
+              "...\n"
+              ']\nFill in the actual data at placeholders "xxx" in the template. Do NOT modify the wording of the preference. Please use double quotes for each string.')
     return prompt
 
 
