@@ -31,10 +31,8 @@ end_persona_id=7
 
 # Construct the command
 command="python prepare_qa.py --model gpt-4o --action qa \
-         --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
-                  legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
-                  studyConsultation therapy travelPlanning writing \
-         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period} --clean"
+         --topics writing \
+         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period}"
 
 # Print the command for debugging/logging purposes
 echo "$command"
