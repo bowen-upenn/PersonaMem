@@ -89,8 +89,11 @@ def validate_json(file_path):
 
 
 
-def process_json_files(directory="./data/output/", persona_range=None):
-    min_persona, max_persona = map(int, persona_range.split('-')) if persona_range else (None, None)
+def process_json_files(persona_range, directory="./data/output/"):
+    if '-' in persona_range:
+        min_persona, max_persona = map(int, persona_range.split('-'))
+    else:
+        min_persona, max_persona = int(persona_range), int(persona_range)
 
     for root, _, files in os.walk(directory):
         for file in files:
@@ -112,7 +115,7 @@ def process_json_files(directory="./data/output/", persona_range=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Validate JSON files in a directory.")
     parser.add_argument("--path", type=str, default="./data/output/", help="Directory path to search JSON files.")
-    parser.add_argument("--persona_range", type=str, default=None, help="Persona ID range (e.g., 8-11).")
+    parser.add_argument("--persona_range", type=str, default=0, help="Persona ID range (e.g., 8-11).")
 
     args = parser.parse_args()
-    process_json_files(args.path, args.persona_range)
+    process_json_files(args.persona_range, args.path)

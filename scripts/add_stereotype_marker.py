@@ -5,11 +5,13 @@ import argparse
 import yaml
 from json_repair import repair_json
 from tqdm import tqdm
+from rapidfuzz import fuzz
 
 # Add path of the parent directory
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from query_llm import QueryLLM
+import utils
 
 
 def process_json_file(file_path, LLM, verbose=False):
@@ -18,12 +20,40 @@ def process_json_file(file_path, LLM, verbose=False):
 
     # Step 2: Extract persona and preferences.
     persona = data.get("Expanded Persona", {})
-    preferences = data.get("Likes and Dislikes", {})
+    if not isinstance(persona, str):
+        persona = str(persona)
+
+    # Extract contextual personal history preferences.
+    context_keys = [
+        "Init Contextual Personal History",
+        "Contextual Personal History Next Week",
+        "Contextual Personal History Next Month",
+        "Contextual Personal History Next Year"
+    ]
+
+    preference_set = set()
+    for key in context_keys:
+        context_dict = data.get(key, {})
+        if isinstance(context_dict, dict):
+            for inner_key, inner_val in context_dict.items():
+                if isinstance(inner_val, dict):
+                    for fact_key in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "Updated [Fact] Dislikes"]:
+                        if fact_key in inner_val:
+                            value = inner_val[fact_key].strip()
+                            preference_set.add('Likes ' + value)
+                            preference_set.add('Dislikes ' + value)
+                            break
+
+    # New list of preferences is the set of values extracted from the contextual history.
+    preference_set = str(preference_set)
+    if verbose:
+        print('persona', persona)
+        print('\n\npreference_set', preference_set)
 
     # Step 3: Prepare data for LLM query.
     query_data = {
         'persona': persona,
-        'preferences': preferences,
+        'preferences': preference_set,
     }
 
     # Query the LLM.
@@ -59,18 +89,32 @@ def process_json_file(file_path, LLM, verbose=False):
                 if ref_key in reference:
                     pref_value = reference[ref_key]
                     # print('reference', reference)
-                    is_stereotypical = False
 
-                    # Check if the preference is in the stereotypical list with a matching label.
-                    for item in stereotypical_list:
-                        if isinstance(item, dict):
-                            # print('item', item)
-                            if item.get('preference').lower().strip() == pref_value.lower().strip():
-                                if (item.get('label').lower().strip() == "likes" and ref_key in ["[Fact] Likes", "[Updated Fact] Likes"]
-                                        or item.get('label').lower().strip() == "dislikes" and ref_key in ["[Fact] Dislikes", "[Updated Fact] Dislikes"]):
-                                    is_stereotypical = True
-                                    # print(f"Preference '{pref_value}' is stereotypical: {is_stereotypical}")
-                                    break
+                    is_stereotypical = False
+                    if '[stereotypical]' in pref_value.lower():
+                        is_stereotypical = True
+                        print(f"Preference '{pref_value}' is stereotypical: {is_stereotypical}")
+                    else:
+                        # Check if the preference is in the stereotypical list with a matching label.
+                        for item in stereotypical_list:
+                            if isinstance(item, dict):
+                                stereotype_pref = item.get('preference', '').strip().lower()
+                                # if stereotype_pref begins with Likes or Dislikes, remove the first word and the space
+                                if stereotype_pref.startswith('likes '):
+                                    stereotype_pref = stereotype_pref[6:]
+                                elif stereotype_pref.startswith('dislikes '):
+                                    stereotype_pref = stereotype_pref[9:]
+
+                                # Apply fuzzy matching: Accept match if similarity is above 90%
+                                similarity_score = fuzz.ratio(pref_value, stereotype_pref)
+
+                                if similarity_score >= 90:  # High-confidence match
+                                    # print('item', item)
+                                    if (item.get('label').lower().strip() == "likes" and ref_key in ["[Fact] Likes", "[Updated Fact] Likes"]
+                                            or item.get('label').lower().strip() == "dislikes" and ref_key in ["[Fact] Dislikes", "[Updated Fact] Dislikes"]):
+                                        is_stereotypical = True
+                                        print(f"Preference '{pref_value}' is stereotypical: {is_stereotypical}")
+                                        break
 
                     # Add the Stereotypical field accordingly
                     qa['Stereotypical'] = "Yes" if is_stereotypical else "No"
@@ -97,11 +141,11 @@ def process_all_files(directory, persona_range, LLM, verbose=False):
     else:
         min_persona, max_persona = int(persona_range), int(persona_range)
 
-    for root, _, files in os.walk(directory):
+    for root, _, files in tqdm(os.walk(directory)):
         # if files is not a list
         if not isinstance(files, list):
             continue
-        for file in tqdm(files):
+        for file in files:
             if any(excluded in file.lower() for excluded in ["writing", "email", "coding"]):
                 continue
 
@@ -113,7 +157,7 @@ def process_all_files(directory, persona_range, LLM, verbose=False):
                         continue
 
             if file.endswith(".json"):
-                print(f"Processing file: {os.path.join(root, file)}")
+                print(f'{utils.Colors.OKGREEN}Processing file: {os.path.join(root, file)}{utils.Colors.ENDC}')
                 process_json_file(os.path.join(root, file), LLM, verbose=verbose)
 
 

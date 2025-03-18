@@ -233,12 +233,12 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         related_event["[Updated Fact] Likes"] = last_two_details[0]["[Updated Fact] Likes"]
         if "[Old Fact] Likes" in last_two_details[0]:
             return qa_entries
-        related_event["[Old Fact] Dislikes"] = last_two_details[0]["[Old Fact] Dislikes"]
+        related_event["[Old Fact] Dislikes"] = last_two_details[0]["[Old Fact] Dislikes"] if "[Old Fact] Dislikes" in last_two_details[0] else last_two_details[0]["[Fact] Dislikes"]
     else:
         related_event["[Updated Fact] Dislikes"] = last_two_details[0]["[Updated Fact] Dislikes"]
         if "[Old Fact] Dislikes" in last_two_details[0]:
             return qa_entries
-        related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"]
+        related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[0] else last_two_details[0]["[Fact] Likes"]
 
     # This Q&A will be asked immediately before the last event
     response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)

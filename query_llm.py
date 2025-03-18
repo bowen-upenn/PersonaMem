@@ -164,24 +164,15 @@ class QueryLLM:
             prompt = prompts.prompt_for_content_generation(data, action)
         elif step == 'eval_new_content':
             prompt = prompts.prompt_for_evaluating_content(data, action)
+        elif step == 'find_stereotype':
+            prompt = prompts.prompts_for_classifying_stereotypical_preferences(data)
         else:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
         if (step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code'
-                or step == 'rewrite_email' or step == 'rewrite_creative_writing' or step == 'new_content'):
+                or step == 'rewrite_email' or step == 'rewrite_creative_writing' or step == 'new_content' or step == 'find_stereotype'):
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
-            # if schema:
-            #     response = self.client.chat.completions.create(
-            #         model=model,
-            #         messages=[{"role": "user",
-            #                    "content": prompt}],
-            #         response_format={
-            #             "type": "json_schema",
-            #             "json_schema": schema
-            #         }
-            #     )
-            # else:
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user",
@@ -209,17 +200,6 @@ class QueryLLM:
             else:
                 curr_thread = self.thread_persona
 
-            # if schema:
-            #     message = self.client.beta.threads.messages.create(
-            #         thread_id=curr_thread.id,
-            #         role="user",
-            #         content=prompt,
-            #         response_format={
-            #             "type": "json_schema",
-            #             "json_schema": schema
-            #         }
-            #     )
-            # else:
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
                 role="user",
