@@ -25,32 +25,139 @@ def parse_date(date_str):
     return datetime.strptime(date_str, "%m/%d/%Y").date()
 
 
+def reformat_coding_conversation(conversation_lines, which_format):
+    """
+    Special handling for conversations related to coding:
+    - Group messages into full utterances.
+    - Preserve code blocks as part of the Assistant's response.
+    """
+
+    utterances = []
+    current_utterance = None
+    in_code_block = False
+    code_block_delim = "```"
+
+    def start_new_utterance(role, content):
+        return {"role": role, "content": content}
+
+    # A helper function to finalize the current utterance.
+    def flush_current_utterance():
+        nonlocal current_utterance
+        if current_utterance is not None:
+            current_utterance["content"] = current_utterance["content"].strip()
+            if current_utterance["content"]:
+                utterances.append(current_utterance)
+            current_utterance = None
+
+    # Determine role from a line marker
+    def get_role_from_line(line):
+        if line.startswith("User:"):
+            return "user"
+        elif line.startswith("Assistant:"):
+            return "assistant"
+        elif line.startswith("[Original_Code]:"):
+            return "assistant"
+        return "user"
+
+    for line in conversation_lines:
+        line = line.rstrip()
+
+        # Skip side notes.
+        if line.startswith("[Side_Note]:"):
+            continue
+
+        # Check for code block start/end.
+        if line.startswith(code_block_delim):
+            if in_code_block:
+                current_utterance["content"] += "\n" + line
+                in_code_block = False
+                continue
+            else:
+                flush_current_utterance()
+                current_utterance = start_new_utterance("assistant", line)
+                in_code_block = True
+                continue
+
+        if in_code_block:
+            current_utterance["content"] += "\n" + line
+            continue
+
+        # Check for a new utterance marker.
+        role_match = re.match(r"^(User:|Assistant:|\[Original_Code\]:)", line)
+        if role_match:
+            flush_current_utterance()
+            role = get_role_from_line(line)
+            content = re.sub(r"^(User:|Assistant:|\[Original_Code\]:)\s*", "", line)
+            current_utterance = start_new_utterance(role, content)
+        else:
+            if current_utterance is None:
+                current_utterance = start_new_utterance("user", line)
+            else:
+                current_utterance["content"] += "\n" + line
+
+    flush_current_utterance()
+
+    if which_format == 'string':
+        formatted = []
+        for utt in utterances:
+            formatted.append(f"{utt['role'].capitalize()}: {utt['content']}")
+        return "\n\n".join(formatted)
+    elif which_format == 'api_dict':
+        return utterances
+    else:
+        raise NotImplementedError(f"Unknown format: {which_format}")
+
+
 def reformat_conversation(topic, conversation, which_format):
+    # Ensure conversation is a list of lines
+    if isinstance(conversation, str):
+        conversation = conversation.splitlines()
+    elif isinstance(conversation, list):
+        conversation = conversation
+    else:
+        raise ValueError("Conversation must be a string or list of strings.")
+
+    # Special formatting for coding topics
+    if topic == 'coding':
+        return reformat_coding_conversation(conversation, which_format)
+
+    extracted_conversation = []
+
     if which_format == 'string':
         # Format as a pure string, removing lines that start with 'Side_Note'
-        extracted_conversation = []
         for line in conversation:
-            if not line.startswith("Side_Note"):
-                line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
-                extracted_conversation.append(line)
-        extracted_conversation = "\n".join(extracted_conversation)
+            line = line.strip()
+            if not line or line.startswith("Side_Note"):
+                continue
+            # Remove dates in the format (dd/mm/yyyy) or dd/mm/yyyy
+            line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
+            extracted_conversation.append(line)
+
+        return "\n".join(extracted_conversation)
 
     elif which_format == 'api_dict':
         # Format the list for an LLM API in a message format
-        extracted_conversation = []
         for line in conversation:
-            if not line.startswith("Side_Note"):
-                line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
-                if topic == 'therapy':
-                    role = 'assistant' if line.startswith("Therapist") or line.startswith("Therapist:") else "user"
-                    extracted_conversation.append({"role": role, "content": line})
-                else:
-                    role = 'assistant' if line.startswith("Assistant") or line.startswith("Assistant:") else "user" # in writing topics, all original samples are also included in user
-                    extracted_conversation.append({"role": role, "content": line})
-    else:
-        raise NotImplementedError("Unknown format: {}".format(which_format))
+            # print(line, '\n')
+            line = line.strip()
+            if not line or line.startswith("Side_Note"):
+                continue
+            # Remove dates
+            line = re.sub(r'\(?\b\d{2}/\d{2}/\d{4}\b\)?', '', line).strip()
 
-    return extracted_conversation
+            # Determine role based on the topic
+            if topic == 'therapy':
+                role = 'assistant' if line.startswith(("Therapist:", "Therapist")) else "user"
+            else:
+                role = 'assistant' if line.startswith(("Assistant:", "Assistant")) else "user"
+
+            # Append to conversation list
+            extracted_conversation.append({"role": role, "content": line})
+
+        return extracted_conversation
+
+    else:
+        raise NotImplementedError(f"Unknown format: {which_format}")
 
 
 def process_conversation_block(topic, conversation, which_format):
@@ -220,24 +327,6 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
 
         # Sample using weighted probabilities
         block = random.choices(current_pool, weights=normalized_weights, k=1)[0]
-        # weights = []
-        # base_weight = 1.0  # Uniform base weight for all blocks
-        #
-        # for block in current_pool:
-        #     fname, _ = block
-        #     topic = fname.split('_')[1]
-        #
-        #     # Increase weight if the topic already has an earlier block selected
-        #     weight = base_weight * (1 + topic_counts.get(topic, 0))
-        #     weights.append(weight)
-        #
-        # # Normalize weights
-        # total_weight = sum(weights)
-        # normalized_weights = [w / total_weight for w in weights]
-        #
-        # # Sample using weighted probabilities
-        # block = random.choices(current_pool, weights=normalized_weights, k=1)[0]
-        # block = random.choice(current_pool)
         if block in chosen:
             # If somehow block is already chosen (should not happen if we handle sets correctly), skip
             continue
@@ -283,8 +372,8 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
 
 def topological_sort(processed_blocks, num_variants=1, verbose=False):
     def extract_topic(file_name):
-        # Extract the topic. For example, for "conversation_travelPlanning_persona0_sample0.json"
-        # we return "travelPlanning_persona0"
+        # For example, for "conversation_travelPlanning_persona0_sample0.json",
+        # return "travelPlanning_persona0"
         parts = file_name.split("_")
         return "_".join(parts[1:3])
 
@@ -312,6 +401,14 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
 
     variants = []
     for variant in range(num_variants):
+        random.seed(variant)
+
+        """
+        Mode A refers to having long distance from the last session to its previous sessions, designed for Q&As queried within the last session
+        Mode B refers to having long distance from the questions in the end to the last sessions, designed for Q&As at the END OF TEXT
+        """
+        mode = "A" if random.random() < 0.5 else "B"
+
         # Step 1: Randomly sample one "Conversation Next Year" session (from any topic)
         next_year_blocks = [
             block
@@ -328,67 +425,107 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
         t_sessions = topics[chosen_topic]
         t_sessions = sorted(t_sessions, key=get_causal_order)
 
-        # Step 3: Split the chosen topic's sessions into two parts.
-        # We search for the "Conversation Next Month" session.
-        split_index = None
-        for i, block in enumerate(t_sessions):
-            if block["time_period"] == "Conversation Next Month":
-                split_index = i
-                break
-        # If no "Conversation Next Month" is found, fallback: use the first "Conversation Next Year"
-        if split_index is None:
-            for i, block in enumerate(t_sessions):
-                if block["time_period"] == "Conversation Next Year":
-                    split_index = i
-                    break
-        # If still not found (unlikely), put everything in the first part.
-        if split_index is None:
-            split_index = len(t_sessions) - 1
-
-        t_before = t_sessions[:split_index + 1]  # sessions up to and including the split
-        t_after = t_sessions[split_index + 1:]     # sessions after the split
-
-        # Step 4: Gather all sessions from other topics.
-        other_sessions = []
+        # Gather sessions from other topics.
+        other_sessions = defaultdict(list)
         for topic, blocks in topics.items():
             if topic != chosen_topic:
-                other_sessions.extend(blocks)
-        other_sessions.sort(key=get_causal_order)
+                for block in blocks:
+                    other_sessions[get_causal_order(block)].append(block)
+        for key in other_sessions:
+            random.shuffle(other_sessions[key])
+        other_sessions = [
+            block for order in sorted(other_sessions.keys())
+            for block in other_sessions[order]
+        ]
 
-        # Step 5: Partition other sessions into two groups:
-        #  - A small fraction to interleave with t_before (max 10% of t_before count)
-        #  - The remainder to insert between t_before and t_after.
-        allowed_count = math.floor(0.1 * len(t_before))
-        interleaved_others = other_sessions[:allowed_count]
-        remaining_others = other_sessions[allowed_count:]
+        if mode == "A":
+            # Mode A: Long distance to the previous session.
+            # Step 3A: Split the chosen topic's sessions into two parts.
+            # Search for the "Conversation Next Month" session.
+            split_index = None
+            for i, block in enumerate(t_sessions):
+                if block["time_period"] == "Conversation Next Month":
+                    split_index = i
+                    break
+            # Fallback: use the first "Conversation Next Year" if no Next Month found.
+            if split_index is None:
+                for i, block in enumerate(t_sessions):
+                    if block["time_period"] == "Conversation Next Year":
+                        split_index = i
+                        break
+            if split_index is None:
+                split_index = len(t_sessions) - 1
 
-        # Step 6: Interleave the allowed other sessions evenly into t_before.
-        interleaved_t_before = []
-        if interleaved_others and len(t_before) > 1:
-            gap = len(t_before) / (len(interleaved_others) + 1)
-            insertion_indices = [int(round(gap * (i + 1))) for i in range(len(interleaved_others))]
-            idx_other = 0
-            for i in range(len(t_before) + len(interleaved_others)):
-                # If this index matches an insertion index, insert one from interleaved_others.
-                if idx_other < len(insertion_indices) and i == insertion_indices[idx_other] + idx_other:
-                    interleaved_t_before.append(interleaved_others[idx_other])
-                    idx_other += 1
-                else:
-                    # Otherwise, pop the next t_before element.
-                    t_elem = t_before.pop(0)
-                    interleaved_t_before.append(t_elem)
+            t_before = t_sessions[:split_index + 1]  # up to and including the split
+            t_after = t_sessions[split_index + 1:]     # sessions after the split
+
+            # Step 4A: Partition other sessions.
+            # Allow up to 10% of t_before count to be interleaved.
+            allowed_count = math.floor(0.1 * len(t_before))
+            interleaved_others = other_sessions[:allowed_count]
+            remaining_others = other_sessions[allowed_count:]
+
+            # Step 5A: Interleave the allowed other sessions evenly into t_before.
+            interleaved_t_before = []
+            t_before_copy = t_before.copy()
+            if interleaved_others and len(t_before_copy) > 1:
+                gap = len(t_before_copy) / (len(interleaved_others) + 1)
+                insertion_indices = [int(round(gap * (i + 1))) for i in range(len(interleaved_others))]
+                idx_other = 0
+                total_len = len(t_before_copy) + len(interleaved_others)
+                for i in range(total_len):
+                    if idx_other < len(insertion_indices) and i == insertion_indices[idx_other] + idx_other:
+                        interleaved_t_before.append(interleaved_others[idx_other])
+                        idx_other += 1
+                    else:
+                        interleaved_t_before.append(t_before_copy.pop(0))
+            else:
+                interleaved_t_before = t_before
+
+            # Step 6A: Merge for Mode A.
+            merged_list = interleaved_t_before + remaining_others + t_after
+
         else:
-            # No interleaving needed.
-            interleaved_t_before = t_before
+            # Mode B: Long distance after the last session.
+            # Step 3B: Use the chosen topic's sessions as one block.
+            t_topic = t_sessions.copy()  # all sessions of the chosen topic, in causal order
 
-        # Step 7: Final merge:
-        # All sessions in the chosen topic's early block (with a small insertion from other topics),
-        # then the bulk of the remaining other sessions,
-        # then the remaining chosen topic sessions.
-        merged_list = interleaved_t_before + remaining_others + t_after
+            # Step 4B: Allow interleaving of up to 10% of total sessions (across the entire dataset)
+            # into the chosen topic block to avoid having them too contiguous.
+            total_sessions_count = len(processed_blocks)
+            allowed_count = math.floor(0.1 * total_sessions_count)
+            interleaved_topic = []
+            t_topic_copy = t_topic.copy()
+            if allowed_count > 0 and len(t_topic_copy) > 1 and len(other_sessions) >= allowed_count:
+                gap = len(t_topic_copy) / (allowed_count + 1)
+                insertion_indices = [int(round(gap * (i + 1))) for i in range(allowed_count)]
+                idx_other = 0
+                total_len = len(t_topic_copy) + allowed_count
+                # Use the first allowed_count sessions from other_sessions for interleaving.
+                interleaved_others = other_sessions[:allowed_count]
+                for i in range(total_len):
+                    if idx_other < len(insertion_indices) and i == insertion_indices[idx_other] + idx_other:
+                        interleaved_topic.append(interleaved_others[idx_other])
+                        idx_other += 1
+                    else:
+                        interleaved_topic.append(t_topic_copy.pop(0))
+            else:
+                interleaved_topic = t_topic
+
+            # Remove the ones used for interleaving from other_sessions.
+            remaining_others = other_sessions[allowed_count:]
+
+            # Step 5B: Merge for Mode B.
+            # The chosen topic block (with slight interleaving) comes first,
+            # followed by all remaining sessions from other topics.
+            merged_list = interleaved_topic + remaining_others
 
         if verbose:
-            print(f"Variant {variant+1}:")
+            if mode == "A":
+                mode = "A (Long distance to previous session of the same topic)"
+            else:
+                mode = "B (Long distance after the last session of this topic)"
+            print(f"Variant {variant+1} (Mode {mode}):")
             sorted_info = [
                 f"{block['file_name']}: {block['time_period']}"
                 for block in merged_list
@@ -399,108 +536,6 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
         variants.append(merged_list)
 
     return variants
-
-# def topological_sort(processed_blocks, num_variants=1, verbose=False):
-#     def extract_topic(file_name):
-#         # Extract the topic. For example, for "conversation_travelPlanning_persona0_sample0.json"
-#         # we return "travelPlanning_persona0"
-#         parts = file_name.split("_")
-#         return "_".join(parts[1:3])
-#
-#     # Map time_period to a causal order value.
-#     causal_order_mapping = {
-#         "Init Conversation": 0,
-#         "Conversation Next Week": 1,
-#         "Conversation Next Month": 2,
-#         "Conversation Next Year": 3,
-#         "Conversation": 0  # for writing, email, coding topics
-#     }
-#
-#     def get_candidate_order(block):
-#         return causal_order_mapping.get(block["time_period"], float("inf"))
-#
-#     # Group blocks by topic and sort each topic's blocks by their causal order.
-#     topics = defaultdict(list)
-#     for block in processed_blocks.values():
-#         topic = extract_topic(block["file_name"])
-#         topics[topic].append(block)
-#
-#     for topic, blocks in topics.items():
-#         blocks.sort(key=lambda b: get_candidate_order(b))
-#
-#     total_blocks = sum(len(b) for b in topics.values())
-#
-#     variants = []
-#     for variant in range(num_variants):
-#         merged_list = []
-#         # Make a copy of the sorted lists so that we can remove blocks as we select them.
-#         topic_lists = {topic: blocks.copy() for topic, blocks in topics.items()}
-#
-#         while any(topic_lists.values()):
-#             # Compute progress ratio (number of blocks merged so far relative to total).
-#             progress_ratio = len(merged_list) / total_blocks
-#             # Define a desired causal order based on global progress:
-#             if progress_ratio < 0.25:
-#                 desired_order = 0
-#             elif progress_ratio < 0.5:
-#                 desired_order = 1
-#             elif progress_ratio < 0.75:
-#                 desired_order = 2
-#             else:
-#                 desired_order = 3
-#
-#             # Build candidate pool: each topic contributes its next (earliest) block.
-#             candidate_blocks = []
-#             for topic, blocks in topic_lists.items():
-#                 if blocks:
-#                     candidate_blocks.append(blocks[0])
-#
-#             # Assign weights based on how close a candidate's order is to the desired order.
-#             weights = []
-#             for block in candidate_blocks:
-#                 candidate_order = get_candidate_order(block)
-#                 diff = abs(candidate_order - desired_order)
-#                 if diff == 0:
-#                     weight = 1.0
-#                 elif diff == 1:
-#                     weight = 0.5
-#                 else:
-#                     weight = 0.1
-#                 weights.append(weight)
-#
-#             # --- Modification 1: Interleave topics ---
-#             # Penalize candidate blocks from the same topic as the last chosen block if alternatives exist.
-#             if merged_list:
-#                 last_topic = extract_topic(merged_list[-1]["file_name"])
-#                 if any(extract_topic(b["file_name"]) != last_topic for b in candidate_blocks):
-#                     for i, block in enumerate(candidate_blocks):
-#                         if extract_topic(block["file_name"]) == last_topic:
-#                             weights[i] *= 0.01
-#
-#             # --- Modification 2: Delay "Conversation Next Year" blocks ---
-#             # If there is any candidate with a time period other than "Conversation Next Year",
-#             # penalize those with "Conversation Next Year" to push them towards the end.
-#             if any(block["time_period"] != "Conversation Next Year" for block in candidate_blocks):
-#                 for i, block in enumerate(candidate_blocks):
-#                     if block["time_period"] == "Conversation Next Year":
-#                         weights[i] *= 0.01
-#
-#             # Select one candidate block using weighted random choice.
-#             chosen_block = random.choices(candidate_blocks, weights=weights, k=1)[0]
-#             merged_list.append(chosen_block)
-#             # Remove the chosen block from its topic list to preserve causal order.
-#             topic = extract_topic(chosen_block["file_name"])
-#             topic_lists[topic].pop(0)
-#
-#         if verbose:
-#             print(f'Variant {variant + 1}: {len(merged_list)} blocks')
-#             sorted_info = [f"{block['file_name']}: {block['time_period']}" for block in merged_list]
-#             print("Sorted conversation blocks:", sorted_info)
-#             print('-' * 50)
-#
-#         variants.append(merged_list)
-#
-#     return variants
 
 
 def get_order_mapping(original_blocks, sorted_blocks):
@@ -591,13 +626,20 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
 
     for i, block in enumerate(sorted_processed_blocks):
         # Only keep Q&As in the last block, i.e., the current session during conversation
-        if i + 1 < total_blocks:
-            continue
+        # if i + 1 < total_blocks:
+        #     continue
 
         # we assign distance to all qa in the current block
         for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
+
+            # For all non-last session, only allow Q&As with 'Where' == 'END OF TEXT' and no further preference updates
+            if i + 1 < total_blocks:
+                if ('Where' not in q) or ('Where' in q and q['Where'] != 'END OF TEXT'):
+                    continue
+                if ('More_Update' not in q) or ('More_Update' in q and q['More_Update'] == 'Yes'):
+                    continue
 
             # Get where the question will be asked
             where = q['Where']
@@ -647,8 +689,8 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             # num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)
 
             # print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
-            print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref)
-            print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
+            # print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref)
+            # print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
 
             num_tokens_question = count_tokens(q['Question'], tokenizer, verbose=False)
             q['distance_blocks'] = block_num_q - block_num_ref

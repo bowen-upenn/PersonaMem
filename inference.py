@@ -184,7 +184,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result['context_length_in_letters'],
             result['distance_blocks'],
             result['distance_tokens'],
-            f"{(result['distance_blocks'] / result['context_length_in_tokens']) * 100:.2f}%",
+            f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%",
             result["question"],
             result["correct_answer"],
             result['all_options'],
