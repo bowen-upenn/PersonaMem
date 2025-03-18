@@ -7,15 +7,15 @@
 
 # Full list of topics for reference
 # init next_week next_month next_year all
-time_period="all"
+time_period="next_month"
 
 ## Lauren
 #start_persona_id=2
 #end_persona_id=3  # non-inclusive
 
 ## Zoey
-start_persona_id=5
-end_persona_id=6
+start_persona_id=6
+end_persona_id=7
 #
 # Yuan
 # start_persona_id=8

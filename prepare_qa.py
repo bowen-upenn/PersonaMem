@@ -453,6 +453,7 @@ def generate_qa_recommendations(LLM, topic, event_history, persona, parent_objec
     incorrect_answers.append(stereotypical_answer)
 
     last_two_details[1]["identity"] = identity
+    #print(last_two_details)
     qa_entry = {
         "Question": question,
         "Correct_Answer": correct_answer,
@@ -669,6 +670,7 @@ def evaluate_content_generation_from_memory(LLM, data_path, source_dir, all_sour
 def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_key, data_path, clean, verbose):
     # Load json file
     with open(data_path, 'r') as file:
+        print('data_path', data_path)
         data = json.load(file)
     print(f'{utils.Colors.OKGREEN}data_path: {data_path}: {conversation_key}{utils.Colors.ENDC}')
 

@@ -28,34 +28,33 @@ def process_json_file(file_path, LLM, verbose=False):
         for qa in tqdm(qa_list):
             if conversation_key == 'Conversation Next Year':
                 qa['More_Update'] = "No"
-                continue
+            else:
+                reference = qa.get("Reference", {})
+                # Check for keys indicating a preference fact or update.
+                for ref_key in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "[Updated Fact] Dislikes"]:
+                    if ref_key in reference:
+                        event = reference[ref_key]
 
-            reference = qa.get("Reference", {})
-            # Check for keys indicating a preference fact or update.
-            for ref_key in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "[Updated Fact] Dislikes"]:
-                if ref_key in reference:
-                    event = reference[ref_key]
+                        # look for the same event mentioned in later conversation_key
+                        if conversation_key == 'Init Conversation':
+                            future_conversation_keys = ['Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
+                        elif conversation_key == 'Conversation Next Week':
+                            future_conversation_keys = ['Conversation Next Month', 'Conversation Next Year']
+                        else:
+                            future_conversation_keys = ['Conversation Next Year']
 
-                    # look for the same event mentioned in later conversation_key
-                    if conversation_key == 'Init Conversation':
-                        future_conversation_keys = ['Conversation Next Week', 'Conversation Next Month', 'Conversation Next Year']
-                    elif conversation_key == 'Conversation Next Week':
-                        future_conversation_keys = ['Conversation Next Month', 'Conversation Next Year']
-                    else:
-                        future_conversation_keys = ['Conversation Next Year']
+                        # Check if any of the reference events appear in future conversation keys
+                        qa['More_Update'] = "No"
+                        for future_key in future_conversation_keys:
+                            for qa_event in qa_dict[future_key]:
+                                future_events = {qa_event.get("Reference", {}).get(k, "") for k in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "[Updated Fact] Dislikes"]}
+                                if {event} & future_events:  # Check if there's any intersection
+                                    qa['More_Update'] = "Yes"
+                                    if verbose:
+                                        print(f"Found future update for {event} in {future_key}")
+                                    break
 
-                    # Check if any of the reference events appear in future conversation keys
-                    qa['More_Update'] = "No"
-                    for future_key in future_conversation_keys:
-                        for qa_event in qa_dict[future_key]:
-                            future_events = {qa_event.get("Reference", {}).get(k, "") for k in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "[Updated Fact] Dislikes"]}
-                            if {event} & future_events:  # Check if there's any intersection
-                                qa['More_Update'] = "Yes"
-                                if verbose:
-                                    print(f"Found future update for {event} in {future_key}")
-                                break
-
-                    modified_qa_list.append(qa)
+            modified_qa_list.append(qa)
 
         # If modifications were made, store them
         if modified_qa_list:

@@ -29,7 +29,7 @@ end_persona_id=19
 command="python prepare_data.py --model gpt-4o \
          --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
                   legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
-                  studyConsultation therapy travelPlanning writing \ \
+                  studyConsultation therapy travelPlanning writing \
          --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --output_dir data/output/ "
 
 # Print the command for debugging/logging purposes
