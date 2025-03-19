@@ -88,7 +88,7 @@
     {
         "annotation_type": "radio",
         "name": "s1_quality",
-        "description": "The question is well-formed and makes sense.",
+        "description": "The question is well-formed and corresponds to the type.",
         "labels": [
           { "name": "True 1️⃣", "key_value": "1" },
           { "name": "False 2️⃣", "key_value": "2" }
@@ -100,7 +100,7 @@
     {
         "annotation_type": "radio",
         "name": "s2_relevance",
-        "description": "The question is relevant to the conversation.",
+        "description": "The question is relevant to the conversation and persona.",
         "labels": [
           { "name": "True 3️⃣", "key_value": "3" },
           { "name": "False 4️⃣", "key_value": "4" }
@@ -111,8 +111,8 @@
     },
     {
         "annotation_type": "radio",
-        "name": "s3_type",
-        "description": "The question falls under the type it's labeled with.",
+        "name": "s3_cresponse",
+        "description": "'Correct_Response' is indeed correct, and can be derived from the context.",
         "labels": [
           { "name": "True 5️⃣", "key_value": "5" },
           { "name": "False 6️⃣", "key_value": "6" }
@@ -123,23 +123,11 @@
     },
     {
         "annotation_type": "radio",
-        "name": "s4_canswer",
-        "description": "'Correct_Answer' is indeed correct, and can be derived from the context.",
+        "name": "s4_bresponse",
+        "description": "'Correct_Response' is better than all of the 'Incorrect_Responses'.",
         "labels": [
           { "name": "True 7️⃣", "key_value": "7" },
           { "name": "False 8️⃣", "key_value": "8" }
-        ],
-        "label_requirement": {
-              "required": True
-          }
-    },
-    {
-        "annotation_type": "radio",
-        "name": "s5_banswer",
-        "description": "'Correct_Answer' is better than all of the 'Incorrect_Answers'.",
-        "labels": [
-          { "name": "True 9️⃣", "key_value": "9" },
-          { "name": "False 0️⃣", "key_value": "0" }
         ],
         "label_requirement": {
               "required": True

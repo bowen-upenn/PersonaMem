@@ -4,6 +4,7 @@ from copy import copy
 from pathlib import Path
 
 import pandas as pd
+import random
 
 # DEFAULT_CONVO_PATH = Path("data/output/therapy/conversation_therapy_persona0_sample0.json")
 CONVO_DIR = Path("data/output/")
@@ -14,11 +15,13 @@ TO_SKIP = set(
         "Where",
         "Conversation",
         "other_previously_mentioned_events",
-        "Incorrect_Answers",
+        "Incorrect_Responses",
     ]
 )
-AT_END = ["Type", "Question", "Correct_Answer"]
+AT_END = ["Type", "Question/Message", "Correct_Response"]
 AT_END_SET = set(AT_END)
+SEED = 2557
+random.seed(SEED)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_dir", "-i", type=Path, default=CONVO_DIR)
@@ -54,12 +57,11 @@ def format_for_html(entry):
             continue
         parts.append(f"{bold(key)}: {value}")
 
-    convo_parts = []
     for key in AT_END:
         text = entry[key]
         parts.append(f"{bold(key, True)}: {text}")
-    parts.append(bold("Incorrect_Answers:", True))
-    for line in entry["Incorrect_Answers"]:
+    parts.append(bold("Incorrect_Responses:", True))
+    for line in entry["Incorrect_Responses"]:
         parts.append(f" * {line}")
     col1 = " <br> ".join(parts)
 
@@ -99,12 +101,22 @@ if __name__ == "__main__":
 
         if category in set(["writing", "email", "coding"]):
             qa_data = data["Q&A"]["Conversation"]
+            for i, entry in enumerate(qa_data):
+                entry["id"] = f"{category}_persona{args.persona}_q{i}"
         else:
-            qa_data = data["Q&A"]["Init Conversation"]
+            qa_data = []
+            for time_period in ["Init Conversation", "Conversation Next Week", "Conversation Next Month", "Conversation Next Year"]:
+                qa_data_ = data["Q&A"][time_period]
+                time_short = time_period.split()[-1] if time_period != "Init Conversation" else "Init"
+                for i, entry in enumerate(qa_data_):
+                    entry["id"] = f"{category}_persona{args.persona}_{time_short}_q{i}"
+                qa_data += qa_data_
 
         num_tasks = args.num_tasks_per_topic
         if num_tasks == -1:
             num_tasks = len(qa_data)
+        else:
+            random.shuffle(qa_data)
 
         print(f"Generating tasks for {num_tasks}/{len(qa_data)} entries")
         for i, entry in enumerate(qa_data[:num_tasks]):
@@ -113,9 +125,11 @@ if __name__ == "__main__":
                 for key, value in entry["Reference"].items():
                     entry[key] = value
                 del entry["Reference"]
+            entry["Question/Message"] = entry.pop("Question")
+            entry['Correct_Response'] = entry.pop("Correct_Answer")
+            entry['Incorrect_Responses'] = entry.pop("Incorrect_Answers")
             html_text = format_for_html(entry)
-            entry_id = f"persona{args.persona}_{entry['Topic']}_initconvo_q{i}"
-            entries_formatted.append({"id": entry_id, "text": html_text})
+            entries_formatted.append({"id": entry['id'], "text": html_text})
 
     df = pd.DataFrame(entries_formatted)
     df.to_csv(OUT_PATH, index=False)
