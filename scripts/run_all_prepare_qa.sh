@@ -14,8 +14,8 @@ time_period="all"
 #end_persona_id=3  # non-inclusive
 
 ## Zoey
-start_persona_id=5
-end_persona_id=6
+start_persona_id=6
+end_persona_id=8
 #
 # Yuan
 # start_persona_id=8
@@ -30,9 +30,9 @@ end_persona_id=6
 #end_persona_id=20
 
 # Construct the command
-command="python prepare_qa.py --model gpt-4o --action qa \
-         --topics writing \
-         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period}"
+command="python prepare_qa.py --model gpt-4o-mini --action qa \
+         --topics bookRecommendation \
+         --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period} --clean"
 
 # Print the command for debugging/logging purposes
 echo "$command"
