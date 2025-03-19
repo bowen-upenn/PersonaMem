@@ -637,12 +637,15 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
         # Only keep Q&As in the last block, i.e., the current session during conversation
         # if i + 1 < total_blocks:
         #     continue
+        if i == 0:
+            init_block_topic = block.get('topic', [])
 
         # we assign distance to all qa in the current block
         qa_count = {}
         for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
+            curr_block_topic = block.get('topic', [])
 
             # For all non-last session, only allow Q&As with 'Where' == 'END OF TEXT' and no further preference updates
             if i + 1 < total_blocks:
@@ -651,6 +654,7 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 if ('More_Update' not in q) or ('More_Update' in q and q['More_Update'] == 'Yes'):
                     continue
 
+                # To limit the total number of questions, we only allow one question per type for all non-last sessions
                 type = q['Type']
                 if type in qa_count and qa_count[type] >= 1:
                     continue
@@ -658,6 +662,11 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                     qa_count[type] = 0
                 else:
                     qa_count[type] += 1
+
+                # To limit the total number of questions, we randomly ignore some non-last sessions
+                if total_blocks > 30 and curr_block_topic != init_block_topic:
+                    if random.random() > 0.5:
+                        continue
             else:
                 # Avoid END OF TEXT questions for the last block since they are too trivial
                 if 'Where' not in q or q['Where'] == 'END OF TEXT':
