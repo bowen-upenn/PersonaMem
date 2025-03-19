@@ -5,25 +5,8 @@
 # legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
 # studyConsultation therapy travelPlanning writing \
 
-# Lauren
-# start_persona_id=2
-# end_persona_id=3  # non-inclusive
-
-## Zoey
-#start_persona_id=4
-#end_persona_id=5
-##
-## Yuan
-#start_persona_id=10
-#end_persona_id=11
-
-## Jeff
-#start_persona_id=12
-#end_persona_id=16
-
-## Brian
-start_persona_id=18
-end_persona_id=19
+start_persona_id=0
+end_persona_id=20
 
 # Construct the command
 command="python prepare_data.py --model gpt-4o \

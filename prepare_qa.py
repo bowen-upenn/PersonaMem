@@ -63,6 +63,7 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
     while True:
         event_data = None
         for key, block in previous_history_blocks.items():
+            # print(key)
             event_data = block.get(timestamp)
 
             # If found the matched time stamp in the block
@@ -81,6 +82,7 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
                     event_data['Conversation'] = ""
                 break
 
+        # print('event_data', event_data)
         if not event_data:
             break  # No further history to trace
         # print('event_data', timestamp, event_data)
@@ -92,6 +94,8 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
             # print('old_event_timestamp', old_event_timestamp)
 
             # Update timestamp for next iteration
+            if old_event_timestamp == timestamp:
+                break
             timestamp = old_event_timestamp
         else:
             break  # No further history to trace
@@ -231,7 +235,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Event": last_two_details[0]["Event"],
         "[Reasons of Change]": last_two_details[0]["[Reasons of Change]"],
     }
-
+    # print(last_two_details[0])
     if "[Updated Fact] Likes" in last_two_details[0]:
         related_event["[Updated Fact] Likes"] = last_two_details[0]["[Updated Fact] Likes"]
         if "[Old Fact] Likes" in last_two_details[0]:
@@ -313,6 +317,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
                              "[Reasons of Change]": last_two_details[1]["[Reasons of Change]"],
                             }
                          }
+        # print('last_two_details[1]', last_two_details[1])
         if "[Updated Fact] Likes" in last_two_details[1]:
             related_event["Previous Preference Update"]["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
             if "[Old Fact] Likes" in last_two_details[1]:
@@ -322,7 +327,7 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
             related_event["Previous Preference Update"]["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
             if "[Old Fact] Dislikes" in last_two_details[1]:
                 return qa_entries
-            related_event["Previous Preference Update"]["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[1] else last_two_details[1]["[Fact] Likes"]
+            related_event["Previous Preference Update"]["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[1] else last_two_details[1]["[Updated Fact] Likes"]
 
         # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
         user_utterance = last_two_details[0]['Conversation'].split('\n')[1]
@@ -827,13 +832,13 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 # except Exception as e:
                 #     all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
                 #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
+                # try:
+                qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
+                if len(qa_entries) > 0:
+                    all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
                 # try:
                 #     qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
                 #     if len(qa_entries) > 0:
