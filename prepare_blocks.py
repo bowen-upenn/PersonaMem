@@ -408,7 +408,12 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
         Mode A refers to having long distance from the last session to its previous sessions, designed for Q&As queried within the last session
         Mode B refers to having long distance from the questions in the end to the last sessions, designed for Q&As at the END OF TEXT
         """
-        mode = "A" if random.random() < 0.5 else "B"
+        if num_variants == 1:
+            mode = "A"
+        elif num_variants == 2:
+            mode = "A" if variant == 0 else "B"
+        else:
+            mode = "A" if random.random() < 0.5 else "B"
 
         # Step 1: Randomly sample one "Conversation Next Year" session (from any topic)
         next_year_blocks = [
@@ -569,16 +574,16 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                 curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
 
         # Insert irrelevant contexts
-        if all_irrelevant_contexts and which_format == 'api_dict':
-            num_random_blocks = random.randint(0, 20)
-            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-            for session in random_sessions:
-                key = list(session.keys())[0]  # only one key in each session
-                if session[key]:
-                    curr_conversations.extend(session[key])
-            # Remove all items whose content is None from curr_conversations
-            curr_conversations = [item for item in curr_conversations if item['content'] is not None]
-            num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
+        # if all_irrelevant_contexts and which_format == 'api_dict':
+        #     num_random_blocks = random.randint(0, 15)
+        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+        #     for session in random_sessions:
+        #         key = list(session.keys())[0]  # only one key in each session
+        #         if session[key]:
+        #             curr_conversations.extend(session[key])
+        #     # Remove all items whose content is None from curr_conversations
+        #     curr_conversations = [item for item in curr_conversations if item['content'] is not None]
+        #     num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
 
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
@@ -650,7 +655,7 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 continue
 
             if where == 'END OF TEXT':
-                block_num_q, start_index_q = total_blocks - 1, len(flattened_all_conversations) - 1
+                block_num_q, start_index_q = total_blocks, len(flattened_all_conversations) - 1
             else:
                 block_num_q, start_index_q = utils.find_string_in_list(where, flattened_all_conversations, all_conversations)
 

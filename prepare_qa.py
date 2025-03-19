@@ -216,11 +216,14 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
             last_two_details.append(current_detail)
 
         # Stop once the list contains two details
-        if len(last_two_details) == 2:
+        if len(last_two_details) == 3:
             break
 
     if len(last_two_details) < 2 or "[Reasons of Change]" not in last_two_details[0]:
         return qa_entries
+    if len(last_two_details) == 3 and "[Reasons of Change]" not in last_two_details[1]:
+        # Keep only the first two
+        last_two_details = last_two_details[:-1]
 
     # The reason of change will be extracted from the most recent event
     # and queried immediately after the user utterance of this most recent event
@@ -240,36 +243,42 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
             return qa_entries
         related_event["[Old Fact] Likes"] = last_two_details[0]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[0] else last_two_details[0]["[Fact] Likes"]
 
-    # This Q&A will be asked immediately before the last event
-    response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
-    response = utils.process_json_from_api(response)
-    question = response.get("User Question", "")
-    correct_answer = response.get("Model Response", "")
+    # # This Q&A will be asked immediately before the last event
+    # response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='generalize_reason_to_other_scenarios', verbose=False)
+    # response = utils.process_json_from_api(response)
+    # question = response.get("User Question", "")
+    # correct_answer = response.get("Model Response", "")
+    #
+    # incorrect_answers = LLM.query_llm(step='qa_helper', data={'user_utterance': question, 'reason_of_change': related_event["[Reasons of Change]"],
+    #                                                           'model_response':correct_answer}, action='propose_incorrect_reasons_generalization', verbose=False)
+    # match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+    # if match:
+    #     incorrect_answers = match.group(1)  # Extract the code block
+    # incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+    # incorrect_answers = repair_json(incorrect_answers)
+    # incorrect_answers = json.loads(incorrect_answers)
+    # # incorrect_answers = ast.literal_eval(incorrect_answers)
+    #
+    # qa_entries.append({
+    #     "Question": question,
+    #     "Correct_Answer": correct_answer,
+    #     "Incorrect_Answers": incorrect_answers,
+    #     "Type": "generalizing_past_reasons_in_memory_to_new_scenarios",
+    #     "Topic": topic,
+    #     "How_Many_Pref_Updates": len(timestamps),
+    #     "Reference": last_two_details[0],
+    #     "Where": "END OF TEXT"
+    # })
 
-    incorrect_answers = LLM.query_llm(step='qa_helper', data={'user_utterance': question, 'reason_of_change': related_event["[Reasons of Change]"],
-                                                              'model_response':correct_answer}, action='propose_incorrect_reasons_generalization', verbose=False)
-    match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
-    if match:
-        incorrect_answers = match.group(1)  # Extract the code block
-    incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
-    incorrect_answers = repair_json(incorrect_answers)
-    incorrect_answers = json.loads(incorrect_answers)
-    # incorrect_answers = ast.literal_eval(incorrect_answers)
-
-    qa_entries.append({
-        "Question": question,
-        "Correct_Answer": correct_answer,
-        "Incorrect_Answers": incorrect_answers,
-        "Type": "generalizing_past_reasons_in_memory_to_new_scenarios",
-        "Topic": topic,
-        "How_Many_Pref_Updates": len(timestamps),
-        "Reference": last_two_details[0],
-        "Where": "END OF TEXT"  # insert this question before this place
-    })
-
+    """
+    Here we focus on those preferences that has shifted at least once
+    When a preference shifts once, we mimic the case that this preference shifts again in the future and ask about what happened to the reasons of the previous shift
+    That is to say, this Q&A is crafted based on the most recent reasons of change in the existing data, and will be queried at the end of the text after the new user utterance created here
+    """
     # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
     response = LLM.query_llm(step='qa_helper', data={'event': str(related_event)}, action='ask_previous_reason_after_new_updates', verbose=False)
     response = utils.process_json_from_api(response)
+    question = response.get("User Utterance", "")
     correct_answer = response.get("Model Response", "")
 
     incorrect_answers = LLM.query_llm(step='qa_helper', data={'question': question, 'response': correct_answer}, action='propose_incorrect_reasons_after_new_updates', verbose=False)
@@ -289,8 +298,57 @@ def generate_qa_reasons_of_change(LLM, topic, event_history, verbose=False):
         "Topic": topic,
         "How_Many_Pref_Updates": len(timestamps),
         "Reference": last_two_details[0],
-        "Where": last_two_details[1]["Conversation"].split('\n')[-1]   # insert this question before this place, -1 to insert after the user's utterance
+        "Where": "END OF TEXT"
     })
+
+    if len(last_two_details) == 3:
+        """
+        Here we focus on those preferences that has shifted at least twice in the existing event sequence
+        When a preference shifts again, we ask about what happened to the reasons of the previous shift, not creating new cases not existed in the existing conversation
+        That is to say, this Q&A is crafted based on the SECOND most recent reasons of change in the existing data, and will be queried immediately after the user's utterance in the last event, but before the model's response
+        """
+        related_event = {"Newest Preference Update": related_event,
+                         "Previous Preference Update": {
+                             "Event": last_two_details[1]["Event"],
+                             "[Reasons of Change]": last_two_details[1]["[Reasons of Change]"],
+                            }
+                         }
+        if "[Updated Fact] Likes" in last_two_details[1]:
+            related_event["Previous Preference Update"]["[Updated Fact] Likes"] = last_two_details[1]["[Updated Fact] Likes"]
+            if "[Old Fact] Likes" in last_two_details[1]:
+                return qa_entries
+            related_event["Previous Preference Update"]["[Old Fact] Dislikes"] = last_two_details[1]["[Old Fact] Dislikes"] if "[Old Fact] Dislikes" in last_two_details[1] else last_two_details[1]["[Fact] Dislikes"]
+        else:
+            related_event["Previous Preference Update"]["[Updated Fact] Dislikes"] = last_two_details[1]["[Updated Fact] Dislikes"]
+            if "[Old Fact] Dislikes" in last_two_details[1]:
+                return qa_entries
+            related_event["Previous Preference Update"]["[Old Fact] Likes"] = last_two_details[1]["[Old Fact] Likes"] if "[Old Fact] Likes" in last_two_details[1] else last_two_details[1]["[Fact] Likes"]
+
+        # This Q&A will be asked immediately after the user's utterance in the last event, but before the model's response
+        user_utterance = last_two_details[0]['Conversation'].split('\n')[1]
+        response = LLM.query_llm(step='qa_helper', data={'event': str(related_event), 'user_utterance': user_utterance}, action='ask_previous_reason_after_new_updates_in_existing_sequence', verbose=False)
+        response = utils.process_json_from_api(response)
+        correct_answer = response.get("Model Response", "")
+
+        incorrect_answers = LLM.query_llm(step='qa_helper', data={'question': question, 'response': correct_answer}, action='propose_incorrect_reasons_after_new_updates', verbose=False)
+        match = re.search(r"```python\n(.*?)\n```", incorrect_answers, re.DOTALL)
+        if match:
+            incorrect_answers = match.group(1)  # Extract the code block
+        incorrect_answers = incorrect_answers.strip("```").strip().replace('\n', '')
+        incorrect_answers = repair_json(incorrect_answers)
+        incorrect_answers = json.loads(incorrect_answers)
+        # incorrect_answers = ast.literal_eval(incorrect_answers)
+
+        qa_entries.append({
+            "Question": user_utterance,
+            "Correct_Answer": correct_answer,
+            "Incorrect_Answers": incorrect_answers,
+            "Type": "recalling_the_reasons_behind_previous_updates",
+            "Topic": topic,
+            "How_Many_Pref_Updates": len(timestamps),
+            "Reference": last_two_details[1],
+            "Where": last_two_details[0]['Conversation'].split('\n')[2]     # insert this question before this place, i.e., before the model response in the existing data
+        })
 
     # Save to JSON file
     if verbose:
@@ -755,20 +813,20 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
         if "Reasons of Change" in corresponding_data or "[Reasons of Change]" in corresponding_data:
             # Knowledge update
             if action == 'qa':
-                try:
-                    qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_factual(LLM, topic, event_history, random_event_histories, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
                 try:
                     qa_entries = generate_qa_reasons_of_change(LLM, topic, event_history, verbose=verbose)
                     if len(qa_entries) > 0:
@@ -776,43 +834,43 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                 except Exception as e:
                     all_errored_path.append(f"Error generating Q&A for reasons of change {data_path}:{conversation_key}")
                     print(f'{utils.Colors.FAIL}Error generating Q&A for reasons of change{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
-                    if len(qa_entries) > 0:
-                        all_qa_entries.extend(qa_entries)
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
-                try:
-                    qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                    if qa_entry:
-                        all_qa_entries.extend([qa_entry])
-                except Exception as e:
-                    all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entries = generate_qa_sequence_of_updates(LLM, topic, event_history, verbose=verbose)
+                #     if len(qa_entries) > 0:
+                #         all_qa_entries.extend(qa_entries)
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                # try:
+                #     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+                #     if qa_entry:
+                #         all_qa_entries.extend([qa_entry])
+                # except Exception as e:
+                #     all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
+                #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
         else:
-            # pass
-            try:
-                qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
-                if len(qa_entries) > 0:
-                    all_qa_entries.extend(qa_entries)
-            except Exception as e:
-                all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
-                print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
-            try:
-                qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
-                if len(qa_entries) > 0:
-                    all_qa_entries.extend(qa_entries)
-            except Exception as e:
-                all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
-                print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
-            try:
-                qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
-                if qa_entry:
-                    all_qa_entries.extend([qa_entry])
-            except Exception as e:
-                all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
-                print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
+            pass
+            # try:
+            #     qa_entries = generate_qa_factual(LLM, topic, event_history, verbose=verbose)
+            #     if len(qa_entries) > 0:
+            #         all_qa_entries.extend(qa_entries)
+            # except Exception as e:
+            #     all_errored_path.append(f"Error generating Q&A for static factual knowledge {data_path}:{conversation_key}")
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for static factual knowledge{utils.Colors.ENDC}{e}')
+            # try:
+            #     qa_entries = generate_qa_recalling_preference(LLM, topic, event_history, verbose=verbose)
+            #     if len(qa_entries) > 0:
+            #         all_qa_entries.extend(qa_entries)
+            # except Exception as e:
+            #     all_errored_path.append(f"Error generating Q&A for recalling preference {data_path}:{conversation_key}")
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recalling preference{utils.Colors.ENDC}{e}')
+            # try:
+            #     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
+            #     if qa_entry:
+            #         all_qa_entries.extend([qa_entry])
+            # except Exception as e:
+            #     all_errored_path.append(f"Error generating Q&A for recommendations {data_path}:{conversation_key}")
+            #     print(f'{utils.Colors.FAIL}Error generating Q&A for recommendations{utils.Colors.ENDC}{e}')
 
     # Save all Q&A entries to the JSON file at data_path
     if "Q&A" not in data:

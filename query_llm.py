@@ -6,6 +6,7 @@ import json
 import random
 import re
 import math
+import timeout_decorator
 
 from openai import OpenAI
 
@@ -90,6 +91,7 @@ class QueryLLM:
         else:
             raise ValueError(f'Invalid step: {step}')
 
+    @timeout_decorator.timeout(60, timeout_exception=TimeoutError)  # Set timeout to 30 seconds
     def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, data_type=None, idx_topic=0, start_time=None, verbose=False):
         schema = None
         if step == 'source_data':

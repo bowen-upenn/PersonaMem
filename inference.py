@@ -20,6 +20,7 @@ from prepare_blocks import *
 from openai import OpenAI
 
 # Google Gemini API from VertexAI
+# from google import genai
 import google.generativeai as genai
 # import vertexai
 # from vertexai.preview.generative_models import GenerativeModel, ChatSession
@@ -114,9 +115,11 @@ class Evaluation:
 
         # Call Google Gemini API for Gemini models
         elif re.search(r'gemini', self.args['models']['llm_model']) is not None:
-            genai.configure(api_key=self.gemini_key)
-            model = genai.GenerativeModel(self.args['models']['llm_model'])
-            response = model.generate_content(messages)
+            client = genai.Client(api_key=self.gemini_key)
+            model = self.args['models']['llm_model']
+            response = client.models.generate_content(
+                model=model, contents="\n\n".join(msg['content'] for msg in messages)
+            )
             response = response.text
             # location = "us-central1"
             # vertexai.init(project=self.project_id, location=location)
@@ -153,7 +156,8 @@ class Evaluation:
             response = client.messages.create(
                 model=self.args['models']['llm_model'],
                 system=messages[0]['content'],
-                messages=messages[1:]
+                messages=messages[1:],
+                max_tokens=1024
             ).content[0].text
 
         else:
@@ -165,6 +169,14 @@ class Evaluation:
 def generate_conversation_id(context):
     """Generates a unique, fixed-length conversation ID using a hash."""
     return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
+
+
+def generate_shared_context_id(shared_context):
+    """Returns a consistent ID for the same shared context using hashing."""
+    if isinstance(shared_context, list):  # If it's a list, convert it to a string
+        shared_context = " ".join(map(str, shared_context))  # Join elements with space
+
+    return hashlib.sha256(shared_context.encode()).hexdigest()  # Generate hash
 
 
 def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
@@ -195,9 +207,19 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         ])
 
 
-def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.json"):
-    with open(json_file_path, "a", encoding="utf-8") as file:
-        file.write(json.dumps(contexts_dict, indent=4) + "\n")
+def save_contexts_to_json(contexts_dict, json_file_path="data/contexts.jsonl"):
+    """Appends JSON objects to a JSON Lines (NDJSON) file without loading the entire file."""
+    with open(json_file_path, "a", encoding="utf-8") as file:  # 'a' mode for append
+        file.write(json.dumps(contexts_dict, ensure_ascii=False) + "\n")  # Append as JSONL
+
+
+def read_jsonl_file(json_file_path="data/contexts.jsonl"):
+    """Reads a JSON Lines file line by line into a list of dictionaries."""
+    data = []
+    with open(json_file_path, "r", encoding="utf-8") as file:
+        for line in file:
+            data.append(json.loads(line.strip()))  # Convert each line to a dictionary
+    return data
 
 
 if __name__ == "__main__":
@@ -238,8 +260,10 @@ if __name__ == "__main__":
     if cmd_args.clean:
         if os.path.exists("data/questions.csv"):
             os.remove("data/questions.csv")
-        if os.path.exists("data/contexts.json"):
-            os.remove("data/contexts.json")
+        if os.path.exists("data/contexts.jsonl"):
+            os.remove("data/contexts.jsonl")
+        if os.path.exists("data/shared_contexts.jsonl"):
+            os.remove("data/shared_contexts.jsonl")
     #     user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
     #     if user_input == 'y':
     #         if os.path.exists("data/questions.csv"):
@@ -311,6 +335,9 @@ if __name__ == "__main__":
         # print('Before sort new_content_samples: ', new_content_samples)
         variants = topological_sort(processed_blocks_dict, num_variants=n_variants, verbose=verbose)
 
+        # Dictionary to store shared context IDs
+        shared_context_id_set = set()
+
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
@@ -325,7 +352,7 @@ if __name__ == "__main__":
                  context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
-                shared_context_id = utils.generate_unique_id_from_string(shared_context)    # More efficient way to store long context shared by multiple Q&As with just different end indices
+                shared_context_id = generate_shared_context_id(shared_context)    # More efficient way to store long context shared by multiple Q&As with just different end indices
 
                 if save_only:
                     curr_qa_info = {
@@ -345,9 +372,12 @@ if __name__ == "__main__":
                         "stereotypical": stereotypical,
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-                    save_contexts_to_json({question_id: curr_context}, "data/contexts.json")
-                    save_contexts_to_json({shared_context_id: shared_context}, "data/shared_contexts.json")
+                    save_contexts_to_json({question_id: curr_context}, "data/contexts.jsonl")
+                    if shared_context_id not in shared_context_id_set:
+                        save_contexts_to_json({shared_context_id: shared_context}, "data/shared_contexts.jsonl")
+                        shared_context_id_set.add(shared_context_id)
                     save_questions_to_csv(curr_qa_info, "data/questions.csv")
+
 
                 else:
                     predicted_answer = evaluation.query_llm(curr_context, formatted_question, which_format)
@@ -393,6 +423,11 @@ if __name__ == "__main__":
                             "topic": topic
                         }
                     )
+
+            shared_contexts = read_jsonl_file("data/shared_contexts.jsonl")
+            contexts = read_jsonl_file("data/contexts.jsonl")
+            print(f"Number of contexts: {len(contexts)}")
+            print(f"Number of shared contexts: {len(shared_contexts)}")
 
             if not save_only:
                 # Calculate the percentage of the results
