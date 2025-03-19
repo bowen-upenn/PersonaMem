@@ -523,9 +523,9 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
 
         if verbose:
             if mode == "A":
-                mode = "A (Long distance to previous session of the same topic)"
+                mode = "A - Long distance to previous session of the same topic"
             else:
-                mode = "B (Long distance after the last session of this topic)"
+                mode = "B - Long distance after the last session of this topic"
             print(f"Variant {variant + 1} (Mode {mode}):")
             sorted_info = [
                 f"{block['file_name']}: {block['time_period']}"

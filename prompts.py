@@ -323,18 +323,29 @@ def prompts_for_generating_qa(data, action):
     elif action == 'ask_previous_reason_after_new_updates':
         prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
                  "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change in the following conversation. " \
-                 "Think about the next time the user changes the attitude again, what would the model response? " \
+                 "Think about the next time the user changes the attitude again towards the same activity, what would the user say to the model and what would the model response? " \
                  "Propose a response that specifically has sensitivity to shifts, and mention how the user still thinks about the previous reason of the previous attitude change. " \
                  "Always follow the template below:\n\n" \
                  "{\n" \
-                 '    "Model Response": xxx\n' \
+                 '    "User Utterance": xxx,\n' \
+                 '    "Model Response": yyy\n' \
+                 "}. " \
+                 "Do NOT modify the names of these keys. Fill in the actual data at placeholders 'xxx' and 'yyy' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
+    elif action == 'ask_previous_reason_after_new_updates_in_existing_sequence':
+        prompt = "The user has mentioned the detailed reason below of their preference update in previous conversations:\n\n" + data['event'] + "\n\n" \
+                 "You should focus on the [Reasons of Change] part. We actually want to evaluate if the model can remember and utilize this reason of change in the following conversation. " \
+                 "Think about the next time the user changes the attitude again towards the same activity and says:\n\n" + data['user_utterance'] + "\n\nwhat would the model response? " \
+                 "Propose a response that specifically has sensitivity to shifts, and mention how the user still thinks about the previous reason of the previous attitude change. " \
+                 "Always follow the template below:\n\n" \
+                 "{\n" \
+                 '     "Model Response": yyy\n' \
                  "}. " \
                  "Do NOT modify the names of these keys. Fill in the actual data at placeholder 'xxx' in the template. Please use DOUBLE quotes in order to generate the correct JSON format. No other words."
     elif action == 'propose_incorrect_reasons_after_new_updates':
         prompt = "Based on this model's response that recalls the correct reason of the user's previous preference changes when the same user changes their preference once again: " + data['response'] + "\n\n" \
                  "Propose three incorrect responses on purpose to prepare a multiple choice Q&A. Each incorrect option should be a generally good response, " \
                  "but either mentions a wrong reason or completely does not mention the previous reason at all. Each option should share similar tone, matching length, and equal level of detail." \
-                 "Please do NOT be lazy! Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. " \
+                 "**IMPORTANT** Please do NOT be lazy! Make sure each incorrect answer has the SAME LENGTH with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization. " \
                  'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
 
     elif action == 'recall_sequence':
