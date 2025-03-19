@@ -636,6 +636,7 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
         #     continue
 
         # we assign distance to all qa in the current block
+        qa_count = {}
         for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
@@ -645,6 +646,18 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
                 if ('Where' not in q) or ('Where' in q and q['Where'] != 'END OF TEXT'):
                     continue
                 if ('More_Update' not in q) or ('More_Update' in q and q['More_Update'] == 'Yes'):
+                    continue
+
+                type = q['Type']
+                if type in qa_count and qa_count[type] >= 1:
+                    continue
+                if type not in qa_count:
+                    qa_count[type] = 0
+                else:
+                    qa_count[type] += 1
+            else:
+                # Avoid END OF TEXT questions for the last block since they are too trivial
+                if 'Where' not in q or q['Where'] == 'END OF TEXT':
                     continue
 
             # Get where the question will be asked
@@ -709,6 +722,8 @@ def compute_question_distance(sorted_processed_blocks, tokenizer, all_conversati
             q['num_irrelevant_tokens'] = num_irrelevant_tokens
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
+
+        # print('qa_count', qa_count)
 
     return all_qa, flattened_all_conversations
 
