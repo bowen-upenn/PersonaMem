@@ -574,16 +574,17 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                 curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
 
         # Insert irrelevant contexts
-        # if all_irrelevant_contexts and which_format == 'api_dict':
-        #     num_random_blocks = random.randint(0, 15)
-        #     random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-        #     for session in random_sessions:
-        #         key = list(session.keys())[0]  # only one key in each session
-        #         if session[key]:
-        #             curr_conversations.extend(session[key])
-        #     # Remove all items whose content is None from curr_conversations
-        #     curr_conversations = [item for item in curr_conversations if item['content'] is not None]
-        #     num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
+        if all_irrelevant_contexts and which_format == 'api_dict':
+            num_random_blocks = random.choices([0, 1, 2], weights=[0.5, 0.3, 0.2])[0]
+            # num_random_blocks = random.randint(0, 2)
+            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+            for session in random_sessions:
+                key = list(session.keys())[0]  # only one key in each session
+                if session[key]:
+                    curr_conversations.extend(session[key])
+            # Remove all items whose content is None from curr_conversations
+            curr_conversations = [item for item in curr_conversations if item['content'] is not None]
+            num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
 
         if which_format == 'string':
             curr_conversations.append(block["conversation"])
