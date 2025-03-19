@@ -575,8 +575,10 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
 
         # Insert irrelevant contexts
         if all_irrelevant_contexts and which_format == 'api_dict':
-            num_random_blocks = random.choices([0, 1, 2], weights=[0.5, 0.3, 0.2])[0]
-            # num_random_blocks = random.randint(0, 2)
+            if len(sorted_processed_blocks) < 30:
+                num_random_blocks = random.choices([0, 1, 2], weights=[0.5, 0.3, 0.2])[0]
+            else:
+                num_random_blocks = random.randint(0, 15)
             random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
             for session in random_sessions:
                 key = list(session.keys())[0]  # only one key in each session
