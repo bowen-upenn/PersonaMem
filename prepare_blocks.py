@@ -371,7 +371,7 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     return final_blocks, persona
 
 
-def topological_sort(processed_blocks, num_variants=1, verbose=False):
+def topological_sort(processed_blocks, tokenizer, num_variants=1, verbose=False):
     def extract_topic(file_name):
         # For example, for "conversation_travelPlanning_persona0_sample0.json",
         # return "travelPlanning_persona0"
@@ -526,6 +526,29 @@ def topological_sort(processed_blocks, num_variants=1, verbose=False):
             # followed by all remaining sessions from other topics.
             merged_list = interleaved_topic + remaining_others
 
+        # Count tokens in the merged variant.
+        flattened_all_conversations = [utter for block in merged_list for utter in block['conversation']]
+        total_num_tokens = 0
+        for item in flattened_all_conversations:
+            total_num_tokens += count_tokens(item['content'], tokenizer, verbose=False)
+        print('total_num_tokens', total_num_tokens)
+
+        # If token count exceeds 128000, remove sessions from one random topic (in other_sessions) until below threshold.
+        token_limit = 0.9*128000 if len(processed_blocks) < 30 else 0.9*1000000     # use 0.9 to allow adding irrelevant contexts later on
+        while total_num_tokens > token_limit:
+            # Get all topics from merged_list that are not the chosen topic.
+            topics_in_other = list({extract_topic(block['file_name']) for block in merged_list if extract_topic(block['file_name']) != chosen_topic})
+            if not topics_in_other:
+                # Cannot remove any further topics; break out.
+                break
+            selected_topic = random.choice(topics_in_other)
+            print(f"Removing sessions for topic: {selected_topic} to reduce tokens.")
+            merged_list = [block for block in merged_list if extract_topic(block['file_name']) != selected_topic]
+            # Recompute token count.
+            flattened_all_conversations = [utter for block in merged_list for utter in block['conversation']]
+            total_num_tokens = sum(count_tokens(item['content'], tokenizer, verbose=False) for item in flattened_all_conversations)
+            print('Recalculated total_num_tokens', total_num_tokens)
+
         if verbose:
             if mode == "A":
                 mode = "A - Long distance to previous session of the same topic"
@@ -562,37 +585,59 @@ def get_order_mapping(original_blocks, sorted_blocks):
 def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts=None, persona=None, verbose=False):
     all_conversations = []
     num_irrelevant_tokens = 0
+    irrelevant_weight = [0.7, 0.2, 0.1]
 
-    for block_idx, block in enumerate(sorted_processed_blocks):
-        curr_conversations = []
+    for try_idx in range(3):
+        for block_idx, block in enumerate(sorted_processed_blocks):
+            curr_conversations = []
 
-        # Append persona at the beginning of each block
-        if persona:
+            # Append persona at the beginning of each block
+            if persona:
+                if which_format == 'string':
+                    curr_conversations.append(persona)
+                else:
+                    curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
+
+            # Insert irrelevant contexts
+            if all_irrelevant_contexts and which_format == 'api_dict':
+                if len(sorted_processed_blocks) < 30:
+                    num_random_blocks = random.choices([0, 1, 2], weights=irrelevant_weight)[0]
+                else:
+                    num_random_blocks = random.randint(0, 15)
+                random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
+                for session in random_sessions:
+                    key = list(session.keys())[0]  # only one key in each session
+                    if session[key]:
+                        curr_conversations.extend(session[key])
+                # Remove all items whose content is None from curr_conversations
+                curr_conversations = [item for item in curr_conversations if item['content'] is not None]
+                num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
+
             if which_format == 'string':
-                curr_conversations.append(persona)
+                curr_conversations.append(block["conversation"])
             else:
-                curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
+                curr_conversations.extend(block["conversation"])
+            all_conversations.append(curr_conversations)
 
-        # Insert irrelevant contexts
-        if all_irrelevant_contexts and which_format == 'api_dict':
-            if len(sorted_processed_blocks) < 30:
-                num_random_blocks = random.choices([0, 1, 2], weights=[0.8, 0.1, 0.1])[0]
-            else:
-                num_random_blocks = random.randint(0, 15)
-            random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
-            for session in random_sessions:
-                key = list(session.keys())[0]  # only one key in each session
-                if session[key]:
-                    curr_conversations.extend(session[key])
-            # Remove all items whose content is None from curr_conversations
-            curr_conversations = [item for item in curr_conversations if item['content'] is not None]
-            num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
+        flattened_all_conversations = [item for curr_conversations in all_conversations for item in curr_conversations]
+        total_num_tokens = 0
+        for item in flattened_all_conversations:
+            # Count tokens in each block's content.
+            total_num_tokens += count_tokens(item['content'], tokenizer, verbose=False)
+        print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
-        if which_format == 'string':
-            curr_conversations.append(block["conversation"])
+        token_limit = 128000 if len(sorted_processed_blocks) < 30 else 1000000
+        if total_num_tokens < token_limit:
+            break
         else:
-            curr_conversations.extend(block["conversation"])
-        all_conversations.append(curr_conversations)
+            all_conversations = []
+            num_irrelevant_tokens = 0
+            if try_idx == 0:
+                print("Total tokens exceed 128000, retrying with fewer irrelevant contexts.")
+                irrelevant_weight = [0.9, 0.1, 0.0]
+            elif try_idx == 1:
+                print("Total tokens exceed 128000, retrying with no irrelevant contexts.")
+                irrelevant_weight = [1.0, 0.0, 0.0]
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -706,7 +751,10 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
                 else:
                     # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
                     all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
-                    all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
+                    try:
+                        all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
+                    except: # invalid time format
+                        continue
                     try:
                         reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                         reference_utterance = reference_event.split('\n')[1]

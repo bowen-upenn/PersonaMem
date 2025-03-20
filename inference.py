@@ -296,9 +296,12 @@ if __name__ == "__main__":
         n_blocks = range(1, cmd_args.n_blocks)
 
     for curr_n_blocks in n_blocks:
-        output_file_path = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks.json'
-        output_file_path_full_results = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks_full.json'
-        print(f"{utils.Colors.OKBLUE}Evaluating {llm_model} on {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}")
+        if cmd_args.save_only:
+            print(f"{utils.Colors.OKBLUE}Processing {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}")
+        else:
+            output_file_path = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks.json'
+            output_file_path_full_results = f'./data/eval/{llm_model}_persona{idx_persona}_{curr_n_blocks}blocks_full.json'
+            print(f"{utils.Colors.OKBLUE}Evaluating {llm_model} on {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}")
         results = {}
         full_results = []
 
@@ -334,7 +337,7 @@ if __name__ == "__main__":
 
         # Topological sort chosen conversation blocks by the latest timestamp
         # print('Before sort new_content_samples: ', new_content_samples)
-        variants = topological_sort(processed_blocks_dict, num_variants=n_variants, verbose=verbose)
+        variants = topological_sort(processed_blocks_dict, tokenizer, num_variants=n_variants, verbose=verbose)
 
         # Dictionary to store shared context IDs
         shared_context_id_set = set()
