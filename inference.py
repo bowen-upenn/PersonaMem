@@ -341,7 +341,7 @@ if __name__ == "__main__":
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
-            all_qa, all_conversations = compute_question_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens)
+            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:

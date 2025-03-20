@@ -75,7 +75,10 @@ def trace_event_history(timestamp, previous_history_blocks, previous_conversatio
                 found = False
                 for i, line in enumerate(conversation):
                     if line.startswith("Side_Note") and timestamp in line:
-                        event_data['Conversation'] = conversation[i] + '\n' + conversation[i + 1] + '\n' + conversation[i + 2]
+                        try:
+                            event_data['Conversation'] = conversation[i] + '\n' + conversation[i + 1] + '\n' + conversation[i + 2]
+                        except:
+                            continue
                         found = True
                         break
                 if not found:
@@ -845,7 +848,7 @@ def evaluate_memory_from_conversation(action, LLM, SentenceBERT, conversation_ke
                         all_qa_entries.extend(qa_entries)
                 except Exception as e:
                     all_errored_path.append(f"Error generating Q&A for sequence of updates {data_path}:{conversation_key}")
-                    print(f'{utils.Colors.FAIL}Error generating Q&A for graph of updates{utils.Colors.ENDC}{e}')
+                    print(f'{utils.Colors.FAIL}Error generating Q&A for sequence of updates{utils.Colors.ENDC}{e}')
                 try:
                     qa_entry = generate_qa_recommendations(LLM, topic, event_history, persona, verbose=verbose)
                     if qa_entry:

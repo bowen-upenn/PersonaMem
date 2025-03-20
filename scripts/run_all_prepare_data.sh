@@ -6,7 +6,7 @@
 # studyConsultation therapy travelPlanning writing \
 
 start_persona_id=0
-end_persona_id=20
+end_persona_id=20  # non-inclusive
 
 # Construct the command
 command="python prepare_data.py --model gpt-4o \

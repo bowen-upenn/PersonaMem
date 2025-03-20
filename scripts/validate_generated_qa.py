@@ -8,6 +8,7 @@ from datetime import datetime
 class Colors:
     FAIL = '\033[91m'
     END = '\033[0m'
+    WARNING = '\033[93m'
 
 
 def validate_json(file_path):
@@ -33,8 +34,9 @@ def validate_json(file_path):
         "tracking_the_full_sequence_of_preference_updates",
     ]
     temp_ignored_types = [
-        "generalizing_past_reasons_in_memory_to_new_scenarios",
-        "recalling_the_reasons_behind_previous_updates",
+        # "tracking_the_full_sequence_of_preference_updates"
+        # "generalizing_past_reasons_in_memory_to_new_scenarios",
+        # "recalling_the_reasons_behind_previous_updates",
     ]
 
     try:
@@ -68,7 +70,7 @@ def validate_json(file_path):
                 continue
 
             if item["Type"] not in required_types and item["Type"] not in temp_ignored_types:
-                print(f"{Colors.FAIL}Invalid type in '{period}'{Colors.END}")
+                print(f"{Colors.FAIL}Invalid type {item['Type']} in '{period}'{Colors.END}")
                 continue
 
             if item["Type"] in required_types:
@@ -77,7 +79,7 @@ def validate_json(file_path):
         # Check if each required_type has been mentioned
         valid = True
         for type in required_types.keys():
-            if required_types[type] == 0 and not (period == "Init Conversation" and type in ignored_types_in_init):
+            if required_types[type] == 0 and not (period == "Init Conversation" and type in ignored_types_in_init) and type not in temp_ignored_types:
                 print(f"{Colors.FAIL}Error generating 'Type' {type} in {file_path}:{period}{Colors.END}")
                 valid = False
 
