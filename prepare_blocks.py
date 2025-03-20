@@ -7,6 +7,7 @@ import yaml
 import math
 import re
 import torch
+import numpy as np
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -585,9 +586,11 @@ def get_order_mapping(original_blocks, sorted_blocks):
 def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts=None, persona=None, verbose=False):
     all_conversations = []
     num_irrelevant_tokens = 0
-    irrelevant_weight = [0.7, 0.2, 0.1]
+    irrelevant_weight = [0.7, 0.2, 0.1] # for medium
+    irrelevant_num = 20 # for large
+    num_try = 10
 
-    for try_idx in range(3):
+    for try_idx in range(num_try):
         for block_idx, block in enumerate(sorted_processed_blocks):
             curr_conversations = []
 
@@ -596,14 +599,14 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                 if which_format == 'string':
                     curr_conversations.append(persona)
                 else:
-                    curr_conversations.append({"role": "system", "content": "Current user persona:" + persona})
+                    curr_conversations.append({"role": "system", "content": "Current user persona: " + persona})
 
             # Insert irrelevant contexts
             if all_irrelevant_contexts and which_format == 'api_dict':
                 if len(sorted_processed_blocks) < 30:
                     num_random_blocks = random.choices([0, 1, 2], weights=irrelevant_weight)[0]
                 else:
-                    num_random_blocks = random.randint(0, 15)
+                    num_random_blocks = random.randint(0, irrelevant_num)
                 random_sessions = random.sample(all_irrelevant_contexts, min(num_random_blocks, len(all_irrelevant_contexts)))
                 for session in random_sessions:
                     key = list(session.keys())[0]  # only one key in each session
@@ -627,17 +630,33 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
         print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
         token_limit = 128000 if len(sorted_processed_blocks) < 30 else 1000000
-        if total_num_tokens < token_limit:
+        if token_limit > total_num_tokens > 0.9 * token_limit if len(sorted_processed_blocks) < 30 else 0.95 * token_limit:
+            break
+        elif try_idx + 1 == num_try:
             break
         else:
             all_conversations = []
             num_irrelevant_tokens = 0
             if try_idx == 0:
-                print("Total tokens exceed 128000, retrying with fewer irrelevant contexts.")
-                irrelevant_weight = [0.9, 0.1, 0.0]
-            elif try_idx == 1:
-                print("Total tokens exceed 128000, retrying with no irrelevant contexts.")
-                irrelevant_weight = [1.0, 0.0, 0.0]
+                if total_num_tokens >= token_limit:
+                    print("Total tokens exceed limit, retrying with fewer irrelevant contexts.")
+                    irrelevant_weight = [0.9, 0.1, 0.0]
+                    irrelevant_num -= 2
+                else:
+                    print("Total tokens is too low, retrying with more irrelevant contexts.")
+                    irrelevant_weight[0] += 0.1
+                    irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
+                    irrelevant_num += 1
+            else:
+                if total_num_tokens >= token_limit:
+                    print("Total tokens exceed limit, retrying with even fewer irrelevant contexts.")
+                    irrelevant_weight = [1.0, 0.0, 0.0]
+                    irrelevant_num -= 1
+                else:
+                    print("Total tokens is too low, retrying with more irrelevant contexts.")
+                    irrelevant_weight[0] += 0.1
+                    irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
+                    irrelevant_num += 1
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -770,6 +789,8 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             # print('len(flattened_all_conversations)', len(flattened_all_conversations), 'total_num_of_tokens', count_tokens(" ".join([item['content'] for item in flattened_all_conversations if 'content' in item]), tokenizer, verbose=False))
             # print('block_num_ref', block_num_ref, 'start_index_ref', start_index_ref, 'num_tokens_ref', num_tokens_ref)
             # print('block_num_q', block_num_q, 'start_index_q', start_index_q, 'num_tokens_q', num_tokens_q)
+            # if len(flattened_all_conversations) > 5000:
+            #     print(flattened_all_conversations)
 
             num_tokens_question = count_tokens(q['Question'], tokenizer, verbose=False)
             q['distance_blocks'] = block_num_q - block_num_ref

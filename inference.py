@@ -258,14 +258,15 @@ if __name__ == "__main__":
 
     cmd_args = parser.parse_args()
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
+    benchmark_size = '128k' if cmd_args.n_blocks == 20 else ('1M' if cmd_args.n_blocks == 60 else str(cmd_args.n_blocks) + 'blocks')
 
     if cmd_args.clean:
-        if os.path.exists("data/questions.csv"):
-            os.remove("data/questions.csv")
-        if os.path.exists("data/contexts.jsonl"):
-            os.remove("data/contexts.jsonl")
-        if os.path.exists("data/shared_contexts.jsonl"):
-            os.remove("data/shared_contexts.jsonl")
+        if os.path.exists(f"data/questions_{benchmark_size}.csv"):
+            os.remove(f"data/questions_{benchmark_size}.csv")
+        if os.path.exists(f"data/contexts_{benchmark_size}.jsonl"):
+            os.remove(f"data/contexts_{benchmark_size}.jsonl")
+        if os.path.exists(f"data/shared_contexts_{benchmark_size}.jsonl"):
+            os.remove(f"data/shared_contexts_{benchmark_size}.jsonl")
     #     user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
     #     if user_input == 'y':
     #         if os.path.exists("data/questions.csv"):
@@ -377,11 +378,11 @@ if __name__ == "__main__":
                         "stereotypical": stereotypical,
                     }
                     # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
-                    save_contexts_to_json({question_id: curr_context}, "data/contexts.jsonl")
+                    save_contexts_to_json({question_id: curr_context}, f"data/contexts_{benchmark_size}.jsonl")
                     if shared_context_id not in shared_context_id_set:
-                        save_contexts_to_json({shared_context_id: shared_context}, "data/shared_contexts.jsonl")
+                        save_contexts_to_json({shared_context_id: shared_context}, f"data/shared_contexts_{benchmark_size}.jsonl")
                         shared_context_id_set.add(shared_context_id)
-                    save_questions_to_csv(curr_qa_info, "data/questions.csv")
+                    save_questions_to_csv(curr_qa_info, f"data/questions_{benchmark_size}.csv")
 
 
                 else:

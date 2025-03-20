@@ -26,3 +26,7 @@ for idx_persona in {0..19}; do
         python inference.py --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --save_only --verbose
     fi
 done
+
+# Usage
+# bash scripts/run_all_inference.sh medium to generate the medium size benchmark up to 128k context window
+# bash scripts/run_all_inference.sh large to generate the large size benchmark up to 1M context window
