@@ -185,25 +185,27 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
 
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
-            writer.writerow(["question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters", "distance_to_ref_in_blocks", "distance_to_ref_in_tokens",
-                             "distance_to_ref_proportion_in_context", "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "num_irrelevant_tokens", "stereotypical"])
+            writer.writerow(["persona_id", "question_id", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
+                             "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
+                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
 
         writer.writerow([
+            result["idx_persona"],
             result["question_id"],
             result["question_type"],
             result['topic'],
+            result["stereotypical"],
             result['context_length_in_tokens'],
             result['context_length_in_letters'],
             result['distance_blocks'],
             result['distance_tokens'],
+            result["num_irrelevant_tokens"],
             f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%",
             result["question"],
             result["correct_answer"],
             result['all_options'],
             result["shared_context_id"],
             result["end_index_in_shared_context"],
-            result["num_irrelevant_tokens"],
-            result["stereotypical"]
         ])
 
 
@@ -272,7 +274,6 @@ if __name__ == "__main__":
     #             os.remove("data/contexts.json")
     #     else:
     #         print("Skipping cleanup.")
-
 
     llm_model = cmd_args.model
     idx_persona = cmd_args.idx_persona
@@ -357,6 +358,7 @@ if __name__ == "__main__":
                 if save_only:
                     curr_qa_info = {
                         "question_id": question_id,
+                        "idx_persona": idx_persona,
                         "question": question,
                         "correct_answer": correct_answer,
                         "all_options": all_options,
