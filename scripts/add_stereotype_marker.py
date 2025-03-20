@@ -83,6 +83,10 @@ def process_json_file(file_path, LLM, verbose=False):
         modified_qa_list = []  # Track modifications for this conversation section
 
         for qa in tqdm(qa_list):
+            type = qa.get("Type", "")
+            if type == 'tracking_the_full_sequence_of_preference_updates':
+                qa['Stereotypical'] = "N/A" # it has a sequence of updates instead of a fixed preference
+
             reference = qa.get("Reference", {})
             # Check for keys indicating a preference fact or update.
             for ref_key in ["[Fact] Likes", "[Fact] Dislikes", "[Updated Fact] Likes", "[Updated Fact] Dislikes"]:
@@ -118,7 +122,8 @@ def process_json_file(file_path, LLM, verbose=False):
 
                     # Add the Stereotypical field accordingly
                     qa['Stereotypical'] = "Yes" if is_stereotypical else "No"
-                    modified_qa_list.append(qa)
+
+            modified_qa_list.append(qa)
 
         # If modifications were made, store them
         if modified_qa_list:
