@@ -430,8 +430,8 @@ if __name__ == "__main__":
                         }
                     )
 
-            shared_contexts = read_jsonl_file("data/shared_contexts.jsonl")
-            contexts = read_jsonl_file("data/contexts.jsonl")
+            shared_contexts = read_jsonl_file(f"data/shared_contexts_{benchmark_size}.jsonl")
+            contexts = read_jsonl_file(f"data/contexts_{benchmark_size}.jsonl")
             print(f"Number of contexts: {len(contexts)}")
             print(f"Number of shared contexts: {len(shared_contexts)}")
 

@@ -630,7 +630,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
         print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
         token_limit = 128000 if len(sorted_processed_blocks) < 30 else 1000000
-        if token_limit > total_num_tokens > 0.9 * token_limit if len(sorted_processed_blocks) < 30 else 0.95 * token_limit:
+        if token_limit > total_num_tokens > (0.9 * token_limit if len(sorted_processed_blocks) < 30 else 0.95 * token_limit):
             break
         elif try_idx + 1 == num_try:
             break
