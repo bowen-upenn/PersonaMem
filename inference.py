@@ -267,6 +267,7 @@ def convert_role_system_to_user(messages_4o):
 
     return messages_o1
 
+
 def generate_conversation_id(context):
     """Generates a unique, fixed-length conversation ID using a hash."""
     return hashlib.sha256(context.encode('utf-8')).hexdigest()[:16]  # First 16 characters of SHA-256 hash
@@ -480,6 +481,11 @@ def load_rows_with_context(csv_path, jsonl_path):
             yield row_data, current_context
 
 
+def count_csv_rows(csv_path):
+    with open(csv_path, mode='r', newline='', encoding='utf-8') as f:
+        return sum(1 for _ in f) - 1  # Subtract 1 for header row
+
+
 def run_evaluation(args, cmd_args, llm, verbose=False):
     question_path = cmd_args.question_path
     context_path = cmd_args.context_path
@@ -488,14 +494,15 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
     # if cmd_args.clean:
     #     user_input = input("The 'clean' flag is set. Do you really want remove existing eval_results.csv file? (y/n): ").strip().lower()
     #     if user_input == 'y':
-    #         if os.path.exists("data/eval_results.csv"):
-    #             os.remove("data/eval_results.csv")
+    if os.path.exists(result_path):
+        os.remove(result_path)
     #     else:
     #         print("Skipping cleanup.")
 
     all_errors = []
+    total_rows = count_csv_rows(question_path)
 
-    for row_data, context in tqdm(load_rows_with_context(question_path, context_path)):
+    for row_data, context in tqdm(load_rows_with_context(question_path, context_path), total=total_rows):
         try:
             # Extract relevant data from the row
             persona_id = row_data["persona_id"]
