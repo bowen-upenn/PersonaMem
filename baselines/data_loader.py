@@ -2,6 +2,14 @@ import ast
 import pandas as pd
 import json
 
+def read_jsonl(PATH):
+    data = []
+    with open(PATH, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.strip():
+                data.append(json.loads(line))
+    return data
+
 def data_loader(PATH_questions, PATH_contexts, fix_json = False):
     # This function loads the questions and contexts from the given paths
     # If fix_json is True, it will fix the json file at PATH_contexts
@@ -16,28 +24,28 @@ def data_loader(PATH_questions, PATH_contexts, fix_json = False):
     # questions: pd.DataFrame, questions data
     # contexts: dict, contexts data
     
-    # Load the data
-    if fix_json:
-        with open(PATH_contexts, 'r') as file:
-            lines = file.readlines()
+    # # Load the data
+    # if fix_json:
+    #     with open(PATH_contexts, 'r') as file:
+    #         lines = file.readlines()
 
-        # Process lines
-        new_lines = []
-        for i, line in enumerate(lines):
-            if line == "}{\n":
-                # Replace the last '\n' in the previous line with a comma
-                if new_lines:
-                    new_lines[-1] = new_lines[-1].rstrip('\n') + ','
-                # Skip adding this line (effectively removing it)
-            else:
-                new_lines.append(line)
+    #     # Process lines
+    #     new_lines = []
+    #     for i, line in enumerate(lines):
+    #         if line == "}{\n":
+    #             # Replace the last '\n' in the previous line with a comma
+    #             if new_lines:
+    #                 new_lines[-1] = new_lines[-1].rstrip('\n') + ','
+    #             # Skip adding this line (effectively removing it)
+    #         else:
+    #             new_lines.append(line)
 
-        # Write the modified content back to the file
-        with open(PATH_contexts, 'w') as file:
-            file.writelines(new_lines)
+    #     # Write the modified content back to the file
+    #     with open(PATH_contexts, 'w') as file:
+    #         file.writelines(new_lines)
 
     questions = pd.read_csv(PATH_questions)
-    contexts = json.load(open(PATH_contexts))
+    contexts = read_jsonl(PATH_contexts)
 
     # preprocessing
     questions['all_options'] = questions['all_options'].apply(lambda x: ast.literal_eval(x))

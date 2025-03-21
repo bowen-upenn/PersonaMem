@@ -10,11 +10,11 @@ def encode_contexts(PATH):
     if not os.path.exists(PATH):
         raise FileNotFoundError(f"The path {PATH} does not exist.")
 
-    PATH_questions = PATH + "questions.json"
-    PATH_contexts = PATH + "contexts.json"
+    PATH_questions = PATH + "questions.csv"
+    PATH_contexts = PATH + "shared_contexts.jsonl"
     
     if not os.path.exists(PATH_questions) or not os.path.exists(PATH_contexts):
-        raise FileNotFoundError(f"Required files not found in the path {PATH}. Please ensure 'questions.json' and 'contexts.json' are present.")
+        raise FileNotFoundError(f"Required files not found in the path {PATH}. Please ensure 'questions.csv' and 'shared_contexts.jsonl' are present.")
     
     emb_model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
     print("Embedding Model loaded successfully")
