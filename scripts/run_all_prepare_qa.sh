@@ -1,22 +1,31 @@
 #!/bin/bash
 
-# Arrays for the parameters
-contexts=("therapy" "legal" "foodRecommendation" "datingConsultation" "travelPlanning" "onlineShopping" "studyConsultation" "writing")
-idx_personas=$(seq 0 0)
+# Full list of topics for reference
+# bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
+# legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
+# studyConsultation therapy travelPlanning writing \
+
+# Full list of time_periods for reference
+# init next_week next_month next_year
+
+# Define the list of time periods
 time_periods=("init" "next_week" "next_month" "next_year")
 
-# Iterate over each combination of parameters
-for context in "${contexts[@]}"; do
-    for idx_persona in $idx_personas; do
-        for time_period in "${time_periods[@]}"; do
-            # Construct the command
-            command="python prepare_qa.py --action qa --data ${context}_persona${idx_persona}_sample0 --time ${time_period}"
+start_persona_id=0
+end_persona_id=20  # non-inclusive
 
-            # Print the command for debugging/logging purposes
-            echo "$command"
+# Loop over each time period
+for time_period in "${time_periods[@]}"; do
+    # Construct the command
+    command="python prepare_qa.py --model gpt-4o --action qa \
+             --topics bookRecommendation coding datingConsultation email familyRelations financialConsultation foodRecommendation homeDecoration \
+                      legalConsultation medicalConsultation movieRecommendation musicRecommendation onlineShopping sportsRecommendation \
+                      studyConsultation therapy travelPlanning writing \
+             --n_persona ${end_persona_id} --n_samples 1 --s_persona ${start_persona_id} --s_samples 0 --time ${time_period} --clean"
 
-            # Execute the command
-            eval "$command"
-        done
-    done
+    # Print the command for debugging/logging purposes
+    echo "$command"
+
+    # Execute the command
+    eval "$command"
 done

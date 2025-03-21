@@ -1,22 +1,32 @@
 #!/bin/bash
 
-#models=("gpt-4o" "gpt-4o-mini")
-#idx_personas=$(seq 2 9)
-models=("gpt-4o-mini")
-idx_personas=$(seq 1)
-n_blocks=$(seq 1 10)
+# Check if the user provided an argument
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 [medium|large]"
+    exit 1
+fi
 
-total=$(( ${#models[@]} * 10 * 10 ))
-current=0
+# Set n_blocks based on the user input
+if [ "$1" == "medium" ]; then
+    n_blocks=20
+elif [ "$1" == "large" ]; then
+    n_blocks=60
+else
+    echo "Invalid argument. Please specify 'medium' or 'large'."
+    exit 1
+fi
 
-for model in "${models[@]}"; do
-    for idx_persona in $idx_personas; do
-        for n_block in $n_blocks; do
-            ((current++))
-            echo -ne "\rProgress: $current/$total"
-            python inference.py --model $model --idx_persona $idx_persona --format api_dict --n_blocks $n_block
-        done
-    done
+# Loop through idx_persona from 0 to 19
+for idx_persona in {0..19}; do
+    if [ "$idx_persona" -eq 0 ]; then
+        echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks from scratch"
+        python inference.py --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --save_only --verbose --clean
+    else
+        echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks"
+        python inference.py --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --save_only --verbose
+    fi
 done
 
-echo -e "\nAll commands executed."
+# Usage
+# bash scripts/run_all_inference.sh medium to generate the medium size benchmark up to 128k context window
+# bash scripts/run_all_inference.sh large to generate the large size benchmark up to 1M context window

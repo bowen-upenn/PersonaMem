@@ -7,6 +7,8 @@ import re
 from datetime import datetime, timedelta
 from sentence_transformers import util
 import ast
+import hashlib
+import base64
 
 
 class Colors:
@@ -148,6 +150,9 @@ def extract_json_from_response(response, parse_json=False, parse_list=False):
             # Extract the JSON part
             json_part = json_match.group(1).strip()
             response = process_json_from_api(json_part)
+        else:
+            # already in JSON format
+            response = json.loads(response)
     elif parse_list:
         response = response.strip("```python").strip("```plaintext").strip()
         response = ast.literal_eval(response)
@@ -168,15 +173,16 @@ def append_json_to_file(response, output_file_path, curr_data_name, parse_json=F
     # Load the existing JSON data from the file (if any)
     existing_json_file = load_existing_json(output_file_path)
 
-    if curr_data_name == 'Init Contextual Personal History':
-        match = re.split(r'```json', response, maxsplit=1)
-        likes_and_dislikes = match[0].strip() if match else ""
-        existing_json_file['Likes and Dislikes'] = likes_and_dislikes
+    # if curr_data_name == 'Init Contextual Personal History':
+    #     match = re.split(r'```json', response, maxsplit=1)
+    #     likes_and_dislikes = match[0].strip() if match else ""
+    #     existing_json_file['Likes and Dislikes'] = likes_and_dislikes
 
     # Extract and append the new JSON data
     parsed_response = extract_json_from_response(response, parse_json, parse_list)
     existing_json_file[curr_data_name] = parsed_response
 
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
     # Save the updated data back to the file
     with open(output_file_path, "w") as json_file:
         json.dump(existing_json_file, json_file, indent=4)
@@ -212,9 +218,21 @@ def pick_a_random_time_within_a_year(input_date):
     return new_date.strftime("%m/%d/%Y")
 
 
-def extract_last_timestamp(response):
-    json_response = extract_json_from_response(response, parse_json=True)
-    timestamps = list(json_response.keys())
+def extract_last_timestamp(json_response):
+    if isinstance(json_response, str):
+        json_response = json.loads(json_response)
+    if isinstance(json_response, list):
+        json_response = json_response[0]
+
+    # Define regex pattern for MM/DD/YYYY format
+    date_pattern = re.compile(r'^(0[1-9]|1[0-2])/([0-2][0-9]|3[01])/\d{4}$')
+
+    # Filter keys that match MM/DD/YYYY format
+    timestamps = [key for key in json_response.keys() if date_pattern.match(key)]
+
+    if not timestamps:
+        return None  # Return None if no valid date keys exist
+
     last_timestamp = max(timestamps, key=lambda x: tuple(map(int, x.split('/')[::-1])))
     return last_timestamp
 
@@ -285,10 +303,10 @@ def clean_raw_writing_data(source_file, output_file):
         print(f"An unexpected error occurred: {e}")
 
 
-def load_all_writing_data():
-    directory_path = "data/output/writing/"
+def load_all_writing_data(topic):
+    directory_path = os.path.join("./data/output", topic)
     writing_data_files = [
-        filename for filename in os.listdir(directory_path) if "writing" in filename
+        filename for filename in os.listdir(directory_path) if topic in filename
     ]
     return writing_data_files
 
@@ -317,7 +335,6 @@ def find_existing_persona_files(idx_persona):
                 file_path = os.path.join(topic_dir, file_name)
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                # Check if the file contains the key we're interested in
                 if "General Personal History Next Year" in data:
                     matching_file = file_path
                     selected_data = data
@@ -348,9 +365,31 @@ def find_existing_persona_files(idx_persona):
             'general_personal_history_next_year': selected_data.get("General Personal History Next Year"),
         }
     else:
-        print(f"No persona file with 'General Personal History Next Year' found for persona {idx_persona}.")
+        print(f"No existing persona file with 'General Personal History Next Year' found for persona {idx_persona}. Retrieving a persona now...")
         return None
 
+
+def filter_valid_dates(data):
+    """
+    Filters JSON-like data:
+    - If it's a list, keep only its dictionary elements and select the one with the most keys.
+    - If it's a dictionary, remove keys that are not in MM/DD/YYYY format.
+    """
+    if isinstance(data, str):
+        data = json.loads(data)
+
+    # If data is a list, filter dictionaries and pick the one with the most keys
+    if isinstance(data, list):
+        dict_list = [item for item in data if isinstance(item, dict)]
+        if not dict_list:
+            return {}  # Return empty dict if no valid dict is found
+        data = max(dict_list, key=lambda d: len(d.keys()), default={})
+
+    # If data is a dict, remove invalid keys
+    if isinstance(data, dict):
+        data = {k: v for k, v in data.items() if re.match(r'\d{2}/\d{2}/\d{4}', k)}
+
+    return data
 
 def get_all_context_names():
     base_path = './data/output'
@@ -390,20 +429,43 @@ def clean_up_one_file(file_path):
         print(f"File not found: {file_path}")
 
 
-def find_string_in_list(data, target):
-    # Check if the data is a list of dictionaries
-    if isinstance(data, list) and isinstance(data[0], dict):
-        for index, item in enumerate(data):
-            if item.get('content') == target:
-                return index
+def sort_based_on_mapping(strings, mapping):
+    """
+    Sort a list of strings based on a given index mapping.
 
-    # Check if the data is a list of strings
-    elif isinstance(data, list) and isinstance(data[0], str):
-        for block_num, data_block in enumerate(data):
-            start_index = data_block.find(target)
-            if start_index != -1:
-                return block_num, start_index
-            else:
-                continue
+    :param strings: List of strings to be sorted.
+    :param mapping: Dictionary mapping original indices to sorted indices.
+    :return: List of strings sorted based on the mapping.
+    """
+    if len(strings) != len(mapping):
+        raise ValueError("The length of the strings list must match the length of the mapping.")
 
-    return -1  # Return -1 if not found
+    sorted_strings = [None] * len(strings)  # Create a list of the same length
+    for original_idx, sorted_idx in mapping.items():
+        sorted_strings[sorted_idx] = strings[original_idx]  # Place elements in the correct order
+
+    return sorted_strings
+
+
+def find_string_in_list(where, flattened_all_conversations, all_conversations):
+    start_index = next((i for i, utterance in enumerate(flattened_all_conversations) if utterance.get('content') == where), -1)
+    block_num = next((i for i, session in enumerate(all_conversations) if any(item.get('content') == where for item in session)), -1)
+
+    # for block_num, block in enumerate(all_conversations):
+    #     if where in block:
+    #         return block_num, start_index
+    # print('target not found')
+    # return -1  # Return -1 if not found
+    return block_num, start_index
+
+
+def generate_unique_id_from_string(input_string):
+    """Generate a unique fixed-length ID from a string."""
+    # check if input_string is a list of dict
+    if isinstance(input_string, list) and isinstance(input_string[0], dict):
+        input_string = ' '.join([item['content'] for item in input_string])
+
+    hash_object = hashlib.sha256(input_string.encode())  # Hash the input string
+    hash_digest = hash_object.digest()  # Get binary hash
+    base64_encoded = base64.urlsafe_b64encode(hash_digest).decode()  # Encode in base64
+    return base64_encoded

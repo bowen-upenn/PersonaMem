@@ -6,6 +6,7 @@ import json
 import random
 import re
 import math
+import timeout_decorator
 
 from openai import OpenAI
 
@@ -18,7 +19,7 @@ class QueryLLM:
         self.args = args
         # Load the API key
         with open("openai_key.txt", "r") as api_key_file:
-            self.api_key = api_key_file.read()
+            self.api_key = api_key_file.read().strip()
 
         self.client = OpenAI(api_key=self.api_key)
         self.assistant = self.client.beta.assistants.create(
@@ -59,6 +60,7 @@ class QueryLLM:
             self.thread_persona = self.client.beta.threads.create()
             self.thread_conversation = self.client.beta.threads.create()
             self.thread_reflect_conversation = self.client.beta.threads.create()
+        elif step == 'writing':
             self.thread_preparing_new_content = self.client.beta.threads.create()
         elif step == 'qa':
             self.thread_new_content = self.client.beta.threads.create()
@@ -69,20 +71,29 @@ class QueryLLM:
             raise ValueError(f'Invalid step: {step}')
 
     def delete_a_thread(self, step):
+        def safe_delete(thread_id):
+            try:
+                self.client.beta.threads.delete(thread_id=thread_id)
+            except Exception as e:
+                print(utils.Colors.WARNING + f'Error deleting thread: {e}' + utils.Colors.ENDC)
+
         if step == 'conversation':
-            self.client.beta.threads.delete(thread_id=self.thread_persona.id)
-            self.client.beta.threads.delete(thread_id=self.thread_conversation.id)
-            self.client.beta.threads.delete(thread_id=self.thread_reflect_conversation.id)
-            self.client.beta.threads.delete(thread_id=self.thread_preparing_new_content.id)
+            safe_delete(thread_id=self.thread_persona.id)
+            safe_delete(thread_id=self.thread_conversation.id)
+            safe_delete(thread_id=self.thread_reflect_conversation.id)
+        elif step == 'writing':
+            safe_delete(thread_id=self.thread_preparing_new_content.id)
         elif step == 'qa':
-            self.client.beta.threads.delete(thread_id=self.thread_new_content.id)
-            self.client.beta.threads.delete(thread_id=self.thread_eval_new_content.id)
+            safe_delete(thread_id=self.thread_new_content.id)
+            safe_delete(thread_id=self.thread_eval_new_content.id)
         elif step == 'irrelevant':
-            self.client.beta.threads.delete(thread_id=self.thread_irrelevant.id)
+            safe_delete(thread_id=self.thread_irrelevant.id)
         else:
             raise ValueError(f'Invalid step: {step}')
 
+    @timeout_decorator.timeout(60, timeout_exception=TimeoutError)  # Set timeout to 30 seconds
     def query_llm(self, step='source_data', persona=None, topic=None, seed=None, data=None, action=None, data_type=None, idx_topic=0, start_time=None, verbose=False):
+        schema = None
         if step == 'source_data':
             prompt = prompts.prompts_for_background_data(seed)
         elif step == 'elaborate_topic':
@@ -118,11 +129,11 @@ class QueryLLM:
         elif step == 'init_contextual_personal_history':
             prompt = prompts.prompts_for_init_contextual_personal_history(topic, start_time, self.expanded_persona, self.general_personal_history)
         elif step == 'first_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='WEEK')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='WEEK')
         elif step == 'second_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='MONTH')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='MONTH')
         elif step == 'third_expand_contextual_personal_history':
-            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='general', period='YEAR')
+            prompt = prompts.prompts_for_expanding_personal_history(topic=topic, type='contextual', period='YEAR')
 
         # A separate thread to populate personal histories into conversations
         elif step == 'init_conversation':
@@ -155,16 +166,20 @@ class QueryLLM:
             prompt = prompts.prompt_for_content_generation(data, action)
         elif step == 'eval_new_content':
             prompt = prompts.prompt_for_evaluating_content(data, action)
+        elif step == 'find_stereotype':
+            prompt = prompts.prompts_for_classifying_stereotypical_preferences(data)
         else:
             raise ValueError(f'Invalid step: {step}')
 
         # Independent API calls every time
-        if step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code' or step == 'rewrite_email' or step == 'rewrite_creative_writing':
+        if (step == 'expand_persona' or step == 'qa_helper' or step == 'expand_conversation_section' or step == 'translate_code'
+                or step == 'rewrite_email' or step == 'rewrite_creative_writing' or step == 'new_content' or step == 'find_stereotype'):
             model = 'gpt-4o-mini' if step == 'expand_conversation_section' else self.args['models']['llm_model']
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user",
-                           "content": prompt}]
+                           "content": prompt}],
+                max_tokens=10000
             )
             response = response.choices[0].message.content
             if verbose:
@@ -178,8 +193,8 @@ class QueryLLM:
                 curr_thread = self.thread_reflect_conversation
             elif step == 'prepare_new_content':
                 curr_thread = self.thread_preparing_new_content
-            elif step == 'new_content':
-                curr_thread = self.thread_new_content
+            # elif step == 'new_content':
+            #     curr_thread = self.thread_new_content
             elif step == 'eval_new_content':
                 curr_thread = self.thread_eval_new_content
             elif step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
@@ -190,7 +205,7 @@ class QueryLLM:
             message = self.client.beta.threads.messages.create(
                 thread_id=curr_thread.id,
                 role="user",
-                content=prompt
+                content=prompt,
             )
 
             if step == 'random_question' or step == 'random_question_follow_up' or step == 'random_question_follow_up_response':
@@ -209,6 +224,7 @@ class QueryLLM:
                     thread_id=curr_thread.id
                 )
                 response = response.data[0].content[0].text.value
+
                 if verbose:
                     if step == 'new_content':
                         print(f'{utils.Colors.OKGREEN}{action.capitalize()}:{utils.Colors.ENDC} {response}')
