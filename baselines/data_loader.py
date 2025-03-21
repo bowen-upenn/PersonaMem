@@ -10,11 +10,11 @@ def read_jsonl(PATH):
                 data.append(json.loads(line))
     
     dict_output = {}
-    for d in data:
-        keys = list(d.keys())
+    for block in data:
+        keys = list(block.keys())
         if len(keys) != 1:
             raise ValueError(f"Expected a single key in the dictionary, got {len(keys)} keys.")
-        dict_output[keys[0]] = d[keys[0]]
+        dict_output[keys[0]] = [str(c) for c in block[keys[0]]]
 
     return dict_output
 
