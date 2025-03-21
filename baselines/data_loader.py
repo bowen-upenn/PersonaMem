@@ -8,7 +8,15 @@ def read_jsonl(PATH):
         for line in f:
             if line.strip():
                 data.append(json.loads(line))
-    return data
+    
+    dict_output = {}
+    for d in data:
+        keys = list(d.keys())
+        if len(keys) != 1:
+            raise ValueError(f"Expected a single key in the dictionary, got {len(keys)} keys.")
+        dict_output[keys[0]] = d[keys[0]]
+
+    return dict_output
 
 def data_loader(PATH_questions, PATH_contexts, fix_json = False):
     # This function loads the questions and contexts from the given paths
