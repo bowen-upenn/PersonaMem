@@ -723,6 +723,17 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
                 type = q['Type']
                 question = q['Question']
 
+                if type in qa_count and qa_count[type] >= 1:
+                    continue
+                if type not in qa_count:
+                    qa_count[type] = 0
+                else:
+                    qa_count[type] += 1
+
+                # To limit the total number of questions, we randomly ignore some non-last sessions
+                if total_blocks > 30 and curr_block_topic != init_block_topic:
+                    if random.random() > 0.5:
+                        continue
                 """
                 Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
                 """
@@ -744,18 +755,6 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
                         # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
                         if score:
                             continue
-
-                if type in qa_count and qa_count[type] >= 1:
-                    continue
-                if type not in qa_count:
-                    qa_count[type] = 0
-                else:
-                    qa_count[type] += 1
-
-                # To limit the total number of questions, we randomly ignore some non-last sessions
-                if total_blocks > 30 and curr_block_topic != init_block_topic:
-                    if random.random() > 0.5:
-                        continue
             else:
                 # Avoid END OF TEXT questions for the last block since they are too trivial
                 if 'Where' not in q or q['Where'] == 'END OF TEXT':

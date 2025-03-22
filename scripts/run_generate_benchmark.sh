@@ -23,7 +23,7 @@ for idx_persona in {0..19}; do
         python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --clean --verbose
     else
         echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks"
-        python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --clean --verbose
+        python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --verbose  # Never add --clean here
     fi
 done
 
