@@ -53,7 +53,9 @@ def data_loader(PATH_questions, PATH_contexts, fix_json = False):
     #         file.writelines(new_lines)
 
     questions = pd.read_csv(PATH_questions)
-    contexts = read_jsonl(PATH_contexts)
+    contexts = {}
+    if PATH_contexts:
+        contexts = read_jsonl(PATH_contexts)
 
     # preprocessing
     questions['all_options'] = questions['all_options'].apply(lambda x: ast.literal_eval(x))

@@ -46,11 +46,12 @@ def evaluator(
     for row in tqdm(questions.iterrows(), total=questions.shape[0]):
         reset_memory(memory)  # reset memory for each question
 
-        target_context = contexts[row[1]["question_id"]]
-        target_context = [x["content"] for x in target_context]
         target_question = row[1]["question"]
         target_options = row[1]["all_options"]
         target_options = "\n".join(target_options)
+        if context_mode != "none":
+            target_context = contexts[row[1]["question_id"]]
+            target_context = [x["content"] for x in target_context]
 
         session = chatSession(model=openai_model, openai_api_key=openai_api_key)
 
@@ -111,13 +112,19 @@ if __name__ == "__main__":
         print("Usage: python script.py <top_k> <context_mode> <gpt_model>")
         sys.exit(1)
 
-    if not os.path.exists("data/questions.csv") or not os.path.exists("data/contexts.json"):
-        print("Error: questions.csv and contexts.json must exist in ./data")
-        sys.exit(1)
-
     top_k = sys.argv[1]
     context_mode = sys.argv[2]
     gpt_model = sys.argv[3]
+
+    PATH_questions = "data/questions.csv"
+    if not os.path.exists(PATH_questions):
+        print(f"Error: {PATH_questions} must exist")
+        sys.exit(1)
+
+    PATH_contexts = "data/contexts.json" if not context_mode == "none" else None
+    if PATH_contexts and not os.path.exists(PATH_contexts):
+        print(f"Error: {PATH_contexts} must exist")
+        sys.exit(1)
 
     # Validate top_k: Ensure it is a positive integer
     if not top_k.isdigit() or int(top_k) <= 0:
@@ -141,11 +148,11 @@ if __name__ == "__main__":
     print(f"context_mode is set to {context_mode}")
     print(f"gpt_model is set to {gpt_model}")
 
-    PATH_questions = "data/questions.csv"
-    PATH_contexts = "data/contexts.json"
+    emb_model = None
+    if context_mode == "rag":
+        emb_model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
+        print("Embedding Model loaded successfully")
 
-    emb_model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
-    print("Embedding Model loaded successfully")
     questions, contexts = data_loader(PATH_questions, PATH_contexts, fix_json=False)
     print("Data loaded successfully")
 
