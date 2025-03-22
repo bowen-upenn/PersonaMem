@@ -20,10 +20,10 @@ fi
 for idx_persona in {0..19}; do
     if [ "$idx_persona" -eq 0 ]; then
         echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks from scratch"
-        python inference.py --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --save_only --verbose --clean
+        python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --clean --verbose
     else
         echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks"
-        python inference.py --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --save_only --verbose
+        python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --clean --verbose
     fi
 done
 

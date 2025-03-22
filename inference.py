@@ -16,6 +16,7 @@ import csv
 import uuid
 
 import utils
+from query_llm import QueryLLM
 from prepare_blocks import *
 
 from openai import OpenAI
@@ -47,14 +48,19 @@ class Evaluation:
             self.lambda_key = lambda_key_file.read()
 
 
-    def query_llm(self, context, question, all_options, instructions=None):
-        assert isinstance(context, list), "Context must be a list of dictionaries"
+    def query_llm(self, question, all_options, context=None, instructions=None, verbose=False):
+        assert context is None or isinstance(context, list), "Context must be a list of dictionaries"
         if instructions is None:
-            instructions = "Think step by step. At the end, give your final answer (a), (b), (c), or (d) after the special token <final_answer>."
+            if context is None:
+                instructions = "Think step by step. At the end, give your final answer (a), (b), (c), or (d) after the special token <final_answer>."
+            else:
+                instructions = ("Think step by step and rely on your memory about the user to give the response. "
+                                "At the end, give your final answer (a), (b), (c), or (d) after the special token <final_answer>.")
 
-        messages = context + [
-            {"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},
-        ]
+        if context:
+            messages = context + [{"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},]
+        else:
+            messages = [{"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},]
 
         # Call OpenAI API for GPT models by default
         if (re.search(r'gpt', self.args['models']['llm_model']) is not None or
@@ -74,8 +80,9 @@ class Evaluation:
                 model=self.args['models']['llm_model'],
                 messages=messages,
             )
-            print("model response: ", response)
             response = response.choices[0].message.content
+            if verbose:
+                print("model response: ", response)
             ####################################################
 
         # Call Google Gemini API for Gemini models
@@ -91,7 +98,7 @@ class Evaluation:
         # Call Claude API for Claude models
         elif re.search(r'claude', self.args['models']['llm_model']) is not None:
             client = anthropic.Client(api_key=self.claude_key)
-            messages = context[-10:] + [
+            messages = [
                 {"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},
             ]
             print("\nmessages: ", messages)
@@ -169,29 +176,29 @@ class Evaluation:
         return response
 
 
-def extract_answer(predicted_answer, correct_answer):
-    # Parse special token
-    predicted_answer = predicted_answer.strip()
-    if "<final_answer>" in predicted_answer:
-        predicted_answer = predicted_answer.split("<final_answer>")[-1].strip()
+    def extract_answer(self, predicted_answer, correct_answer):
+        # Parse special token
+        predicted_answer = predicted_answer.strip()
+        if "<final_answer>" in predicted_answer:
+            predicted_answer = predicted_answer.split("<final_answer>")[-1].strip()
 
-    # Extract all option patterns (e.g., (a), (b), etc.) from the answer
-    option_pattern = r'\(([a-zA-Z])\)'
-    predicted_options = re.findall(option_pattern, predicted_answer)
-    predicted_options_lower = list(map(str.lower, predicted_options))
+        # Extract all option patterns (e.g., (a), (b), etc.) from the answer
+        option_pattern = r'\(([a-zA-Z])\)'
+        predicted_options = re.findall(option_pattern, predicted_answer)
+        predicted_options_lower = list(map(str.lower, predicted_options))
 
-    # Check for the correct and incorrect options
-    correct_letter = re.search(option_pattern, correct_answer).group(1)
-    correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
-    incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
-    incorrect_letters_mentioned = any(
-        letter.lower() in predicted_options_lower for letter in incorrect_letters
-    )
+        # Check for the correct and incorrect options
+        correct_letter = re.search(option_pattern, correct_answer).group(1)
+        correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
+        incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
+        incorrect_letters_mentioned = any(
+            letter.lower() in predicted_options_lower for letter in incorrect_letters
+        )
 
-    if correct_letter_mentioned and not incorrect_letters_mentioned:
-        return True, predicted_answer
-    else:
-        return False, predicted_answer
+        if correct_letter_mentioned and not incorrect_letters_mentioned:
+            return True, predicted_answer
+        else:
+            return False, predicted_answer
 
 
 def openai_to_gemini_history(openai_messages):
@@ -291,6 +298,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
                              "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
                              "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
 
+        percentage = f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%"
         writer.writerow([
             result["idx_persona"],
             result["question_id"],
@@ -302,7 +310,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result['distance_blocks'],
             result['distance_tokens'],
             result["num_irrelevant_tokens"],
-            f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%",
+            percentage if result["context_length_in_tokens"] > 0 else "0%",
             result["question"],
             result["correct_answer"],
             result['all_options'],
@@ -326,30 +334,28 @@ def read_jsonl_file(json_file_path="data/contexts.jsonl"):
     return data
 
 
-def prepare_benchmark_data(args, cmd_args, tokenizer, verbose=False):
-    if cmd_args.clean:
-        user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
-        if user_input == 'y':
-            if os.path.exists("data/questions.csv"):
-                os.remove("data/questions.csv")
-            if os.path.exists("data/contexts.json"):
-                os.remove("data/contexts.json")
-        else:
-            print("Skipping cleanup.")
-
+def prepare_benchmark_data(args, cmd_args, tokenizer, llm=None, verbose=False):
     idx_persona = cmd_args.idx_persona
     which_format = cmd_args.format
     verbose = cmd_args.verbose
     n_variants = cmd_args.n_variants
+    n_blocks = [cmd_args.n_blocks]
     benchmark_size = '128k' if cmd_args.n_blocks == 20 else ('1M' if cmd_args.n_blocks == 60 else str(cmd_args.n_blocks) + 'blocks')
+
+    if cmd_args.clean:
+    #     user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
+    #     if user_input == 'y':
+        if os.path.exists(f"data/questions_{benchmark_size}.csv"):
+            os.remove(f"data/questions_{benchmark_size}.csv")
+        if os.path.exists(f"data/contexts_{benchmark_size}.json"):
+            os.remove(f"data/contexts_{benchmark_size}.json")
+        if os.path.exists(f"data/shared_contexts_{benchmark_size}.json"):
+            os.remove(f"data/shared_contexts_{benchmark_size}.json")
+        # else:
+        #     print("Skipping cleanup.")
 
     with open(args['datasets']['random_contexts_file'], "r", encoding="utf-8") as f:
         all_irrelevant_contexts = json.load(f)
-
-    if cmd_args.up_to is False:
-        n_blocks = [cmd_args.n_blocks]
-    else:
-        n_blocks = range(1, cmd_args.n_blocks)
 
     for curr_n_blocks in n_blocks:
         print(f"{utils.Colors.OKBLUE}Processing {curr_n_blocks} conversation blocks for persona_{idx_persona}{utils.Colors.ENDC}")
@@ -385,7 +391,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer, verbose=False):
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
-            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens)
+            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
@@ -454,6 +460,16 @@ def load_context_by_id(jsonl_path, offset):
         f.seek(offset)
         item = json.loads(f.readline())
         return next(iter(item.values()))
+
+
+def load_rows(csv_path):
+    with open(csv_path, mode='r', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row_number, row in enumerate(reader, start=1):
+            row_data = {}
+            for column_name, value in row.items():
+                row_data[column_name] = value
+            yield row_data
 
 
 def load_rows_with_context(csv_path, jsonl_path):
@@ -526,8 +542,8 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
             context= context[:int(end_index_in_shared_context)]  # Include up to the end index
 
             # Send the query to the LLM
-            model_response = llm.query_llm(context, question, all_options)
-            score, predicted_answer = extract_answer(model_response, correct_answer)
+            model_response = llm.query_llm(question, all_options, context)
+            score, predicted_answer = llm.extract_answer(model_response, correct_answer)
 
             # Save the results back to a CSV file together with the question types
             if verbose:
@@ -572,9 +588,6 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
             continue
 
     if all_errors:
-        with open('output/error_log.json', 'w') as f:
-            json.dump(all_errors, f, indent=4)
-        print("Errors encountered during evaluation. Check 'error_log.json' for details.")
         for error in all_errors:
             print(f"Error for persona_id {error['persona_id']} and question_id {error['question_id']}: {error['error']}")
 
@@ -616,6 +629,7 @@ if __name__ == "__main__":
     parser.add_argument('--idx_persona', type=int, default=0, help='Index of the persona')
     parser.add_argument('--format', type=str, default='api_dict', help='Output conversation format: string or api_dict. Not applicable for qa')
     parser.add_argument('--n_blocks', type=int, default=1, help='Number of conversation blocks')
+    parser.add_argument('--filter_questions', dest='filter_questions', action='store_true', help='Use LLM to filter questions that can be answered correctly without context')
     parser.add_argument('--n_variants', type=int, default=1, help='Number of variants of topological sorts to concatenate conversation sessions')
 
     cmd_args = parser.parse_args()
@@ -630,7 +644,10 @@ if __name__ == "__main__":
     sentence_bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 
     if cmd_args.step == 'prepare':
-        prepare_benchmark_data(args, cmd_args, tokenizer, verbose=cmd_args.verbose)
+        if cmd_args.filter_questions:
+            prepare_benchmark_data(args, cmd_args, tokenizer, llm, verbose=cmd_args.verbose)
+        else:
+            prepare_benchmark_data(args, cmd_args, tokenizer, verbose=cmd_args.verbose)
     elif cmd_args.step == 'evaluate':
         run_evaluation(args, cmd_args, llm, verbose=cmd_args.verbose)
     else:

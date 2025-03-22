@@ -437,6 +437,11 @@ def prompts_for_generating_qa(data, action):
                   "Make sure each incorrect answer has the same length with the correct one, so that the model can not simply pick the longest answer as the correct one without actual memorization." \
                   'Output a Python list of three strings, following this format: ["xxx", "yyy", "zzz"]. Fill in the actual data at placeholders "xxx", "yyy", and "zzz" in the template. Please use double quotes for each string. No other words.'
 
+    elif action == "refine_question":
+        prompt = "Given this question: What are some unique ingredients or customs associated with traditional dishes from different cultures that might be interesting to explore? The model can successfully pick the correct option " + data['correct_option'] + \
+                 "from the multiple choices:\n\n" + data['all_options'] + "\n\nHowever, this is not what we want. We want to design user questions related to recalling_facts_mentioned_by_the_user, " \
+                 "but more importantly, requires the model to recall memory about the user from long previous conversations, instead of being able to answer the question directly by looking at the questions and options. " \
+                 "Please redesign a short question that a user could ask to the model naturally in a conversation, keeping the four options the same. Do NOT explicitly asking the model to recall the memory. Output the question only. No other words."
     else:
         raise ValueError("Invalid action", action)
     return prompt

@@ -7,6 +7,7 @@ import yaml
 import math
 import re
 import torch
+from tqdm import tqdm
 import numpy as np
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -630,7 +631,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
         print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
         token_limit = 128000 if len(sorted_processed_blocks) < 30 else 1000000
-        if token_limit > total_num_tokens > (0.9 * token_limit if len(sorted_processed_blocks) < 30 else 0.95 * token_limit):
+        if token_limit > total_num_tokens:
             break
         elif try_idx + 1 == num_try:
             break
@@ -642,21 +643,21 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                     print("Total tokens exceed limit, retrying with fewer irrelevant contexts.")
                     irrelevant_weight = [0.9, 0.1, 0.0]
                     irrelevant_num -= 2
-                else:
-                    print("Total tokens is too low, retrying with more irrelevant contexts.")
-                    irrelevant_weight[0] += 0.1
-                    irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
-                    irrelevant_num += 1
+                # else:
+                #     print("Total tokens is too low, retrying with more irrelevant contexts.")
+                #     irrelevant_weight[0] += 0.1
+                #     irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
+                #     irrelevant_num += 1
             else:
                 if total_num_tokens >= token_limit:
                     print("Total tokens exceed limit, retrying with even fewer irrelevant contexts.")
                     irrelevant_weight = [1.0, 0.0, 0.0]
                     irrelevant_num -= 1
-                else:
-                    print("Total tokens is too low, retrying with more irrelevant contexts.")
-                    irrelevant_weight[0] += 0.1
-                    irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
-                    irrelevant_num += 1
+                # else:
+                #     print("Total tokens is too low, retrying with more irrelevant contexts.")
+                #     irrelevant_weight[0] += 0.1
+                #     irrelevant_weight = irrelevant_weight / np.sum(irrelevant_weight)
+                #     irrelevant_num += 1
 
     # if verbose:
     #     print(f'{utils.Colors.OKGREEN}Conversations:{utils.Colors.ENDC}')
@@ -680,7 +681,7 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens):
+def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm=None):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -706,7 +707,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
 
         # we assign distance to all qa in the current block
         qa_count = {}
-        for idx, q in enumerate(block.get('qa', [])):
+        for idx, q in tqdm(enumerate(block.get('qa', [])), total=len(block.get('qa', []))):
             if not q:
                 continue
             curr_block_topic = block.get('topic', [])
@@ -720,6 +721,30 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
 
                 # To limit the total number of questions, we only allow one question per type for all non-last sessions
                 type = q['Type']
+                question = q['Question']
+
+                """
+                Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
+                """
+                if llm:
+                    if type != "tracking_the_full_sequence_of_preference_updates" and not question.startswith('User:'):
+                        # Combine correct answer with incorrect answers
+                        incorrect_answers = random.sample(q["Incorrect_Answers"], min(3, len(q["Incorrect_Answers"])))
+                        options = [q["Correct_Answer"]] + incorrect_answers
+                        random.shuffle(options)
+                        correct_index = options.index(q["Correct_Answer"])
+                        correct_answer = '(' + chr(97 + correct_index) + ')'
+                        all_options = str([f"({chr(97 + i)}) {option}" for i, option in enumerate(options)])
+
+                        try:
+                            model_response = llm.query_llm(question, all_options, context=None, verbose=False)
+                        except:
+                            continue
+                        score, predicted_answer = llm.extract_answer(model_response, correct_answer)
+                        # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
+                        if score:
+                            continue
+
                 if type in qa_count and qa_count[type] >= 1:
                     continue
                 if type not in qa_count:
@@ -804,7 +829,8 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
             all_qa.append(q)
 
-        # print('qa_count', qa_count)
+        if llm:
+            print('qa_count', qa_count)
 
     return all_qa, flattened_all_conversations
 
