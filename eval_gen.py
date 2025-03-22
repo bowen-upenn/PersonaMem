@@ -60,15 +60,8 @@ def get_best_choice(prompt, candidate, model_name):
 # --------------------
 # Example usage:
 if __name__ == "__main__":
-    context_text = "In chess, the king can only move one square in any direction. "
-    query_text = "Which piece moves diagonally? "
-    choice_candidates = [
-        "Queen", 
-        "Bishop", 
-        "Knight", 
-        "Rook"
-    ]
-    
+    prompt = "I like "
+    candidate = "ice cream"
     best_choice, best_lp = get_best_choice(context_text, query_text, model_name)
     print(f"Best choice: '{best_choice}' with log probability: {best_lp:.4f}")
 
