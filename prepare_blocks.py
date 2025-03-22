@@ -681,7 +681,7 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm=None):
+def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm=None, checked_questions=None):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -721,8 +721,6 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
 
                 # To limit the total number of questions, we only allow one question per type for all non-last sessions
                 type = q['Type']
-                question = q['Question']
-
                 if type in qa_count and qa_count[type] >= 1:
                     continue
                 if type not in qa_count:
@@ -734,27 +732,6 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
                 if total_blocks > 30 and curr_block_topic != init_block_topic:
                     if random.random() > 0.5:
                         continue
-                """
-                Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
-                """
-                if llm:
-                    if type != "tracking_the_full_sequence_of_preference_updates" and not question.startswith('User:'):
-                        # Combine correct answer with incorrect answers
-                        incorrect_answers = random.sample(q["Incorrect_Answers"], min(3, len(q["Incorrect_Answers"])))
-                        options = [q["Correct_Answer"]] + incorrect_answers
-                        random.shuffle(options)
-                        correct_index = options.index(q["Correct_Answer"])
-                        correct_answer = '(' + chr(97 + correct_index) + ')'
-                        all_options = str([f"({chr(97 + i)}) {option}" for i, option in enumerate(options)])
-
-                        try:
-                            model_response = llm.query_llm(question, all_options, context=None, verbose=False)
-                        except:
-                            continue
-                        score, predicted_answer = llm.extract_answer(model_response, correct_answer)
-                        # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
-                        if score:
-                            continue
             else:
                 # Avoid END OF TEXT questions for the last block since they are too trivial
                 if 'Where' not in q or q['Where'] == 'END OF TEXT':
@@ -762,10 +739,48 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
 
             # Get where the question will be asked
             where = q['Where']
+            if 'Reference' not in q:
+                continue
 
             # For all sessions except for the final one, we ignore all questions asked within the conversation
             if i + 1 < total_blocks and where != 'END OF TEXT':
                 continue
+
+            """
+            Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
+            """
+            if llm:
+                type = q['Type']
+                question = q['Question']
+                if type != "tracking_the_full_sequence_of_preference_updates" and not question.startswith('User:'):
+                    # Combine correct answer with incorrect answers
+                    incorrect_answers = random.sample(q["Incorrect_Answers"], min(3, len(q["Incorrect_Answers"])))
+                    options = [q["Correct_Answer"]] + incorrect_answers
+                    random.shuffle(options)
+                    correct_index = options.index(q["Correct_Answer"])
+                    correct_answer = '(' + chr(97 + correct_index) + ')'
+                    all_options = str([f"({chr(97 + i)}) {option}" for i, option in enumerate(options)])
+
+                    if question not in checked_questions.keys():
+                        remove = False
+                        for _ in range(3):
+                            try:
+                                model_response = llm.query_llm(question, all_options, context=None, verbose=False)
+                            except:
+                                continue
+                            score, predicted_answer = llm.extract_answer(model_response, correct_answer)
+                            # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
+                            if score:
+                                remove = True
+                                break
+                        if remove:
+                            checked_questions[question] = False
+                            continue
+                        else:
+                            checked_questions[question] = True
+                    else:
+                        if checked_questions[question] == False:
+                            continue
 
             if where == 'END OF TEXT':
                 block_num_q, start_index_q = total_blocks, len(flattened_all_conversations) - 1
@@ -776,36 +791,32 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             # num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = flattened_all_conversations[:start_index_q]
 
-            # Get where the reference information will be
-            if 'Reference' not in q:
-                continue
+            if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
+                reference_utterance = sorted_processed_blocks[i]['conversation'][0]['content']
+                block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+            elif 'Conversation' in q['Reference']:
+                reference_event = q['Reference']['Conversation']
+                reference_utterance = reference_event.split('\n')[1]
+                # print('reference_utterance', reference_utterance, 'where', where, 'type', q['Type'])
+                block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+                # print('start_index_ref', start_index_ref, 'len(all_conversations)', len(all_conversations))
+                # print('all_conversations[start_index_ref]', all_conversations[start_index_ref])
+                # print('reference_utterance', reference_utterance)
             else:
-                if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
-                    reference_utterance = sorted_processed_blocks[i]['conversation'][0]['content']
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
-                elif 'Conversation' in q['Reference']:
-                    reference_event = q['Reference']['Conversation']
+                # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
+                all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
+                try:
+                    all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
+                except: # invalid time format
+                    continue
+                try:
+                    reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                     reference_utterance = reference_event.split('\n')[1]
-                    # print('reference_utterance', reference_utterance, 'where', where, 'type', q['Type'])
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
-                    # print('start_index_ref', start_index_ref, 'len(all_conversations)', len(all_conversations))
-                    # print('all_conversations[start_index_ref]', all_conversations[start_index_ref])
-                    # print('reference_utterance', reference_utterance)
-                else:
-                    # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
-                    all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
-                    try:
-                        all_timestamps.sort(key=lambda x: datetime.strptime(x, "%m/%d/%Y"))
-                    except: # invalid time format
-                        continue
-                    try:
-                        reference_event = q['Reference'][all_timestamps[0]]['Conversation']
-                        reference_utterance = reference_event.split('\n')[1]
-                    except:
-                        reference_event = q['Reference'][all_timestamps[1]]['Conversation']  # in case the earliest timestamp is not associated with a conversation
-                        reference_utterance = reference_event.split('\n')[1]
+                except:
+                    reference_event = q['Reference'][all_timestamps[1]]['Conversation']  # in case the earliest timestamp is not associated with a conversation
+                    reference_utterance = reference_event.split('\n')[1]
 
-                    block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+                block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
             num_tokens_ref = prefix_tokens[start_index_ref]
             # num_tokens_ref = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_ref]]), tokenizer, verbose=False)

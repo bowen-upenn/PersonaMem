@@ -27,40 +27,54 @@ from azure.ai.inference.models import SystemMessage, UserMessage
 
 
 class Evaluation:
-    def __init__(self, args):
+    def __init__(self, args, cmd_args):
         self.args = args
 
         # Load API keys
-        with open("api_tokens/openai_key.txt", "r") as api_key_file:
+        token_path = cmd_args.token_path
+
+        with open(os.path.join(token_path, "openai_key.txt"), "r") as api_key_file:
             self.openai_key = api_key_file.read()
 
-        with open("api_tokens/azure_key.txt", "r") as azure_key_file:
-            self.azure_key = azure_key_file.read()
-        with open("api_tokens/azure_endpoint.txt", "r") as azure_endpoint_file:
-            self.azure_endpoint_url = azure_endpoint_file.read()
-        with open("api_tokens/gemini_key.txt", "r") as genai_key_file:
-            self.genai_key = genai_key_file.read()
-        with open("api_tokens/claude_key.txt", "r") as claude_key_file:
-            self.claude_key = claude_key_file.read()
-        with open("api_tokens/deepseek_key.txt", "r") as deepseek_key_file:
-            self.deepseek_key = deepseek_key_file.read()
-        with open("api_tokens/lambda_key.txt", "r") as lambda_key_file:
-            self.lambda_key = lambda_key_file.read()
+        if os.path.exists(os.path.join(token_path, "azure_key.txt")):
+            with open(os.path.join(token_path, "azure_key.txt"), "r") as azure_key_file:
+                self.azure_key = azure_key_file.read()
+            with open(os.path.join(token_path, "azure_endpoint.txt"), "r") as azure_endpoint_file:
+                self.azure_endpoint_url = azure_endpoint_file.read()
+
+        if os.path.exists(os.path.join(token_path, "gemini_key.txt")):
+            with open(os.path.join(token_path, "gemini_key.txt"), "r") as genai_key_file:
+                self.genai_key = genai_key_file.read()
+
+        if os.path.exists(os.path.join(token_path, "claude_key.txt")):
+            with open(os.path.join(token_path, "claude_key.txt"), "r") as claude_key_file:
+                self.claude_key = claude_key_file.read()
+
+        if os.path.exists(os.path.join(token_path, "deepseek_key.txt")):
+            with open(os.path.join(token_path, "deepseek_key.txt"), "r") as deepseek_key_file:
+                self.deepseek_key = deepseek_key_file.read()
+
+        if os.path.exists(os.path.join(token_path, "lambda_key.txt")):
+            with open(os.path.join(token_path, "lambda_key.txt"), "r") as lambda_key_file:
+                self.lambda_key = lambda_key_file.read()
 
 
     def query_llm(self, question, all_options, context=None, instructions=None, verbose=False):
+        context = None
         assert context is None or isinstance(context, list), "Context must be a list of dictionaries"
         if instructions is None:
-            if context is None:
-                instructions = "Think step by step. At the end, give your final answer (a), (b), (c), or (d) after the special token <final_answer>."
-            else:
-                instructions = ("Think step by step and rely on your memory about the user to give the response. "
-                                "At the end, give your final answer (a), (b), (c), or (d) after the special token <final_answer>.")
+            # if context is None:
+            instructions = "Find the most appropriate model response and give your final answer (a), (b), (c), or (d) after the special token <final_answer>."
+            # instructions = ("Relying on earlier user-model interactions, find the most appropriate model response. "
+            #                 "Give your final answer (a), (b), (c), or (d) at the end after the special token <final_answer>. Candidate answers:")
+            # else:
+            #     instructions = ("Please rely on your memory about the user to give the response. "
+            #                     "Give your final answer (a), (b), (c), or (d) at the end after the special token <final_answer>.")
 
         if context:
-            messages = context + [{"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},]
+            messages = context + [{"role": "user", "content": question + '\n\n' + instructions + '\n\n' + all_options},]
         else:
-            messages = [{"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},]
+            messages = [{"role": "user", "content": question + '\n\n' + instructions + '\n\n' + all_options},]
 
         # Call OpenAI API for GPT models by default
         if (re.search(r'gpt', self.args['models']['llm_model']) is not None or
@@ -177,19 +191,23 @@ class Evaluation:
 
 
     def extract_answer(self, predicted_answer, correct_answer):
-        # Parse special token
+        # Clean special tags
         predicted_answer = predicted_answer.strip()
         if "<final_answer>" in predicted_answer:
             predicted_answer = predicted_answer.split("<final_answer>")[-1].strip()
+        if predicted_answer.endswith("</final_answer>"):
+            predicted_answer = predicted_answer[:-len("</final_answer>")].strip()
 
-        # Extract all option patterns (e.g., (a), (b), etc.) from the answer
-        option_pattern = r'\(([a-zA-Z])\)'
+        # Extract all option letters (with or without parentheses)
+        option_pattern = r'\(?([a-zA-Z])\)?'
         predicted_options = re.findall(option_pattern, predicted_answer)
         predicted_options_lower = list(map(str.lower, predicted_options))
 
-        # Check for the correct and incorrect options
-        correct_letter = re.search(option_pattern, correct_answer).group(1)
+        # Find correct answer letter
+        correct_letter = re.search(r'\(?([a-zA-Z])\)?', correct_answer).group(1)
         correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
+
+        # Create a list of incorrect options
         incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
         incorrect_letters_mentioned = any(
             letter.lower() in predicted_options_lower for letter in incorrect_letters
@@ -289,6 +307,7 @@ def generate_shared_context_id(shared_context):
 
 
 def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
+    os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
 
@@ -341,6 +360,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer, llm=None, verbose=False):
     n_variants = cmd_args.n_variants
     n_blocks = [cmd_args.n_blocks]
     benchmark_size = '128k' if cmd_args.n_blocks == 20 else ('1M' if cmd_args.n_blocks == 60 else str(cmd_args.n_blocks) + 'blocks')
+    checked_questions = {}
 
     if cmd_args.clean:
     #     user_input = input("The 'clean' flag is set. Do you really want remove existing questions.csv and contexts.json? (y/n): ").strip().lower()
@@ -391,7 +411,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer, llm=None, verbose=False):
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
-            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm)
+            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm, checked_questions)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
@@ -604,8 +624,8 @@ if __name__ == "__main__":
     torch.manual_seed(0)
     world_size = torch.cuda.device_count()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if world_size > 1:
-        assert world_size == 1
+    # if world_size > 1:
+    #     assert world_size == 1
     print('device', device)
     print('torch.distributed.is_available', torch.distributed.is_available())
     print('Using %d GPUs' % (torch.cuda.device_count()))
@@ -618,6 +638,7 @@ if __name__ == "__main__":
                                                                     'Llama-3.3-70B-Instruct, Meta-Llama-3.1-70B-Instruct, Meta-Llama-3.1-8B-Instruct, '
                                                                     'claude-3-7-sonnet-20250219, DeepSeek-R1, DeepSeek-v3')
     parser.add_argument('--step', type=str, default='prepare', help='Step to run: prepare or evaluate')
+    parser.add_argument('--token_path', type=str, default='api_tokens', help='Path to the API tokens')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
@@ -640,7 +661,7 @@ if __name__ == "__main__":
         from google.genai.types import Part, UserContent, ModelContent
 
     base_dir = "./data/output"
-    llm = Evaluation(args)
+    llm = Evaluation(args, cmd_args)
     tokenizer = tiktoken.encoding_for_model("gpt-4o")
     sentence_bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 
