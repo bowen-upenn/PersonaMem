@@ -296,7 +296,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
         if os.stat(csv_file_path).st_size == 0:
             writer.writerow(["persona_id", "question_id", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
                              "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
-                             "question", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
+                             "user_question_or_message", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
 
         percentage = f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%"
         writer.writerow([
@@ -532,7 +532,7 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
             distance_to_ref_in_tokens = row_data["distance_to_ref_in_tokens"]
             num_irrelevant_tokens = row_data["num_irrelevant_tokens"]
             distance_to_ref_proportion_in_context = row_data["distance_to_ref_proportion_in_context"]
-            question = row_data["question"]
+            question = row_data["user_question_or_message"]
             correct_answer = row_data["correct_answer"]
             all_options = row_data["all_options"]
             shared_context_id = row_data["shared_context_id"]
@@ -557,13 +557,14 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
 
                 # Write the header if the file is empty
                 if os.stat(result_path).st_size == 0:
-                    writer.writerow(["score", "persona_id", "question_id", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
+                    writer.writerow(["score", "persona_id", "question_id", "user_question_or_message", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
                                      "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
                                      "model_response", "len_of_model_response", "predicted_answer", "correct_answer"])
                 writer.writerow([
                     score,
                     persona_id,
                     question_id,
+                    question,
                     question_type,
                     topic,
                     stereotypical,
