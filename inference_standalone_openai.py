@@ -275,14 +275,12 @@ if __name__ == "__main__":
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Command line arguments')
 
-    """ General arguments """
     parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from o3-mini, o1, o1-mini, gpt-4o, gpt-4o-mini')
     parser.add_argument('--step', type=str, default='prepare', help='Step to run: prepare or evaluate')
     parser.add_argument('--token_path', type=str, default='api_tokens', help='Path to the API tokens')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='Set verbose to True')
 
-    """ Arguments for running the evaluation step """
     parser.add_argument('--question_path', type=str, default='data/questions_128k.csv', help='Path to the questions CSV file')
     parser.add_argument('--context_path', type=str, default='data/shared_contexts_128k.jsonl', help='Path to the contexts JSONL file')
     parser.add_argument('--result_path', type=str, default='data/eval_results.csv', help='Path to save the results CSV file')
@@ -290,7 +288,6 @@ if __name__ == "__main__":
     cmd_args = parser.parse_args()
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
 
-    base_dir = "./data/output"
     llm = Evaluation(args, cmd_args)
 
     if cmd_args.step == 'evaluate':
