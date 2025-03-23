@@ -276,10 +276,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command line arguments')
 
     """ General arguments """
-    parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from o3-mini, o1, o1-mini, gpt-4o, gpt-4o-mini, '
-                                                                    'Llama-3.3-70B-Instruct, Meta-Llama-3.1-70B-Instruct, Meta-Llama-3.1-8B-Instruct, '
-                                                                    'claude-3-7-sonnet-20250219, DeepSeek-R1, DeepSeek-v3,'
-                                                                    'gemini-2.0-flash, gemini-1.5-flash, gemini-2.0-flash-lite')
+    parser.add_argument('--model', type=str, default="gpt-4o", help='Set LLM model. Choose from o3-mini, o1, o1-mini, gpt-4o, gpt-4o-mini')
     parser.add_argument('--step', type=str, default='prepare', help='Step to run: prepare or evaluate')
     parser.add_argument('--token_path', type=str, default='api_tokens', help='Path to the API tokens')
     parser.add_argument('--clean', dest='clean', action='store_true', help='Remove existing csv and json files and start clean')
