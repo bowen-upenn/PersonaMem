@@ -705,7 +705,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
         token_count = count_tokens(item['content'], tokenizer=tokenizer, verbose=False)
         prefix_tokens.append(prefix_tokens[-1] + token_count)
 
-    for i, block in enumerate(sorted_processed_blocks):
+    for i, block in tqdm(enumerate(sorted_processed_blocks), total=total_blocks):
         # Only keep Q&As in the last block, i.e., the current session during conversation
         # if i + 1 < total_blocks:
         #     continue
@@ -714,7 +714,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
 
         # we assign distance to all qa in the current block
         qa_count = {}
-        for idx, q in tqdm(enumerate(block.get('qa', [])), total=len(block.get('qa', []))):
+        for idx, q in enumerate(block.get('qa', [])):
             if not q:
                 continue
             curr_block_topic = block.get('topic', [])
