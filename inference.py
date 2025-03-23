@@ -60,7 +60,6 @@ class Evaluation:
 
 
     def query_llm(self, question, all_options, context=None, instructions=None, verbose=False):
-        context = None
         assert context is None or isinstance(context, list), "Context must be a list of dictionaries"
         if instructions is None:
             # if context is None:
