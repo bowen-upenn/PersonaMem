@@ -27,8 +27,8 @@ def encode_contexts(PATH):
         dict_context_emb[key] = emb_model.encode(contexts[key])
 
     # Save embeddings as .npz
-    np.savez_compressed(f"{PATH}/context_embs.npz", **dict_context_emb)
-    print(f"Context embeddings saved to {PATH}/context_embs.npz")
+    np.savez_compressed(f"{PATH}context_embs.npz", **dict_context_emb)
+    print(f"Context embeddings saved to {PATH}context_embs.npz")
 
     # To use:
     # loaded_data = np.load(f"{PATH}/context_embs.npz", allow_pickle=True)
