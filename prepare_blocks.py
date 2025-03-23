@@ -373,7 +373,7 @@ def load_n_conversation_blocks(idx_persona, n_blocks, base_dir="./data/output", 
     return final_blocks, persona
 
 
-def topological_sort(processed_blocks, tokenizer, num_variants=1, verbose=False):
+def topological_sort(processed_blocks, tokenizer=None, num_variants=1, verbose=False):
     def extract_topic(file_name):
         # For example, for "conversation_travelPlanning_persona0_sample0.json",
         # return "travelPlanning_persona0"
@@ -532,7 +532,7 @@ def topological_sort(processed_blocks, tokenizer, num_variants=1, verbose=False)
         flattened_all_conversations = [utter for block in merged_list for utter in block['conversation']]
         total_num_tokens = 0
         for item in flattened_all_conversations:
-            total_num_tokens += count_tokens(item['content'], tokenizer, verbose=False)
+            total_num_tokens += count_tokens(item['content'], tokenizer=tokenizer, verbose=False)
         print('total_num_tokens', total_num_tokens)
 
         # If token count exceeds 128000, remove sessions from one random topic (in other_sessions) until below threshold.
@@ -548,7 +548,7 @@ def topological_sort(processed_blocks, tokenizer, num_variants=1, verbose=False)
             merged_list = [block for block in merged_list if extract_topic(block['file_name']) != selected_topic]
             # Recompute token count.
             flattened_all_conversations = [utter for block in merged_list for utter in block['conversation']]
-            total_num_tokens = sum(count_tokens(item['content'], tokenizer, verbose=False) for item in flattened_all_conversations)
+            total_num_tokens = sum(count_tokens(item['content'], tokenizer=tokenizer, verbose=False) for item in flattened_all_conversations)
             print('Recalculated total_num_tokens', total_num_tokens)
 
         if verbose:
@@ -588,7 +588,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
     all_conversations = []
     num_irrelevant_tokens = 0
     irrelevant_weight = [0.7, 0.2, 0.1] # for medium
-    irrelevant_num = 20 # for large
+    irrelevant_num = 18 # for large
     num_try = 10
 
     for try_idx in range(num_try):
@@ -615,7 +615,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                         curr_conversations.extend(session[key])
                 # Remove all items whose content is None from curr_conversations
                 curr_conversations = [item for item in curr_conversations if item['content'] is not None]
-                num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
+                num_irrelevant_tokens += count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer=tokenizer, verbose=False)
 
             if which_format == 'string':
                 curr_conversations.append(block["conversation"])
@@ -627,10 +627,10 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
         total_num_tokens = 0
         for item in flattened_all_conversations:
             # Count tokens in each block's content.
-            total_num_tokens += count_tokens(item['content'], tokenizer, verbose=False)
+            total_num_tokens += count_tokens(item['content'], tokenizer=tokenizer, verbose=False)
         print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
-        token_limit = 128000 if len(sorted_processed_blocks) < 30 else 1000000
+        token_limit = 128000 if len(sorted_processed_blocks) < 30 else 0.96 * 1000000
         if token_limit > total_num_tokens:
             break
         elif try_idx + 1 == num_try:
@@ -665,12 +665,19 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
     return all_conversations, num_irrelevant_tokens
 
 
-def count_tokens(all_strings, tokenizer, verbose=False):
-    # all_strings = "\n\n".join(all_strings)
+def count_tokens(all_strings, tokenizer=None, verbose=False):
     tokens = tokenizer.encode(all_strings)
     if verbose:
         print(f"{utils.Colors.OKGREEN}Number of tokens: {len(tokens)} on gpt-4o tokenizer{utils.Colors.ENDC}")
     return len(tokens)
+    # else:
+    #     tokens = model.models.count_tokens(
+    #         model='gemini-2.0-flash-lite-001',
+    #         contents=all_strings,
+    #     )
+    #     if verbose:
+    #         print(f"{utils.Colors.OKGREEN}Number of tokens: {tokens.total_tokens} on gemini-2.0-flash tokenizer{utils.Colors.ENDC}")
+    #     return tokens.total_tokens
 
 
 def extract_qa(base_dir, topic, file_name, time_period):
@@ -681,7 +688,7 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
-def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm=None, checked_questions=None):
+def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, num_irrelevant_tokens, tokenizer=None, llm=None, checked_questions=None):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
     This function computes the distance of each question from the end to its corresponding conversation block.
@@ -695,7 +702,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
     prefix_tokens = [0]
     for item in flattened_all_conversations:
         # Count tokens in each block's content.
-        token_count = count_tokens(item['content'], tokenizer, verbose=False)
+        token_count = count_tokens(item['content'], tokenizer=tokenizer, verbose=False)
         prefix_tokens.append(prefix_tokens[-1] + token_count)
 
     for i, block in enumerate(sorted_processed_blocks):
@@ -746,42 +753,6 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             if i + 1 < total_blocks and where != 'END OF TEXT':
                 continue
 
-            """
-            Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
-            """
-            if llm:
-                type = q['Type']
-                question = q['Question']
-                if type != "tracking_the_full_sequence_of_preference_updates" and not question.startswith('User:'):
-                    # Combine correct answer with incorrect answers
-                    incorrect_answers = random.sample(q["Incorrect_Answers"], min(3, len(q["Incorrect_Answers"])))
-                    options = [q["Correct_Answer"]] + incorrect_answers
-                    random.shuffle(options)
-                    correct_index = options.index(q["Correct_Answer"])
-                    correct_answer = '(' + chr(97 + correct_index) + ')'
-                    all_options = str([f"({chr(97 + i)}) {option}" for i, option in enumerate(options)])
-
-                    if question not in checked_questions.keys():
-                        remove = False
-                        for _ in range(3):
-                            try:
-                                model_response = llm.query_llm(question, all_options, context=None, verbose=False)
-                            except:
-                                continue
-                            score, predicted_answer = llm.extract_answer(model_response, correct_answer)
-                            # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
-                            if score:
-                                remove = True
-                                break
-                        if remove:
-                            checked_questions[question] = False
-                            continue
-                        else:
-                            checked_questions[question] = True
-                    else:
-                        if checked_questions[question] == False:
-                            continue
-
             if where == 'END OF TEXT':
                 block_num_q, start_index_q = total_blocks, len(flattened_all_conversations) - 1
             else:
@@ -827,7 +798,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             # if len(flattened_all_conversations) > 5000:
             #     print(flattened_all_conversations)
 
-            num_tokens_question = count_tokens(q['Question'], tokenizer, verbose=False)
+            num_tokens_question = count_tokens(q['Question'], tokenizer=tokenizer, verbose=False)
             q['distance_blocks'] = block_num_q - block_num_ref
             q['distance_tokens'] = num_tokens_q - num_tokens_ref + num_tokens_question
             q['context_length_in_tokens'] = num_tokens_q + num_tokens_question
@@ -837,10 +808,50 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conv
             q['curr_context'] = curr_context
             q['num_irrelevant_tokens'] = num_irrelevant_tokens
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
+
+            if q['distance_blocks'] <= 0 or q['distance_tokens'] <= 0:
+                continue
+
+            """
+            Filter out Q&As that can be answered correctly without seeing the context, which indicate questions that might have leaked the answer
+            """
+            if llm:
+                type = q['Type']
+                question = q['Question']
+                if type != "tracking_the_full_sequence_of_preference_updates" and not question.startswith('User:'):
+                    # Combine correct answer with incorrect answers
+                    incorrect_answers = random.sample(q["Incorrect_Answers"], min(3, len(q["Incorrect_Answers"])))
+                    options = [q["Correct_Answer"]] + incorrect_answers
+                    random.shuffle(options)
+                    correct_index = options.index(q["Correct_Answer"])
+                    correct_answer = '(' + chr(97 + correct_index) + ')'
+                    all_options = str([f"({chr(97 + i)}) {option}" for i, option in enumerate(options)])
+
+                    if question not in checked_questions.keys():
+                        remove = False
+                        for _ in range(3):
+                            try:
+                                model_response = llm.query_llm(question, all_options, context=None, verbose=False)
+                            except:
+                                continue
+                            score, predicted_answer = llm.extract_answer(model_response, correct_answer)
+                            # print('model_response', model_response, 'predicted_answer', predicted_answer, 'correct_answer', correct_answer, 'score', score)
+                            if score:
+                                remove = True
+                                break
+                        if remove:
+                            checked_questions[question] = False
+                            continue
+                        else:
+                            checked_questions[question] = True
+                    else:
+                        if checked_questions[question] == False:
+                            continue
+
             all_qa.append(q)
 
-        if llm:
-            print('qa_count', qa_count)
+        # if llm:
+        #     print('qa_count', qa_count)
 
     return all_qa, flattened_all_conversations
 

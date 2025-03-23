@@ -10,7 +10,6 @@ import re
 import torch
 from datetime import datetime
 from tqdm import tqdm
-from sentence_transformers import SentenceTransformer, util
 import hashlib
 import csv
 import uuid
@@ -33,136 +32,85 @@ class Evaluation:
         # Load API keys
         token_path = cmd_args.token_path
 
-        with open(os.path.join(token_path, "openai_key.txt"), "r") as api_key_file:
-            self.openai_key = api_key_file.read()
+        if re.search(r'gpt', self.args['models']['llm_model']) is not None or 'o' in self.args['models']['llm_model']:
+            with open(os.path.join(token_path, "openai_key.txt"), "r") as api_key_file:
+                self.openai_key = api_key_file.read()
+            self.client = OpenAI(api_key=self.openai_key)
 
-        if os.path.exists(os.path.join(token_path, "azure_key.txt")):
+        elif re.search(r'Llama-3.3-70B-Instruct', self.args['models']['llm_model']) is not None:
             with open(os.path.join(token_path, "azure_key.txt"), "r") as azure_key_file:
                 self.azure_key = azure_key_file.read()
             with open(os.path.join(token_path, "azure_endpoint.txt"), "r") as azure_endpoint_file:
                 self.azure_endpoint_url = azure_endpoint_file.read()
+            self.client = ChatCompletionsClient(
+                endpoint=self.azure_endpoint_url,
+                credential=AzureKeyCredential(self.azure_key)
+            )
 
-        if os.path.exists(os.path.join(token_path, "gemini_key.txt")):
+        elif re.search(r'gemini', self.args['models']['llm_model']) is not None:
             with open(os.path.join(token_path, "gemini_key.txt"), "r") as genai_key_file:
                 self.genai_key = genai_key_file.read()
+            self.client = genai.Client(api_key=self.genai_key)
 
-        if os.path.exists(os.path.join(token_path, "claude_key.txt")):
+        elif re.search(r'claude', self.args['models']['llm_model']) is not None:
             with open(os.path.join(token_path, "claude_key.txt"), "r") as claude_key_file:
                 self.claude_key = claude_key_file.read()
+            self.client = anthropic.Client(api_key=self.claude_key)
 
-        if os.path.exists(os.path.join(token_path, "deepseek_key.txt")):
-            with open(os.path.join(token_path, "deepseek_key.txt"), "r") as deepseek_key_file:
-                self.deepseek_key = deepseek_key_file.read()
-
-        if os.path.exists(os.path.join(token_path, "lambda_key.txt")):
+        else:
             with open(os.path.join(token_path, "lambda_key.txt"), "r") as lambda_key_file:
                 self.lambda_key = lambda_key_file.read()
+            lambda_url = "https://api.lambdalabs.com/v1"
+            self.client = OpenAI(api_key=self.lambda_key, base_url=lambda_url)
 
 
     def query_llm(self, question, all_options, context=None, instructions=None, verbose=False):
         assert context is None or isinstance(context, list), "Context must be a list of dictionaries"
         if instructions is None:
-            # if context is None:
             instructions = "Find the most appropriate model response and give your final answer (a), (b), (c), or (d) after the special token <final_answer>."
-            # instructions = ("Relying on earlier user-model interactions, find the most appropriate model response. "
-            #                 "Give your final answer (a), (b), (c), or (d) at the end after the special token <final_answer>. Candidate answers:")
-            # else:
-            #     instructions = ("Please rely on your memory about the user to give the response. "
-            #                     "Give your final answer (a), (b), (c), or (d) at the end after the special token <final_answer>.")
-
         if context:
             messages = context + [{"role": "user", "content": question + '\n\n' + instructions + '\n\n' + all_options},]
         else:
             messages = [{"role": "user", "content": question + '\n\n' + instructions + '\n\n' + all_options},]
 
         # Call OpenAI API for GPT models by default
-        if (re.search(r'gpt', self.args['models']['llm_model']) is not None or
-                re.search(r'o1', self.args['models']['llm_model']) is not None or re.search(r'o3', self.args['models']['llm_model']) is not None):
-
-            ####################################################
-            """ 
-            Edit this piece of code if you need to modify the OpenAI API call. 
-            """
-            client = OpenAI(api_key=self.openai_key)
-            if (re.search(r'o3', self.args['models']['llm_model']) is not None or
-                    re.search(r'o1', self.args['models']['llm_model']) is not None):
+        if re.search(r'gpt', self.args['models']['llm_model']) is not None or 'o' in self.args['models']['llm_model']:
+            if 'o' in self.args['models']['llm_model']:
                 messages = convert_role_system_to_user(messages)
 
-            # print(f"messages: {messages}")
-            response = client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model=self.args['models']['llm_model'],
                 messages=messages,
             )
             response = response.choices[0].message.content
             if verbose:
                 print("model response: ", response)
-            ####################################################
 
         # Call Google Gemini API for Gemini models
-        # Try the current version to see if the messages can be a list
         elif re.search(r'gemini', self.args['models']['llm_model']) is not None:
-            client = genai.Client(api_key=self.genai_key)
             messages = openai_to_gemini_history(messages)
-            response = client.models.generate_content(
+            response = self.client.models.generate_content(
                 model=self.args['models']['llm_model'], contents=messages
             )
             response = response.text
 
         # Call Claude API for Claude models
         elif re.search(r'claude', self.args['models']['llm_model']) is not None:
-            client = anthropic.Client(api_key=self.claude_key)
             messages = [
                 {"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},
             ]
-            # print("\nmessages: ", messages)
-            response = client.messages.create(
+            response = self.client.messages.create(
                 model=self.args['models']['llm_model'],
                 max_tokens=1024,
                 messages=messages,
             )
             response = response.content[0].text
 
-        # Call DeepSeek API for DeepSeek models
-        elif re.search(r'deepseek', self.args['models']['llm_model']) is not None:
-            # client = OpenAI(api_key=self.deepseek_key, base_url="https://api.deepseek.com")
-            # messages = convert_role_system_to_user(messages)
-            # response = client.chat.completions.create(
-            #     model=self.args['models']['llm_model'],
-            #     messages=messages,
-            #     stream=False
-            # )
-            #
-            # response = response.choices[0].message.content
-            lambda_url = "https://api.lambdalabs.com/v1"
-
-            client = OpenAI(api_key=self.lambda_key, base_url=lambda_url)
-            model = self.args['models']['llm_model']
-
-            chat_completion = client.chat.completions.create(
-                model=model,
-                messages=messages,
-            )
-            response = chat_completion.choices[0].message.content
-
         # Call Microsoft Azure API for Llama-3.3-70B-Instruct
         elif re.search(r'Llama-3.3-70B-Instruct', self.args['models']['llm_model']) is not None:
             # For Serverless API or Managed Compute endpoints using Microsoft Azure
-            client = ChatCompletionsClient(
-                endpoint=self.azure_endpoint_url,
-                credential=AzureKeyCredential(self.azure_key)
-            )
             max_tokens = 5012 if self.args['models']['llm_model'] == "deepseek-r1" else 4096  # Adjust max tokens for meta-llama-3-70b-instruct
-            # tokenizer = transformers.AutoTokenizer.from_pretrained("deepseek_v3_tokenizer/", trust_remote_code=True)            # len = count_tokens(" ".join([item['content'] for item in curr_conversations]), tokenizer, verbose=False)
-            # len = count_tokens(" ".join([item['content'] for item in messages]), tokenizer, verbose=False)
-            # print(f"Number of tokens: {len} on deepseek-r1 tokenizer")
-            # messages = context[30:] + [
-            #     {"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},
-            # ]
-            response = client.complete(
-                # messages=[
-                #     SystemMessage(content="You are a helpful assistant."),
-                #     UserMessage(content=messages)
-                # ],
+            response = self.client.complete(
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.8,
@@ -175,11 +123,7 @@ class Evaluation:
 
         # Call lambda API for other models
         else:
-            lambda_url = "https://api.lambdalabs.com/v1"
-
-            client = OpenAI(api_key=self.lambda_key, base_url=lambda_url)
             model = self.args['models']['llm_model']
-
             chat_completion = client.chat.completions.create(
                 model=model,
                 messages=messages,
@@ -352,13 +296,18 @@ def read_jsonl_file(json_file_path="data/contexts.jsonl"):
     return data
 
 
-def prepare_benchmark_data(args, cmd_args, tokenizer, llm=None, verbose=False):
+def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=False):
     idx_persona = cmd_args.idx_persona
     which_format = cmd_args.format
     verbose = cmd_args.verbose
     n_variants = cmd_args.n_variants
     n_blocks = [cmd_args.n_blocks]
-    benchmark_size = '128k' if cmd_args.n_blocks == 20 else ('1M' if cmd_args.n_blocks == 60 else str(cmd_args.n_blocks) + 'blocks')
+    if cmd_args.n_blocks == 20:
+        benchmark_size = '128k'
+    elif cmd_args.n_blocks == 60:
+        benchmark_size = '1M'
+    else:
+        benchmark_size = str(cmd_args.n_blocks) + 'blocks'
     checked_questions = {}
 
     if cmd_args.clean:
@@ -410,7 +359,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer, llm=None, verbose=False):
         for sorted_processed_blocks in variants:
             # Concatenate all conversation blocks
             all_conversations, num_irrelevant_tokens = concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irrelevant_contexts, persona, verbose)
-            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, tokenizer, all_conversations, num_irrelevant_tokens, llm, checked_questions)
+            all_qa, all_conversations = add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, num_irrelevant_tokens, tokenizer, llm, checked_questions)
 
             total_num_tokens = count_tokens(" ".join([item['content'] for item in all_conversations if 'content' in item]), tokenizer, verbose=False)
             if verbose:
@@ -558,7 +507,8 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
             end_index_in_shared_context = row_data["end_index_in_shared_context"]
 
             # Prepare the context for the LLM query
-            context= context[:int(end_index_in_shared_context)]  # Include up to the end index
+            # print("context_length_in_tokens", context_length_in_tokens, "context_length_in_letters", context_length_in_letters)
+            context = context[:int(end_index_in_shared_context)]  # Include up to the end index
 
             # Send the query to the LLM
             model_response = llm.query_llm(question, all_options, context)
@@ -656,20 +606,21 @@ if __name__ == "__main__":
 
     cmd_args = parser.parse_args()
     args['models']['llm_model'] = cmd_args.model if cmd_args.model is not None else args['models']['llm_model']
+
     if re.search(r'gemini', cmd_args.model) is not None:
-        from google import genai    # Gemini has conflicting requirements of the environment with OpenAI
+        from google import genai  # Gemini has conflicting requirements of the environment with OpenAI
         from google.genai.types import Part, UserContent, ModelContent
 
     base_dir = "./data/output"
     llm = Evaluation(args, cmd_args)
     tokenizer = tiktoken.encoding_for_model("gpt-4o")
-    sentence_bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 
     if cmd_args.step == 'prepare':
         if cmd_args.filter_questions:
-            prepare_benchmark_data(args, cmd_args, tokenizer, llm, verbose=cmd_args.verbose)
+            prepare_benchmark_data(args, cmd_args, tokenizer=tokenizer, llm=llm, verbose=cmd_args.verbose)
         else:
-            prepare_benchmark_data(args, cmd_args, tokenizer, verbose=cmd_args.verbose)
+            prepare_benchmark_data(args, cmd_args, tokenizer=tokenizer, verbose=cmd_args.verbose)
+
     elif cmd_args.step == 'evaluate':
         run_evaluation(args, cmd_args, llm, verbose=cmd_args.verbose)
     else:
