@@ -124,7 +124,7 @@ class Evaluation:
         # Call lambda API for other models
         else:
             model = self.args['models']['llm_model']
-            chat_completion = client.chat.completions.create(
+            chat_completion = self.client.chat.completions.create(
                 model=model,
                 messages=messages,
             )
