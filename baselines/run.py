@@ -50,8 +50,10 @@ def evaluator(
         target_options = row[1]["all_options"]
         target_options = "\n".join(target_options)
         if context_mode != "none":
-            target_context = contexts[row[1]["question_id"]]
-            target_context = [x["content"] for x in target_context]
+            context_id = row[1]["shared_context_id"]
+            end_index = row[1]["end_index_in_shared_context"]
+            target_context = contexts[context_id][0:end_index]
+            target_context = [str(x) for x in target_context] # previously x['context'] only, but now we include 'role' and 'context' together
 
         session = chatSession(model=openai_model, openai_api_key=openai_api_key)
 
