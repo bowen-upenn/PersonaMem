@@ -61,3 +61,16 @@ class chatSession:
 
     def clear_history(self):
         self.msg_history = []
+
+
+def split_on_system(msg_history_all):
+    msg_histories = []
+    msg_history_curr = []
+    for turn in msg_history_all:
+        if turn["role"] == "system":
+            msg_histories.append(msg_history_curr)
+            msg_history_curr = []
+        msg_history_curr.append(turn)
+    msg_histories.append(msg_history_curr)
+    msg_histories = msg_histories[1:]  # remove first empty list
+    return msg_histories

@@ -1,23 +1,27 @@
+import json
 import os
 import sys
 
 import numpy as np
 import pandas as pd
-from chat_lib import chatSession
-from data_loader import data_loader
+from chat_lib import chatSession, split_on_system
+from data_loader import chunks, data_loader
 from FlagEmbedding import BGEM3FlagModel
 from mem0_lib import build_config
 from tqdm import tqdm
 
 from mem0 import Memory
 
+MEM0_CHUNK_SIZE = 64
+USER_ID = "123"
 cache = {}
 
 
 def reset_memory(memory):
     if memory is None:
         return
-    memory.reset()
+    if len(memory.get_all(USER_ID)["results"]) > 0:
+        memory.reset()
 
 
 def encode_with_cache(model, texts):
@@ -38,22 +42,19 @@ def evaluator(
     choosen_indices = []
 
     memory = None
-    if context_mode == "mem0":
-        mem0_config = build_config(openai_model, openai_api_key)
-
-        memory = Memory.from_config(mem0_config)
 
     for row in tqdm(questions.iterrows(), total=questions.shape[0]):
-        reset_memory(memory)  # reset memory for each question
+        print("processing row", row[0])
 
-        target_question = row[1]["question"]
+        target_question = row[1].get("question") or row[1].get("user_question_or_message")
         target_options = row[1]["all_options"]
         target_options = "\n".join(target_options)
         if context_mode != "none":
             context_id = row[1]["shared_context_id"]
             end_index = row[1]["end_index_in_shared_context"]
             target_context = contexts[context_id][0:end_index]
-            target_context = [str(x) for x in target_context] # previously x['context'] only, but now we include 'role' and 'context' together
+            target_context = [str(x) for x in target_context]
+            # previously x['context'] only, but now we include 'role' and 'context' together
 
         session = chatSession(model=openai_model, openai_api_key=openai_api_key)
 
@@ -81,21 +82,28 @@ def evaluator(
                 session.add_message(role, context)
                 role = "assistant" if role == "user" else "user"
         elif context_mode == "mem0":
-            role = "user"
-            for context in target_context:
-                session.add_message(role, context)
-                role = "assistant" if role == "user" else "user"
-            msg_history = session.msg_history
-            memory.add(msg_history, user_id="123")  # only retrieves from user history
-            mems_relevant = memory.search(target_question, user_id="123", limit=top_k)["results"]
+            mem0_config = build_config(
+                openai_model,
+                openai_api_key,
+                collection_name=f"Question{row[0]}",
+                vector_store="chroma",
+            )
+
+            memory = Memory.from_config(mem0_config)
+
+            # TODO: data loader actually does json.dumps, so could refactor to avoid extra work
+            msg_history_all = [json.loads(turn) for turn in target_context]
+            msg_histories = split_on_system(msg_history_all)
+            for msg_history in tqdm(msg_histories, desc="Adding each session to memory"):
+                memory.add(msg_history, user_id=USER_ID)  # only retrieves from user history
+
+            mems_relevant = memory.search(target_question, user_id=USER_ID, limit=top_k)["results"]
             mems_flat = "\n".join([m["memory"] for m in mems_relevant])
             prompt = f"# User facts: \n{mems_flat}\n\n"
             top_k_idx = mems_flat
-            session.clear_history()
 
         prompt += f"# Question: {target_question}\n\n"
         prompt += f"# Choices: \n{target_options}"
-
         session.add_message("user", prompt)
         response = session.get_message()
 
@@ -117,6 +125,9 @@ if __name__ == "__main__":
     top_k = sys.argv[1]
     context_mode = sys.argv[2]
     gpt_model = sys.argv[3]
+    if len(sys.argv) > 5:
+        idx_shard = int(sys.argv[4]) or 0
+        num_shards = int(sys.argv[5]) or 1
 
     PATH_questions = "data/questions.csv"
     if not os.path.exists(PATH_questions):
@@ -154,9 +165,20 @@ if __name__ == "__main__":
     if context_mode == "rag":
         emb_model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
         print("Embedding Model loaded successfully")
+    elif context_mode == "mem0":
+        print(
+            "You may see some errors message from mem0, since it's using prompt engineering and JSONs are not always valid. You can probably ignore them."
+        )
 
     questions, contexts = data_loader(PATH_questions, PATH_contexts, fix_json=False)
     print("Data loaded successfully")
+    if num_shards > 1:
+        dataset_rows_sharded = list(chunks(questions, num_shards))
+        num_qs_total = len(questions)
+        questions = dataset_rows_sharded[idx_shard]
+        print(
+            f"Processing shard {idx_shard + 1}/{num_shards} with {len(questions)}/{num_qs_total} questions"
+        )
 
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if openai_api_key is None:
@@ -179,5 +201,8 @@ if __name__ == "__main__":
     df_prediction["p"] = predictions
     df_prediction["r"] = choosen_indices
 
-    df_prediction.to_csv(f"data/pred_k={top_k}_r={context_mode}_m={gpt_model}.csv", index=False)
+    stem = f"pred_k={top_k}_r={context_mode}_m={gpt_model}"
+    if num_shards > 1:
+        stem += f"_{idx_shard + 1}-{num_shards}"
+    df_prediction.to_csv(f"data/{stem}.csv", index=False)
     print("Predictions saved successfully")
