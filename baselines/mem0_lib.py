@@ -1,12 +1,12 @@
 USER_DIR = "."
 
 
-def build_config(model_name, api_key, collection_name="test", vector_store="qdrant"):
+def build_config(model_name, api_key, collection_name="test", vector_store="qdrant", suffix=""):
     provider = "openai"
 
     config = {"version": "v1.1"}
 
-    path = f"{USER_DIR}/{vector_store}_db"
+    path = f"{USER_DIR}/{vector_store}_db{suffix}"
 
     vector_entry = {
         "provider": vector_store,

@@ -36,7 +36,14 @@ def encode_with_cache(model, texts):
 
 
 def evaluator(
-    questions, contexts, emb_model, openai_model, openai_api_key, top_k=5, context_mode="none"
+    questions,
+    contexts,
+    emb_model,
+    openai_model,
+    openai_api_key,
+    top_k=5,
+    context_mode="none",
+    idx_shard=-1,
 ):
     predictions = []
     choosen_indices = []
@@ -82,11 +89,13 @@ def evaluator(
                 session.add_message(role, context)
                 role = "assistant" if role == "user" else "user"
         elif context_mode == "mem0":
+            suffix = idx_shard if idx_shard != -1 else ""
             mem0_config = build_config(
                 openai_model,
                 openai_api_key,
                 collection_name=f"Question{row[0]}",
                 vector_store="chroma",
+                suffix=suffix,
             )
 
             memory = Memory.from_config(mem0_config)
@@ -125,9 +134,12 @@ if __name__ == "__main__":
     top_k = sys.argv[1]
     context_mode = sys.argv[2]
     gpt_model = sys.argv[3]
+
+    idx_shard = -1
+    num_shards = 1
     if len(sys.argv) > 5:
-        idx_shard = int(sys.argv[4]) or 0
-        num_shards = int(sys.argv[5]) or 1
+        idx_shard = int(sys.argv[4])
+        num_shards = int(sys.argv[5])
 
     PATH_questions = "data/questions.csv"
     if not os.path.exists(PATH_questions):
@@ -184,13 +196,13 @@ if __name__ == "__main__":
     if openai_api_key is None:
         raise ValueError("OPENAI_API_KEY environment variable is not set.")
     predictions, choosen_indices = evaluator(
-        questions, contexts, emb_model, gpt_model, openai_api_key, top_k, context_mode
+        questions, contexts, emb_model, gpt_model, openai_api_key, top_k, context_mode, idx_shard
     )
 
     # calculate accuracy
     correct_answer = questions["correct_answer"].apply(lambda x: x[1])
     predictions = [x.lower() for x in predictions]
-    list_correct = [correct_answer[i] == predictions[i] for i in range(len(predictions))]
+    list_correct = [correct_answer.iloc[i] == predictions[i] for i in range(len(predictions))]
     accuracy = sum(list_correct) / len(list_correct)
     print(f"Accuracy: {accuracy}")
 
