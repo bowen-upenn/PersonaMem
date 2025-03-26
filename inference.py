@@ -124,7 +124,7 @@ class Evaluation:
         # Call lambda API for other models
         else:
             model = self.args['models']['llm_model']
-            chat_completion = client.chat.completions.create(
+            chat_completion = self.client.chat.completions.create(
                 model=model,
                 messages=messages,
             )
@@ -306,6 +306,8 @@ def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=Fal
         benchmark_size = '128k'
     elif cmd_args.n_blocks == 60:
         benchmark_size = '1M'
+    elif cmd_args.n_blocks == 10:
+        benchmark_size = '32k'
     else:
         benchmark_size = str(cmd_args.n_blocks) + 'blocks'
     checked_questions = {}

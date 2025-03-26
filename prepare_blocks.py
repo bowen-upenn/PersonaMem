@@ -536,7 +536,12 @@ def topological_sort(processed_blocks, tokenizer=None, num_variants=1, verbose=F
         print('total_num_tokens', total_num_tokens)
 
         # If token count exceeds 128000, remove sessions from one random topic (in other_sessions) until below threshold.
-        token_limit = 0.9*128000 if len(processed_blocks) < 30 else 0.9*1000000     # use 0.9 to allow adding irrelevant contexts later on
+        if len(processed_blocks) > 30:
+            token_limit = 0.9*128000
+        elif len(processed_blocks) > 15:
+            token_limit = 0.9*128000
+        else:
+            token_limit = 0.9*32000
         while total_num_tokens > token_limit:
             # Get all topics from merged_list that are not the chosen topic.
             topics_in_other = list({extract_topic(block['file_name']) for block in merged_list if extract_topic(block['file_name']) != chosen_topic})
@@ -603,7 +608,7 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
                     curr_conversations.append({"role": "system", "content": "Current user persona: " + persona})
 
             # Insert irrelevant contexts
-            if all_irrelevant_contexts and which_format == 'api_dict':
+            if all_irrelevant_contexts and which_format == 'api_dict' and len(sorted_processed_blocks) > 15:
                 if len(sorted_processed_blocks) < 30:
                     num_random_blocks = random.choices([0, 1, 2], weights=irrelevant_weight)[0]
                 else:
@@ -630,7 +635,12 @@ def concatenate_blocks(sorted_processed_blocks, which_format, tokenizer, all_irr
             total_num_tokens += count_tokens(item['content'], tokenizer=tokenizer, verbose=False)
         print('Attempt', try_idx, '- total_num_tokens', total_num_tokens)
 
-        token_limit = 128000 if len(sorted_processed_blocks) < 30 else 0.96 * 1000000
+        if len(sorted_processed_blocks) > 30:
+            token_limit = 0.9 * 128000
+        elif len(sorted_processed_blocks) > 15:
+            token_limit = 0.9 * 128000
+        else:
+            token_limit = 0.9 * 32000
         if token_limit > total_num_tokens:
             break
         elif try_idx + 1 == num_try:

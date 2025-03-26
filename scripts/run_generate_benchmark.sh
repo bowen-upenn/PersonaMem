@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Limit memory usage to 32 GB (in KB)
+ulimit -v $((32 * 1024 * 1024))
+
 # Check if the user provided an argument
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 [medium|large]"
@@ -11,6 +14,8 @@ if [ "$1" == "medium" ]; then
     n_blocks=20
 elif [ "$1" == "large" ]; then
     n_blocks=60
+elif [ "$1" == "small" ]; then
+    n_blocks=10
 else
     echo "Invalid argument. Please specify 'medium' or 'large'."
     exit 1
