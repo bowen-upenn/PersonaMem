@@ -21,7 +21,7 @@ def read_jsonl(PATH):
     return dict_output
 
 
-def data_loader(PATH_questions, PATH_contexts, fix_json=False):
+def data_loader(PATH_questions = None, PATH_contexts = None, fix_json=False):
     # This function loads the questions and contexts from the given paths
     # If fix_json is True, it will fix the json file at PATH_contexts
     # by replacing the '}{\n' with a comma
@@ -54,15 +54,19 @@ def data_loader(PATH_questions, PATH_contexts, fix_json=False):
     #     # Write the modified content back to the file
     #     with open(PATH_contexts, 'w') as file:
     #         file.writelines(new_lines)
+    if PATH_questions is not None:
+        questions = pd.read_csv(PATH_questions)
+        questions["all_options"] = questions["all_options"].apply(lambda x: ast.literal_eval(x))
+    else:
+        questions = None
 
-    questions = pd.read_csv(PATH_questions)
-    contexts = {}
-    if PATH_contexts:
-        contexts = read_jsonl(PATH_contexts)
-
-    # preprocessing
-    questions["all_options"] = questions["all_options"].apply(lambda x: ast.literal_eval(x))
-
+    if PATH_contexts is not None:
+        contexts = {}
+        if PATH_contexts:
+            contexts = read_jsonl(PATH_contexts)
+    else:
+        contexts = None
+    
     return questions, contexts
 
 
