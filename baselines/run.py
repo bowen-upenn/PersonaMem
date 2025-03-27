@@ -6,11 +6,9 @@ import numpy as np
 import pandas as pd
 from chat_lib import chatSession, split_on_system
 from data_loader import chunks, data_loader
-from FlagEmbedding import BGEM3FlagModel
 from mem0_lib import build_config
 from tqdm import tqdm
-
-from mem0 import Memory
+import pickle
 
 MEM0_CHUNK_SIZE = 64
 USER_ID = "123"
@@ -38,7 +36,6 @@ def encode_with_cache(model, texts):
 def evaluator(
     questions,
     contexts,
-    emb_model,
     openai_model,
     openai_api_key,
     top_k=5,
@@ -50,8 +47,18 @@ def evaluator(
 
     memory = None
 
+    if context_mode == "rag":
+        with open("data/question_embs_list.pkl", "rb") as f:
+            question_embs = pickle.load(f)
+        loaded_data = np.load("data/context_embs.npz", allow_pickle=True)
+        context_embs = {key: loaded_data[key] for key in loaded_data.files}
+        del loaded_data
+    if context_mode == "mem0":
+        from mem0 import Memory
+
     for row in tqdm(questions.iterrows(), total=questions.shape[0]):
-        print("processing row", row[0])
+        row_idx = row[0]
+        # print("processing row", row_idx)
 
         target_question = row[1].get("question") or row[1].get("user_question_or_message")
         target_options = row[1]["all_options"]
@@ -66,13 +73,14 @@ def evaluator(
         session = chatSession(model=openai_model, openai_api_key=openai_api_key)
 
         if context_mode == "rag":
-            embeddings_1 = encode_with_cache(emb_model, target_question)
-            embeddings_2 = encode_with_cache(emb_model, target_context)
+            embeddings_1 = question_embs[row_idx]
+            embeddings_2 = context_embs[context_id][:end_index]
+            
             similarity = embeddings_1 @ embeddings_2.T
 
             # index of top k similar context
 
-            top_k_idx = np.argsort(similarity[0])[::-1][:top_k]
+            top_k_idx = np.argsort(similarity)[::-1][:top_k]
             retrieved_context = [target_context[i] for i in top_k_idx]
             retrieved_context = "\n".join(retrieved_context)
 
@@ -146,7 +154,7 @@ if __name__ == "__main__":
         print(f"Error: {PATH_questions} must exist")
         sys.exit(1)
 
-    PATH_contexts = "data/contexts.json" if not context_mode == "none" else None
+    PATH_contexts = "data/shared_contexts.jsonl" if not context_mode == "none" else None
     if PATH_contexts and not os.path.exists(PATH_contexts):
         print(f"Error: {PATH_contexts} must exist")
         sys.exit(1)
@@ -173,11 +181,9 @@ if __name__ == "__main__":
     print(f"context_mode is set to {context_mode}")
     print(f"gpt_model is set to {gpt_model}")
 
-    emb_model = None
-    if context_mode == "rag":
-        emb_model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
-        print("Embedding Model loaded successfully")
-    elif context_mode == "mem0":
+    openai_api_key = input("Please input openai key:")# os.getenv("OPENAI_API_KEY")
+
+    if context_mode == "mem0":
         print(
             "You may see some errors message from mem0, since it's using prompt engineering and JSONs are not always valid. You can probably ignore them."
         )
@@ -192,11 +198,11 @@ if __name__ == "__main__":
             f"Processing shard {idx_shard + 1}/{num_shards} with {len(questions)}/{num_qs_total} questions"
         )
 
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    
     if openai_api_key is None:
         raise ValueError("OPENAI_API_KEY environment variable is not set.")
     predictions, choosen_indices = evaluator(
-        questions, contexts, emb_model, gpt_model, openai_api_key, top_k, context_mode, idx_shard
+        questions, contexts, gpt_model, openai_api_key, top_k, context_mode, idx_shard
     )
 
     # calculate accuracy
