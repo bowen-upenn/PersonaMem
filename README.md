@@ -165,7 +165,7 @@ The context length is determined by the argument you pass to the script:
 > We also allow command-line argparser for the following arguments inside the script:
 > - `--model` **[str]**: The LLM used for filtering low-quality questions (e.g., `gpt-4o-mini`).
 > - `--step` **[str]**: Default `prepare` to generate benchmark contexts.
-> - `--idx_persona` **[int]**: The index of the persona for which the context is constructed.
+> - `--idx_persona` **[int]**: The index of the persona for which the context is constructed, specified by `start_persona_id` and `end_persona_id` in the script.
 > - `--n_blocks` **[int]**: Total number of conversation sessions to concatenate. This is set automatically when using small, medium, or large.
 > - `--n_variants` **[int]**: Number of different topological variants (orderings) of conversation sessions to concatenate.
 > - `--filter_questions` **[store_true]**: Use an LLM to remove questions that can be answered directly without seeing context.
