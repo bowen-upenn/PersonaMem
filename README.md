@@ -33,6 +33,13 @@ We use Python virtual environment. Please run the following commands to create a
     source myenv/bin/activate
     pip install -r requirements.txt
 
+Google Gemini models have conflicting dependencies with OpenAI models related to `google-genai` and `httpx` packages. To run Gemini models, we therefore recommend creating a separate Conda environment:
+
+    conda create -n persona_mem python=3.9
+    conda activate persona_mem
+    pip install -r requirements.txt
+    pip install -q -U google-genai
+
 
 ## 🚀 Running Inference on Benchmark Data
 
