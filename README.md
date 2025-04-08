@@ -6,7 +6,9 @@
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
-**Different users have different personas. We investigate three research questions in LLM personalization:**
+**Different users have different personas.** Personalization in LLMs involves adapting model responses to individual users based on their traits, preferences, and interaction history. By analyzing previous interactions, LLMs learn to deliver more relevant and tailored responses to different users, rather than merely providing generic correct answers. As a result, personalization enhances the model’s effectiveness in various tasks such as writing assistance, recommendations, or consultations, and thereby user experience and engagement.
+
+**We investigate three research questions in LLM personalization:**
 
 - How well can LLMs internalize the user's inherent traits and preferences?
 - Can LLMs track how user profiling and preferences evolve over time?
