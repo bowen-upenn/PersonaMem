@@ -101,6 +101,7 @@ If you would like to add support for **additional models**, refer to our impleme
 ```bash
 bash scripts/run_all_prepare_data.sh
 ```
+💡 **Tip:** If a data generation step fails, it's likely due to syntax issues in the LLM-generated response. Simply regenerate the data of that file.
 
 > We also allow command-line argparser for the following arguments inside the script:
 > - `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
