@@ -1,10 +1,13 @@
 ## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO).
 
+We propose the PersonaMem benchmark and its synthetic dialog generation pipeline for persona-oriented, multi-session, timelined user-chatbot interaction history under diverse conversation topics.
+
 <p align="center">
-<img src=figures/benchmark_overview.png/>
+<img src=figures/overview.png/>
 </p>
 
-We propose the PersonaMem benchmark and its synthetic dialog generation pipeline for persona-oriented, multi-session, timelined user-chatbot interaction history under diverse conversation topics.
+Overview of PersonaMem benchmark. Each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
+
 
 ## Benchmark Data
 We provide benchmark data on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts, with versions available for 32k, 128k, and 1M token lengths.
