@@ -1,13 +1,16 @@
 ## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO)
 
-
 <p align="center">
-<img src=figures/overview.png/>
+<img src=figures/advanced_artistic_illustration.png/>
 </p>
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
-Each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
+<p align="center">
+<img src=figures/benchmark_overview.png/>
+</p>
+
+As shown in the overview, each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
 ## 📊 Benchmark Data
 We provide the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts. The dataset is available with three versions based on context token length:
