@@ -6,6 +6,15 @@
 
 We propose the PersonaMem benchmark and its synthetic dialog generation pipeline for persona-oriented, multi-session, timelined user-chatbot interaction history under diverse conversation topics.
 
+## Benchmark Data
+We provide benchmark data on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts, with versions available for 32k, 128k, and 1M token lengths.
+
+## Running Inference on Benchmark Data
+
+## Building Persona-Oriented Multi-Session Conversation Data
+
+
+
 ## To start the persona-aligned conversation generation
 
 We allow command-line argparser for the following arguments: 
