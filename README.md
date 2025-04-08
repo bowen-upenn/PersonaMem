@@ -1,14 +1,10 @@
-## This is the official implementation of the paper [MemoryBench: Evaluating the Memorization of User Personas in Long Conversations](todo) in PyTorch.
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO).
 
 <p align="center">
 <img src=figures/artistic_illustration.jpeg/>
 </p>
 
-<p align="center">
-  <strong>From Memory to Personalization</strong>
-</p>
-
-We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can (1) remember the user's persona from long user-AI conversations, but also (2) utilize this memory to generate persona-aligned recommendations and new contents over diverse scenarios. 
+We propose the PersonaMem benchmark and its synthetic dialog generation pipeline for persona-oriented, multi-session, timelined user-chatbot interaction history under diverse conversation topics.
 
 ## To start the persona-aligned conversation generation
 
