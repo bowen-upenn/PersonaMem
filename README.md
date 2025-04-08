@@ -1,14 +1,32 @@
-## This is the official implementation of the paper [MemoryBench: Evaluating the Memorization of User Personas in Long Conversations](todo) in PyTorch.
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO).
 
 <p align="center">
-<img src=figures/artistic_illustration.jpeg/>
+<img src=figures/overview.png/>
 </p>
 
-<p align="center">
-  <strong>From Memory to Personalization</strong>
-</p>
+We present **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
-We create a persona-oriented memory benchmark for LLMs and their agents. We aim to evaluate not only if the LLMs can (1) remember the user's persona from long user-AI conversations, but also (2) utilize this memory to generate persona-aligned recommendations and new contents over diverse scenarios. 
+Each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
+
+## Benchmark Data
+We provide benchmark data on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts. The dataset is available with three versions based on context token length:
+
+- **32k tokens**
+  - ```questions_32k.csv```
+  - ```shared_contexts_32k.jsonl```
+- **128k tokens**
+  - ```questions_128k.csv```
+  - ```shared_contexts_128k.jsonl```
+- **1M tokens**
+  - ```questions_1M.csv```
+  - ```shared_contexts_1M.jsonl```
+
+
+## Running Inference on Benchmark Data
+
+## Building Persona-Oriented Multi-Session Conversation Data
+
+
 
 ## To start the persona-aligned conversation generation
 
