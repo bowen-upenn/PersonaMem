@@ -46,31 +46,36 @@ class Evaluation:
         return response
 
     def extract_answer(self, predicted_answer, correct_answer):
+        def _extract_only_options(text):
+            text = text.lower()
+            in_parens = re.findall(r'\(([a-d])\)', text)
+            if in_parens:
+                return set(in_parens)
+            else:
+                return set(re.findall(r'\b([a-d])\b', text))
+
+        correct = correct_answer.lower().strip("() ")
+
+        # Clean predicted_answer
+        full_response = predicted_answer
         predicted_answer = predicted_answer.strip()
         if "<final_answer>" in predicted_answer:
             predicted_answer = predicted_answer.split("<final_answer>")[-1].strip()
         if predicted_answer.endswith("</final_answer>"):
             predicted_answer = predicted_answer[:-len("</final_answer>")].strip()
 
-        # Extract all option letters (with or without parentheses)
-        option_pattern = r'\(?([a-zA-Z])\)?'
-        predicted_options = re.findall(option_pattern, predicted_answer)
-        predicted_options_lower = list(map(str.lower, predicted_options))
+        pred_options = _extract_only_options(predicted_answer)
 
-        # Find correct answer letter
-        correct_letter = re.search(r'\(?([a-zA-Z])\)?', correct_answer).group(1)
-        correct_letter_mentioned = correct_letter.lower() in predicted_options_lower
-
-        # Create a list of incorrect options
-        incorrect_letters = [chr(i) for i in range(65, 91) if chr(i) != correct_letter.upper()]
-        incorrect_letters_mentioned = any(
-            letter.lower() in predicted_options_lower for letter in incorrect_letters
-        )
-
-        if correct_letter_mentioned and not incorrect_letters_mentioned:
+        # First try the predicted_answer
+        if pred_options == {correct}:
             return True, predicted_answer
-        else:
-            return False, predicted_answer
+
+        # Optionally fallback to model_response if provided
+        response_options = _extract_only_options(full_response)
+        if response_options == {correct}:
+            return True, predicted_answer
+
+        return False, predicted_answer
 
 
 def convert_role_system_to_user(messages_4o):
