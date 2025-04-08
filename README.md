@@ -64,6 +64,7 @@ We provide ready-to-use **inference scripts** in the [scripts/](scripts/) direct
   - GPT-4o: ```inference_gpt_4o.sh```
   - GPT-4o-mini: ```inference_gpt_4o_mini.sh```
 - **[Google Gemini Models](https://ai.google.dev/gemini-api/docs/models)**
+  - Gemini-2.5-Pro: ```inference_gemini_2p5_pro.sh```
   - Gemini-2.0-Flash: ```inference_gemini_2p0_flash.sh```
   - Gemini-2.0-Flash-Lite: ```inference_gemini_2p0_flash_lite.sh```
   - Gemini-1.5-Flash: ```inference_gemini_1p5_flash.sh```
