@@ -2,7 +2,7 @@
 
 # Arguments for the Python script
 MODEL_NAME="gemini-2.0-flash-lite"
-BENCHMARK_SIZE="1M"
+BENCHMARK_SIZE="128k" # or 1M
 QUESTION_PATH="data/questions_${BENCHMARK_SIZE}.csv"
 CONTEXT_PATH="data/shared_contexts_${BENCHMARK_SIZE}.jsonl"
 RESULT_PATH="data/results/eval_results_${BENCHMARK_SIZE}_${MODEL_NAME}.csv"
