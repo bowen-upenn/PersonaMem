@@ -1,14 +1,15 @@
-## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO).
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO)
+
 
 <p align="center">
 <img src=figures/overview.png/>
 </p>
 
-We present **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
+We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
 Each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
-## Benchmark Data
+## 📊 Benchmark Data
 We provide benchmark data on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts. The dataset is available with three versions based on context token length:
 
 - **32k tokens**
@@ -22,7 +23,51 @@ We provide benchmark data on [Google Drive](https://drive.google.com/drive/folde
   - ```shared_contexts_1M.jsonl```
 
 
-## Running Inference on Benchmark Data
+## 🚀 Running Inference on Benchmark Data
+
+**Before you begin**, create a new folder named [api_tokens/](api_tokens/) in the root directory. This folder will store your API keys required to run the models.
+
+1. **Create API keys** from the respective providers if you haven't already.
+
+2. Inside the [api_tokens/](api_tokens/) folder, create the following text files depending on which models you plan to use. Paste your API key as plain text into the corresponding file:
+
+    - ```openai_key.txt``` – for OpenAI models
+    - ```gemini_key.txt``` – for Google Gemini models
+    - ```claude_key.txt``` – for Anthropic Claude models
+    - ```lambda_key.txt``` – for models accessed via the [Lambda Cloud API](https://docs.lambda.ai/public-cloud/lambda-inference-api/?_gl=1*1yqhedk*_gcl_aw*R0NMLjE3NDQwOTAyNjIuQ2owS0NRanc3ODJfQmhEakFSSXNBQlR2X0pEWUpQRTRhLXJMY0xjeWZYYUZrRzE4Q196MG0zdjY0cmQtX09FYm5iRHlrek95QWVDVVZxVWFBbnhYRUFMd193Y0I.*_gcl_au*NTQ3OTExNDIzLjE3NDQwOTAyNjE.*_ga*MTA0MjYwNjUyMS4xNzQ0MDkwMjYy*_ga_43EZT1FM6Q*MTc0NDA5MDI2MS4xLjAuMTc0NDA5MDI2MS42MC4wLjY1NjAyNzc2NA..) (e.g., Llama, DeepSeek, etc.)
+
+
+We provide ready-to-use **inference scripts** in the [scripts/](scripts/) directory for evaluating the following models:
+- **[OpenAI Models](https://platform.openai.com/docs/models)**
+  - GPT-4.5: ```inference_gpt_4p5_preview.sh```
+  - o3-mini: ```inference_o3_mini.sh```
+  - o1: ```inference_o1.sh```
+  - o1-mini: ```inference_o1_mini.sh```
+  - GPT-4o: ```inference_gpt_4o.sh```
+  - GPT-4o-mini: ```inference_gpt_4o_mini.sh```
+- **[Google Gemini Models](https://ai.google.dev/gemini-api/docs/models)**
+  - Gemini-2.0-Flash: ```inference_gemini_2p0_flash.sh```
+  - Gemini-2.0-Flash-Lite: ```inference_gemini_2p0_flash_lite.sh```
+  - Gemini-1.5-Flash: ```inference_gemini_1p5_flash.sh```
+- **[Anthropic Claude Models](https://docs.anthropic.com/en/docs/about-claude/models/all-models)**
+  - Claude-3.7-Sonnet: ```inference_claude_3p7_sonnet.sh```
+  - Claude-3.5-Haiku: ```inference_claude_3p5_haiku.sh```
+- **[Meta Llama Models](https://docs.lambda.ai/public-cloud/lambda-inference-api/?_gl=1*1yqhedk*_gcl_aw*R0NMLjE3NDQwOTAyNjIuQ2owS0NRanc3ODJfQmhEakFSSXNBQlR2X0pEWUpQRTRhLXJMY0xjeWZYYUZrRzE4Q196MG0zdjY0cmQtX09FYm5iRHlrek95QWVDVVZxVWFBbnhYRUFMd193Y0I.*_gcl_au*NTQ3OTExNDIzLjE3NDQwOTAyNjE.*_ga*MTA0MjYwNjUyMS4xNzQ0MDkwMjYy*_ga_43EZT1FM6Q*MTc0NDA5MDI2MS4xLjAuMTc0NDA5MDI2MS42MC4wLjY1NjAyNzc2NA..)**
+  - Llama-4-Maverick: ```inference_llama4_maverick.sh```
+  - Llama-3.1-405B: ```inference_llama_3p1_405b.sh```
+- **[DeepSeek Models](https://docs.lambda.ai/public-cloud/lambda-inference-api/?_gl=1*1yqhedk*_gcl_aw*R0NMLjE3NDQwOTAyNjIuQ2owS0NRanc3ODJfQmhEakFSSXNBQlR2X0pEWUpQRTRhLXJMY0xjeWZYYUZrRzE4Q196MG0zdjY0cmQtX09FYm5iRHlrek95QWVDVVZxVWFBbnhYRUFMd193Y0I.*_gcl_au*NTQ3OTExNDIzLjE3NDQwOTAyNjE.*_ga*MTA0MjYwNjUyMS4xNzQ0MDkwMjYy*_ga_43EZT1FM6Q*MTc0NDA5MDI2MS4xLjAuMTc0NDA5MDI2MS42MC4wLjY1NjAyNzc2NA..)**
+  - DeepSeek-R1-607B: ```inference_deepseek_r1_671b.sh```
+
+To run evaluation for a specific model, simply execute the corresponding script. For example:
+  
+    bash scripts/inference_gpt_4o.sh
+
+Each script supports benchmarking at different context window sizes. If the model allows, you can modify the ```BENCHMARK_SIZE``` variable inside the script to ```32k```, ```128k```, or ```1M```. Currently, only **Gemini models** and **Llama-4** support context windows up to **1 million tokens**.
+
+**Evaluation results** will be automatically saved to the [data/results/](data/results/) directory.
+
+If you would like to add support for **additional models**, refer to our implementation in [`inference.py`](inference.py) or [`inference_standalone_openai.py`](inference_standalone_openai.py) for guidance. You only need to update the `__init__` and `query_llm` methods of the `Evaluation` class.
+
 
 ## Building Persona-Oriented Multi-Session Conversation Data
 
