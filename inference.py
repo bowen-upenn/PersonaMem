@@ -37,16 +37,6 @@ class Evaluation:
                 self.openai_key = api_key_file.read()
             self.client = OpenAI(api_key=self.openai_key)
 
-        elif re.search(r'Llama-3.3-70B-Instruct', self.args['models']['llm_model']) is not None:
-            with open(os.path.join(token_path, "azure_key.txt"), "r") as azure_key_file:
-                self.azure_key = azure_key_file.read()
-            with open(os.path.join(token_path, "azure_endpoint.txt"), "r") as azure_endpoint_file:
-                self.azure_endpoint_url = azure_endpoint_file.read()
-            self.client = ChatCompletionsClient(
-                endpoint=self.azure_endpoint_url,
-                credential=AzureKeyCredential(self.azure_key)
-            )
-
         elif re.search(r'gemini', self.args['models']['llm_model']) is not None:
             with open(os.path.join(token_path, "gemini_key.txt"), "r") as genai_key_file:
                 self.genai_key = genai_key_file.read()
@@ -105,21 +95,6 @@ class Evaluation:
                 messages=messages,
             )
             response = response.content[0].text
-
-        # Call Microsoft Azure API for Llama-3.3-70B-Instruct
-        elif re.search(r'Llama-3.3-70B-Instruct', self.args['models']['llm_model']) is not None:
-            # For Serverless API or Managed Compute endpoints using Microsoft Azure
-            max_tokens = 5012 if self.args['models']['llm_model'] == "deepseek-r1" else 4096  # Adjust max tokens for meta-llama-3-70b-instruct
-            response = self.client.complete(
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=0.8,
-                top_p=0.1,
-                presence_penalty=0.0,
-                frequency_penalty=0.0,
-                model=self.args['models']['llm_model']
-            )
-            response = response.choices[0].message.content
 
         # Call lambda API for other models
         else:
