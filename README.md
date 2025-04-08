@@ -102,27 +102,27 @@ If you would like to add support for **additional models**, refer to our impleme
 bash scripts/run_all_prepare_data.sh
 ```
 
-We also allow command-line argparser for the following arguments inside the script:
-- `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
-- `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
-- `--n_persona` **[int]**: Total number of different personas to generate, specified by the `end_persona_id` variable in the script.
-- `--s_persona` **[int]**: The starting index of all personas to generate, specified by the `start_persona_id` variable in the script.
-- `--output_dir` **[str]**: Directory where generated data will be saved.
-- `--clean` **[store_true]** Remove existing data files and start clean.
-- `--verbose` **[store_true]**: Print all generated content to the console.
-
-You only need to specify integer values for `end_persona_id` and `start_persona_id`. A total of `end_persona_id - start_persona_id` random personas will be created automatically. Data of different topics under the same `persona_id` will always share the same persona.
-
-Example: Generate Conversations for a Single Topic
-```bash
-python prepare_data.py --model gpt-4o --context therapy --output_dir data/output/ --verbose
-```
-Example: Generate Conversations for Multiple Topics
-```bash
-python prepare_data.py --model gpt-4o --topics therapy travelPlanning foodRecommendation --output_dir data/output/ --verbose
-```
-
-We currently include 18 diverse conversation topics: - `bookRecommendation`, `coding`, `datingConsultation`, `email`, `familyRelations`, `financialConsultation`, `foodRecommendation`, `homeDecoration`, `legalConsultation`, `medicalConsultation`, `movieRecommendation`, `musicRecommendation`, `onlineShopping`, `sportsRecommendation`, `studyConsultation`, `therapy`, `travelPlanning`, `writing`. Feel free to experiment by specifying a new topic name in the command line.
+> We also allow command-line argparser for the following arguments inside the script:
+> - `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
+> - `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
+> - `--n_persona` **[int]**: Total number of different personas to generate, specified by the `end_persona_id` variable in the script.
+> - `--s_persona` **[int]**: The starting index of all personas to generate, specified by the `start_persona_id` variable in the script.
+> - `--output_dir` **[str]**: Directory where generated data will be saved.
+> - `--clean` **[store_true]** Remove existing data files and start clean.
+> - `--verbose` **[store_true]**: Print all generated content to the console.
+> 
+> You only need to specify integer values for `end_persona_id` and `start_persona_id`. A total of `end_persona_id - start_persona_id` random personas will be created automatically. Data of different topics under the same `persona_id` will always share the same persona.
+> 
+> Example: Generate Conversations for a Single Topic
+> ```bash
+> python prepare_data.py --model gpt-4o --context therapy --output_dir data/output/ --verbose
+> ```
+> Example: Generate Conversations for Multiple Topics
+> ```bash
+> python prepare_data.py --model gpt-4o --topics therapy travelPlanning foodRecommendation --output_dir data/output/ --verbose
+> ```
+> 
+> We currently include 18 diverse conversation topics: - `bookRecommendation`, `coding`, `datingConsultation`, `email`, `familyRelations`, `financialConsultation`, `foodRecommendation`, `homeDecoration`, `legalConsultation`, `medicalConsultation`, `movieRecommendation`, `musicRecommendation`, `onlineShopping`, `sportsRecommendation`, `studyConsultation`, `therapy`, `travelPlanning`, `writing`. Feel free to experiment by specifying a new topic name in the command line.
 
 
 ### Step 2 - Generating question-answering pairs
@@ -132,20 +132,20 @@ We currently include 18 diverse conversation topics: - `bookRecommendation`, `co
 bash scripts/run_all_prepare_qa.sh
 ```
 
-We also allow command-line argparser for the following arguments inside the script:
-- `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
-- `--action` **[str]**: Default `qa` to generate question-answering pairs. `view_graphs` to visualize the event sequence of a persona.
-- `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
-- `--n_persona` **[int]**: Total number of different personas to generate, specified by `end_persona_id` in the script.
-- `--s_persona` **[int]**: The starting index of all personas to generate, specified by `start_persona_id` in the script.
-- `--time` **[str]**: A list of time periods selected from `init`, `next_week`, `next_month`, and `next_year`, specified by the `time_periods` variable in the script.
-- `--clean` **[store_true]** Remove existing data files and start clean.
-- `--verbose` **[store_true]**: Print all generated content to the console.
-
-Example: Generate Question-Answering Pairs for Multiple Topics
-```bash
-python prepare_data.py --model gpt-4o --action qa --topics therapy travelPlanning foodRecommendation --time init --verbose
-```
+> We also allow command-line argparser for the following arguments inside the script:
+> - `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
+> - `--action` **[str]**: Default `qa` to generate question-answering pairs. `view_graphs` to visualize the event sequence of a persona.
+> - `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
+> - `--n_persona` **[int]**: Total number of different personas to generate, specified by `end_persona_id` in the script.
+> - `--s_persona` **[int]**: The starting index of all personas to generate, specified by `start_persona_id` in the script.
+> - `--time` **[str]**: A list of time periods selected from `init`, `next_week`, `next_month`, and `next_year`, specified by the `time_periods` variable in the script.
+> - `--clean` **[store_true]** Remove existing data files and start clean.
+> - `--verbose` **[store_true]**: Print all generated content to the console.
+> 
+> Example: Generate Question-Answering Pairs for Multiple Topics
+> ```bash
+> python prepare_data.py --model gpt-4o --action qa --topics therapy travelPlanning foodRecommendation --time init --verbose
+> ```
 
 ### Step 3 - Contructing long contexts in benchmark
 *🧩 Now we have conversations and Q&A pairs for each conversation session. Let’s concatenate them to form the full interaction history.*
@@ -162,17 +162,17 @@ The context length is determined by the argument you pass to the script:
 - `medium` → up to **128k tokens**
 - `large`  → up to **1M tokens**
 
-We also allow command-line argparser for the following arguments inside the script:
-- `--model` **[str]**: The LLM used for filtering low-quality questions (e.g., `gpt-4o-mini`).
-- `--step` **[str]**: Default `prepare` to generate benchmark contexts.
-- `--idx_persona` **[int]**: The index of the persona for which the context is constructed.
-- `--n_blocks` **[int]**: Total number of conversation sessions to concatenate. This is set automatically when using small, medium, or large.
-- `--n_variants` **[int]**: Number of different topological variants (orderings) of conversation sessions to concatenate.
-- `--filter_questions` **[store_true]**: Use an LLM to remove questions that can be answered directly without seeing context.
-- `--clean` **[store_true]** Remove existing data files and start clean.
-- `--verbose` **[store_true]**: Print all generated content to the console.
-
-Example: Generate Full Context for One Persona
-```bash
-python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
-```
+> We also allow command-line argparser for the following arguments inside the script:
+> - `--model` **[str]**: The LLM used for filtering low-quality questions (e.g., `gpt-4o-mini`).
+> - `--step` **[str]**: Default `prepare` to generate benchmark contexts.
+> - `--idx_persona` **[int]**: The index of the persona for which the context is constructed.
+> - `--n_blocks` **[int]**: Total number of conversation sessions to concatenate. This is set automatically when using small, medium, or large.
+> - `--n_variants` **[int]**: Number of different topological variants (orderings) of conversation sessions to concatenate.
+> - `--filter_questions` **[store_true]**: Use an LLM to remove questions that can be answered directly without seeing context.
+> - `--clean` **[store_true]** Remove existing data files and start clean.
+> - `--verbose` **[store_true]**: Print all generated content to the console.
+> 
+> Example: Generate Full Context for One Persona
+> ```bash
+> python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
+> ```
