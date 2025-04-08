@@ -79,6 +79,7 @@ If you would like to add support for **additional models**, refer to our impleme
 
 
 ## 💬 Building Persona-Oriented Multi-Session Conversation Data
+Interested in how we built the conversation data? Keep reading!
 <p align="center">
 <img src=figures/generate_data.png/>
 </p>
