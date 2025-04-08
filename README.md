@@ -69,7 +69,11 @@ Each script supports benchmarking at different **context window sizes**. If the 
 If you would like to add support for **additional models**, refer to our implementation in [`inference.py`](inference.py) or [`inference_standalone_openai.py`](inference_standalone_openai.py) for guidance. You only need to update the `__init__` and `query_llm` methods of the `Evaluation` class.
 
 
-## Building Persona-Oriented Multi-Session Conversation Data
+
+## 💬 Building Persona-Oriented Multi-Session Conversation Data
+<p align="center">
+<img src=figures/generate_data.png/>
+</p>
 
 
 
