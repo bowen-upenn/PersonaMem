@@ -62,7 +62,7 @@ To run evaluation for a specific model, simply execute the corresponding script.
   
     bash scripts/inference_gpt_4o.sh
 
-Each script supports benchmarking at different context window sizes. If the model allows, you can modify the ```BENCHMARK_SIZE``` variable inside the script to ```32k```, ```128k```, or ```1M```. Currently, only **Gemini models** and **Llama-4** support context windows up to **1 million tokens**.
+Each script supports benchmarking at different **context window sizes**. If the model allows, you can modify the ```BENCHMARK_SIZE``` variable inside the script to ```32k```, ```128k```, or ```1M```. Currently, only Gemini models and Llama-4 support context windows up to **1 million tokens**.
 
 **Evaluation results** will be automatically saved to the [data/results/](data/results/) directory.
 
