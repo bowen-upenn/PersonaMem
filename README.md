@@ -90,136 +90,89 @@ If you would like to add support for **additional models**, refer to our impleme
 
 
 ## 💬 Building Persona-Oriented Multi-Session Conversation Data
-Interested in how we built the conversation data? Keep reading!
+*Interested in how we built the conversation data? Keep reading!*
 <p align="center">
 <img src=figures/generate_data.png/>
 </p>
 
+### Step 1 - Generating User Personas and Conversations
+**We provide a script to automatically generate persona-based multi-session conversations. To run it:**
+
+```bash
+bash scripts/run_all_prepare_data.sh
+```
+
+We also allow command-line argparser for the following arguments inside the script:
+- `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
+- `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
+- `--n_persona` **[int]**: Total number of different personas to generate, specified by the `end_persona_id` variable in the script.
+- `--s_persona` **[int]**: The starting index of all personas to generate, specified by the `start_persona_id` variable in the script.
+- `--output_dir` **[str]**: Directory where generated data will be saved.
+- `--clean` **[store_true]** Remove existing data files and start clean.
+- `--verbose` **[store_true]**: Print all generated content to the console.
+
+You only need to specify integer values for `end_persona_id` and `start_persona_id`. A total of `end_persona_id - start_persona_id` random personas will be created automatically. Data of different topics under the same `persona_id` will always share the same persona.
+
+Example: Generate Conversations for a Single Topic
+```bash
+python prepare_data.py --model gpt-4o --context therapy --output_dir data/output/ --verbose
+```
+Example: Generate Conversations for Multiple Topics
+```bash
+python prepare_data.py --model gpt-4o --topics therapy travelPlanning foodRecommendation --output_dir data/output/ --verbose
+```
+
+We currently include 18 diverse conversation topics: - `bookRecommendation`, `coding`, `datingConsultation`, `email`, `familyRelations`, `financialConsultation`, `foodRecommendation`, `homeDecoration`, `legalConsultation`, `medicalConsultation`, `movieRecommendation`, `musicRecommendation`, `onlineShopping`, `sportsRecommendation`, `studyConsultation`, `therapy`, `travelPlanning`, `writing`. Feel free to experiment by specifying a new topic name in the command line.
 
 
-## To start the persona-aligned conversation generation
+### Step 2 - Generating question-answering pairs
+**We provide a script to continue to generate question-answering pairs. To run it:**
 
-We allow command-line argparser for the following arguments: 
+```bash
+bash scripts/run_all_prepare_qa.sh
+```
 
-therapy, legal, datingConsultation, foodRecommendation, onlineShopping, studyConsultation, travelPlanning, writing
+We also allow command-line argparser for the following arguments inside the script:
+- `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
+- `--action` **[str]**: Default `qa` to generate question-answering pairs. `view_graphs` to visualize the event sequence of a persona.
+- `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
+- `--n_persona` **[int]**: Total number of different personas to generate, specified by `end_persona_id` in the script.
+- `--s_persona` **[int]**: The starting index of all personas to generate, specified by `start_persona_id` in the script.
+- `--time` **[str]**: A list of time periods selected from `init`, `next_week`, `next_month`, and `next_year`, specified by the `time_periods` variable in the script.
+- `--clean` **[store_true]** Remove existing data files and start clean.
+- `--verbose` **[store_true]**: Print all generated content to the console.
 
-- ```--model``` **[str]** to select the LLM to generate the data
-  - ```gpt-4o```
-- ```--n_persona``` **[int]** to select the number of unique personas. *(This is the outer loop)*
-- ```--context``` **[str]** to select the context of the conversation. To select a single context, use the format ```context1```. To select multiple contexts, use the format ```context1 context2 context3```. *(This is the middle loop)*
-  - ```therapy```
-  - ```legal```
-  - ```datingConsultation```
-  - ```foodRecommendation```
-  - ```onlineShopping```
-  - ```studyConsultation```
-  - ```travelPlanning```
-  - ```writing```
-  - ```all```  to select all existing contexts under [./data/output/](./data/output/). Feel free to create a new empty folder with the new context name you want. Note that currently we have real-world seeding data for ```therapy```, ```legal```, and ```writing``` contexts only.
-- ```--n_samples``` **[int]** to select the number of samples per context per persona. *(This is the inner loop)*
-- ```--verbose``` **[store_true]** to print out all generated contents.
+Example: Generate Question-Answering Pairs for Multiple Topics
+```bash
+python prepare_data.py --model gpt-4o --action qa --topics therapy travelPlanning foodRecommendation --time init --verbose
+```
 
-#### To generate conversations of a single context
+### Step 3 - Contructing long contexts in benchmark
+*🧩 Now we have conversations and Q&A pairs for each conversation session. Let’s concatenate them to form the full interaction history.*
 
-    python prepare_data.py --model gpt-4o --context therapy --n_persona 10 --n_samples 1 --verbose
+**We provide a script to continue to generate question-answering pairs. To run it, for example:**
 
-#### To generate conversations of multiple contexts, specify the names of the contexts and separate them by space, e.g.
+```bash
+bash scripts/run_generate_benchmark.sh large
+```
 
-    python prepare_data.py --model gpt-4o --context therapy travel food --n_persona 10 --n_samples 1 --verbose
+The context length is determined by the argument you pass to the script:
 
-#### To generate conversations of all contexts available
+- `small`  → up to **32k tokens**
+- `medium` → up to **128k tokens**
+- `large`  → up to **1M tokens**
 
-    python prepare_data.py --model gpt-4o --context all --n_persona 10 --n_samples 1 --verbose
+We also allow command-line argparser for the following arguments inside the script:
+- `--model` **[str]**: The LLM used for filtering low-quality questions (e.g., `gpt-4o-mini`).
+- `--step` **[str]**: Default `prepare` to generate benchmark contexts.
+- `--idx_persona` **[int]**: The index of the persona for which the context is constructed.
+- `--n_blocks` **[int]**: Total number of conversation sessions to concatenate. This is set automatically when using small, medium, or large.
+- `--n_variants` **[int]**: Number of different topological variants (orderings) of conversation sessions to concatenate.
+- `--filter_questions` **[store_true]**: Use an LLM to remove questions that can be answered directly without seeing context.
+- `--clean` **[store_true]** Remove existing data files and start clean.
+- `--verbose` **[store_true]**: Print all generated content to the console.
 
-The most common reason for generation failures is syntax errors in JSON formats. The LLM might occasionally produce strings that do not conform to the required JSON format. In such cases, we will output the data paths of all failed samples. You can then copy these paths into [./scripts/rerun_prepare_data.sh](./scripts/rerun_prepare_data.sh) and run the following command to process the failed samples again.
-    
-    bash scripts/rerun_prepare_data.sh
-
-## To start the Q&A generation
-
-The Q&As must be generated after the conversations. We allow command-line argparser for the following arguments:
-
-- ```--model``` **[str]** to select the LLM to generate the q&a
-  - ```gpt-4o```
-- ```--action``` **[str]** to select the current action
-    - ```view_graphs``` to display all linear graphs of knowledge updates up to the specified cut-off time (included). Not applicable for the ```writing``` context.
-    - ```qa``` to generate question and answer pairs
-- ```--data``` **[str]** to specify the data path of the conversation data. Note that the data path specifies the current context.
-- ```--time``` **[str]** to specify the cut-off time (included) for the conversation data. Not applicable for the ```writing``` context.
-    - ```init``` for the ```Initial Conversation``` block
-    - ```next_week``` for the ```Conversation Next Week``` block
-    - ```next_month``` for the ```Conversation Next Month``` block
-    - ```next_year``` for the ```Conversation Next Year``` block
-- ```--verbose``` **[store_true]** to print out all generated contents.
-
-#### To visualize linear graphs of knowledge updates
-
-    python prepare_qa.py --model gpt-4o --action view_graphs --data therapy_persona0_sample0 --time next_year --verbose
-
-#### To generate Q&As for one given data file
-
-    python prepare_qa.py --model gpt-4o --action qa --data therapy_persona0_sample0 --time next_year --verbose
-
-#### To generate Q&As for a batch of data files
-
-Specify the data files you want to process in [./scripts/run_all_prepare_qa.sh](./scripts/run_all_prepare_qa.sh) and run the following command.
-
-    bash scripts/run_all_prepare_qa.sh
-
-Similarly, the most common reason for generation failures is syntax errors in JSON formats, and we will output the data paths of all failed samples. You can copy these paths into [./scripts/rerun_prepare_qa.sh](./scripts/rerun_prepare_qa.sh) and run the following command to process the failed samples again.
-    
-    bash scripts/rerun_prepare_qa.sh
-
-## To test block concatenations for enabling long context windows
-
-This step is optional and intended for debugging purposes only. The actual block concatenation process will be performed in the next session.
-
-The block concatenation must be performed after the Q&As are generated. We allow command-line argparser for the following arguments:
-
-- ```--idx_persona``` **[int]** to select the index of the persona.
-- ```--n_blocks``` **[int]** to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
-- ```--format``` **[str]** to select the output conversation format.
-  - ```string``` to select pure the string format for the concatenated conversations.
-  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as 'user' and 'assistant'.
-- ```--verbose``` **[store_true]** to print out all generated contents.
-
-#### Example command
-
-    python prepare_block.py --idx_persona 0 --n_blocks 5 --format string --verbose
-
-
-## To evaluate LLMs on the generated data
-
-This is the final step of the pipeline. You must have set up your API tokens under [api_tokens](api_tokens). We allow command-line argparser for the following arguments:
-
-- ```--model``` **[str]** to select the LLM to evaluate (we currently support gpt-4o and gpt-4o-mini)
-  - ```o1-preview```
-  - ```o1-mini```
-  - ```gpt-4o```
-  - ```gpt-4o-mini```
-  - ```gpt-4-turbo```
-  - ```gpt-3.5-turbo```
-  - ```gemini-1.5-flash-002```
-  - ```gemini-1.5-pro-002```
-  - ```gemini-1.0-pro```
-  - ```meta-llama-3-70b-instruct```
-  - ```meta-llama-3-8b-instruct```
-  - ```claude-3-opus-20241022```
-  - ```claude-3-5-sonnet-20241022```
-- ```--idx_persona``` **[int]** to select the index of the persona.
-- ```--format``` **[str]** to select the output conversation format.
-  - ```string``` to select pure the string format for the concatenated conversations.
-  - ```api_dict``` to select the API dictionary format for the concatenated conversations, such as ```user``` and ```assistant```.
-- ```--n_blocks``` **[int]** to select the number of conversation blocks to concatenate. We will randomly sample n_blocks from available data belonging to idx_persona.
-- ```--up_to``` **[store_true]** to evaluate on all the way from 1 up to n_blocks, not just n_blocks itself.
-- ```--verbose``` **[store_true]** to print out all generated contents.
-
-#### Example command
-
-    python inference.py --model o1-preview --idx_persona 0 --format api_dict --n_blocks 5 --up_to --verbose
-
-#### To run evaluations on multiple scenarios
-
-Specify the evaluation hyperparameters in [./scripts/run_all_inference.sh](./scripts/run_all_inference.sh) and run the following command.
-
-    bash scripts/run_all_inference.sh
+Example: Generate Full Context for One Persona
+```bash
+python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
+```
