@@ -1,4 +1,4 @@
-## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO)
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO) and the PersonaMem benchmark.
 
 <p align="center">
 <img src=figures/advanced_artistic_illustration.png/>
