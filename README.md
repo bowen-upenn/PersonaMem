@@ -23,6 +23,14 @@ We provide the benchmark data of <img src="figures/logo.png" alt="Logo" width="2
   - ```shared_contexts_1M.jsonl```
 
 
+## 🔗 Dependencies
+We use Python virtual environment. Please run the following commands to create a virtual environment and install all the requirements:
+    
+    python -m venv myenv
+    source myenv/bin/activate
+    pip install -r requirements.txt
+
+
 ## 🚀 Running Inference on Benchmark Data
 
 **Before you begin**, create a new folder named [api_tokens/](api_tokens/) in the root directory. This folder will store your API keys required to run the models.
