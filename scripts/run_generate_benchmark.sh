@@ -21,8 +21,11 @@ else
     exit 1
 fi
 
+start_persona_id=0
+end_persona_id=20  # non-inclusive
+
 # Loop through idx_persona from 0 to 19
-for idx_persona in {0..19}; do
+for ((idx_persona=start_persona_id; idx_persona<end_persona_id; idx_persona++)); do
     if [ "$idx_persona" -eq 0 ]; then
         echo "Saving benchmark data for idx_persona=$idx_persona with n_blocks=$n_blocks from scratch"
         python inference.py --step prepare --model gpt-4o-mini --idx_persona "$idx_persona" --n_blocks "$n_blocks" --n_variants 2 --filter_questions --clean --verbose
