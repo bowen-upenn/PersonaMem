@@ -34,7 +34,7 @@ We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="2
   - ```questions_1M.csv```
   - ```shared_contexts_1M.jsonl```
 
-We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. Most models perform reasonably well at recalling user facts and preferences. However, they might struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
+We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
 <p align="center">
 <img src=figures/results_qa_types.png/>
