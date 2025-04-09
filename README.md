@@ -33,6 +33,30 @@ We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="2
 - **1M tokens**
   - ```questions_1M.csv```
   - ```shared_contexts_1M.jsonl```
+ 
+### File Format
+
+Each `questions_[SIZE].csv` file contains the following columns:
+
+- `persona_id`: Unique ID for each user persona
+- `question_id`: Unique ID for each question
+- `question_type`
+- `topic`: Topic of the conversation session
+- `context_length_in_tokens`: Total tokens in the context
+- `context_length_in_letters`: Total English letters in the context
+- `distance_to_ref_in_blocks`: Blocks from question to most recent preference mention
+- `distance_to_ref_in_tokens`: Tokens from question to most recent preference mention
+- `num_irrelevant_tokens`: Tokens from irrelevant interactions
+- `distance_to_ref_proportion_in_context`: Proportional position of latest preference in context
+- `user_question_or_message`
+- `correct_answer`
+- `all_options`: list of all answer choices presented for this question
+- `shared_context_id`: Key to retrieve full context from `shared_contexts_[SIZE].jsonl`
+- `end_index_in_shared_context`: Use to slice the loaded context as `context[:int(end_index_in_shared_context)]`
+
+Each `shared_contexts_[SIZE].jsonl` file is a JSONL-formatted list of API dicts of user–model interaction sequences.
+
+### Performance Leaderboard
 
 We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
