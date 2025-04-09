@@ -1,10 +1,19 @@
-## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO)
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO) and the PersonaMem benchmark.
 
 <p align="center">
 <img src=figures/advanced_artistic_illustration.png/>
 </p>
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
+
+**Different users have different personas.** Personalization in LLMs involves adapting model responses to individual users based on their traits, preferences, and interaction history. By analyzing previous interactions, LLMs learn to deliver more relevant and tailored responses to different users, rather than merely providing generic correct answers. As a result, personalization enhances the model’s effectiveness in various tasks such as writing assistance, recommendations, or consultations, and thereby user experience and engagement.
+
+**We investigate three research questions in LLM personalization:**
+
+- How well can LLMs internalize the user's inherent traits and preferences?
+- Can LLMs track how user profiling and preferences evolve over time?
+- Are LLMs able to generate personalized responses accordingly in new scenarios?
+
 
 <p align="center">
 <img src=figures/benchmark_overview.png/>
@@ -13,7 +22,7 @@ We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a
 As shown in the overview, each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
 ## 📊 Benchmark Data
-We provide the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing), including question-answer pairs and their corresponding contexts. The dataset is available with three versions based on context token length:
+We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [Huggingface](TODO), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
 
 - **32k tokens**
   - ```questions_32k.csv```
@@ -24,6 +33,19 @@ We provide the benchmark data of <img src="figures/logo.png" alt="Logo" width="2
 - **1M tokens**
   - ```questions_1M.csv```
   - ```shared_contexts_1M.jsonl```
+
+We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
+
+<p align="center">
+<img src=figures/results_qa_types.png/>
+</p>
+
+We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
+sessions/1M tokens. **GPT-4.5** and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as o1, o3-mini and DeepSeek-R1-607B do not demonstrate competitive advantage over non-reasoning models.
+
+<p align="center">
+<img src=figures/results_long_contexts.png/>
+</p>
 
 
 ## 🔗 Dependencies
@@ -135,7 +157,7 @@ bash scripts/run_all_prepare_qa.sh
 
 > We also allow command-line argparser for the following arguments inside the script:
 > - `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
-> - `--action` **[str]**: Default `qa` to generate question-answering pairs. `view_graphs` to visualize the event sequence of a persona.
+> - `--action` **[str]**: Default `qa` to generate question-answering pairs.
 > - `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
 > - `--n_persona` **[int]**: Total number of different personas to generate, specified by `end_persona_id` in the script.
 > - `--s_persona` **[int]**: The starting index of all personas to generate, specified by `start_persona_id` in the script.
