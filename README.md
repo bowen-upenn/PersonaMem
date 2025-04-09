@@ -157,7 +157,7 @@ bash scripts/run_all_prepare_qa.sh
 
 > We also allow command-line argparser for the following arguments inside the script:
 > - `--model` **[str]**: The LLM used for generation (e.g., `gpt-4o`).
-> - `--action` **[str]**: Default `qa` to generate question-answering pairs. `view_graphs` to visualize the event sequence of a persona.
+> - `--action` **[str]**: Default `qa` to generate question-answering pairs.
 > - `--topics` **[str]**: One or more conversation topics (space-separated for multiple).
 > - `--n_persona` **[int]**: Total number of different personas to generate, specified by `end_persona_id` in the script.
 > - `--s_persona` **[int]**: The starting index of all personas to generate, specified by `start_persona_id` in the script.
