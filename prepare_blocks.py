@@ -698,6 +698,28 @@ def extract_qa(base_dir, topic, file_name, time_period):
     return qa
 
 
+def extract_groundtruth_info(q_reference, type):
+    if type == 'tracking_the_full_sequence_of_preference_updates':
+        groundtruth_info = q_reference['full_sequence']
+
+    else:
+        if "[Updated Fact] Likes" in q_reference:
+            groundtruth_info = 'Likes ' + q_reference['[Updated Fact] Likes']
+        elif "[Updated Fact] Dislikes" in q_reference:
+            groundtruth_info = 'Dislikes ' + q_reference['[Updated Fact] Dislikes']
+        elif "[Fact] Likes" in q_reference:
+            groundtruth_info = 'Likes ' + q_reference['[Fact] Likes']
+        elif "[Fact] Dislikes" in q_reference:
+            groundtruth_info = 'Dislikes ' + q_reference['[Fact] Dislikes']
+        else:
+            return None
+
+        if type == 'generalizing_past_reasons_in_memory_to_new_scenarios' or type == 'recalling_the_reasons_behind_previous_updates':
+            groundtruth_info += ". Reason: " + q_reference['[Reasons of Change]']
+
+    return groundtruth_info
+
+
 def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, num_irrelevant_tokens, tokenizer=None, llm=None, checked_questions=None):
     """
     We assume the questions are asked at the end of all concatenated conversation blocks.
@@ -730,6 +752,7 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
             curr_block_topic = block.get('topic', [])
 
             # For all non-last session, only allow Q&As with 'Where' == 'END OF TEXT' and no further preference updates
+            type = q['Type']
             if i + 1 < total_blocks:
                 if ('Where' not in q) or ('Where' in q and q['Where'] != 'END OF TEXT'):
                     continue
@@ -737,7 +760,6 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
                     continue
 
                 # To limit the total number of questions, we only allow one question per type for all non-last sessions
-                type = q['Type']
                 if type in qa_count and qa_count[type] >= 1:
                     continue
                 if type not in qa_count:
@@ -772,9 +794,12 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
             # num_tokens_q = count_tokens(" ".join([item['content'] for item in flattened_all_conversations[:start_index_q]]), tokenizer, verbose=False)
             curr_context = flattened_all_conversations[:start_index_q]
 
+            groundtruth_info = None
             if block['topic'] == 'writing' or block['topic'] == 'email' or block['topic'] == 'coding':
                 reference_utterance = sorted_processed_blocks[i]['conversation'][0]['content']
                 block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
+                groundtruth_info = extract_groundtruth_info(q['Reference'], type)
+
             elif 'Conversation' in q['Reference']:
                 reference_event = q['Reference']['Conversation']
                 reference_utterance = reference_event.split('\n')[1]
@@ -783,6 +808,8 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
                 # print('start_index_ref', start_index_ref, 'len(all_conversations)', len(all_conversations))
                 # print('all_conversations[start_index_ref]', all_conversations[start_index_ref])
                 # print('reference_utterance', reference_utterance)
+                groundtruth_info = extract_groundtruth_info(q['Reference'], type)
+
             else:
                 # For sequence of updates Q&A, it is a list of dictionary. We need to find the last one, i.e., the earliest one
                 all_timestamps = [key for key in q['Reference'] if key != 'full_sequence']
@@ -793,9 +820,11 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
                 try:
                     reference_event = q['Reference'][all_timestamps[0]]['Conversation']
                     reference_utterance = reference_event.split('\n')[1]
+                    groundtruth_info = extract_groundtruth_info(q['Reference'], type)
                 except:
                     reference_event = q['Reference'][all_timestamps[1]]['Conversation']  # in case the earliest timestamp is not associated with a conversation
                     reference_utterance = reference_event.split('\n')[1]
+                    groundtruth_info = extract_groundtruth_info(q['Reference'], type)
 
                 block_num_ref, start_index_ref = utils.find_string_in_list(reference_utterance, flattened_all_conversations, all_conversations)
 
@@ -817,8 +846,12 @@ def add_all_qa_and_compute_distance(sorted_processed_blocks, all_conversations, 
             q['end_index_in_shared_context'] = start_index_q
             q['curr_context'] = curr_context
             q['num_irrelevant_tokens'] = num_irrelevant_tokens
+            groundtruth_info = re.sub(r"\[stereotypical\]", "", groundtruth_info, flags=re.IGNORECASE)
+            q['groundtruth_info'] = groundtruth_info
             # print('len(curr_context)', len(curr_context), "context_length", q['context_length'])
 
+            if groundtruth_info is None:
+                continue
             if q['distance_blocks'] <= 0 or q['distance_tokens'] <= 0:
                 continue
 
@@ -913,6 +946,7 @@ def question_loader(qa_list):
         num_irrelevant_tokens = qa['num_irrelevant_tokens']
         where = qa['Where'] if 'Where' in qa else None
         stereotypical = qa['Stereotypical'] if 'Stereotypical' in qa else None
+        groundtruth_info = qa['groundtruth_info']
 
         yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
-               context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens)
+               context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens, groundtruth_info)

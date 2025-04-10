@@ -228,6 +228,18 @@ def generate_shared_context_id(shared_context):
     return hashlib.sha256(shared_context.encode()).hexdigest()  # Generate hash
 
 
+def question_type_mapping(old_name):
+    mapping = {"recalling_facts_mentioned_by_the_user": "recall_user_shared_facts",
+               "identifying_new_things_not_mentioned_by_the_user": "suggest_new_ideas",
+               "recalling_the_latest_user_preferences": "acknowledge_latest_preferences",
+               "tracking_the_full_sequence_of_preference_updates": "track_full_preference_evolution",
+               "recalling_the_reasons_behind_previous_updates": "revisit_reasons_behind_preference_updates",
+               "recommendation_aligned_with_users_latest_preferences": "provide_preference_aligned_recommendations",
+               "generalizing_past_reasons_in_memory_to_new_scenarios": "generalize_to_new_scenarios"
+               }
+    return mapping[old_name]
+
+
 def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
     os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
@@ -235,17 +247,17 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
 
         # Write the header if the file is empty
         if os.stat(csv_file_path).st_size == 0:
-            writer.writerow(["persona_id", "question_id", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
+            writer.writerow(["persona_id", "question_id", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters",
                              "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
-                             "user_question_or_message", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context"])
+                             "user_question_or_message", "correct_answer", "all_options", "shared_context_id", "end_index_in_shared_context", "groundtruth_info"])
 
         percentage = f"{(result['distance_tokens'] / result['context_length_in_tokens']) * 100:.2f}%"
+        question_type = question_type_mapping(result["question_type"])
         writer.writerow([
             result["idx_persona"],
             result["question_id"],
-            result["question_type"],
+            question_type,
             result['topic'],
-            result["stereotypical"],
             result['context_length_in_tokens'],
             result['context_length_in_letters'],
             result['distance_blocks'],
@@ -257,6 +269,7 @@ def save_questions_to_csv(result, csv_file_path="data/questions.csv"):
             result['all_options'],
             result["shared_context_id"],
             result["end_index_in_shared_context"],
+            result["groundtruth_info"] if "groundtruth_info" in result else ""
         ])
 
 
@@ -348,7 +361,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=Fal
 
             # Show all Q&As related to this concatenated conversation
             for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
-                 context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens) in tqdm(question_loader(all_qa), total=len(all_qa)):
+                 context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens, groundtruth_info) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
                 shared_context_id = generate_shared_context_id(shared_context)  # More efficient way to store long context shared by multiple Q&As with just different end indices
@@ -369,6 +382,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=Fal
                     "context_length_in_letters": context_length_in_letters,
                     "num_irrelevant_tokens": num_irrelevant_tokens,
                     "stereotypical": stereotypical,
+                    "groundtruth_info": groundtruth_info
                 }
                 # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
                 save_contexts_to_json({question_id: curr_context}, f"data/contexts_{benchmark_size}.jsonl")
