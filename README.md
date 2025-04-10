@@ -22,7 +22,7 @@ We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a
 As shown in the overview, each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
 ## 📊 Benchmark Data
-We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [Huggingface](TODO), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
+We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
 
 - **32k tokens**
   - ```questions_32k.csv```
@@ -33,6 +33,30 @@ We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="2
 - **1M tokens**
   - ```questions_1M.csv```
   - ```shared_contexts_1M.jsonl```
+ 
+### File Format
+
+Each `questions_[SIZE].csv` file contains the following columns:
+
+- `persona_id`: Unique ID for each user persona
+- `question_id`: Unique ID for each question
+- `question_type`
+- `topic`: Topic of the conversation session
+- `context_length_in_tokens`: Total tokens in the context
+- `context_length_in_letters`: Total English letters in the context
+- `distance_to_ref_in_blocks`: Blocks from question to most recent preference mention
+- `distance_to_ref_in_tokens`: Tokens from question to most recent preference mention
+- `num_irrelevant_tokens`: Tokens from irrelevant interactions
+- `distance_to_ref_proportion_in_context`: Proportional position of latest preference in context
+- `user_question_or_message`
+- `correct_answer`
+- `all_options`: list of all answer choices presented for this question
+- `shared_context_id`: Key to retrieve full context from `shared_contexts_[SIZE].jsonl`
+- `end_index_in_shared_context`: Use to slice the loaded context as `context[:int(end_index_in_shared_context)]`
+
+Each `shared_contexts_[SIZE].jsonl` file is a JSONL-formatted list of API dicts of user–model interaction sequences.
+
+### 🚀 Performance Leaderboard
 
 We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
@@ -41,7 +65,7 @@ We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-
 </p>
 
 We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
-sessions/1M tokens. **GPT-4.5** and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as o1, o3-mini and DeepSeek-R1-607B do not demonstrate competitive advantage over non-reasoning models.
+sessions/1M tokens. 🚨**GPT-4.5** and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as o1, o3-mini and DeepSeek-R1-607B do not demonstrate competitive advantage over non-reasoning models.
 
 <p align="center">
 <img src=figures/results_long_contexts.png/>
