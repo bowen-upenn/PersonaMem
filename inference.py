@@ -19,9 +19,6 @@ from query_llm import QueryLLM
 from prepare_blocks import *
 
 from openai import OpenAI
-from azure.ai.inference import ChatCompletionsClient
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.inference.models import SystemMessage, UserMessage
 
 
 
