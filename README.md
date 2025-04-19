@@ -61,7 +61,7 @@ Each `shared_contexts_[SIZE].jsonl` file is a JSONL-formatted list of API dicts 
 
 ### 🚀 Performance Leaderboard
 
-🚨 We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, GPT-4.1, o4-mini, o3-mini, o1, Llama-4, DeepSeek-R1, Gemini-2, Gemini-1.5, Claude-3.7, and Claude-3.5, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
+🚨 We evaluate **15 state-of-the-art LLMs**, including GPT-4.5, GPT-4.1, o4-mini, o3-mini, o1, Llama-4, DeepSeek-R1, Gemini-2, Gemini-1.5, Claude-3.7, and Claude-3.5, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
 <p align="center">
 <img src=figures/results_qa_types.png/>
