@@ -61,17 +61,17 @@ Each `shared_contexts_[SIZE].jsonl` file is a JSONL-formatted list of API dicts 
 
 ### 🚀 Performance Leaderboard
 
-We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
+🚨 We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, GPT-4.1, o4-mini, o3-mini, o1, Llama-4, DeepSeek-R1, Gemini-2, Gemini-1.5, Claude-3.7, and Claude-3.5, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
 <p align="center">
 <img src=figures/results_qa_types.png/>
 </p>
 
-We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
-sessions/1M tokens. 🚨**GPT-4.5** and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as o1, o3-mini and DeepSeek-R1-607B do not demonstrate competitive advantage over non-reasoning models.
+🚨 We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
+sessions/1M tokens. **GPT-4.5**, **GPT-4.1**, and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as **o4-mini, o3-mini, o1, and DeepSeek-R1-607B** do not demonstrate competitive advantages over non-reasoning models.
 
 <p align="center">
-<img src=figures/results_long_contexts.png/>
+<img src=figures/results_long_context.png/>
 </p>
 
 
