@@ -25,6 +25,18 @@ We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a
 
 As shown in the overview, each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
+
+## 🐰 Citation
+If you find our work inspires you, please consider citing it. Thank you!
+
+    @article{jiang2025know,
+      title={Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale},
+      author={Jiang, Bowen and Hao, Zhuoqun and Cho, Young-Min and Li, Bryan and Yuan, Yuan and Chen, Sihao and Ungar, Lyle and Taylor, Camillo J and Roth, Dan},
+      journal={arXiv preprint arXiv:2504.14225},
+      year={2025}
+    }
+
+    
 ## 📊 Benchmark Data
 We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
 
