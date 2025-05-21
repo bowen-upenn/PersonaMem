@@ -5,7 +5,7 @@
 </p>
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B)](https://arxiv.org/abs/2504.14225) [![Project](https://img.shields.io/badge/Project_Page-Link-blue)](https://zhuoqunhao.github.io/PersonaMem.github.io/) 
- [![Data](https://img.shields.io/badge/🤗HuggingFace-Link-FFA500)](https://huggingface.co/datasets/bowen-upenn/PersonaMem)
+ [![Data](https://img.shields.io/badge/🤗HuggingFace-Link-FFA500)](https://huggingface.co/datasets/bowen-upenn/PersonaMem)  [![Visualization](https://img.shields.io/badge/Chat_Visualization-Link-green)](https://app.memobase.io/playground/example)
 
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
@@ -38,7 +38,7 @@ If you find our work inspires you, please consider citing it. Thank you!
 
     
 ## 📊 Benchmark Data
-We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
+We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length. @gusye1234 provides us with a fantastic visualization tool at https://app.memobase.io/playground/example.
 
 - **32k tokens**
   - ```questions_32k.csv```
