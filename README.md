@@ -38,7 +38,7 @@ If you find our work inspires you, please consider citing it. Thank you!
 
     
 ## 📊 Benchmark Data
-We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length. @gusye1234 provides us with a fantastic visualization tool at https://app.memobase.io/playground/example.
+We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length. @gusye1234 provides us with a fantastic visualization tool at https://app.memobase.io/playground/example.
 
 - **32k tokens**
   - ```questions_32k.csv```
