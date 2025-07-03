@@ -360,7 +360,7 @@ def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=Fal
                 print(f"{utils.Colors.OKGREEN}Number of tokens: {total_num_tokens} on gpt-4o tokenizer{utils.Colors.ENDC}")
 
             # Show all Q&As related to this concatenated conversation
-            for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
+            for (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
                  context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens, groundtruth_info) in tqdm(question_loader(all_qa), total=len(all_qa)):
                 # Generate a random unique ID for the question
                 question_id = str(uuid.uuid4())  # Generate a random unique ID
@@ -381,7 +381,6 @@ def prepare_benchmark_data(args, cmd_args, tokenizer=None, llm=None, verbose=Fal
                     "context_length_in_tokens": context_length_in_tokens,
                     "context_length_in_letters": context_length_in_letters,
                     "num_irrelevant_tokens": num_irrelevant_tokens,
-                    "stereotypical": stereotypical,
                     "groundtruth_info": groundtruth_info
                 }
                 # Save the contexts to JSON and the question-answer pairs to CSV as our released dataset
@@ -488,7 +487,6 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
             question_id = row_data["question_id"]
             question_type = row_data["question_type"]
             topic = row_data["topic"]
-            stereotypical = row_data["stereotypical"]
             context_length_in_tokens = row_data["context_length_in_tokens"]
             context_length_in_letters = row_data["context_length_in_letters"]
             distance_to_ref_in_blocks = row_data["distance_to_ref_in_blocks"]
@@ -521,7 +519,7 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
 
                 # Write the header if the file is empty
                 if os.stat(result_path).st_size == 0:
-                    writer.writerow(["score", "persona_id", "question_id", "user_question_or_message", "question_type", "topic", "stereotypical", "context_length_in_tokens", "context_length_in_letters",
+                    writer.writerow(["score", "persona_id", "question_id", "user_question_or_message", "question_type", "topic", "context_length_in_tokens", "context_length_in_letters",
                                      "distance_to_ref_in_blocks", "distance_to_ref_in_tokens", "num_irrelevant_tokens", "distance_to_ref_proportion_in_context",
                                      "model_response", "len_of_model_response", "predicted_answer", "correct_answer"])
                 writer.writerow([
@@ -531,7 +529,6 @@ def run_evaluation(args, cmd_args, llm, verbose=False):
                     question,
                     question_type,
                     topic,
-                    stereotypical,
                     context_length_in_tokens,
                     context_length_in_letters,
                     distance_to_ref_in_blocks,

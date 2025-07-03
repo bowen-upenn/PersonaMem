@@ -945,8 +945,7 @@ def question_loader(qa_list):
         curr_context = qa['curr_context']
         num_irrelevant_tokens = qa['num_irrelevant_tokens']
         where = qa['Where'] if 'Where' in qa else None
-        stereotypical = qa['Stereotypical'] if 'Stereotypical' in qa else None
         groundtruth_info = qa['groundtruth_info']
 
-        yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where, stereotypical,
+        yield (curr_context, question, formatted_question, correct_answer, all_options, distance_blocks, distance_tokens, question_type, topic, where,
                context_length_in_tokens, context_length_in_letters, shared_context, end_index_in_shared_context, num_irrelevant_tokens, groundtruth_info)
