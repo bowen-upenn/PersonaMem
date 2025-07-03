@@ -19,9 +19,6 @@ from query_llm import QueryLLM
 from prepare_blocks import *
 
 from openai import OpenAI
-from azure.ai.inference import ChatCompletionsClient
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.inference.models import SystemMessage, UserMessage
 
 
 
@@ -32,7 +29,7 @@ class Evaluation:
         # Load API keys
         token_path = cmd_args.token_path
 
-        if re.search(r'gpt', self.args['models']['llm_model']) is not None or 'o' in self.args['models']['llm_model']:
+        if re.search(r'gpt', self.args['models']['llm_model']) is not None or re.search(r'o1', self.args['models']['llm_model']) or re.search(r'o3', self.args['models']['llm_model']):
             with open(os.path.join(token_path, "openai_key.txt"), "r") as api_key_file:
                 self.openai_key = api_key_file.read()
             self.client = OpenAI(api_key=self.openai_key)
@@ -64,7 +61,7 @@ class Evaluation:
             messages = [{"role": "user", "content": question + '\n\n' + instructions + '\n\n' + all_options},]
 
         # Call OpenAI API for GPT models by default
-        if re.search(r'gpt', self.args['models']['llm_model']) is not None or 'o' in self.args['models']['llm_model']:
+        if re.search(r'gpt', self.args['models']['llm_model']) is not None or re.search(r'o1', self.args['models']['llm_model']) or re.search(r'o3', self.args['models']['llm_model']):
             if 'o' in self.args['models']['llm_model']:
                 messages = convert_role_system_to_user(messages)
 

@@ -1,8 +1,12 @@
-## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](TODO) and the PersonaMem benchmark.
+## This is the official repository of the paper [Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale](https://arxiv.org/abs/2504.14225) and the [PersonaMem](https://huggingface.co/datasets/bowen-upenn/PersonaMem) benchmark.
 
 <p align="center">
 <img src=figures/advanced_artistic_illustration.png/>
 </p>
+
+[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B)](https://arxiv.org/abs/2504.14225) [![Project](https://img.shields.io/badge/Project_Page-Link-blue)](https://zhuoqunhao.github.io/PersonaMem.github.io/) 
+ [![Data](https://img.shields.io/badge/🤗HuggingFace-Link-FFA500)](https://huggingface.co/datasets/bowen-upenn/PersonaMem)  [![Visualization](https://img.shields.io/badge/Chat_Visualization-Link-green)](https://app.memobase.io/playground/example)
+
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
@@ -21,8 +25,20 @@ We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a
 
 As shown in the overview, each benchmark sample is a user persona with static (e.g., demographic info.) and dynamic attributes (e.g., evolving preferences). Users engage with a chatbot in multi-session interactions across a variety of topics such as food recommendation, travel planning, and therapy consultation. As the user’s preferences evolve over time, the benchmark offers annotated questions assessing whether models can track and incorporate the changes into their responses.
 
+
+## 🐰 Citation
+If you find our work inspires you, please consider citing it. Thank you!
+
+    @article{jiang2025know,
+      title={Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale},
+      author={Jiang, Bowen and Hao, Zhuoqun and Cho, Young-Min and Li, Bryan and Yuan, Yuan and Chen, Sihao and Ungar, Lyle and Taylor, Camillo J and Roth, Dan},
+      journal={arXiv preprint arXiv:2504.14225},
+      year={2025}
+    }
+
+    
 ## 📊 Benchmark Data
-We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [Google Drive](https://drive.google.com/drive/folders/1bUyh-JWB-U70iEvE70ZaXzRBw5KPWODO?usp=sharing) and [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length:
+We release the benchmark data of <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem** on [🤗Huggingface](https://huggingface.co/datasets/bowen-upenn/PersonaMem), including question-answer pairs, corresponding contexts, and other meta data. The dataset is available with three versions based on context token length. @gusye1234 provides us with a fantastic visualization tool at https://app.memobase.io/playground/example.
 
 - **32k tokens**
   - ```questions_32k.csv```
@@ -58,17 +74,17 @@ Each `shared_contexts_[SIZE].jsonl` file is a JSONL-formatted list of API dicts 
 
 ### 🚀 Performance Leaderboard
 
-We evaluate **13 state-of-the-art LLMs**, including GPT-4.5, o1, o3-mini, Llama-4, DeepSeek-R1, Gemini-2, and Claude-3.7, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
+🚨 We evaluate **15 state-of-the-art LLMs**, including GPT-4.5, GPT-4.1, o4-mini, o3-mini, o1, Llama-4, DeepSeek-R1, Gemini-2, Gemini-1.5, Claude-3.7, and Claude-3.5, across **7 in-situ query types**. While they could perform well at recalling user facts and preferences, they still struggle at providing novel suggestions, or applying users’ preferences in new scenarios.
 
 <p align="center">
 <img src=figures/results_qa_types.png/>
 </p>
 
-We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
-sessions/1M tokens. 🚨**GPT-4.5** and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as o1, o3-mini and DeepSeek-R1-607B do not demonstrate competitive advantage over non-reasoning models.
+🚨 We also rank these LLMs from top to bottom based on their performance as the number of sessions increases since the most recent preference was mentioned in the **long context**. Top: up to 20 sessions/128k tokens; Bottom: up to 60
+sessions/1M tokens. **GPT-4.5**, **GPT-4.1**, and **Gemini-1.5** achieve the highest overall performance, however, their performance still hovers around 52% in a multiple-choice setting, highlighting substantial room for improvement. Notably, reasoning models such as **o4-mini, o3-mini, o1, and DeepSeek-R1-607B** do not demonstrate competitive advantages over non-reasoning models.
 
 <p align="center">
-<img src=figures/results_long_contexts.png/>
+<img src=figures/results_long_context.png/>
 </p>
 
 
