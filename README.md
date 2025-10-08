@@ -7,9 +7,7 @@
 [![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B)](https://arxiv.org/abs/2504.14225) [![Project](https://img.shields.io/badge/Project_Page-Link-blue)](https://zhuoqunhao.github.io/PersonaMem.github.io/) 
  [![Data](https://img.shields.io/badge/🤗HuggingFace-Link-FFA500)](https://huggingface.co/datasets/bowen-upenn/PersonaMem)  [![Visualization](https://img.shields.io/badge/Chat_Visualization-Link-green)](https://app.memobase.io/playground/example)
 
-> 🚨 [Update - Aug 30] We have released [PersonaMem-v2: Implicit Personas](https://huggingface.co/datasets/bowen-upenn/ImplicitPersona) on 🤗HuggingFace, focusing on 1000 even more realistic and implicit user preferences!
-
-> 🚨 [Update - Aug 19] We are almost ready to ship another **1000 personas** of a really high quality, focusing on implicit user preferences that can be inferred from long user–chatbot conversations! Stay tuned! 🎉 
+### 🚨 [Update - Aug 30] We have released [PersonaMem-v2: Implicit Personas](https://huggingface.co/datasets/bowen-upenn/ImplicitPersona) on 🤗HuggingFace, focusing on 1000 even more realistic and implicit user preferences!
 
 We present <img src="figures/logo.png" alt="Logo" width="24"/> **PersonaMem**, a new personalization benchmark to assess how well language models can infer evolving user profiles and generate personalized responses across task scenarios. PersonaMem emphasizes **persona-oriented**, **multi-session** interactions between users and chatbots, facilitated by a synthetic dialog generation pipeline that simulates realistic and evolving conversational contexts.
 
@@ -242,6 +240,7 @@ The context length is determined by the argument you pass to the script:
 > ```bash
 > python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
 > ```
+
 
 
 
