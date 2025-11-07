@@ -161,6 +161,8 @@ If you would like to add support for **additional models**, refer to our impleme
 ### Step 1 - Generating User Personas and Conversations
 **We provide a script to automatically generate persona-based multi-session conversations. To run it:**
 
+First, download [PersonaHub](https://huggingface.co/datasets/proj-persona/PersonaHub) and place it in path ``data/source/Persona_Hub_20000.jsonl``. If you encounter errors indicating missing datasets other than PersonaHub, you can safely ignore them or comment out the corresponding lines.
+
 ```bash
 bash scripts/run_all_prepare_data.sh
 ```
@@ -240,6 +242,7 @@ The context length is determined by the argument you pass to the script:
 > ```bash
 > python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
 > ```
+
 
 
 
