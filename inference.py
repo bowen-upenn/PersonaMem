@@ -83,12 +83,10 @@ class Evaluation:
 
         # Call Claude API for Claude models
         elif re.search(r'claude', self.args['models']['llm_model']) is not None:
-            messages = [
-                {"role": "user", "content": question + '\n\n' + all_options + '\n\n' + instructions},
-            ]
+            messages = convert_role_system_to_user(messages)
             response = self.client.messages.create(
                 model=self.args['models']['llm_model'],
-                max_tokens=1024,
+                max_tokens=128000,
                 messages=messages,
             )
             response = response.content[0].text
