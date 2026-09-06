@@ -244,7 +244,32 @@ The context length is determined by the argument you pass to the script:
 > python inference.py --step prepare --model gpt-4o-mini --idx_persona 0 --n_blocks 60 --n_variants 2 --filter_questions --clean --verbose
 > ```
 
+## Citations
 
+If you find our work helpful, please consider cite them. Thank you!
+
+```
+@article{jiang2026personamem,
+  title={PersonaMem-v3: Toward Omni-Platform Personal Intelligence for Holistic User Understanding, Recommendation, and Agentic Tasks},
+  author={Jiang, Bowen and Yuan, Yuan and Hao, Zhuoqun and Liu, Yuchen and Shen, Maohao and Chen, Sihao and Wornell, Gregory and Callison-Burch, Chris and Ungar, Lyle and Roth, Dan and others},
+  journal={arXiv preprint arXiv:2608.21381},
+  year={2026}
+}
+
+@article{jiang2025personamem2,
+  title={PersonaMem-v2: Towards Personalized Intelligence via Learning Implicit User Personas and Agentic Memory},
+  author={Jiang, Bowen and Yuan, Yuan and Shen, Maohao and Hao, Zhuoqun and Xu, Zhangchen and Chen, Zichen and Liu, Ziyi and Vijjini, Anvesh Rao and He, Jiashu and Yu, Hanchao and Poovendran, Radha and Wornell, Gregory and Ungar, Lyle and Roth, Dan and Chen, Sihao and Taylor, Camillo Jose},
+  journal={arXiv preprint arXiv:2512.06688},
+  year={2025}
+}
+
+@article{jiang2025know,
+  title={Know Me, Respond to Me: Benchmarking LLMs for Dynamic User Profiling and Personalized Responses at Scale},
+  author={Jiang, Bowen and Hao, Zhuoqun and Cho, Young-Min and Li, Bryan and Yuan, Yuan and Chen, Sihao and Ungar, Lyle and Taylor, Camillo J and Roth, Dan},
+  journal={arXiv preprint arXiv:2504.14225},
+  year={2025}
+}
+```
 
 
 
